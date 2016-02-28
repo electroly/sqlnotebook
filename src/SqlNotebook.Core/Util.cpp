@@ -51,7 +51,7 @@ String^ Util::Str(const wchar_t* utf16Str) {
 }
 
 String^ Util::Str(const char* utf8Str) {
-    size_t nDataLen = strlen(utf8Str);
+    int nDataLen = (int)strlen(utf8Str);
     int bufferSizeChars = MultiByteToWideChar(CP_UTF8, 0, utf8Str, nDataLen, nullptr, 0);
     if (bufferSizeChars <= 0) {
         throw gcnew InvalidOperationException("Unable to convert string from UTF-8 to UTF-16.");
