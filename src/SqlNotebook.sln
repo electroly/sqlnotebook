@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlNotebook", "SqlNotebook\SqlNotebook.csproj", "{4766090D-0E56-4A24-BDE7-3F9FB8D37C80}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SqlNotebook.Core", "SqlNotebook.Core\SqlNotebook.Core.vcxproj", "{4991E0F9-FD29-4D6A-B489-F355A808CA8A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeifenLuo.WinFormsUI", "..\ext\dockpanelsuite\WinFormsUI\WeifenLuo.WinFormsUI.csproj", "{C75532C4-765B-418E-B09B-46D36B2ABDB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.TextEditor", "..\ext\texteditor\Project\ICSharpCode.TextEditor.csproj", "{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4766090D-0E56-4A24-BDE7-3F9FB8D37C80}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{4766090D-0E56-4A24-BDE7-3F9FB8D37C80}.Debug|x64.ActiveCfg = Debug|x64
+		{4766090D-0E56-4A24-BDE7-3F9FB8D37C80}.Debug|x64.Build.0 = Debug|x64
+		{4766090D-0E56-4A24-BDE7-3F9FB8D37C80}.Release|Any CPU.ActiveCfg = Release|x64
+		{4766090D-0E56-4A24-BDE7-3F9FB8D37C80}.Release|x64.ActiveCfg = Release|x64
+		{4766090D-0E56-4A24-BDE7-3F9FB8D37C80}.Release|x64.Build.0 = Release|x64
+		{4991E0F9-FD29-4D6A-B489-F355A808CA8A}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{4991E0F9-FD29-4D6A-B489-F355A808CA8A}.Debug|x64.ActiveCfg = Debug|x64
+		{4991E0F9-FD29-4D6A-B489-F355A808CA8A}.Debug|x64.Build.0 = Debug|x64
+		{4991E0F9-FD29-4D6A-B489-F355A808CA8A}.Release|Any CPU.ActiveCfg = Release|Win32
+		{4991E0F9-FD29-4D6A-B489-F355A808CA8A}.Release|x64.ActiveCfg = Release|x64
+		{4991E0F9-FD29-4D6A-B489-F355A808CA8A}.Release|x64.Build.0 = Release|x64
+		{C75532C4-765B-418E-B09B-46D36B2ABDB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C75532C4-765B-418E-B09B-46D36B2ABDB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C75532C4-765B-418E-B09B-46D36B2ABDB1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C75532C4-765B-418E-B09B-46D36B2ABDB1}.Debug|x64.Build.0 = Debug|Any CPU
+		{C75532C4-765B-418E-B09B-46D36B2ABDB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C75532C4-765B-418E-B09B-46D36B2ABDB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C75532C4-765B-418E-B09B-46D36B2ABDB1}.Release|x64.ActiveCfg = Release|Any CPU
+		{C75532C4-765B-418E-B09B-46D36B2ABDB1}.Release|x64.Build.0 = Release|Any CPU
+		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Debug|x64.Build.0 = Debug|Any CPU
+		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Release|x64.ActiveCfg = Release|Any CPU
+		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
