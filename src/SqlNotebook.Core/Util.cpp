@@ -17,6 +17,7 @@
 #include <Windows.h>
 #include "SqlNotebookCore.h"
 using namespace System::Runtime::InteropServices;
+using namespace SqlNotebookCore;
 
 std::wstring Util::WStr(String^ mstr) {
     auto utf16 = Marshal::StringToHGlobalUni(mstr);
@@ -51,7 +52,7 @@ String^ Util::Str(const wchar_t* utf16Str) {
 }
 
 String^ Util::Str(const char* utf8Str) {
-    int nDataLen = (int)strlen(utf8Str);
+    int nDataLen = (int)strlen(utf8Str) + 1;
     int bufferSizeChars = MultiByteToWideChar(CP_UTF8, 0, utf8Str, nDataLen, nullptr, 0);
     if (bufferSizeChars <= 0) {
         throw gcnew InvalidOperationException("Unable to convert string from UTF-8 to UTF-16.");

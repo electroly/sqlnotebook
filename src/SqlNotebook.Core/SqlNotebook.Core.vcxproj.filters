@@ -7,6 +7,6 @@
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Notebook.cpp" />
-    <ClCompile Include="Sqlite.cpp" />
+    <ClCompile Include="CsvModule.cpp" />
   </ItemGroup>
 </Project>

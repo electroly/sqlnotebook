@@ -21,108 +21,16 @@
 using namespace System;
 using namespace System::Data;
 using namespace System::Collections::Generic;
+using namespace System::Threading;
+
+void g_SqliteCall(sqlite3* sqlite, int result); // handle the errcode by throwing if non-SQLITE_OK
 
 namespace SqlNotebookCore {
-
-    public struct NativeSqliteModule {
-        sqlite3_module super;
-    };
-
-    public enum class SqliteIndexConstraintOperator {
-        Eq = SQLITE_INDEX_CONSTRAINT_EQ,
-        Gt = SQLITE_INDEX_CONSTRAINT_GT,
-        Le = SQLITE_INDEX_CONSTRAINT_LE,
-        Lt = SQLITE_INDEX_CONSTRAINT_LT,
-        Ge = SQLITE_INDEX_CONSTRAINT_GE,
-        Match = SQLITE_INDEX_CONSTRAINT_MATCH,
-        Like = SQLITE_INDEX_CONSTRAINT_LIKE,
-        Glob = SQLITE_INDEX_CONSTRAINT_GLOB,
-        RegExp = SQLITE_INDEX_CONSTRAINT_REGEXP
-    };
-
-    public ref class SqliteIndexConstraint sealed {
-        public:
-        initonly int Column; // Column constrained.  -1 for ROWID
-        initonly SqliteIndexConstraintOperator Op; // Constraint operator
-        initonly bool Usable; // True if this constraint is usable
-
-        SqliteIndexConstraint(int column, SqliteIndexConstraintOperator op, bool usable);
-    };
-
-    public ref class SqliteOrderBy sealed {
-        public:
-        initonly int Column; // Column number
-        initonly bool Desc; // True for DESC.  False for ASC.
-
-        SqliteOrderBy(int column, bool desc);
-    };
-
-    public ref class SqliteIndexInfoInput sealed {
-        public:
-        initonly IReadOnlyList<SqliteIndexConstraint^>^ Constraints; // Table of WHERE clause constraints
-        initonly IReadOnlyList<SqliteOrderBy^>^ Order; // The ORDER BY clause
-
-        SqliteIndexInfoInput(IReadOnlyList<SqliteIndexConstraint^>^ constraints, IReadOnlyList<SqliteOrderBy^>^ order);
-    };
-
-    public ref class SqliteIndexConstraintUsage sealed {
-        public:
-        initonly int ArgIndex; // if >0, constraint is part of argv to xFilter
-        initonly bool Omit; // Do not code a test for this constraint
-
-        SqliteIndexConstraintUsage(int argIndex, bool omit);
-    };
-
-    public ref class SqliteIndexInfoOutput sealed {
-        public:
-        initonly IReadOnlyList<SqliteIndexConstraintUsage^>^ ConstraintUsage;
-        initonly int IndexNumber; // Number used to identify the index
-        initonly bool OrderByConsumed; // True if output is already ordered
-        initonly double EstimatedCost; // Estimated cost of using this index
-        initonly int64_t EstimatedRows; // Estimated number of rows returned
-
-        SqliteIndexInfoOutput(IReadOnlyList<SqliteIndexConstraintUsage^>^ constraintUsage, int indexNumber,
-            bool orderByConsumed, double estimatedCost, int64_t estimatedRows);
-    };
-
-    public interface class ISqliteVirtualTable : public IDisposable {
-        void Disconnect();
-        void Drop();
-    };
-
-    public interface class ISqliteVirtualTableCursor : public IDisposable {
-        void Filter(int indexNumber, IReadOnlyList<Object^>^ args);
-        void Next();
-        bool Eof();
-        Object Column(int columnIndex);
-        int64_t Rowid();
-    };
-
-    public interface class ISqliteModule : public IDisposable {
-        ISqliteVirtualTable^ Create(IReadOnlyList<String^>^ args);
-        ISqliteVirtualTable^ Connect(IReadOnlyList<String^>^ args);
-        SqliteIndexInfoOutput^ BestIndex(ISqliteVirtualTable^ vtab, SqliteIndexInfoInput^ input);
-        ISqliteVirtualTableCursor^ Open(ISqliteVirtualTable^ vtab);
-    };
-
-    public ref class RegisteredModule sealed {
-        public:
-        RegisteredModule(ISqliteModule^ clientModule, NativeSqliteModule* sqliteModule);
-        ~RegisteredModule();
-        !RegisteredModule();
-
-        private:
-        bool _isDisposed;
-        ISqliteModule^ _clientModule;
-        NativeSqliteModule* _sqliteModule;
-    };
-
-    public ref class Notebook sealed {
+    public ref class Notebook sealed : public IDisposable {
         public:
         Notebook(String^ filePath);
         ~Notebook();
         !Notebook();
-        void RegisterModule(String^ moduleName, ISqliteModule^ module);
         void Execute(String^ sql);
         void Execute(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
         void Execute(String^ sql, IReadOnlyList<Object^>^ args);
@@ -134,11 +42,11 @@ namespace SqlNotebookCore {
         bool _isDisposed;
         String^ _filePath;
         sqlite3* _sqlite;
-        List<RegisteredModule^>^ _modules;
 
         DataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs, 
             IReadOnlyList<Object^>^ orderedArgs, bool returnResult);
-        void SqliteCall(int result); // handle the errcode by throwing if non-SQLITE_OK
+        void InstallCsvModule();
+        void SqliteCall(int result);
     };
 
     public ref class Util abstract sealed {
@@ -151,8 +59,6 @@ namespace SqlNotebookCore {
 
     public ref class SqliteException sealed : public Exception {
         public:
-        SqliteException(String^ message);
+        SqliteException(String^ message) : Exception(message) {}
     };
 }
-
-using namespace SqlNotebookCore;
