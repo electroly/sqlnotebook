@@ -247,9 +247,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="dockpanelsuite.snk" />
-    <None Include="license.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Docking\Resources\DockPane_AutoHide.bmp" />

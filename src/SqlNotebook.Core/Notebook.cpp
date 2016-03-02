@@ -26,6 +26,7 @@ Notebook::Notebook(String^ filePath) {
     SqliteCall(sqlite3_open16(filePathWstr.c_str(), &sqlite));
     _sqlite = sqlite;
     InstallCsvModule();
+    InstallPgModule();
 }
 
 Notebook::~Notebook() {
@@ -114,7 +115,7 @@ DataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^
                 // will call our callback (we just use "free") to dispose of this copy.
                 auto strCopy = _wcsdup(strValue.c_str());
                 auto lenB = strValue.size() * sizeof(wchar_t);
-                SqliteCall(sqlite3_bind_text16(stmt, i, strValue.c_str(), (int)lenB, free));
+                SqliteCall(sqlite3_bind_text16(stmt, i, strCopy, (int)lenB, free));
             }
         }
 

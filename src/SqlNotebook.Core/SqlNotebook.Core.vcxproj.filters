@@ -8,5 +8,6 @@
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Notebook.cpp" />
     <ClCompile Include="CsvModule.cpp" />
+    <ClCompile Include="PgModule.cpp" />
   </ItemGroup>
 </Project>

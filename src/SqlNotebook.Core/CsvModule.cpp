@@ -14,6 +14,7 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#include "gcroot.h"
 #include "SqlNotebookCore.h"
 using namespace SqlNotebookCore;
 using namespace System::IO;
@@ -23,10 +24,15 @@ using namespace System::Text::RegularExpressions;
 
 static sqlite3_module s_csvModule = { 0 };
 
+private ref class CsvData {
+    public:
+    List<String^>^ ColumnNames;
+    List<array<String^>^>^ Rows;
+};
+
 private struct CsvTable {
     sqlite3_vtab Super;
-    std::vector<std::wstring> ColumnNames;
-    std::vector<std::vector<std::wstring>> Rows;
+    gcroot<CsvData^> Data;
     CsvTable() {
         memset(&Super, 0, sizeof(Super));
     }
@@ -34,11 +40,10 @@ private struct CsvTable {
 
 private struct CsvCursor {
     sqlite3_vtab_cursor Super;
-    CsvTable* Table;
+    gcroot<CsvData^> Data;
     int RowIndex;
     CsvCursor() {
         memset(&Super, 0, sizeof(Super));
-        Table = nullptr;
         RowIndex = 0;
     }
 };
@@ -70,7 +75,7 @@ static int CsvCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
 
     try {
         if (argc != 5) {
-            throw gcnew Exception("Wrong number of arguments.");
+            throw gcnew Exception("Syntax: CREATE VIRTUAL TABLE <name> USING csv ('<filename>', HEADER);");
         }
         auto filePath = Util::Str(argv[3])->Trim(L'\'');
         auto headerFlag = Util::Str(argv[4])->ToUpper();
@@ -110,19 +115,10 @@ static int CsvCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
 
         // store the file contents in the native CsvTable structure
         vtab = new CsvTable;
-        vtab->ColumnNames.reserve(columnNames->Count);
-        for each (auto columnName in columnNames) {
-            vtab->ColumnNames.push_back(Util::WStr(columnName));
-        }
-        vtab->Rows.reserve(rows->Count);
-        for each (auto row in rows) {
-            std::vector<std::wstring> rowData;
-            rowData.reserve(row->Length);
-            for each (auto cell in row) {
-                rowData.push_back(Util::WStr(cell));
-            }
-            vtab->Rows.push_back(rowData);
-        }
+        auto csvData = gcnew CsvData();
+        csvData->ColumnNames = columnNames;
+        csvData->Rows = rows;
+        vtab->Data = csvData;
 
         // inform sqlite of the column structure
         auto createTableLines = gcnew List<String^>();
@@ -153,13 +149,14 @@ static int CsvBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
     // we don't have any indices of any kind.  a full dumb scan is all we can offer.
     info->idxNum = 1;
     info->estimatedCost = 1;
-    info->estimatedRows = vtab->Rows.size();
+    info->estimatedRows = vtab->Data->Rows->Count;
     return SQLITE_OK;
 }
 
 static int CsvOpen(sqlite3_vtab* pVTab, sqlite3_vtab_cursor** ppCursor) {
+    auto vtab = (CsvTable*)pVTab;
     auto cursor = new CsvCursor;
-    cursor->Table = (CsvTable*)pVTab;
+    cursor->Data = vtab->Data;
     *ppCursor = &cursor->Super;
     return SQLITE_OK;
 }
@@ -183,19 +180,20 @@ static int CsvNext(sqlite3_vtab_cursor* pCur) {
 
 static int CsvEof(sqlite3_vtab_cursor* pCur) {
     auto cursor = (CsvCursor*)pCur;
-    auto totalRows = cursor->Table->Rows.size();
+    auto totalRows = cursor->Data->Rows->Count;
     return cursor->RowIndex >= totalRows ? 1 : 0;
 }
 
 static int CsvColumn(sqlite3_vtab_cursor* pCur, sqlite3_context* ctx, int n) {
     auto cursor = (CsvCursor*)pCur;
-    auto& row = cursor->Table->Rows[cursor->RowIndex];
-    if (n >= row.size()) {
+    auto row = cursor->Data->Rows[cursor->RowIndex];
+    if (n >= row->Length) {
         sqlite3_result_null(ctx);
     } else {
         auto value = row[n];
-        auto valueCopy = _wcsdup(value.c_str()); // sqlite will free this
-        auto lenB = value.size() * sizeof(wchar_t);
+        auto valueWstr = Util::WStr(value);
+        auto valueCopy = _wcsdup(valueWstr.c_str()); // sqlite will free this
+        auto lenB = valueWstr.size() * sizeof(wchar_t);
         sqlite3_result_text16(ctx, valueCopy, (int)lenB, free);
     }
     return SQLITE_OK;

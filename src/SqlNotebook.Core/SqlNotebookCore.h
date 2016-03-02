@@ -22,6 +22,7 @@ using namespace System;
 using namespace System::Data;
 using namespace System::Collections::Generic;
 using namespace System::Threading;
+using namespace System::Runtime::InteropServices;
 
 void g_SqliteCall(sqlite3* sqlite, int result); // handle the errcode by throwing if non-SQLITE_OK
 
@@ -46,6 +47,7 @@ namespace SqlNotebookCore {
         DataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs, 
             IReadOnlyList<Object^>^ orderedArgs, bool returnResult);
         void InstallCsvModule();
+        void InstallPgModule();
         void SqliteCall(int result);
     };
 

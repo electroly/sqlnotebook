@@ -272,9 +272,10 @@ namespace Mono.Terminal {
 
 		void Render ()
 		{
-            Console.ForegroundColor = ConsoleColor.DarkGray;
+            var oldFg = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write (shown_prompt);
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = oldFg;
             Console.Write (rendered_text);
 
 			int max = System.Math.Max (rendered_text.Length + shown_prompt.Length, max_rendered);

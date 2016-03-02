@@ -15,26 +15,30 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Linq;
-using SqlNotebookCore;
-using System.IO;
 using System.Data;
+using System.IO;
+using System.Linq;
 using Mono.Terminal;
+using SqlNotebookCore;
 
+// a quick and dirty command line interface for SqlNotebook
 namespace Snb {
-    class Program {
-        static void Main(string[] args) {
+    public static class Program {
+        public static void Main(string[] args) {
+            Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Gray;
             var filePath = Path.GetTempFileName();
+            Console.WriteLine("SQL Notebook");
             try {
                 using (var notebook = new Notebook(filePath)) {
                     var lineEditor = new LineEditor("sqlnotebook");
                     string input;
 
-                    while ((input = lineEditor.Edit("snb> ", "")) != null) {
+                    while ((input = lineEditor.Edit("> ", "")) != null) {
                         if (input == "exit") {
                             break;
                         } else if (input.Trim() == "") {
+                            Console.WriteLine();
                             continue;
                         }
                         try {
@@ -56,8 +60,10 @@ namespace Snb {
                                         from colIndex in Enumerable.Range(0, dt.Columns.Count)
                                         join x in columnWidths on colIndex equals x.ColIndex
                                         select dt.Columns[colIndex].ColumnName.PadRight(x.MaxLength);
-                                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                                    Console.BackgroundColor = ConsoleColor.DarkGray;
+                                    Console.ForegroundColor = ConsoleColor.White;
                                     Console.WriteLine(string.Join("  ", paddedHeaders));
+                                    Console.BackgroundColor = ConsoleColor.Black;
                                     Console.ForegroundColor = ConsoleColor.Gray;
                                     foreach (DataRow row in dt.Rows) {
                                         var paddedValues =
@@ -67,13 +73,14 @@ namespace Snb {
                                         Console.WriteLine(string.Join("  ", paddedValues));
                                     }
                                     Console.ForegroundColor = ConsoleColor.DarkGray;
-                                    Console.WriteLine($"{dt.Rows.Count} row{(dt.Rows.Count == 1 ? "" : "s")}.");
+                                    Console.WriteLine($"({dt.Rows.Count} row{(dt.Rows.Count == 1 ? "" : "s")}.)");
                                     Console.ForegroundColor = ConsoleColor.Gray;
                                 }
                             }
                         } catch (Exception ex) {
                             Console.WriteLine(ex.Message);
                         }
+                        Console.WriteLine();
                     }
                 }
             } finally {
