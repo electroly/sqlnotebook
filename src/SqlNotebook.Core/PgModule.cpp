@@ -212,7 +212,7 @@ static int PgCreate(sqlite3* db, void* pAux, int argc, const char* const* argv, 
         }
 
         // get a row count too
-        int rowCount = 0;
+        int64_t rowCount = 0;
         {
             NpgsqlCommand cmd("SELECT COUNT(*) FROM \"" + pgTableName->Replace("\"", "\"\"") + "\"", conn);
             rowCount = (int64_t)cmd.ExecuteScalar();
@@ -311,7 +311,7 @@ static int PgBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
     info->idxStr = sqlite3_mprintf("%s", sql.c_str());
     info->needToFreeIdxStr = true;
     info->estimatedRows = vtab->InitialRowCount / (1 + info->nConstraint);
-    info->estimatedCost = info->estimatedRows;
+    info->estimatedCost = (double)info->estimatedRows;
         // wild guess of the effect of each WHERE constraint. we just want to induce sqlite to give us as many
         // constraints as possible for a given query.
 
@@ -376,7 +376,7 @@ static int PgFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxStr, i
         cursor->Reader = reader;
         cursor->IsEof = !cursor->Reader->Read();
         return SQLITE_OK;
-    } catch (Exception^ ex) {
+    } catch (Exception^) {
         return SQLITE_ERROR;
     }
 }
@@ -429,7 +429,7 @@ static int PgColumn(sqlite3_vtab_cursor* pCur, sqlite3_context* ctx, int n) {
         } else if (type == NpgsqlTypes::NpgsqlDate::typeid) {
             ResultText16(ctx, ((DateTime)cursor->Reader->GetDate(n)).ToString("yyyy-MM-dd"));
         } else if (type == NpgsqlTypes::NpgsqlDateTime::typeid) {
-            ResultText16(ctx, ((DateTime)cursor->Reader->GetDateTime(n)).ToString("yyyy-MM-ddTHH\:mm\:ss.fffzzz"));
+            ResultText16(ctx, ((DateTime)cursor->Reader->GetDateTime(n)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
         } else {
             ResultText16(ctx, cursor->Reader->GetValue(n)->ToString());
         }
