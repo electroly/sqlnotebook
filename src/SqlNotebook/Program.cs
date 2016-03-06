@@ -31,7 +31,7 @@ namespace SqlNotebook {
             Application.SetCompatibleTextRenderingDefault(false);
             string tempFilePath = Path.GetTempFileName();
             try {
-                Application.Run(new MainFrm(tempFilePath));
+                Application.Run(new MainForm(tempFilePath));
             } finally {
                 File.Delete(tempFilePath);
             }

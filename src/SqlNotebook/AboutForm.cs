@@ -14,12 +14,17 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
-    public partial class ExplorerControl : UserControl {
-        public ExplorerControl() {
+    public partial class AboutForm : Form {
+        public AboutForm() {
             InitializeComponent();
+        }
+
+        private void OkBtn_Click(object sender, EventArgs e) {
+            Close();
         }
     }
 }

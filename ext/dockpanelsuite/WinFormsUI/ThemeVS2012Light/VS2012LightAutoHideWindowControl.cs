@@ -28,6 +28,8 @@ namespace WeifenLuo.WinFormsUI.Docking
                 AutoHideWindow.DockPanel.BeginDrag(AutoHideWindow, AutoHideWindow.RectangleToScreen(Bounds));
             }
 
+            //CHANGED: Removed gradient in splitters.
+            /*
             protected override void OnPaint(PaintEventArgs e)
             {
                 base.OnPaint(e);
@@ -65,6 +67,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                         break;
                 }
             }
+            */
         }
 
         public VS2012LightAutoHideWindowControl(DockPanel dockPanel) : base(dockPanel)

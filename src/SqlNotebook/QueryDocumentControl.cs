@@ -15,45 +15,26 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using SqlNotebookCore;
-using WeifenLuo.WinFormsUI.Docking;
+using ICSharpCode.TextEditor;
 
 namespace SqlNotebook {
-    public partial class MainFrm : Form {
-        private readonly DockPanel _dockPanel;
-        private Notebook _notebook;
-        private readonly UserControlDockContent _notebookPane;
+    public partial class QueryDocumentControl : UserControl {
+        private readonly TextEditorControlEx _textEditor;
 
-        public MainFrm(string tempFilePath) {
+        public QueryDocumentControl() {
             InitializeComponent();
-
-            _notebook = new Notebook(tempFilePath);
-            _dockPanel = new DockPanel {
-                Dock = DockStyle.Fill,
-                Theme = new VS2012LightTheme(),
-                DocumentStyle = DocumentStyle.DockingWindow
+            _textEditor = new TextEditorControlEx {
+                Dock = DockStyle.Fill
             };
-            _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
-
-            _notebookPane = new UserControlDockContent("Notebook", new ExplorerControl());
-            _notebookPane.CloseButtonVisible = false;
-            _notebookPane.Show(_dockPanel, DockState.DockLeft);
-        }
-
-        protected override void OnFormClosed(FormClosedEventArgs e) {
-            base.OnFormClosed(e);
-            _notebook.Dispose();
-            _notebook = null;
-        }
-
-        private void AboutMnu_Click(object sender, EventArgs e) {
-            using (var frm = new AboutFrm()) {
-                frm.ShowDialog(this);
-            }
-        }
-
-        private void ImportBtn_Click(object sender, EventArgs e) {
+            Controls.Add(_textEditor);
         }
     }
 }

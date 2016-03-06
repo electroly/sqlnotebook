@@ -38,6 +38,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\..\Release\</OutputPath>
@@ -84,6 +85,10 @@
       <HintPath>..\packages\ICSharpCode.TextEditorEx.1.0.0.6\lib\net40\ICSharpCode.TextEditorEx.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Npgsql, Version=3.0.5.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
       <HintPath>..\packages\Npgsql.3.0.5\lib\net45\Npgsql.dll</HintPath>
       <Private>True</Private>
@@ -101,23 +106,56 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AboutFrm.cs">
+    <Compile Include="AboutForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AboutFrm.Designer.cs">
-      <DependentUpon>AboutFrm.cs</DependentUpon>
+    <Compile Include="AboutForm.Designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ConsoleDocumentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ConsoleDocumentControl.Designer.cs">
+      <DependentUpon>ConsoleDocumentControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IExecutableDocument.cs" />
+    <Compile Include="ImportCsvOptionsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImportCsvOptionsForm.Designer.cs">
+      <DependentUpon>ImportCsvOptionsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Importer.cs" />
+    <Compile Include="ImportPreviewForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImportPreviewForm.Designer.cs">
+      <DependentUpon>ImportPreviewForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImportRenameTableForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImportRenameTableForm.Designer.cs">
+      <DependentUpon>ImportRenameTableForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QueryDocumentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="QueryDocumentControl.Designer.cs">
+      <DependentUpon>QueryDocumentControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ConsoleRichTextBox.cs" />
     <Compile Include="UserControlDockContent.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UserControlDockContent.Designer.cs">
       <DependentUpon>UserControlDockContent.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainFrm.cs">
+    <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainFrm.Designer.cs">
-      <DependentUpon>MainFrm.cs</DependentUpon>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ExplorerControl.cs">
       <SubType>UserControl</SubType>
@@ -127,11 +165,29 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="AboutFrm.resx">
-      <DependentUpon>AboutFrm.cs</DependentUpon>
+    <Compile Include="WaitForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WaitForm.Designer.cs">
+      <DependentUpon>WaitForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainFrm.resx">
-      <DependentUpon>MainFrm.cs</DependentUpon>
+    <EmbeddedResource Include="ConsoleDocumentControl.resx">
+      <DependentUpon>ConsoleDocumentControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportCsvOptionsForm.resx">
+      <DependentUpon>ImportCsvOptionsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportPreviewForm.resx">
+      <DependentUpon>ImportPreviewForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportRenameTableForm.resx">
+      <DependentUpon>ImportRenameTableForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ExplorerControl.resx">
       <DependentUpon>ExplorerControl.cs</DependentUpon>
@@ -140,6 +196,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="QueryDocumentControl.resx">
+      <DependentUpon>QueryDocumentControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WaitForm.resx">
+      <DependentUpon>WaitForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

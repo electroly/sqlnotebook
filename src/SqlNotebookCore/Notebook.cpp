@@ -15,18 +15,14 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "SqlNotebookCore.h"
-using namespace System::Runtime::InteropServices;
 using namespace SqlNotebookCore;
 
 Notebook::Notebook(String^ filePath) {
     _filePath = filePath;
-
-    auto filePathWstr = Util::WStr(filePath);
-    sqlite3* sqlite;
-    SqliteCall(sqlite3_open16(filePathWstr.c_str(), &sqlite));
-    _sqlite = sqlite;
-    InstallCsvModule();
-    InstallPgModule();
+    _threadCancellationTokenSource = gcnew CancellationTokenSource();
+    _threadQueue = gcnew BlockingCollection<Action^>();
+    _thread = Task::Run(gcnew Action(this, &Notebook::SqliteThread));
+    Invoke(gcnew Action(this, &Notebook::Init));
 }
 
 Notebook::~Notebook() {
@@ -42,6 +38,63 @@ Notebook::!Notebook() {
         sqlite3_close_v2(_sqlite);
         _sqlite = nullptr;
     }
+}
+
+void Notebook::SqliteThread() {
+    auto stopToken = _threadCancellationTokenSource->Token;
+    try {
+        while (!stopToken.IsCancellationRequested) {
+            auto action = _threadQueue->Take(stopToken);
+            action();
+        }
+    } catch (OperationCanceledException^) {
+        // ok
+    }
+}
+
+void Notebook::Init() {
+    auto filePathWstr = Util::WStr(_filePath);
+    sqlite3* sqlite;
+    SqliteCall(sqlite3_open16(filePathWstr.c_str(), &sqlite));
+    _sqlite = sqlite;
+    InstallCsvModule();
+    InstallPgModule();
+}
+
+private ref class InvokeClosure {
+    public:
+    Action^ UserAction = nullptr;
+    BlockingCollection<Action^>^ ThreadQueue = nullptr;
+    Exception^ CaughtException = nullptr;
+    
+    void Invoke() {
+        _sem = gcnew Semaphore(0, 1);
+        ThreadQueue->Add(gcnew Action(this, &InvokeClosure::RunOnThread));
+        // RunOnThread will release the semaphore when it completes
+        _sem->WaitOne();
+        if (CaughtException != nullptr) {
+            throw CaughtException;
+        }
+    }
+
+    private:
+    Semaphore^ _sem;
+    
+    void RunOnThread() {
+        try {
+            UserAction();
+        } catch (Exception^ ex) {
+            CaughtException = ex;
+        }
+        _sem->Release();
+    }
+};
+
+void Notebook::Invoke(Action^ action) {
+    auto x = gcnew InvokeClosure();
+    x->UserAction = action;
+    x->ThreadQueue = _threadQueue;
+    x->Invoke();
 }
 
 void Notebook::Execute(String^ sql) {

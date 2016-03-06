@@ -14,12 +14,36 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
-    public partial class ExplorerControl : UserControl {
-        public ExplorerControl() {
+    public partial class ImportRenameTableForm : Form {
+        public string NewName { get; private set; }
+
+        public ImportRenameTableForm(string oldName, string newName) {
             InitializeComponent();
+            _oldNameTxt.Text = oldName;
+            _newNameTxt.Text = newName;
+            _newNameTxt.Select();
+        }
+
+        private void OkBtn_Click(object sender, EventArgs e) {
+            if (_newNameTxt.Text == "") {
+                MessageBox.Show(this, "Please enter a new name.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            foreach (char ch in _newNameTxt.Text) {
+                if (!char.IsLetterOrDigit(ch) && ch != '_') {
+                    MessageBox.Show(this, 
+                        "The new name must contain only letters, numbers, and underscores.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+            NewName = _newNameTxt.Text;
+            DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }

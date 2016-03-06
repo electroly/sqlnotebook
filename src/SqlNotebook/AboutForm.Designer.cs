@@ -1,5 +1,5 @@
 ﻿namespace SqlNotebook {
-    partial class AboutFrm {
+    partial class AboutForm {
         /// <summary>
         /// Required designer variable.
         /// </summary>

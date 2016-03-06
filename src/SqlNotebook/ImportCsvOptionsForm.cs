@@ -17,8 +17,8 @@
 using System.Windows.Forms;
 
 namespace SqlNotebook {
-    public partial class ExplorerControl : UserControl {
-        public ExplorerControl() {
+    public partial class ImportCsvOptionsForm : Form {
+        public ImportCsvOptionsForm() {
             InitializeComponent();
         }
     }

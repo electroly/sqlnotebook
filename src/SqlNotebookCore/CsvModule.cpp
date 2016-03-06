@@ -61,10 +61,10 @@ static int CsvCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
     // from https://www.sqlite.org/vtab.html regarding argv:
     //      The first string, argv[0], is the name of the module being invoked. The module name is the name provided
     //      as the second argument to sqlite3_create_module() and as the argument to the USING clause of the CREATE
-    //      VIRTUAL TABLE statement that is running. The second, argv[3], is the name of the database in which the new
+    //      VIRTUAL TABLE statement that is running. The second, argv[1], is the name of the database in which the new
     //      virtual table is being created. The database name is "main" for the primary database, or "temp" for TEMP
     //      database, or the name given at the end of the ATTACH statement for attached databases. The third element
-    //      of the array, argv[4], is the name of the new virtual table, as specified following the TABLE keyword in
+    //      of the array, argv[2], is the name of the new virtual table, as specified following the TABLE keyword in
     //      the CREATE VIRTUAL TABLE statement. If present, the fourth and subsequent strings in the argv[] array
     //      report the arguments to the module name in the CREATE VIRTUAL TABLE statement.
     // our custom arguments are:

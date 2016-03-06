@@ -63,6 +63,26 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ApplicationXpTerminal {
+            get {
+                object obj = ResourceManager.GetObject("ApplicationXpTerminal", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ApplicationXpTerminalAdd {
+            get {
+                object obj = ResourceManager.GetObject("ApplicationXpTerminalAdd", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ControlPlayBlue {
             get {
                 object obj = ResourceManager.GetObject("ControlPlayBlue", resourceCulture);
@@ -123,6 +143,16 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ScriptAdd {
+            get {
+                object obj = ResourceManager.GetObject("ScriptAdd", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap SqlNotebookIcon48 {
             get {
                 object obj = ResourceManager.GetObject("SqlNotebookIcon48", resourceCulture);
@@ -136,6 +166,26 @@ namespace SqlNotebook.Properties {
         internal static System.Drawing.Bitmap Stop {
             get {
                 object obj = ResourceManager.GetObject("Stop", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TextExports {
+            get {
+                object obj = ResourceManager.GetObject("TextExports", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TextImports {
+            get {
+                object obj = ResourceManager.GetObject("TextImports", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
