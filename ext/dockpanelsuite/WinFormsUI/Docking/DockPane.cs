@@ -12,6 +12,7 @@ namespace WeifenLuo.WinFormsUI.Docking
     [ToolboxItem(false)]
     public partial class DockPane : UserControl, IDockDragSource
     {
+
         public enum AppearanceStyle
         {
             ToolWindow,
@@ -45,7 +46,8 @@ namespace WeifenLuo.WinFormsUI.Docking
         }
 
         private DockPaneStripBase m_tabStripControl;
-        internal DockPaneStripBase TabStripControl
+
+        public DockPaneStripBase TabStripControl
         {
             get { return m_tabStripControl; }
         }
@@ -462,7 +464,7 @@ namespace WeifenLuo.WinFormsUI.Docking
             get { return (DockState == DockState.Document) ? AppearanceStyle.Document : AppearanceStyle.ToolWindow; }
         }
 
-        internal Rectangle DisplayingRectangle
+        public Rectangle DisplayingRectangle
         {
             get { return ClientRectangle; }
         }
@@ -560,7 +562,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                 ((Control)NestedPanesContainer).PerformLayout();
         }
 
-        protected override void OnLayout(LayoutEventArgs levent)
+        protected override void OnLayout(LayoutEventArgs e)
         {
             SetIsHidden(DisplayingContents.Count == 0);
             if (!IsHidden)
@@ -578,7 +580,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                 }
             }
 
-            base.OnLayout(levent);
+            base.OnLayout(e);
         }
 
         internal void SetContentBounds()
@@ -1314,6 +1316,34 @@ namespace WeifenLuo.WinFormsUI.Docking
                 DockState = DockState.Document;
         }
 
+        #endregion
+
+        #region cachedLayoutArgs leak workaround
+        
+        /// <summary>
+        /// There's a bug in the WinForms layout engine
+        /// that can result in a deferred layout to not
+        /// properly clear out the cached layout args after
+        /// the layout operation is performed.
+        /// Specifically, this bug is hit when the bounds of
+        /// the Pane change, initiating a layout on the parent
+        /// (DockWindow) which is where the bug hits.
+        /// To work around it, when a pane loses the DockWindow
+        /// as its parent, that parent DockWindow needs to
+        /// perform a layout to flush the cached args, if they exist.
+        /// </summary>
+        private DockWindow _lastParentWindow;
+        protected override void OnParentChanged(EventArgs e)
+        {
+            base.OnParentChanged(e);
+            var newParent = Parent as DockWindow;
+            if (newParent != _lastParentWindow)
+            {
+                if (_lastParentWindow != null)
+                    _lastParentWindow.PerformLayout();
+                _lastParentWindow = newParent;
+            }
+        }
         #endregion
     }
 }

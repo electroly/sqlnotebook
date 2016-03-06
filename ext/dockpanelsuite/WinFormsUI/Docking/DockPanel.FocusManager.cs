@@ -122,13 +122,13 @@ namespace WeifenLuo.WinFormsUI.Docking
             [ThreadStatic]
             private static LocalWindowsHook sm_localWindowsHook;
 
-            private LocalWindowsHook.HookEventHandler m_hookEventHandler;
+            private readonly LocalWindowsHook.HookEventHandler m_hookEventHandler;
 
             public FocusManagerImpl(DockPanel dockPanel)
             {
                 m_dockPanel = dockPanel;
                 if (Win32Helper.IsRunningOnMono)
-                    return;                
+                    return;
                 m_hookEventHandler = new LocalWindowsHook.HookEventHandler(HookEventHandler);
 
                 // Ensure the windows hook has been created for this thread
@@ -197,7 +197,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                 if (handler.Form.SelectNextControl(handler.Form.ActiveControl, true, true, true, true))
                     return;
 
-                if (Win32Helper.IsRunningOnMono) 
+                if (Win32Helper.IsRunningOnMono)
                     return;
 
                 // Since DockContent Form is not selectalbe, use Win32 SetFocus instead
@@ -304,20 +304,25 @@ namespace WeifenLuo.WinFormsUI.Docking
                 return false;
             }
 
-            private int m_countSuspendFocusTracking = 0;
+            private uint m_countSuspendFocusTracking = 0;
             public void SuspendFocusTracking()
             {
-                m_countSuspendFocusTracking++;
-                if (!Win32Helper.IsRunningOnMono)
-                    sm_localWindowsHook.HookInvoked -= m_hookEventHandler;
+                if (m_disposed)
+                    return;
+
+                if (m_countSuspendFocusTracking++ == 0)
+                {
+                    if (!Win32Helper.IsRunningOnMono)
+                        sm_localWindowsHook.HookInvoked -= m_hookEventHandler;
+                }
             }
 
             public void ResumeFocusTracking()
             {
-                if (m_countSuspendFocusTracking > 0)
-                    m_countSuspendFocusTracking--;
+                if (m_disposed || m_countSuspendFocusTracking == 0)
+                    return;
 
-                if (m_countSuspendFocusTracking == 0)
+                if (--m_countSuspendFocusTracking == 0)
                 {
                     if (ContentActivating != null)
                     {
@@ -350,7 +355,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                     if (pane == null)
                         RefreshActiveWindow();
                 }
-                else if (msg == Win32.Msgs.WM_SETFOCUS)
+                else if (msg == Win32.Msgs.WM_SETFOCUS || msg == Win32.Msgs.WM_MDIACTIVATE)
                     RefreshActiveWindow();
             }
 
@@ -570,11 +575,28 @@ namespace WeifenLuo.WinFormsUI.Docking
             add { Events.AddHandler(ActiveContentChangedEvent, value); }
             remove { Events.RemoveHandler(ActiveContentChangedEvent, value); }
         }
+
         protected void OnActiveContentChanged(EventArgs e)
         {
             EventHandler handler = (EventHandler)Events[ActiveContentChangedEvent];
             if (handler != null)
                 handler(this, e);
+        }
+
+        private static readonly object DocumentDraggedEvent = new object();
+        [LocalizedCategory("Category_PropertyChanged")]
+        [LocalizedDescription("DockPanel_ActiveContentChanged_Description")]
+        public event EventHandler DocumentDragged
+        {
+            add { Events.AddHandler(DocumentDraggedEvent, value); }
+            remove { Events.RemoveHandler(DocumentDraggedEvent, value); }
+        }
+
+        internal void OnDocumentDragged()
+        {
+            EventHandler handler = (EventHandler)Events[DocumentDraggedEvent];
+            if (handler != null)
+                handler(this, EventArgs.Empty);
         }
 
         private static readonly object ActivePaneChangedEvent = new object();

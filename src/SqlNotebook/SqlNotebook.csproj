@@ -64,10 +64,30 @@
   <PropertyGroup>
     <ApplicationIcon>SqlNotebookIcon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <StartupObject>SqlNotebook.Program</StartupObject>
+  </PropertyGroup>
   <PropertyGroup>
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Excel, Version=2.1.2.3, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.2.1.2.3\lib\net45\Excel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.TextEditorEx, Version=1.0.0.6, Culture=neutral, PublicKeyToken=4d61825e8dd49f1a, processorArchitecture=MSIL">
+      <HintPath>..\packages\ICSharpCode.TextEditorEx.1.0.0.6\lib\net40\ICSharpCode.TextEditorEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Npgsql, Version=3.0.5.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.3.0.5\lib\net45\Npgsql.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -87,17 +107,23 @@
     <Compile Include="AboutFrm.Designer.cs">
       <DependentUpon>AboutFrm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControlDockContent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserControlDockContent.Designer.cs">
+      <DependentUpon>UserControlDockContent.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainFrm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainFrm.Designer.cs">
       <DependentUpon>MainFrm.cs</DependentUpon>
     </Compile>
-    <Compile Include="NotebookPane.cs">
-      <SubType>Form</SubType>
+    <Compile Include="ExplorerControl.cs">
+      <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="NotebookPane.Designer.cs">
-      <DependentUpon>NotebookPane.cs</DependentUpon>
+    <Compile Include="ExplorerControl.Designer.cs">
+      <DependentUpon>ExplorerControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -107,14 +133,15 @@
     <EmbeddedResource Include="MainFrm.resx">
       <DependentUpon>MainFrm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="NotebookPane.resx">
-      <DependentUpon>NotebookPane.cs</DependentUpon>
+    <EmbeddedResource Include="ExplorerControl.resx">
+      <DependentUpon>ExplorerControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -135,13 +162,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\WeifenLuo.WinFormsUI.csproj">
-      <Project>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</Project>
-      <Name>WeifenLuo.WinFormsUI</Name>
+    <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\ThemeVS2012Light.csproj">
+      <Project>{4ed4fdb5-9fd0-49e6-876d-1635f727c755}</Project>
+      <Name>ThemeVS2012Light</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SqlNotebook.Core\SqlNotebook.Core.vcxproj">
+    <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\WinFormsUI.csproj">
+      <Project>{c75532c4-765b-418e-b09b-46d36b2abdb1}</Project>
+      <Name>WinFormsUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SqlNotebookCore\SqlNotebookCore.vcxproj">
       <Project>{4991e0f9-fd29-4d6a-b489-f355a808ca8a}</Project>
-      <Name>SqlNotebook.Core</Name>
+      <Name>SqlNotebookCore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

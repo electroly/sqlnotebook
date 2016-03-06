@@ -170,7 +170,12 @@ namespace WeifenLuo.WinFormsUI.Docking
 
         protected internal abstract int HitTest(Point point);
 
-        protected internal abstract GraphicsPath GetOutline(int index);
+        protected virtual bool MouseDownActivateTest(MouseEventArgs e)
+        {
+            return true;
+        }
+
+        public abstract GraphicsPath GetOutline(int index);
 
         protected internal virtual Tab CreateTab(IDockContent content)
         {
@@ -181,21 +186,24 @@ namespace WeifenLuo.WinFormsUI.Docking
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
-
             int index = HitTest();
             if (index != -1)
             {
                 if (e.Button == MouseButtons.Middle)
                 {
                     // Close the specified content.
-                    IDockContent content = Tabs[index].Content;
-                    DockPane.CloseContent(content);
+                    TryCloseTab(index);
                 }
                 else
                 {
                     IDockContent content = Tabs[index].Content;
                     if (DockPane.ActiveContent != content)
-                        DockPane.ActiveContent = content;
+                    {
+                        // Test if the content should be active
+                        if (MouseDownActivateTest(e))
+                            DockPane.ActiveContent = content;
+                    }
+
                 }
             }
 
@@ -214,6 +222,9 @@ namespace WeifenLuo.WinFormsUI.Docking
             if (e.Button != MouseButtons.Left || _dragBox.Contains(e.Location)) 
                 return;
 
+            if (DockPane.ActiveContent == null)
+                return;
+
             if (DockPane.DockPanel.AllowEndUserDocking && DockPane.AllowDockDragAndDrop && DockPane.ActiveContent.DockHandler.AllowEndUserDocking)
                 DockPane.DockPanel.BeginDrag(DockPane.ActiveContent.DockHandler);
         }
@@ -226,6 +237,18 @@ namespace WeifenLuo.WinFormsUI.Docking
         protected void ShowTabPageContextMenu(Point position)
         {
             DockPane.ShowTabPageContextMenu(this, position);
+        }
+
+        protected bool TryCloseTab(int index)
+        {
+            if (index >= 0 || index < Tabs.Count)
+            {
+                // Close the specified content.
+                IDockContent content = Tabs[index].Content;
+                DockPane.CloseContent(content);
+                return true;
+            }
+            return false;
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
@@ -270,5 +293,116 @@ namespace WeifenLuo.WinFormsUI.Docking
                     DockPane.ActiveContent = content;
             }
         }
+
+        protected abstract Rectangle GetTabBounds(Tab tab);
+
+        internal static Rectangle ToScreen(Rectangle rectangle, Control parent)
+        {
+            if (parent == null)
+                return rectangle;
+
+            return new Rectangle(parent.PointToScreen(new Point(rectangle.Left, rectangle.Top)), new Size(rectangle.Width, rectangle.Height));
+        }
+
+        protected override AccessibleObject CreateAccessibilityInstance()
+        {
+            return new DockPaneStripAccessibleObject(this);
+        }
+
+        public class DockPaneStripAccessibleObject : Control.ControlAccessibleObject
+        {
+            private DockPaneStripBase _strip;
+
+            public DockPaneStripAccessibleObject(DockPaneStripBase strip)
+                : base(strip)
+            {
+                _strip = strip;
+            }
+
+            public override AccessibleRole Role
+            {
+                get
+                {
+                    return AccessibleRole.PageTabList;
+                }
+            }
+
+            public override int GetChildCount()
+            {
+                return _strip.Tabs.Count;
+            }
+
+            public override AccessibleObject GetChild(int index)
+            {
+                return new DockPaneStripTabAccessibleObject(_strip, _strip.Tabs[index], this);
+            }
+
+            public override AccessibleObject HitTest(int x, int y)
+            {
+                Point point = new Point(x, y);
+                foreach (Tab tab in _strip.Tabs)
+                {
+                    Rectangle rectangle = _strip.GetTabBounds(tab);
+                    if (ToScreen(rectangle, _strip).Contains(point))
+                        return new DockPaneStripTabAccessibleObject(_strip, tab, this);
+                }
+
+                return null;
+            }
+        }
+
+        protected class DockPaneStripTabAccessibleObject : AccessibleObject
+        {
+            private DockPaneStripBase _strip;
+            private Tab _tab;
+
+            private AccessibleObject _parent;
+
+            internal DockPaneStripTabAccessibleObject(DockPaneStripBase strip, Tab tab, AccessibleObject parent)
+            {
+                _strip = strip;
+                _tab = tab;
+
+                _parent = parent;
+            }
+
+            public override AccessibleObject Parent
+            {
+                get
+                {
+                    return _parent;
+                }
+            }
+
+            public override AccessibleRole Role
+            {
+                get
+                {
+                    return AccessibleRole.PageTab;
+                }
+            }
+
+            public override Rectangle Bounds
+            {
+                get
+                {
+                    Rectangle rectangle = _strip.GetTabBounds(_tab);
+                    return ToScreen(rectangle, _strip);
+                }
+            }
+
+            public override string Name
+            {
+                get
+                {
+                    return _tab.Content.DockHandler.TabText;
+                }
+                set
+                {
+                    //base.Name = value;
+                }
+            }
+        }
+ 
     }
 }

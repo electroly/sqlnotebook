@@ -15,13 +15,10 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
 
-namespace SqlNotebook
-{
+namespace SqlNotebook {
     static class Program
     {
         /// <summary>
@@ -32,7 +29,12 @@ namespace SqlNotebook
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainFrm());
+            string tempFilePath = Path.GetTempFileName();
+            try {
+                Application.Run(new MainFrm(tempFilePath));
+            } finally {
+                File.Delete(tempFilePath);
+            }
         }
     }
 }

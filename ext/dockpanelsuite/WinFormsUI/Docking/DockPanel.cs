@@ -329,7 +329,7 @@ namespace WeifenLuo.WinFormsUI.Docking
             get	{	return m_panes;	}
         }
 
-        internal Rectangle DockArea
+        public Rectangle DockArea
         {
             get
             {
@@ -339,7 +339,6 @@ namespace WeifenLuo.WinFormsUI.Docking
             }
         }
 
-        public event EventHandler DockBottomPortionChanged;
         private double m_dockBottomPortion = 0.25;
         [LocalizedCategory("Category_Docking")]
         [LocalizedDescription("DockPanel_DockBottomPortion_Description")]
@@ -364,13 +363,9 @@ namespace WeifenLuo.WinFormsUI.Docking
                 }
 
                 PerformLayout();
-
-                if (DockBottomPortionChanged != null)
-                    DockBottomPortionChanged(this, EventArgs.Empty);
             }
         }
 
-        public event EventHandler DockLeftPortionChanged;
         private double m_dockLeftPortion = 0.25;
         [LocalizedCategory("Category_Docking")]
         [LocalizedDescription("DockPanel_DockLeftPortion_Description")]
@@ -394,13 +389,9 @@ namespace WeifenLuo.WinFormsUI.Docking
                         m_dockRightPortion = 1 - m_dockLeftPortion;
                 }
                 PerformLayout();
-
-                if (DockLeftPortionChanged != null)
-                    DockLeftPortionChanged(this, EventArgs.Empty);
             }
         }
 
-        public event EventHandler DockRightPortionChanged;
         private double m_dockRightPortion = 0.25;
         [LocalizedCategory("Category_Docking")]
         [LocalizedDescription("DockPanel_DockRightPortion_Description")]
@@ -424,13 +415,9 @@ namespace WeifenLuo.WinFormsUI.Docking
                         m_dockLeftPortion = 1 - m_dockRightPortion;
                 }
                 PerformLayout();
-
-                if (DockRightPortionChanged != null)
-                    DockRightPortionChanged(this, EventArgs.Empty);
             }
         }
 
-        public event EventHandler DockTopPortionChanged;
         private double m_dockTopPortion = 0.25;
         [LocalizedCategory("Category_Docking")]
         [LocalizedDescription("DockPanel_DockTopPortion_Description")]
@@ -454,9 +441,6 @@ namespace WeifenLuo.WinFormsUI.Docking
                         m_dockBottomPortion = 1 - m_dockTopPortion;
                 }
                 PerformLayout();
-
-                if (DockTopPortionChanged != null)
-                    DockTopPortionChanged(this, EventArgs.Empty);
             }
         }
 
@@ -895,7 +879,7 @@ namespace WeifenLuo.WinFormsUI.Docking
             }
         }
 
-        internal Rectangle DocumentWindowBounds
+        public Rectangle DocumentWindowBounds
         {
             get
             {

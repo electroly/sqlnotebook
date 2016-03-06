@@ -489,12 +489,12 @@ namespace WeifenLuo.WinFormsUI.Docking
                 rect.Height, rect.Width);
         }
 
-        protected override IDockContent HitTest(Point ptMouse)
+        protected override IDockContent HitTest(Point point)
         {
             foreach (DockState state in DockStates)
             {
                 Rectangle rectTabStrip = GetLogicalTabStripRectangle(state, true);
-                if (!rectTabStrip.Contains(ptMouse))
+                if (!rectTabStrip.Contains(point))
                     continue;
 
                 foreach (Pane pane in GetPanes(state))
@@ -502,13 +502,20 @@ namespace WeifenLuo.WinFormsUI.Docking
                     foreach (TabVS2005 tab in pane.AutoHideTabs)
                     {
                         GraphicsPath path = GetTabOutline(tab, true, true);
-                        if (path.IsVisible(ptMouse))
+                        if (path.IsVisible(point))
                             return tab.Content;
                     }
                 }
             }
 
             return null;
+        }
+
+        protected override Rectangle GetTabBounds(Tab tab)
+        {
+            GraphicsPath path = GetTabOutline((TabVS2005)tab, true, true);
+            RectangleF bounds = path.GetBounds();
+            return new Rectangle((int)bounds.Left, (int)bounds.Top, (int)bounds.Width, (int)bounds.Height);
         }
 
         protected internal override int MeasureHeight()

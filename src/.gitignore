@@ -1,6 +1,7 @@
 x64/
 .vs/
 ipch/
+packages/
 *.aps
 *.ncb
 *.opendb

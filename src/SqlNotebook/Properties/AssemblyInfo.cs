@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SqlNotebook")]
+[assembly: AssemblyTitle("SQL Notebook")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SqlNotebook")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyProduct("SQL Notebook")]
+[assembly: AssemblyCopyright("Copyright © 2016 Brian Luft")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
