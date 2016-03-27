@@ -15,16 +15,23 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
+using SqlNotebook.Properties;
 
 namespace SqlNotebook {
     public partial class AboutForm : Form {
         public AboutForm() {
             InitializeComponent();
+            _thirdPartyTxt.Text = Resources.ThirdPartyLicenses;
         }
 
         private void OkBtn_Click(object sender, EventArgs e) {
             Close();
+        }
+
+        private void GithubLnk_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+            Process.Start("https://github.com/electroly/sqlnotebook");
         }
     }
 }
