@@ -115,22 +115,23 @@ namespace SqlNotebook {
             return NewItem("script");
         }
 
-        public string NewNote() {
-            return NewItem("note");
+        public string NewNote(string name = null, string data = null) {
+            return NewItem("note", name, data);
         }
 
-        private string NewItem(string type) {
-            string name = null;
+        private string NewItem(string type, string name = null, string data = null) {
             Notebook.Invoke(() => {
                 Init();
-                using (var dt = Notebook.Query($"SELECT name FROM sqlnotebook_items WHERE name LIKE '{type}%'")) {
-                    var existingNames = new HashSet<string>(dt.Rows.Cast<DataRow>().Select(x => x.Field<string>("name")));
-                    int i;
-                    for (i = 1; existingNames.Contains($"{type}{i}"); i++) { }
-                    name = $"{type}{i}";
+                if (name == null) {
+                    using (var dt = Notebook.Query($"SELECT name FROM sqlnotebook_items WHERE name LIKE '{type}%'")) {
+                        var existingNames = new HashSet<string>(dt.Rows.Cast<DataRow>().Select(x => x.Field<string>("name")));
+                        int i;
+                        for (i = 1; existingNames.Contains($"{type}{i}"); i++) { }
+                        name = $"{type}{i}";
+                    }
                 }
-                Notebook.Execute($"INSERT INTO sqlnotebook_items (name, type, data) VALUES (@name, '{type}', '')",
-                    new Dictionary<string, object> { ["@name"] = name });
+                Notebook.Execute($"INSERT INTO sqlnotebook_items (name, type, data) VALUES (@name, @type, @data)",
+                    new Dictionary<string, object> { ["@name"] = name, ["@type"] = type, ["@data"] = data ?? ""});
             });
             Rescan();
             return name;

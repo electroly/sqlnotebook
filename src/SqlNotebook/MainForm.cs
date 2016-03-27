@@ -33,7 +33,7 @@ namespace SqlNotebook {
         private readonly Dictionary<NotebookItem, UserControlDockContent> _openItems 
             = new Dictionary<NotebookItem, UserControlDockContent>();
 
-        public MainForm(string tempFilePath) {
+        public MainForm(string tempFilePath, bool isNew) {
             InitializeComponent();
 
             _importer = new Importer(this);
@@ -52,6 +52,11 @@ namespace SqlNotebook {
             _notebookPane.Show(_dockPanel, DockState.DockLeft);
 
             _manager.NotebookItemOpenRequest += Manager_NotebookItemOpenRequest;
+
+            if (isNew) {
+                _manager.NewNote("Getting Started", Resources.GettingStartedRtf);
+                Load += (sender, e) => OpenItem(new NotebookItem(NotebookItemType.Note, "Getting Started"));
+            }
         }
 
         private void Manager_NotebookItemOpenRequest(object sender, NotebookItemOpenRequestEventArgs e) {

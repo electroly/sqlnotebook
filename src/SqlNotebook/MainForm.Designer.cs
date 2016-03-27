@@ -42,9 +42,9 @@
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this._aboutMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this._newNoteBtn = new System.Windows.Forms.ToolStripButton();
             this._newConsoleBtn = new System.Windows.Forms.ToolStripButton();
             this._newScriptBtn = new System.Windows.Forms.ToolStripButton();
-            this._newNoteBtn = new System.Windows.Forms.ToolStripButton();
             this._importBtn = new System.Windows.Forms.ToolStripDropDownButton();
             this._importFileMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.postgreSQLDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,11 +68,11 @@
             // 
             // _toolStripContainer.ContentPanel
             // 
-            this._toolStripContainer.ContentPanel.Size = new System.Drawing.Size(812, 596);
+            this._toolStripContainer.ContentPanel.Size = new System.Drawing.Size(898, 729);
             this._toolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this._toolStripContainer.Location = new System.Drawing.Point(0, 0);
             this._toolStripContainer.Name = "_toolStripContainer";
-            this._toolStripContainer.Size = new System.Drawing.Size(812, 647);
+            this._toolStripContainer.Size = new System.Drawing.Size(898, 780);
             this._toolStripContainer.TabIndex = 0;
             this._toolStripContainer.Text = "toolStripContainer1";
             // 
@@ -87,7 +87,7 @@
             this._statusStrip.Dock = System.Windows.Forms.DockStyle.None;
             this._statusStrip.Location = new System.Drawing.Point(0, 0);
             this._statusStrip.Name = "_statusStrip";
-            this._statusStrip.Size = new System.Drawing.Size(812, 22);
+            this._statusStrip.Size = new System.Drawing.Size(898, 22);
             this._statusStrip.TabIndex = 0;
             // 
             // _toolStrip
@@ -108,7 +108,7 @@
             this._toolStrip.Name = "_toolStrip";
             this._toolStrip.Padding = new System.Windows.Forms.Padding(3, 2, 1, 0);
             this._toolStrip.ShowItemToolTips = false;
-            this._toolStrip.Size = new System.Drawing.Size(812, 29);
+            this._toolStrip.Size = new System.Drawing.Size(898, 29);
             this._toolStrip.Stretch = true;
             this._toolStrip.TabIndex = 1;
             // 
@@ -199,6 +199,17 @@
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 23);
             // 
+            // _newNoteBtn
+            // 
+            this._newNoteBtn.Image = global::SqlNotebook.Properties.Resources.NoteAdd;
+            this._newNoteBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._newNoteBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
+            this._newNoteBtn.Name = "_newNoteBtn";
+            this._newNoteBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+            this._newNoteBtn.Size = new System.Drawing.Size(83, 22);
+            this._newNoteBtn.Text = "New note";
+            this._newNoteBtn.Click += new System.EventHandler(this.NewNoteBtn_Click);
+            // 
             // _newConsoleBtn
             // 
             this._newConsoleBtn.Image = global::SqlNotebook.Properties.Resources.ApplicationXpTerminalAdd;
@@ -220,17 +231,6 @@
             this._newScriptBtn.Size = new System.Drawing.Size(88, 22);
             this._newScriptBtn.Text = "New script";
             this._newScriptBtn.Click += new System.EventHandler(this.NewScriptBtn_Click);
-            // 
-            // _newNoteBtn
-            // 
-            this._newNoteBtn.Image = global::SqlNotebook.Properties.Resources.NoteAdd;
-            this._newNoteBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._newNoteBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
-            this._newNoteBtn.Name = "_newNoteBtn";
-            this._newNoteBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this._newNoteBtn.Size = new System.Drawing.Size(83, 22);
-            this._newNoteBtn.Text = "New note";
-            this._newNoteBtn.Click += new System.EventHandler(this.NewNoteBtn_Click);
             // 
             // _importBtn
             // 
@@ -301,7 +301,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(812, 647);
+            this.ClientSize = new System.Drawing.Size(898, 780);
             this.Controls.Add(this._toolStripContainer);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

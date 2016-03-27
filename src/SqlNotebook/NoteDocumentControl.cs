@@ -24,6 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Text;
+using System.Diagnostics;
 
 namespace SqlNotebook {
     public partial class NoteDocumentControl : UserControl {
@@ -42,7 +43,8 @@ namespace SqlNotebook {
             ItemName = name;
             _manager = manager;
             _text.SelectionFont = Font;
-            
+            _text.SetInnerMargins(10, 10, 10, 0);
+
             Load += (sender, e) => {
                 string initialRtf = _manager.GetItemData(ItemName);
                 if (initialRtf != null) {
@@ -115,7 +117,7 @@ namespace SqlNotebook {
         private void ToggleFontStyle(FontStyle flag) {
             var f = _text.SelectionFont;
             var s = f.Style & ~flag;
-            if (!f.Bold) {
+            if ((f.Style & flag) == 0) {
                 s |= flag;
             }
             _text.SelectionFont = new Font(f.FontFamily, f.Size, s, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
@@ -151,6 +153,12 @@ namespace SqlNotebook {
         private void AlignRightBtn_Click(object sender, EventArgs e) {
             _text.SelectionAlignment = HorizontalAlignment.Right;
             UpdateToolbar();
+        }
+
+        private void Text_LinkClicked(object sender, LinkClickedEventArgs e) {
+            if (e.LinkText.StartsWith("http://") || e.LinkText.StartsWith("https://")) {
+                Process.Start(e.LinkText);
+            }
         }
     }
 }

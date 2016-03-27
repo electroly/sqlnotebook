@@ -141,6 +141,23 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
+        ///{\colortbl ;\red0\green0\blue255;}
+        ///{\*\generator Riched20 10.0.10586}\viewkind4\uc1 
+        ///\pard\cf1\b\f0\fs29 Welcome to your new SQL Notebook file!\cf0\fs28\par
+        ///\b0\fs24\par
+        ///\b How to work with notebooks\par
+        ///\b0 - Click \i New note\i0  to create an informational note (like this one).\par
+        ///- Click \i New console\i0  to begin entering SQL commands interactively.\par
+        ///- Click \i New script\i0  to write SQL queries in  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string GettingStartedRtf {
+            get {
+                return ResourceManager.GetString("GettingStartedRtf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap NoteAdd {
