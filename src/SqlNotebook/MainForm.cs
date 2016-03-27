@@ -15,41 +15,92 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using SqlNotebook.Properties;
 using SqlNotebookCore;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SqlNotebook {
     public partial class MainForm : Form {
         private readonly DockPanel _dockPanel;
+        private NotebookManager _manager;
         private Notebook _notebook;
         private readonly UserControlDockContent _notebookPane;
         private readonly Importer _importer;
+        private readonly ExplorerControl _explorer;
+
+        private readonly Dictionary<NotebookItem, UserControlDockContent> _openItems 
+            = new Dictionary<NotebookItem, UserControlDockContent>();
 
         public MainForm(string tempFilePath) {
             InitializeComponent();
 
             _importer = new Importer(this);
             _notebook = new Notebook(tempFilePath);
+            _manager = new NotebookManager(_notebook);
             _dockPanel = new DockPanel {
                 Dock = DockStyle.Fill,
                 Theme = new VS2012LightTheme(),
                 DocumentStyle = DocumentStyle.DockingWindow
             };
-            _dockPanel.ActiveDocumentChanged += (sender, e) => {
-                if (_dockPanel.ActiveDocument is UserControlDockContent) {
-                    var doc = (UserControlDockContent)_dockPanel.ActiveDocument;
-                    _executeBtn.Enabled = doc.Content is IExecutableDocument;
-                }
-            };
+            _dockPanel.Extender.FloatWindowFactory = new FloatWindowFactoryEx();
             _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
 
-            _notebookPane = new UserControlDockContent("Notebook", new ExplorerControl());
+            _notebookPane = new UserControlDockContent("Notebook", _explorer = new ExplorerControl(_manager));
             _notebookPane.CloseButtonVisible = false;
             _notebookPane.Show(_dockPanel, DockState.DockLeft);
 
-            new UserControlDockContent("Hi", new ConsoleDocumentControl(_notebook)).Show(_dockPanel);
+            _manager.NotebookItemOpenRequest += Manager_NotebookItemOpenRequest;
         }
+
+        private void Manager_NotebookItemOpenRequest(object sender, NotebookItemOpenRequestEventArgs e) {
+            OpenItem(e.Item);
+        }
+
+        private void OpenItem(NotebookItem item) {
+            UserControlDockContent wnd;
+            if (_openItems.TryGetValue(item, out wnd)) {
+                wnd.Focus();
+                return;
+            }
+
+            UserControlDockContent f = null;
+            if (item.Type == NotebookItemType.Console) {
+                var doc = new ConsoleDocumentControl(item.Name, _manager);
+                f = new UserControlDockContent(item.Name, doc) {
+                    Icon = Resources.ApplicationXpTerminalIco
+                };
+                f.FormClosing += (sender2, e2) => {
+                    _manager.SetItemData(doc.ItemName, doc.RtfText);
+                };
+            } else if (item.Type == NotebookItemType.Script) {
+                var doc = new QueryDocumentControl(item.Name, _manager);
+                f = new UserControlDockContent(item.Name, doc) {
+                    Icon = Resources.NoteIco
+                };
+                f.FormClosing += (sender2, e2) => {
+                    _manager.SetItemData(doc.ItemName, doc.SqlText);
+                };
+            } else if (item.Type == NotebookItemType.Note) {
+                var doc = new NoteDocumentControl(item.Name, _manager);
+                f = new UserControlDockContent(item.Name, doc) {
+                    Icon = Resources.NoteIco
+                };
+                f.FormClosing += (sender2, e2) => {
+                    _manager.SetItemData(doc.ItemName, doc.RtfText);
+                };
+            } else {
+                return;
+            }
+
+            f.FormClosed += (sender2, e2) => {
+                _openItems.Remove(item);
+            };
+            f.Show(_dockPanel);
+            _openItems[item] = f;
+        }
+
 
         protected override void OnFormClosed(FormClosedEventArgs e) {
             base.OnFormClosed(e);
@@ -71,17 +122,30 @@ namespace SqlNotebook {
             }
         }
 
-        private void ExecuteBtn_Click(object sender, EventArgs e) {
-            ((_dockPanel.ActiveDocument as UserControlDockContent)?.Content as IExecutableDocument)?.Execute();
+        private void NewConsoleBtn_Click(object sender, EventArgs e) {
+            OpenItem(new NotebookItem(NotebookItemType.Console, _manager.NewConsole()));
+        }
+
+        private void NewScriptBtn_Click(object sender, EventArgs e) {
+            OpenItem(new NotebookItem(NotebookItemType.Script, _manager.NewScript()));
+        }
+
+        private void NewNoteBtn_Click(object sender, EventArgs e) {
+            OpenItem(new NotebookItem(NotebookItemType.Note, _manager.NewNote()));
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-            if (keyData == Keys.F5 || keyData == (Keys.Control | Keys.Enter)) {
-                ExecuteBtn_Click(this, EventArgs.Empty);
-                return true;
-            } else {
-                return base.ProcessCmdKey(ref msg, keyData);
+            if (keyData == Keys.F5) {
+                var doc = _dockPanel.ActiveDocument as UserControlDockContent;
+                if (doc != null) {
+                    var queryDoc = doc.Content as QueryDocumentControl;
+                    if (queryDoc != null) {
+                        queryDoc.Execute();
+                        return true;
+                    }
+                }
             }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }

@@ -42,8 +42,9 @@
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this._aboutMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
+            this._newConsoleBtn = new System.Windows.Forms.ToolStripButton();
+            this._newScriptBtn = new System.Windows.Forms.ToolStripButton();
+            this._newNoteBtn = new System.Windows.Forms.ToolStripButton();
             this._importBtn = new System.Windows.Forms.ToolStripDropDownButton();
             this._importFileMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.postgreSQLDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,8 +53,6 @@
             this.noneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.recentServersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton3 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this._executeBtn = new System.Windows.Forms.ToolStripButton();
             this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
             this._toolStripContainer.SuspendLayout();
@@ -100,12 +99,11 @@
             this.toolStripDropDownButton1,
             this.toolStripDropDownButton2,
             this.toolStripSeparator3,
-            this.toolStripButton2,
-            this.toolStripButton5,
+            this._newNoteBtn,
+            this._newConsoleBtn,
+            this._newScriptBtn,
             this._importBtn,
-            this.toolStripDropDownButton3,
-            this.toolStripSeparator5,
-            this._executeBtn});
+            this.toolStripDropDownButton3});
             this._toolStrip.Location = new System.Drawing.Point(0, 0);
             this._toolStrip.Name = "_toolStrip";
             this._toolStrip.Padding = new System.Windows.Forms.Padding(3, 2, 1, 0);
@@ -137,7 +135,7 @@
             this.newNotebookToolStripMenuItem.Image = global::SqlNotebook.Properties.Resources.PageWhite;
             this.newNotebookToolStripMenuItem.Name = "newNotebookToolStripMenuItem";
             this.newNotebookToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newNotebookToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.newNotebookToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.newNotebookToolStripMenuItem.Text = "New";
             // 
             // openToolStripMenuItem
@@ -145,7 +143,7 @@
             this.openToolStripMenuItem.Image = global::SqlNotebook.Properties.Resources.Folder;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.openToolStripMenuItem.Text = "Open...";
             // 
             // saveToolStripMenuItem
@@ -153,25 +151,25 @@
             this.saveToolStripMenuItem.Image = global::SqlNotebook.Properties.Resources.Diskette;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.saveToolStripMenuItem.Text = "Save";
             // 
             // saveNotebookAsToolStripMenuItem
             // 
             this.saveNotebookAsToolStripMenuItem.Name = "saveNotebookAsToolStripMenuItem";
-            this.saveNotebookAsToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.saveNotebookAsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.saveNotebookAsToolStripMenuItem.Text = "Save as...";
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(189, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(152, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             // 
             // toolStripDropDownButton2
@@ -201,25 +199,38 @@
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 23);
             // 
-            // toolStripButton2
+            // _newConsoleBtn
             // 
-            this.toolStripButton2.Image = global::SqlNotebook.Properties.Resources.ScriptAdd;
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this.toolStripButton2.Size = new System.Drawing.Size(89, 22);
-            this.toolStripButton2.Text = "New query";
+            this._newConsoleBtn.Image = global::SqlNotebook.Properties.Resources.ApplicationXpTerminalAdd;
+            this._newConsoleBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._newConsoleBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
+            this._newConsoleBtn.Name = "_newConsoleBtn";
+            this._newConsoleBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+            this._newConsoleBtn.Size = new System.Drawing.Size(100, 22);
+            this._newConsoleBtn.Text = "New console";
+            this._newConsoleBtn.Click += new System.EventHandler(this.NewConsoleBtn_Click);
             // 
-            // toolStripButton5
+            // _newScriptBtn
             // 
-            this.toolStripButton5.Image = global::SqlNotebook.Properties.Resources.ApplicationXpTerminalAdd;
-            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton5.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
-            this.toolStripButton5.Name = "toolStripButton5";
-            this.toolStripButton5.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this.toolStripButton5.Size = new System.Drawing.Size(100, 22);
-            this.toolStripButton5.Text = "New console";
+            this._newScriptBtn.Image = global::SqlNotebook.Properties.Resources.ScriptAdd;
+            this._newScriptBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._newScriptBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
+            this._newScriptBtn.Name = "_newScriptBtn";
+            this._newScriptBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+            this._newScriptBtn.Size = new System.Drawing.Size(88, 22);
+            this._newScriptBtn.Text = "New script";
+            this._newScriptBtn.Click += new System.EventHandler(this.NewScriptBtn_Click);
+            // 
+            // _newNoteBtn
+            // 
+            this._newNoteBtn.Image = global::SqlNotebook.Properties.Resources.NoteAdd;
+            this._newNoteBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._newNoteBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
+            this._newNoteBtn.Name = "_newNoteBtn";
+            this._newNoteBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+            this._newNoteBtn.Size = new System.Drawing.Size(83, 22);
+            this._newNoteBtn.Text = "New note";
+            this._newNoteBtn.Click += new System.EventHandler(this.NewNoteBtn_Click);
             // 
             // _importBtn
             // 
@@ -286,25 +297,6 @@
             this.toolStripDropDownButton3.Size = new System.Drawing.Size(74, 22);
             this.toolStripDropDownButton3.Text = "&Export";
             // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.AutoSize = false;
-            this.toolStripSeparator5.Margin = new System.Windows.Forms.Padding(0, 0, 0, 4);
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 23);
-            // 
-            // _executeBtn
-            // 
-            this._executeBtn.Enabled = false;
-            this._executeBtn.Image = global::SqlNotebook.Properties.Resources.ControlPlayBlue;
-            this._executeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._executeBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
-            this._executeBtn.Name = "_executeBtn";
-            this._executeBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this._executeBtn.Size = new System.Drawing.Size(72, 22);
-            this._executeBtn.Text = "Execute";
-            this._executeBtn.Click += new System.EventHandler(this.ExecuteBtn_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -333,7 +325,7 @@
         private System.Windows.Forms.ToolStripContainer _toolStripContainer;
         private System.Windows.Forms.StatusStrip _statusStrip;
         private System.Windows.Forms.ToolStrip _toolStrip;
-        private System.Windows.Forms.ToolStripButton toolStripButton5;
+        private System.Windows.Forms.ToolStripButton _newConsoleBtn;
         private System.Windows.Forms.ToolStripDropDownButton _importBtn;
         private System.Windows.Forms.ToolStripMenuItem _importFileMnu;
         private System.Windows.Forms.ToolStripMenuItem postgreSQLDatabaseToolStripMenuItem;
@@ -350,11 +342,10 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton2;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton3;
-        private System.Windows.Forms.ToolStripButton _executeBtn;
         private System.Windows.Forms.ToolStripMenuItem _aboutMnu;
         private System.Windows.Forms.ToolStripMenuItem recentServersToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton toolStripButton2;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripButton _newScriptBtn;
+        private System.Windows.Forms.ToolStripButton _newNoteBtn;
     }
 }
 

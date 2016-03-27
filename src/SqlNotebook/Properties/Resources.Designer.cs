@@ -81,6 +81,16 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon ApplicationXpTerminalIco {
+            get {
+                object obj = ResourceManager.GetObject("ApplicationXpTerminalIco", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap ControlPlayBlue {
@@ -127,6 +137,26 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("Folder", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NoteAdd {
+            get {
+                object obj = ResourceManager.GetObject("NoteAdd", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon NoteIco {
+            get {
+                object obj = ResourceManager.GetObject("NoteIco", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         

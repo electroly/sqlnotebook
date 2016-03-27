@@ -547,12 +547,12 @@ namespace WeifenLuo.WinFormsUI.Docking
 
         private static Pen PenToolWindowTabBorder
         {
-            get { return SystemPens.ControlDark; }
+            get { return SystemPens.Control; }
         }
 
         private static Pen PenDocumentTabActiveBorder
         {
-            get { return SystemPens.ControlDarkDark; }
+            get { return Pens.White; }
         }
 
         private static Pen PenDocumentTabInactiveBorder

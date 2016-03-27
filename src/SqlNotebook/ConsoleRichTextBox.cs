@@ -16,8 +16,6 @@
 
 using System;
 using System.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
@@ -30,7 +28,6 @@ namespace SqlNotebook {
     }
 
     public sealed class ConsoleRichTextBox : RichTextBox {
-        private const int WM_SETREDRAW = 0x0B;
         private int _inputStart = 0;
 
         public string PromptText { get; set; } = ">>";
@@ -42,22 +39,8 @@ namespace SqlNotebook {
             SelectionProtected = true;
         }
 
-        public void BeginUpdate() {
-            NativeMethods.SendMessage(Handle, WM_SETREDRAW, (IntPtr)0, IntPtr.Zero);
-        }
-
-        public void EndUpdate() {
-            NativeMethods.SendMessage(Handle, WM_SETREDRAW, (IntPtr)1, IntPtr.Zero);
-            Invalidate();
-        }
-
-        private static class NativeMethods {
-            [DllImport("user32.dll")]
-            public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wp, IntPtr lp);
-        }
-
         public void ShowPrompt() {
-            BeginUpdate();
+            this.BeginUpdate();
             Append("\n");
             Append(PromptText, PromptFont, PromptColor, BackColor);
             Append(" ");
@@ -67,7 +50,7 @@ namespace SqlNotebook {
             SelectionStart = Text.Length;
             SelectionProtected = false;
             ScrollToCaret();
-            EndUpdate();
+            this.EndUpdate();
         }
 
         public void Append(string text, Font font = null, Color? fg = null, Color? bg = null) {
@@ -91,13 +74,13 @@ namespace SqlNotebook {
                     var e2 = new ConsoleCommandEventArgs(command);
                     ConsoleCommand?.Invoke(this, e2);
                     if (e2.WasSuccessful) {
-                        BeginUpdate();
+                        this.BeginUpdate();
                         SelectAll();
                         SelectionProtected = true;
                         Append("\n");
                         SelectionStart = Text.Length;
                         ShowPrompt();
-                        EndUpdate();
+                        this.EndUpdate();
                     }
                     ReadOnly = false;
                 }));

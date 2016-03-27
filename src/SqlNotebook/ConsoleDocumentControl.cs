@@ -28,17 +28,28 @@ using SqlNotebookCore;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace SqlNotebook {
-    public partial class ConsoleDocumentControl : UserControl, IExecutableDocument {
+    public partial class ConsoleDocumentControl : UserControl {
+        private readonly NotebookManager _manager;
         private readonly Notebook _notebook;
         private readonly ConsoleRichTextBox _consoleTxt;
-        private readonly Font _promptFont = new Font("Consolas", 12, FontStyle.Bold);
-        private readonly Font _font = new Font("Consolas", 12);
-        private readonly Font _headerFont = new Font("Consolas", 12);
-        private readonly Font _dividerFont = new Font("Arial", 12);
+        private readonly Font _promptFont = new Font("Consolas", 10, FontStyle.Bold);
+        private readonly Font _font = new Font("Consolas", 10);
+        private readonly Font _headerFont = new Font("Consolas", 10, FontStyle.Italic);
+        private readonly Font _dividerFont = new Font("Arial", 10);
 
-        public ConsoleDocumentControl(Notebook notebook) {
+        public string RtfText {
+            get {
+                return _consoleTxt.Rtf;
+            }
+        }
+
+        public string ItemName { get; set; }
+
+        public ConsoleDocumentControl(string name, NotebookManager manager) {
             InitializeComponent();
-            _notebook = notebook;
+            ItemName = name;
+            _manager = manager;
+            _notebook = manager.Notebook;
             _consoleTxt = new ConsoleRichTextBox {
                 Dock = DockStyle.Fill,
                 BackColor = SystemColors.Window,
@@ -60,16 +71,24 @@ namespace SqlNotebook {
             };
 
             Load += (sender, e) => {
+                string initialRtf = _manager.GetItemData(ItemName);
+                if (initialRtf != null) {
+                    _consoleTxt.Rtf = initialRtf;
+                }
+                if (_consoleTxt.Text.EndsWith($"\n{_consoleTxt.PromptText} ")) {
+                    var len = _consoleTxt.PromptText.Length + 2;
+                    _consoleTxt.Select(_consoleTxt.Text.Length - len, len);
+                    _consoleTxt.SelectionProtected = false;
+                    _consoleTxt.SelectedText = "";
+                }
                 _consoleTxt.ShowPrompt();
             };
-        }
-
-        private void ExecuteBtn_Click(object sender, EventArgs e) {
         }
 
         private bool Execute(string sql) {
             try {
                 ExecuteCore(sql);
+                _manager.Rescan();
                 return true;
             } catch (Exception ex) {
                 var td = new TaskDialog {
@@ -78,7 +97,7 @@ namespace SqlNotebook {
                     Icon = TaskDialogStandardIcon.Error,
                     InstructionText = "An error occurred.",
                     StandardButtons = TaskDialogStandardButtons.Ok,
-                    OwnerWindowHandle = Application.OpenForms[0].Handle,  //ParentForm.Handle,
+                    OwnerWindowHandle = ParentForm.Handle,
                     StartupLocation = TaskDialogStartupLocation.CenterOwner,
                     Text = ex.Message
                 };
@@ -88,13 +107,21 @@ namespace SqlNotebook {
         }
 
         private void ExecuteCore(string sql) {
-            DataTable dt = null;
+            var dts = new List<DataTable>();
             Exception exception = null;
             var f = new WaitForm("SQL Query", "Running your SQL query...", () => {
                 _notebook.Invoke(() => {
                     try {
-                        dt = _notebook.Query(sql);
+                        foreach (var statement in NotebookManager.SplitStatements(sql)) {
+                            dts.Add(_notebook.Query(statement));
+                        }
                     } catch (Exception ex) {
+                        foreach (var dt in dts) {
+                            if (dt != null) {
+                                dt.Dispose();
+                            }
+                        }
+                        dts.Clear();
                         exception = ex;
                     }
                 });
@@ -106,66 +133,63 @@ namespace SqlNotebook {
                 } else {
                     _consoleTxt.BeginUpdate();
                     try {
-                        _consoleTxt.Append("\n");
-                        if (dt == null || dt.Columns.Count == 0) {
-                            _consoleTxt.Append("OK.", fg: Color.LightGray);
-                            if (dt != null) {
-                                dt.Dispose();
-                            }
-                        } else {
-                            var columnWidths =
-                                from colIndex in Enumerable.Range(0, dt.Columns.Count)
-                                let maxLength =
-                                    dt.Rows.Cast<DataRow>()
-                                    .Select(x => x[colIndex].ToString().Length)
-                                    .Concat(new[] { dt.Columns[colIndex].ColumnName.Length })
-                                    .Max()
-                                select new { ColIndex = colIndex, MaxLength = maxLength };
-                            var paddedHeaders =
-                                (from colIndex in Enumerable.Range(0, dt.Columns.Count)
-                                 join x in columnWidths on colIndex equals x.ColIndex
-                                 select dt.Columns[colIndex].ColumnName.PadRight(x.MaxLength))
-                                .ToList();
-                            _consoleTxt.Append(" ", _headerFont, bg: Color.WhiteSmoke);
-                            for (int i = 0; i < dt.Columns.Count; i++) {
-                                if (i > 0) {
-                                    _consoleTxt.Append("  ", _dividerFont, bg: Color.WhiteSmoke);
-                                    _consoleTxt.Append("|", _dividerFont, Color.LightGray, Color.LightGray);
-                                    _consoleTxt.Append("  ", _dividerFont, bg: Color.WhiteSmoke);
+                        foreach (var dt in dts) {
+                            if (dt == null || dt.Columns.Count == 0) {
+                                if (dt != null) {
+                                    dt.Dispose();
                                 }
-                                _consoleTxt.Append(paddedHeaders[i], _headerFont, bg: Color.WhiteSmoke);
-                            }
-                            _consoleTxt.Append(" \n", _headerFont, bg: Color.WhiteSmoke);
-                            foreach (DataRow row in dt.Rows) {
-                                var paddedValues =
+                            } else {
+                                _consoleTxt.Append("\n");
+                                var columnWidths =
+                                    from colIndex in Enumerable.Range(0, dt.Columns.Count)
+                                    let maxLength =
+                                        dt.Rows.Cast<DataRow>()
+                                        .Select(x => x[colIndex].ToString().Length)
+                                        .Concat(new[] { dt.Columns[colIndex].ColumnName.Length })
+                                        .Max()
+                                    select new { ColIndex = colIndex, MaxLength = maxLength };
+                                var paddedHeaders =
                                     (from colIndex in Enumerable.Range(0, dt.Columns.Count)
                                      join x in columnWidths on colIndex equals x.ColIndex
-                                     select row.ItemArray[colIndex].ToString().PadRight(x.MaxLength))
+                                     select dt.Columns[colIndex].ColumnName.PadRight(x.MaxLength))
                                     .ToList();
-                                _consoleTxt.Append(" ");
+                                _consoleTxt.Append(" ", _headerFont, bg: Color.WhiteSmoke);
                                 for (int i = 0; i < dt.Columns.Count; i++) {
                                     if (i > 0) {
-                                        _consoleTxt.Append("  ", _dividerFont);
+                                        _consoleTxt.Append("  ", _dividerFont, bg: Color.WhiteSmoke);
                                         _consoleTxt.Append("|", _dividerFont, Color.LightGray, Color.LightGray);
-                                        _consoleTxt.Append("  ", _dividerFont);
+                                        _consoleTxt.Append("  ", _dividerFont, bg: Color.WhiteSmoke);
                                     }
-                                    _consoleTxt.Append(paddedValues[i]);
+                                    _consoleTxt.Append(paddedHeaders[i], _headerFont, bg: Color.WhiteSmoke);
                                 }
-                                _consoleTxt.Append(" \n");
+                                _consoleTxt.Append(" \n", _headerFont, bg: Color.WhiteSmoke);
+                                foreach (DataRow row in dt.Rows) {
+                                    var paddedValues =
+                                        (from colIndex in Enumerable.Range(0, dt.Columns.Count)
+                                         join x in columnWidths on colIndex equals x.ColIndex
+                                         select row.ItemArray[colIndex].ToString().PadRight(x.MaxLength))
+                                        .ToList();
+                                    _consoleTxt.Append(" ");
+                                    for (int i = 0; i < dt.Columns.Count; i++) {
+                                        if (i > 0) {
+                                            _consoleTxt.Append("  ", _dividerFont);
+                                            _consoleTxt.Append("|", _dividerFont, Color.LightGray, Color.LightGray);
+                                            _consoleTxt.Append("  ", _dividerFont);
+                                        }
+                                        _consoleTxt.Append(paddedValues[i]);
+                                    }
+                                    _consoleTxt.Append(" \n");
+                                }
+                                _consoleTxt.Append($"({dt.Rows.Count} row{(dt.Rows.Count == 1 ? "" : "s")})", fg: Color.LightGray);
+                                _consoleTxt.ScrollToCaret();
+                                dt.Dispose();
                             }
-                            _consoleTxt.Append($"({dt.Rows.Count} row{(dt.Rows.Count == 1 ? "" : "s")})", fg: Color.LightGray);
-                            _consoleTxt.ScrollToCaret();
-                            dt.Dispose();
                         }
                     } finally {
                         _consoleTxt.EndUpdate();
                     }
                 }
             }
-        }
-
-        void IExecutableDocument.Execute() {
-            ExecuteBtn_Click(this, EventArgs.Empty);
         }
     }
 }

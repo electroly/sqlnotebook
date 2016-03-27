@@ -118,7 +118,8 @@
     <Compile Include="ConsoleDocumentControl.Designer.cs">
       <DependentUpon>ConsoleDocumentControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="IExecutableDocument.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="FloatWindowFactoryEx.cs" />
     <Compile Include="ImportCsvOptionsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -137,6 +138,13 @@
     </Compile>
     <Compile Include="ImportRenameTableForm.Designer.cs">
       <DependentUpon>ImportRenameTableForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NotebookManager.cs" />
+    <Compile Include="NoteDocumentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="NoteDocumentControl.Designer.cs">
+      <DependentUpon>NoteDocumentControl.cs</DependentUpon>
     </Compile>
     <Compile Include="QueryDocumentControl.cs">
       <SubType>UserControl</SubType>
@@ -191,6 +199,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ExplorerControl.resx">
       <DependentUpon>ExplorerControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NoteDocumentControl.resx">
+      <DependentUpon>NoteDocumentControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
