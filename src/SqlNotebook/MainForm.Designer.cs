@@ -33,12 +33,11 @@
             this._statusStrip = new System.Windows.Forms.StatusStrip();
             this._toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.newNotebookToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveNotebookAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._newMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._openMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._saveMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._exitMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this._aboutMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -116,12 +115,11 @@
             // 
             this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newNotebookToolStripMenuItem,
-            this.openToolStripMenuItem,
-            this.saveToolStripMenuItem,
-            this.saveNotebookAsToolStripMenuItem,
+            this._newMnu,
+            this._openMnu,
+            this._saveMnu,
             this.toolStripSeparator4,
-            this.exitToolStripMenuItem});
+            this._exitMnu});
             this.toolStripDropDownButton1.Image = global::SqlNotebook.Properties.Resources.DatabaseTable;
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
@@ -130,47 +128,45 @@
             this.toolStripDropDownButton1.Size = new System.Drawing.Size(46, 22);
             this.toolStripDropDownButton1.Text = "&File";
             // 
-            // newNotebookToolStripMenuItem
+            // _newMnu
             // 
-            this.newNotebookToolStripMenuItem.Image = global::SqlNotebook.Properties.Resources.PageWhite;
-            this.newNotebookToolStripMenuItem.Name = "newNotebookToolStripMenuItem";
-            this.newNotebookToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newNotebookToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.newNotebookToolStripMenuItem.Text = "New";
+            this._newMnu.Image = global::SqlNotebook.Properties.Resources.PageWhite;
+            this._newMnu.Name = "_newMnu";
+            this._newMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this._newMnu.Size = new System.Drawing.Size(155, 22);
+            this._newMnu.Text = "New";
+            this._newMnu.Click += new System.EventHandler(this.NewMnu_Click);
             // 
-            // openToolStripMenuItem
+            // _openMnu
             // 
-            this.openToolStripMenuItem.Image = global::SqlNotebook.Properties.Resources.Folder;
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.openToolStripMenuItem.Text = "Open...";
+            this._openMnu.Image = global::SqlNotebook.Properties.Resources.Folder;
+            this._openMnu.Name = "_openMnu";
+            this._openMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this._openMnu.Size = new System.Drawing.Size(155, 22);
+            this._openMnu.Text = "Open...";
+            this._openMnu.Click += new System.EventHandler(this.OpenMnu_Click);
             // 
-            // saveToolStripMenuItem
+            // _saveMnu
             // 
-            this.saveToolStripMenuItem.Image = global::SqlNotebook.Properties.Resources.Diskette;
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            // 
-            // saveNotebookAsToolStripMenuItem
-            // 
-            this.saveNotebookAsToolStripMenuItem.Name = "saveNotebookAsToolStripMenuItem";
-            this.saveNotebookAsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.saveNotebookAsToolStripMenuItem.Text = "Save as...";
+            this._saveMnu.Image = global::SqlNotebook.Properties.Resources.Diskette;
+            this._saveMnu.Name = "_saveMnu";
+            this._saveMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this._saveMnu.Size = new System.Drawing.Size(155, 22);
+            this._saveMnu.Text = "Save";
+            this._saveMnu.Click += new System.EventHandler(this.SaveMnu_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(152, 6);
             // 
-            // exitToolStripMenuItem
+            // _exitMnu
             // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.exitToolStripMenuItem.Text = "E&xit";
+            this._exitMnu.Name = "_exitMnu";
+            this._exitMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+            this._exitMnu.Size = new System.Drawing.Size(155, 22);
+            this._exitMnu.Text = "E&xit";
+            this._exitMnu.Click += new System.EventHandler(this.ExitMnu_Click);
             // 
             // toolStripDropDownButton2
             // 
@@ -308,6 +304,7 @@
             this.MinimumSize = new System.Drawing.Size(523, 359);
             this.Name = "MainForm";
             this.Text = "Untitled - SQL Notebook";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this._toolStripContainer.BottomToolStripPanel.ResumeLayout(false);
             this._toolStripContainer.BottomToolStripPanel.PerformLayout();
             this._toolStripContainer.TopToolStripPanel.ResumeLayout(false);
@@ -334,12 +331,11 @@
         private System.Windows.Forms.ToolStripMenuItem noneToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
-        private System.Windows.Forms.ToolStripMenuItem newNotebookToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveNotebookAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem _newMnu;
+        private System.Windows.Forms.ToolStripMenuItem _openMnu;
+        private System.Windows.Forms.ToolStripMenuItem _saveMnu;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem _exitMnu;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton2;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton3;
         private System.Windows.Forms.ToolStripMenuItem _aboutMnu;

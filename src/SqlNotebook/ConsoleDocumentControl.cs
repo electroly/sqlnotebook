@@ -88,6 +88,7 @@ namespace SqlNotebook {
         private bool Execute(string sql) {
             try {
                 ExecuteCore(sql);
+                _manager.SetDirty();
                 _manager.Rescan();
                 return true;
             } catch (Exception ex) {

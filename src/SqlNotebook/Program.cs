@@ -29,11 +29,29 @@ namespace SqlNotebook {
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            string tempFilePath = Path.GetTempFileName();
+
+            string filePath;
+            bool isNew;
+            if (Environment.GetCommandLineArgs().Length == 2) {
+                filePath = Environment.GetCommandLineArgs()[1];
+                if (!File.Exists(filePath)) {
+                    MessageBox.Show("File does not exist: " + filePath);
+                    return;
+                }
+                isNew = false;
+            } else {
+                filePath = Path.GetTempFileName();
+                isNew = true;
+            }
+
             try {
-                Application.Run(new MainForm(tempFilePath, true));
+                Application.Run(new MainForm(filePath, isNew));
+            } catch (Exception ex) {
+                MessageBox.Show(ex.Message, "SQL Notebook", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } finally {
-                File.Delete(tempFilePath);
+                if (isNew) {
+                    try { File.Delete(filePath); } catch { }
+                }
             }
         }
     }

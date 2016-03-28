@@ -57,13 +57,33 @@ namespace SqlNotebook {
     }
 
     public sealed class NotebookManager {
+        private readonly string _savepointName;
         public Notebook Notebook { get; }
         public IReadOnlyList<NotebookItem> Items { get; private set; } = new NotebookItem[0];
-        public event EventHandler<NotebookChangeEventArgs> NotebookChange;
+        public event EventHandler<NotebookChangeEventArgs> NotebookChange; // informs the ExplorerControl about changes
         public event EventHandler<NotebookItemOpenRequestEventArgs> NotebookItemOpenRequest;
-
+        public event EventHandler NotebookDirty;
+        
         public NotebookManager(Notebook notebook) {
             Notebook = notebook;
+
+            _savepointName = Guid.NewGuid().ToString();
+            Notebook.Invoke(() => {
+                Notebook.Execute($"SAVEPOINT \"{_savepointName}\"");
+            });
+        }
+
+        public void Save() {
+            Notebook.Invoke(() => {
+                Notebook.Execute($"RELEASE SAVEPOINT \"{_savepointName}\"");
+                Notebook.Execute($"SAVEPOINT \"{_savepointName}\"");
+            });
+        }
+
+        public void Revert() {
+            Notebook.Invoke(() => {
+                Notebook.Execute($"ROLLBACK TO SAVEPOINT \"{_savepointName}\"");
+            });
         }
 
         public void Rescan() {
@@ -76,6 +96,10 @@ namespace SqlNotebook {
 
         public void Open(NotebookItem item) {
             NotebookItemOpenRequest?.Invoke(this, new NotebookItemOpenRequestEventArgs(item));
+        }
+
+        public void SetDirty() {
+            NotebookDirty?.Invoke(this, EventArgs.Empty);
         }
 
         private IReadOnlyList<NotebookItem> ReadItems() {
@@ -108,15 +132,21 @@ namespace SqlNotebook {
         }
 
         public string NewConsole() {
-            return NewItem("console");
+            var x = NewItem("console");
+            SetDirty();
+            return x;
         }
 
         public string NewScript() {
-            return NewItem("script");
+            var x = NewItem("script");
+            SetDirty();
+            return x;
         }
 
         public string NewNote(string name = null, string data = null) {
-            return NewItem("note", name, data);
+            var x = NewItem("note", name, data);
+            SetDirty();
+            return x;
         }
 
         private string NewItem(string type, string name = null, string data = null) {

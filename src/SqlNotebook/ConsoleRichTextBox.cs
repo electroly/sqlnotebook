@@ -84,6 +84,18 @@ namespace SqlNotebook {
                     }
                     ReadOnly = false;
                 }));
+            } else if (e.KeyCode == Keys.Home && SelectionStart >= _inputStart) {
+                this.BeginUpdate();
+                if (e.Shift) {
+                    int loc = SelectionStart;
+                    SelectionStart = _inputStart;
+                    SelectionLength = loc - SelectionStart;
+                } else {
+                    SelectionStart = _inputStart;
+                    SelectionLength = 0;
+                }
+                this.EndUpdate();
+                e.Handled = true;
             }
             base.OnKeyDown(e);
         }

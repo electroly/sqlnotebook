@@ -57,6 +57,12 @@ void Notebook::Init() {
     sqlite3* sqlite;
     SqliteCall(sqlite3_open16(filePathWstr.c_str(), &sqlite));
     _sqlite = sqlite;
+
+    // ensure we have an exclusive lock on the database file
+    Execute("PRAGMA locking_mode = EXCLUSIVE");
+    Execute("BEGIN EXCLUSIVE");
+    Execute("COMMIT");
+
     InstallCsvModule();
     InstallPgModule();
 }
@@ -215,7 +221,14 @@ DataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^
                     }
                     table->Rows->Add(rowData);
                 }
+            } else if (ret == SQLITE_READONLY) {
+                delete table;
+                throw gcnew InvalidOperationException(L"Unable to write to a read-only notebook file.");
+            } else if (ret == SQLITE_BUSY || ret == SQLITE_LOCKED) {
+                delete table;
+                throw gcnew InvalidOperationException(L"The notebook file is locked by another application.");
             } else if (ret == SQLITE_ERROR) {
+                delete table;
                 SqliteCall(SQLITE_ERROR);
             } else {
                 delete table;
@@ -245,4 +258,16 @@ void g_SqliteCall(sqlite3* sqlite, int result) {
         auto msg = Util::Str((const wchar_t*)sqlite3_errmsg16(sqlite));
         throw gcnew SqliteException(msg);
     }
+}
+
+void Notebook::MoveTo(String^ newFilePath) {
+    SqliteCall(sqlite3_close_v2(_sqlite));
+    _sqlite = nullptr;
+    System::IO::File::Copy(_filePath, newFilePath, true);
+    _filePath = newFilePath;
+    Init();
+}
+
+String^ Notebook::GetFilePath() {
+    return _filePath;
 }

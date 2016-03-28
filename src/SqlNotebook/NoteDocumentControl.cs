@@ -87,6 +87,7 @@ namespace SqlNotebook {
             _text.SelectionProtected = false;
             _text.Select(oldStart, oldLength);
             _text.EndUpdate();
+            _manager.SetDirty();
         }
 
         private void Text_SelectionChanged(object sender, EventArgs e) {

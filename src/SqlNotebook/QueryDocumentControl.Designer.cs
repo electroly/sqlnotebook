@@ -147,6 +147,7 @@
             this._rowCountLbl});
             this._resultToolStrip.Location = new System.Drawing.Point(0, 0);
             this._resultToolStrip.Name = "_resultToolStrip";
+            this._resultToolStrip.ShowItemToolTips = false;
             this._resultToolStrip.Size = new System.Drawing.Size(482, 25);
             this._resultToolStrip.Stretch = true;
             this._resultToolStrip.TabIndex = 0;

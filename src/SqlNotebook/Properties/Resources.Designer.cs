@@ -141,12 +141,12 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil\fcharset0 MS Shell Dlg 2;}{\f2\fnil\fcharset1 Segoe UI Symbol;}{\f3\fnil\fcharset0 Consolas;}{\f4\fnil\fcharset2 Symbol;}}
+        ///   Looks up a localized string similar to {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil\fcharset0 MS Shell Dlg 2;}{\f2\fnil\fcharset1 Segoe UI Symbol;}{\f3\fnil\fcharset0 Consolas;}}
         ///{\colortbl ;\red0\green0\blue0;\red0\green0\blue255;\red255\green0\blue0;}
         ///{\*\generator Riched20 10.0.10586}\viewkind4\uc1 
-        ///\pard\cf1\b\f0\fs35 Getting Started with SQL Notebook\cf0\b0\f1\fs17\par
+        ///\pard\cf1\b\f0\fs32 Getting Started with SQL Notebook\cf0\b0\f1\fs17\par
         ///\f0\fs24\par
-        ///This notebook is an SQLite database.  You can work with SQL tables stored [rest of string was truncated]&quot;;.
+        ///\fs20 This notebook is an SQLite database.  You can work with SQL tables stored locally in this noteb [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GettingStartedRtf {
             get {
@@ -191,6 +191,16 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("ScriptAdd", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon ScriptIco {
+            get {
+                object obj = ResourceManager.GetObject("ScriptIco", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         

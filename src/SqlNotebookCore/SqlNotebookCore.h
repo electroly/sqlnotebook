@@ -35,6 +35,7 @@ namespace SqlNotebookCore {
         ~Notebook();
         !Notebook();
         void Invoke(Action^ action); // run the action on the sqlite thread
+        String^ GetFilePath();
 
         // all of these methods must be run on the sqlite thread
         void Execute(String^ sql);
@@ -43,6 +44,7 @@ namespace SqlNotebookCore {
         DataTable^ Query(String^ sql);
         DataTable^ Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
         DataTable^ Query(String^ sql, IReadOnlyList<Object^>^ args);
+        void MoveTo(String^ newFilePath);
 
         private:
         bool _isDisposed;
