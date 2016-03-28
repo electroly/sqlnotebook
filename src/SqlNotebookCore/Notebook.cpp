@@ -227,12 +227,18 @@ DataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^
             } else if (ret == SQLITE_BUSY || ret == SQLITE_LOCKED) {
                 delete table;
                 throw gcnew InvalidOperationException(L"The notebook file is locked by another application.");
+            } else if (ret == SQLITE_CORRUPT) {
+                delete table;
+                throw gcnew InvalidOperationException(L"The notebook file is corrupted.");
+            } else if (ret == SQLITE_NOTADB) {
+                delete table;
+                throw gcnew InvalidOperationException(L"This is not an SQLite database file.");
             } else if (ret == SQLITE_ERROR) {
                 delete table;
                 SqliteCall(SQLITE_ERROR);
             } else {
                 delete table;
-                throw gcnew InvalidOperationException(L"Unrecognized result from sqlite3_step().");
+                throw gcnew InvalidOperationException(String::Format(L"Unrecognized result ({0}) from sqlite3_step().", ret));
             }
         }
 

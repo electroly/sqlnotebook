@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SqlNotebook.Properties;
@@ -55,11 +56,12 @@ namespace SqlNotebook {
             _dockPanel.Extender.FloatWindowFactory = new FloatWindowFactoryEx();
             _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
 
-            _notebookPane = new UserControlDockContent("Table of Contents", _explorer = new ExplorerControl(_manager));
+            _notebookPane = new UserControlDockContent("Table of Contents", _explorer = new ExplorerControl(_manager, this));
             _notebookPane.CloseButtonVisible = false;
             _notebookPane.Show(_dockPanel, DockState.DockLeft);
 
             _manager.NotebookItemOpenRequest += Manager_NotebookItemOpenRequest;
+            _manager.NotebookItemCloseRequest += Manager_NotebookItemCloseRequest;
             _manager.NotebookDirty += (sender, e) => SetDirty();
 
             if (isNew) {
@@ -69,6 +71,13 @@ namespace SqlNotebook {
             }
 
             Load += (sender, e) => _manager.Rescan();
+        }
+
+        private void Manager_NotebookItemCloseRequest(object sender, NotebookItemRequestEventArgs e) {
+            UserControlDockContent ucdc;
+            if (_openItems.TryGetValue(e.Item, out ucdc)) {
+                ucdc.Close();
+            }
         }
 
         private void SetTitle() {
@@ -90,7 +99,7 @@ namespace SqlNotebook {
             }
         }
 
-        private void Manager_NotebookItemOpenRequest(object sender, NotebookItemOpenRequestEventArgs e) {
+        private void Manager_NotebookItemOpenRequest(object sender, NotebookItemRequestEventArgs e) {
             OpenItem(e.Item);
         }
 

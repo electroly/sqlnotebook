@@ -49,9 +49,9 @@ namespace SqlNotebook {
         }
     }
 
-    public sealed class NotebookItemOpenRequestEventArgs : EventArgs {
+    public sealed class NotebookItemRequestEventArgs : EventArgs {
         public NotebookItem Item { get; }
-        public NotebookItemOpenRequestEventArgs(NotebookItem item) {
+        public NotebookItemRequestEventArgs(NotebookItem item) {
             Item = item;
         }
     }
@@ -61,7 +61,8 @@ namespace SqlNotebook {
         public Notebook Notebook { get; }
         public IReadOnlyList<NotebookItem> Items { get; private set; } = new NotebookItem[0];
         public event EventHandler<NotebookChangeEventArgs> NotebookChange; // informs the ExplorerControl about changes
-        public event EventHandler<NotebookItemOpenRequestEventArgs> NotebookItemOpenRequest;
+        public event EventHandler<NotebookItemRequestEventArgs> NotebookItemOpenRequest;
+        public event EventHandler<NotebookItemRequestEventArgs> NotebookItemCloseRequest;
         public event EventHandler NotebookDirty;
         
         public NotebookManager(Notebook notebook) {
@@ -94,8 +95,12 @@ namespace SqlNotebook {
             NotebookChange?.Invoke(this, new NotebookChangeEventArgs(addedItems, removedItems));
         }
 
-        public void Open(NotebookItem item) {
-            NotebookItemOpenRequest?.Invoke(this, new NotebookItemOpenRequestEventArgs(item));
+        public void OpenItem(NotebookItem item) {
+            NotebookItemOpenRequest?.Invoke(this, new NotebookItemRequestEventArgs(item));
+        }
+
+        public void CloseItem(NotebookItem item) {
+            NotebookItemCloseRequest?.Invoke(this, new NotebookItemRequestEventArgs(item));
         }
 
         public void SetDirty() {
