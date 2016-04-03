@@ -201,6 +201,18 @@ namespace SqlNotebookCore {
         size_t Utf8Length;
     };
 
+    public ref class SimpleDataTable sealed {
+        public:
+        IReadOnlyList<String^>^ Columns;
+        IReadOnlyList<array<Object^>^>^ Rows;
+        SimpleDataTable(IReadOnlyList<String^>^ columns, IReadOnlyList<array<Object^>^>^ rows);
+        Object^ Get(int rowNumber, String^ column);
+        int GetIndex(String^ column);
+
+        private:
+        IReadOnlyDictionary<String^, int>^ _columnIndices;
+    };
+
     public ref class Notebook sealed : public IDisposable {
         public:
         Notebook(String^ filePath);
@@ -216,9 +228,9 @@ namespace SqlNotebookCore {
         void Execute(String^ sql);
         void Execute(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
         void Execute(String^ sql, IReadOnlyList<Object^>^ args);
-        DataTable^ Query(String^ sql);
-        DataTable^ Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
-        DataTable^ Query(String^ sql, IReadOnlyList<Object^>^ args);
+        SimpleDataTable^ Query(String^ sql);
+        SimpleDataTable^ Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
+        SimpleDataTable^ Query(String^ sql, IReadOnlyList<Object^>^ args);
         void MoveTo(String^ newFilePath);
 
         private:
@@ -231,7 +243,7 @@ namespace SqlNotebookCore {
         CancellationTokenSource^ _threadCancellationTokenSource;
         BlockingCollection<Action^>^ _threadQueue;
 
-        DataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
+        SimpleDataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
             IReadOnlyList<Object^>^ orderedArgs, bool returnResult);
         void InstallCsvModule();
         void InstallPgModule();

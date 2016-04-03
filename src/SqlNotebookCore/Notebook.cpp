@@ -115,19 +115,19 @@ void Notebook::Execute(String^ sql, IReadOnlyList<Object^>^ args) {
     QueryCore(sql, nullptr, args, false);
 }
 
-DataTable^ Notebook::Query(String^ sql) {
+SimpleDataTable^ Notebook::Query(String^ sql) {
     return Query(sql, gcnew List<Object^>());
 }
 
-DataTable^ Notebook::Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args) {
+SimpleDataTable^ Notebook::Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args) {
     return QueryCore(sql, args, nullptr, true);
 }
 
-DataTable^ Notebook::Query(String^ sql, IReadOnlyList<Object^>^ args) {
+SimpleDataTable^ Notebook::Query(String^ sql, IReadOnlyList<Object^>^ args) {
     return QueryCore(sql, nullptr, args, true);
 }
 
-DataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
+SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
         IReadOnlyList<Object^>^ orderedArgs, bool returnResult) {
     sqlite3_stmt* stmt = nullptr;
     try {
@@ -159,14 +159,14 @@ DataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^
             }
 
             auto type = value->GetType();
-            if (type == int::typeid) {
-                auto intValue = safe_cast<int>(value);
+            if (type->Equals(Int32::typeid)) {
+                int intValue = safe_cast<Int32>(value);
                 SqliteCall(sqlite3_bind_int(stmt, i, intValue));
-            } else if (type == long::typeid) {
-                auto longValue = safe_cast<long>(value);
+            } else if (type->Equals(Int64::typeid)) {
+                long longValue = safe_cast<Int64>(value);
                 SqliteCall(sqlite3_bind_int64(stmt, i, longValue));
-            } else if (type == double::typeid) {
-                auto dblValue = safe_cast<double>(value);
+            } else if (type->Equals(Double::typeid)) {
+                double dblValue = safe_cast<Double>(value);
                 SqliteCall(sqlite3_bind_double(stmt, i, dblValue));
             } else {
                 auto strValue = Util::WStr(value->ToString());
@@ -179,17 +179,18 @@ DataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^
         }
 
         // execute the statement
-        auto table = gcnew DataTable();
+        auto columnNames = gcnew List<String^>();
         int columnCount = 0;
         if (returnResult) {
             columnCount = sqlite3_column_count(stmt);
             for (int i = 0; i < columnCount; i++) {
                 auto columnName = Util::Str((const wchar_t*)sqlite3_column_name16(stmt, i));
-                table->Columns->Add(columnName);
+                columnNames->Add(columnName);
             }
         }
 
-        // read the results into a DataTable
+        // read the results
+        auto rows = gcnew List<array<Object^>^>();
         while (true) {
             int ret = sqlite3_step(stmt);
             if (ret == SQLITE_DONE) {
@@ -215,40 +216,31 @@ DataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^
                                 rowData[i] = DBNull::Value;
                                 break;
                             default:
-                                delete table;
                                 throw gcnew InvalidOperationException(L"Unrecognized result from sqlite3_column_type().");
                         }
                     }
-                    table->Rows->Add(rowData);
+                    rows->Add(rowData);
                 }
             } else if (ret == SQLITE_READONLY) {
-                delete table;
                 throw gcnew InvalidOperationException(L"Unable to write to a read-only notebook file.");
             } else if (ret == SQLITE_BUSY || ret == SQLITE_LOCKED) {
-                delete table;
                 throw gcnew InvalidOperationException(L"The notebook file is locked by another application.");
             } else if (ret == SQLITE_CORRUPT) {
-                delete table;
                 throw gcnew InvalidOperationException(L"The notebook file is corrupted.");
             } else if (ret == SQLITE_NOTADB) {
-                delete table;
                 throw gcnew InvalidOperationException(L"This is not an SQLite database file.");
             } else if (ret == SQLITE_ERROR) {
-                delete table;
                 SqliteCall(SQLITE_ERROR);
             } else {
-                delete table;
                 throw gcnew InvalidOperationException(String::Format(L"Unrecognized result ({0}) from sqlite3_step().", ret));
             }
         }
 
         if (returnResult) {
-            return table;
+            return gcnew SimpleDataTable(columnNames, rows);
         } else {
-            delete table;
             return nullptr;
         }
-
     } finally {
         sqlite3_finalize(stmt);
     }
@@ -338,4 +330,26 @@ String^ Notebook::FindLongestValidStatementPrefix(String^ input) {
 
     auto prefix = str.substr(0, oldPos);
     return Util::Str(prefix.c_str());
+}
+
+SimpleDataTable::SimpleDataTable(IReadOnlyList<String^>^ columns, IReadOnlyList<array<Object^>^>^ rows) {
+    Columns = columns;
+    Rows = rows;
+    
+    auto dict = gcnew Dictionary<String^, int>();
+    int i = 0;
+    for each (auto columnName in columns) {
+        dict[columnName] = i++;
+    }
+    _columnIndices = dict;
+}
+
+Object^ SimpleDataTable::Get(int rowNumber, String^ column) {
+    auto row = Rows[rowNumber];
+    auto colIndex = _columnIndices[column];
+    return row[colIndex];
+}
+
+int SimpleDataTable::GetIndex(String^ column) {
+    return _columnIndices[column];
 }

@@ -122,27 +122,37 @@ namespace SqlNotebook {
                 if (exception != null) {
                     throw exception;
                 } else {
-                    using (output) {
-                        var resultSets = new List<DataTable>(output.DataTables);
-                        output.DataTables.Clear();
+                    var resultSets = new List<DataTable>();
 
-                        if (output.TextOutput.Any()) {
-                            var dt = new DataTable("Output");
-                            dt.Columns.Add("printed_text", typeof(string));
-                            foreach (var line in output.TextOutput) {
-                                var row = dt.NewRow();
-                                row.ItemArray = new object[] { line };
-                                dt.Rows.Add(row);
-                            }
-                            resultSets.Insert(0, dt);
+                    foreach (var sdt in output.DataTables) {
+                        var dt = new DataTable();
+                        foreach (var col in sdt.Columns) {
+                            dt.Columns.Add(col);
                         }
-
-                        _grid.DataSource = null;
-                        _results.ForEach(x => x.Dispose());
-                        _results.Clear();
-                        _results.AddRange(resultSets);
-                        ShowResult(0);
+                        foreach (var row in sdt.Rows) {
+                            var dtRow = dt.NewRow();
+                            dtRow.ItemArray = row;
+                            dt.Rows.Add(dtRow);
+                        }
+                        resultSets.Add(dt);
                     }
+
+                    if (output.TextOutput.Any()) {
+                        var dt = new DataTable("Output");
+                        dt.Columns.Add("printed_text", typeof(string));
+                        foreach (var line in output.TextOutput) {
+                            var row = dt.NewRow();
+                            row.ItemArray = new object[] { line };
+                            dt.Rows.Add(row);
+                        }
+                        resultSets.Insert(0, dt);
+                    }
+
+                    _grid.DataSource = null;
+                    _results.ForEach(x => x.Dispose());
+                    _results.Clear();
+                    _results.AddRange(resultSets);
+                    ShowResult(0);
                 }
             }
         }

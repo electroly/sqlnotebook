@@ -115,30 +115,28 @@ namespace SqlNotebook {
                 Init();
 
                 // tables and views
-                using (var dt = Notebook.Query(
+                var dt = Notebook.Query(
                     @"SELECT name, type 
                     FROM sqlite_master 
                     WHERE
                         (type = 'table' OR type = 'view') AND 
                         name != 'sqlnotebook_items' AND 
-                        name != 'sqlnotebook_proc_params'")) {
-                    foreach (DataRow row in dt.Rows) {
-                        var type = row.Field<string>("type") == "view" ? NotebookItemType.View : NotebookItemType.Table;
-                        items.Add(new NotebookItem(type, row.Field<string>("name")));
-                    }
+                        name != 'sqlnotebook_proc_params'");
+                for (int i = 0; i < dt.Rows.Count; i++) {
+                    var type = (string)dt.Get(i, "type") == "view" ? NotebookItemType.View : NotebookItemType.Table;
+                    items.Add(new NotebookItem(type, (string)dt.Get(i, "name")));
                 }
 
                 // consoles, queries, procedures, and notes
-                using (var dt = Notebook.Query("SELECT name, type FROM sqlnotebook_items")) {
-                    foreach (DataRow row in dt.Rows) {
-                        string name = row.Field<string>("name");
-                        string typeStr = row.Field<string>("type");
-                        var type =
-                            typeStr == "script" ? NotebookItemType.Script :
-                            typeStr == "console" ? NotebookItemType.Console :
-                            NotebookItemType.Note;
-                        items.Add(new NotebookItem(type, name));
-                    }
+                dt = Notebook.Query("SELECT name, type FROM sqlnotebook_items");
+                for (int i = 0; i < dt.Rows.Count; i++) {
+                    string name = (string)dt.Get(i, "name");
+                    string typeStr = (string)dt.Get(i, "type");
+                    var type =
+                        typeStr == "script" ? NotebookItemType.Script :
+                        typeStr == "console" ? NotebookItemType.Console :
+                        NotebookItemType.Note;
+                    items.Add(new NotebookItem(type, name));
                 }
             });
             return items;
@@ -166,12 +164,11 @@ namespace SqlNotebook {
             Notebook.Invoke(() => {
                 Init();
                 if (name == null) {
-                    using (var dt = Notebook.Query($"SELECT name FROM sqlnotebook_items WHERE name LIKE '{type}%'")) {
-                        var existingNames = new HashSet<string>(dt.Rows.Cast<DataRow>().Select(x => x.Field<string>("name")));
-                        int i;
-                        for (i = 1; existingNames.Contains($"{type}{i}"); i++) { }
-                        name = $"{type}{i}";
-                    }
+                    var dt = Notebook.Query($"SELECT name FROM sqlnotebook_items WHERE name LIKE '{type}%'");
+                    var existingNames = new HashSet<string>(dt.Rows.Select(x => (string)x[0]));
+                    int i;
+                    for (i = 1; existingNames.Contains($"{type}{i}"); i++) { }
+                    name = $"{type}{i}";
                 }
                 Notebook.Execute($"INSERT INTO sqlnotebook_items (name, type, data) VALUES (@name, @type, @data)",
                     new Dictionary<string, object> { ["@name"] = name, ["@type"] = type, ["@data"] = data ?? ""});
@@ -189,11 +186,10 @@ namespace SqlNotebook {
 
         public string GetItemData(string name) {
             return Invoke(() => {
-                using (var dt = Notebook.Query("SELECT data FROM sqlnotebook_items WHERE name = @name",
-                    new Dictionary<string, object> { ["@name"] = name })) {
-                    if (dt.Rows.Count == 1) {
-                        return dt.Rows.Cast<DataRow>().First().Field<string>("data");
-                    }
+                var dt = Notebook.Query("SELECT data FROM sqlnotebook_items WHERE name = @name",
+                    new Dictionary<string, object> { ["@name"] = name });
+                if (dt.Rows.Count == 1) {
+                    return (string)dt.Get(0, "data");
                 }
                 return "";
             });
@@ -219,19 +215,17 @@ namespace SqlNotebook {
 
         private void Init() {
             // create the sqlnotebook_items table if it does not exist
-            using (var dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_items'")) {
-                if (dt.Rows.Count == 0) {
-                    Notebook.Execute(
-                        @"CREATE TABLE sqlnotebook_items (name TEXT NOT NULL, type TEXT NOT NULL, data TEXT, PRIMARY KEY (name))");
-                }
+            var dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_items'");
+            if (dt.Rows.Count == 0) {
+                Notebook.Execute(@"CREATE TABLE sqlnotebook_items (name TEXT NOT NULL, type TEXT NOT NULL, " +
+                    "data TEXT, PRIMARY KEY (name))");
             }
 
             // create the sqlnotebook_proc_params table if it does not exist
-            using (var dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_proc_params'")) {
-                if (dt.Rows.Count == 0) {
-                    Notebook.Execute(
-                        @"CREATE TABLE sqlnotebook_proc_params (proc TEXT, par_name TEXT, par_type TEXT, par_value, PRIMARY KEY (proc, par_name))");
-                }
+            dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_proc_params'");
+            if (dt.Rows.Count == 0) {
+                Notebook.Execute(@"CREATE TABLE sqlnotebook_proc_params (proc TEXT, par_name TEXT, par_type TEXT, " +
+                    "par_value, PRIMARY KEY (proc, par_name))");
             }
         }
     }

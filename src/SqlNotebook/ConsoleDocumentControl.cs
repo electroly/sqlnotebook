@@ -125,51 +125,45 @@ namespace SqlNotebook {
                 if (exception != null) {
                     throw exception;
                 } else {
-                    using (output) {
-                        _consoleTxt.BeginUpdate();
-                        try {
-                            foreach (var line in output.TextOutput) {
-                                _consoleTxt.Append($"\n{line}");
-                            }
-
-                            foreach (var dt in output.DataTables) {
-                                PrintDataTable(dt);
-                            }
-
-                            if (output.ScalarResult != null) {
-                                _consoleTxt.Append($"\nReturned: {output.ScalarResult}");
-                            }
-
-                            _consoleTxt.Append("\n");
-                        } finally {
-                            _consoleTxt.SelectionStart = _consoleTxt.Text.Length;
-                            _consoleTxt.ScrollToCaret();
-                            _consoleTxt.EndUpdate();
+                    _consoleTxt.BeginUpdate();
+                    try {
+                        foreach (var line in output.TextOutput) {
+                            _consoleTxt.Append($"\n{line}");
                         }
+
+                        foreach (var dt in output.DataTables) {
+                            PrintDataTable(dt);
+                        }
+
+                        if (output.ScalarResult != null) {
+                            _consoleTxt.Append($"\nReturned: {output.ScalarResult}");
+                        }
+
+                        _consoleTxt.Append("\n");
+                    } finally {
+                        _consoleTxt.SelectionStart = _consoleTxt.Text.Length;
+                        _consoleTxt.ScrollToCaret();
+                        _consoleTxt.EndUpdate();
                     }
                 }
             }
         }
 
-        private void PrintDataTable(DataTable dt) {
-            if (dt == null || dt.Columns.Count == 0) {
-                if (dt != null) {
-                    dt.Dispose();
-                }
-            } else {
+        private void PrintDataTable(SimpleDataTable dt) {
+            if (dt != null && dt.Columns.Count > 0) {
                 _consoleTxt.Append("\n");
                 var columnWidths =
                     from colIndex in Enumerable.Range(0, dt.Columns.Count)
                     let maxLength =
                         dt.Rows.Cast<DataRow>()
                         .Select(x => x[colIndex].ToString().Length)
-                        .Concat(new[] { dt.Columns[colIndex].ColumnName.Length })
+                        .Concat(new[] { dt.Columns[colIndex].Length })
                         .Max()
                     select new { ColIndex = colIndex, MaxLength = maxLength };
                 var paddedHeaders =
                     (from colIndex in Enumerable.Range(0, dt.Columns.Count)
                         join x in columnWidths on colIndex equals x.ColIndex
-                        select dt.Columns[colIndex].ColumnName.PadRight(x.MaxLength))
+                        select dt.Columns[colIndex].PadRight(x.MaxLength))
                     .ToList();
                 _consoleTxt.AppendText(" ");
                 for (int i = 0; i < dt.Columns.Count; i++) {

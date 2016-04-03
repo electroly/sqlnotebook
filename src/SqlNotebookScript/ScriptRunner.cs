@@ -21,8 +21,8 @@ using System.Linq;
 using SqlNotebookCore;
 
 namespace SqlNotebookScript {
-    public sealed class ScriptOutput : IDisposable {
-        public List<DataTable> DataTables { get; } = new List<DataTable>();
+    public sealed class ScriptOutput {
+        public List<SimpleDataTable> DataTables { get; } = new List<SimpleDataTable>();
         public List<string> TextOutput { get; } = new List<string>();
         public object ScalarResult { get; set; }
 
@@ -32,37 +32,15 @@ namespace SqlNotebookScript {
             TextOutput.AddRange(x.TextOutput);
             x.TextOutput.Clear();
         }
-
-        private bool _disposed = false;
-
-        private void Dispose(bool disposing) {
-            if (!_disposed) {
-                if (disposing) {
-                    DataTables.ForEach(x => x.Dispose());
-                    DataTables.Clear();
-                }
-                _disposed = true;
-            }
-        }
-
-        public void Dispose() {
-            Dispose(true);
-        }
     }
 
-    internal sealed class ScriptEnv : IDisposable {
+    internal sealed class ScriptEnv {
         // local variables. keys are in lowercase.
         public Dictionary<string, object> Vars { get; } = new Dictionary<string, object>();
         // script parameters.  keys are in lowercase.
         public Dictionary<string, object> Pars { get; } = new Dictionary<string, object>();
 
         public ScriptOutput Output { get; private set; } = new ScriptOutput();
-        public ScriptOutput TakeOutput() {
-            // caller takes ownership of the output (re: IDisposable)
-            var x = Output;
-            Output = new ScriptOutput();
-            return x;
-        }
 
         public bool DidReturn { get; set; }
         public bool DidBreak { get; set; }
@@ -72,21 +50,6 @@ namespace SqlNotebookScript {
         public object ErrorNumber { get; set; }
         public object ErrorMessage { get; set; }
         public object ErrorState { get; set; }
-
-        private bool _disposed = false;
-
-        private void Dispose(bool disposing) {
-            if (!_disposed) {
-                if (disposing) {
-                    Output.Dispose();
-                }
-                _disposed = true;
-            }
-        }
-
-        public void Dispose() {
-            Dispose(true);
-        }
     }
 
     public sealed class ScriptException : Exception {
@@ -118,24 +81,22 @@ namespace SqlNotebookScript {
 
         private string GetItemData(string name) {
             string data = null;
-            using (var dt = _notebook.Query("SELECT data FROM sqlnotebook_items WHERE name = @name",
-                new Dictionary<string, object> { ["@name"] = name })) {
-                if (dt.Rows.Count == 1) {
-                    data = dt.Rows.Cast<DataRow>().First().Field<string>("data");
-                }
+            var dt = _notebook.Query("SELECT data FROM sqlnotebook_items WHERE name = @name",
+                new Dictionary<string, object> { ["@name"] = name });
+            if (dt.Rows.Count == 1) {
+                data = (string)dt.Get(0, "data");
             }
             return data;
         }
 
         // must be run from the SQLite thread
         public ScriptOutput Execute(Ast.Script script, IReadOnlyDictionary<string, object> args) {
-            using (var env = new ScriptEnv()) {
-                foreach (var arg in args) {
-                    env.Pars[arg.Key.ToLower()] = arg.Value;
-                }
-                Execute(script, env);
-                return env.TakeOutput();
+            var env = new ScriptEnv();
+            foreach (var arg in args) {
+                env.Pars[arg.Key.ToLower()] = arg.Value;
             }
+            Execute(script, env);
+            return env.Output;
         }
 
         private void Execute(Ast.Script script, ScriptEnv env) {
@@ -166,12 +127,8 @@ namespace SqlNotebookScript {
 
         private void ExecuteSqlStmt(Ast.SqlStmt stmt, ScriptEnv env) {
             var dt = _notebook.Query(stmt.Sql, env.Vars);
-            if (dt != null) {
-                if (dt.Columns.Count > 0) {
-                    env.Output.DataTables.Add(dt);
-                } else {
-                    dt.Dispose();
-                }
+            if (dt.Columns.Any()) {
+                env.Output.DataTables.Add(dt);
             }
         }
 
@@ -265,17 +222,16 @@ namespace SqlNotebookScript {
             var parser = new ScriptParser(_notebook);
             var runner = new ScriptRunner(_notebook);
             var script = parser.Parse(GetItemData(stmt.ScriptName));
-            using (var subEnv = new ScriptEnv()) {
-                foreach (var arg in stmt.Arguments) {
-                    subEnv.Pars[arg.Name.ToLower()] = EvaluateExpr(arg.Value, env);
-                }
-                runner.Execute(script, subEnv);
-                env.Output.Append(subEnv.Output);
-                var returnCode = subEnv.Output.ScalarResult;
-                if (stmt.ReturnVariableName != null) {
-                    var name = stmt.ReturnVariableName.ToLower();
-                    env.Vars[name] = returnCode ?? 0L;
-                }
+            var subEnv = new ScriptEnv();
+            foreach (var arg in stmt.Arguments) {
+                subEnv.Pars[arg.Name.ToLower()] = EvaluateExpr(arg.Value, env);
+            }
+            runner.Execute(script, subEnv);
+            env.Output.Append(subEnv.Output);
+            var returnCode = subEnv.Output.ScalarResult;
+            if (stmt.ReturnVariableName != null) {
+                var name = stmt.ReturnVariableName.ToLower();
+                env.Vars[name] = returnCode ?? 0L;
             }
         }
 
@@ -309,27 +265,20 @@ namespace SqlNotebookScript {
             var value = EvaluateExpr(expr, env);
             if (typeof(T).IsAssignableFrom(value.GetType())) {
                 return (T)value;
-            } else if (typeof(T) == typeof(long) && value is string) {
-                // implicit string -> long conversion
-                long parsedValue;
-                if (long.TryParse(value.ToString(), out parsedValue)) {
-                    return (T)(object)parsedValue;
-                }
+            } else {
+                throw new ScriptException(
+                    $"Evaluation of expression \"{expr.Sql}\" produced a value of type " +
+                    $"\"{value.GetType().Name}\" instead of the expected \"{typeof(T).Name}\".");
             }
-
-            throw new ScriptException(
-                $"Evaluation of expression \"{expr.Sql}\" produced a value of type " +
-                $"\"{value.GetType().Name}\" instead of the expected \"{typeof(T).Name}\".");
         }
 
         private object EvaluateExpr(Ast.Expr expr, ScriptEnv env) {
-            using (var dt = _notebook.Query($"SELECT ({expr.Sql})", env.Vars)) {
-                if (dt.Columns.Count == 1 && dt.Rows.Count == 1) {
-                    return dt.Rows[0].ItemArray[0];
-                } else {
-                    throw new ScriptException(
-                        $"Evaluation of expression \"{expr.Sql}\" did not produce a value.");
-                }
+            var dt = _notebook.Query($"SELECT ({expr.Sql})", env.Vars);
+            if (dt.Columns.Count == 1 && dt.Rows.Count == 1) {
+                return dt.Rows[0][0];
+            } else {
+                throw new ScriptException(
+                    $"Evaluation of expression \"{expr.Sql}\" did not produce a value.");
             }
         }
     }
