@@ -222,12 +222,7 @@ namespace SqlNotebook {
             using (var dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_items'")) {
                 if (dt.Rows.Count == 0) {
                     Notebook.Execute(
-                        @"CREATE TABLE sqlnotebook_items (
-                            name TEXT NOT NULL, 
-                            type TEXT NOT NULL, 
-                            data TEXT, 
-                            PRIMARY KEY (name)
-                        )");
+                        @"CREATE TABLE sqlnotebook_items (name TEXT NOT NULL, type TEXT NOT NULL, data TEXT, PRIMARY KEY (name))");
                 }
             }
 
@@ -235,13 +230,7 @@ namespace SqlNotebook {
             using (var dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_proc_params'")) {
                 if (dt.Rows.Count == 0) {
                     Notebook.Execute(
-                        @"CREATE TABLE sqlnotebook_proc_params (
-                            proc TEXT, 
-                            par_name TEXT, 
-                            par_type TEXT, 
-                            par_value, 
-                            PRIMARY KEY (proc, par_name)
-                        )");
+                        @"CREATE TABLE sqlnotebook_proc_params (proc TEXT, par_name TEXT, par_type TEXT, par_value, PRIMARY KEY (proc, par_name))");
                 }
             }
         }
