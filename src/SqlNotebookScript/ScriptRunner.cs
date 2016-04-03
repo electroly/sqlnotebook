@@ -145,6 +145,8 @@ namespace SqlNotebookScript {
                 throw new ScriptException($"Attempted to BREAK outside of a WHILE loop.");
             } else if (env.DidContinue) {
                 throw new ScriptException($"Attempted to CONTINUE outside of a WHILE loop.");
+            } else if (env.DidThrow) {
+                throw new ScriptException($"Uncaught error.  Message: {env.ErrorMessage}, Number: {env.ErrorNumber}, State: {env.ErrorState}.");
             }
         }
 
