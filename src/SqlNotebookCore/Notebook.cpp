@@ -159,13 +159,13 @@ SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, O
             }
 
             auto type = value->GetType();
-            if (type->Equals(Int32::typeid)) {
+            if (type == Int32::typeid) {
                 int intValue = safe_cast<Int32>(value);
                 SqliteCall(sqlite3_bind_int(stmt, i, intValue));
-            } else if (type->Equals(Int64::typeid)) {
+            } else if (type == Int64::typeid) {
                 long longValue = safe_cast<Int64>(value);
                 SqliteCall(sqlite3_bind_int64(stmt, i, longValue));
-            } else if (type->Equals(Double::typeid)) {
+            } else if (type == Double::typeid) {
                 double dblValue = safe_cast<Double>(value);
                 SqliteCall(sqlite3_bind_double(stmt, i, dblValue));
             } else {

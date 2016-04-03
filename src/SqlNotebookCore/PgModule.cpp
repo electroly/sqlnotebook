@@ -414,17 +414,17 @@ static int PgColumn(sqlite3_vtab_cursor* pCur, sqlite3_context* ctx, int n) {
             sqlite3_result_int64(ctx, cursor->Reader->GetInt64(n));
         } else if (type == Byte::typeid) {
             sqlite3_result_int(ctx, cursor->Reader->GetByte(n));
-        } else if (type == float::typeid) {
+        } else if (type == Single::typeid) {
             sqlite3_result_double(ctx, cursor->Reader->GetFloat(n));
-        } else if (type == double::typeid) {
+        } else if (type == Double::typeid) {
             sqlite3_result_double(ctx, cursor->Reader->GetDouble(n));
         } else if (type == Decimal::typeid) {
             sqlite3_result_double(ctx, (double)cursor->Reader->GetDecimal(n));
         } else if (type == String::typeid) {
             ResultText16(ctx, cursor->Reader->GetString(n));
-        } else if (type == wchar_t::typeid) {
+        } else if (type == Char::typeid) {
             ResultText16(ctx, gcnew String(cursor->Reader->GetChar(n), 1));
-        } else if (type == bool::typeid) {
+        } else if (type == Boolean::typeid) {
             sqlite3_result_int(ctx, cursor->Reader->GetBoolean(n) ? 1 : 0);
         } else if (type == NpgsqlTypes::NpgsqlDate::typeid) {
             ResultText16(ctx, ((DateTime)cursor->Reader->GetDate(n)).ToString("yyyy-MM-dd"));
