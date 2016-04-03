@@ -231,6 +231,9 @@ namespace SqlNotebookCore {
         SimpleDataTable^ Query(String^ sql);
         SimpleDataTable^ Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
         SimpleDataTable^ Query(String^ sql, IReadOnlyList<Object^>^ args);
+        Object^ QueryValue(String^ sql);
+        Object^ QueryValue(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
+        Object^ QueryValue(String^ sql, IReadOnlyList<Object^>^ args);
         void MoveTo(String^ newFilePath);
 
         private:

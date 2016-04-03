@@ -121,7 +121,7 @@ namespace SqlNotebook {
                     WHERE
                         (type = 'table' OR type = 'view') AND 
                         name != 'sqlnotebook_items' AND 
-                        name != 'sqlnotebook_proc_params'");
+                        name != 'sqlnotebook_script_params'");
                 for (int i = 0; i < dt.Rows.Count; i++) {
                     var type = (string)dt.Get(i, "type") == "view" ? NotebookItemType.View : NotebookItemType.Table;
                     items.Add(new NotebookItem(type, (string)dt.Get(i, "name")));
@@ -181,6 +181,28 @@ namespace SqlNotebook {
             Notebook.Invoke(() => {
                 Notebook.Execute("UPDATE sqlnotebook_items SET data = @data WHERE name = @name",
                     new Dictionary<string, object> { ["@name"] = name, ["@data"] = data });
+
+                // if this is a Script, then we also need to update the list of parameters in sqlnotebook_script_params
+                var type = Notebook.QueryValue("SELECT type FROM sqlnotebook_items WHERE name = @name",
+                    new Dictionary<string, object> { ["@name"] = name }) as string;
+                if (type != null && type == "script") {
+                    try {
+                        var parser = new ScriptParser(Notebook);
+                        var ast = parser.Parse(data);
+                        var paramNames =
+                            ast.Traverse()
+                            .OfType<SqlNotebookScript.Ast.DeclareStmt>()
+                            .Where(x => x.IsParameter)
+                            .Select(x => x.VariableName)
+                            .ToList();
+                        Notebook.Execute("DELETE FROM sqlnotebook_script_params WHERE script_name = @name",
+                            new Dictionary<string, object> { ["@name"] = name });
+                        foreach (var paramName in paramNames) {
+                            Notebook.Execute("INSERT INTO sqlnotebook_script_params (script_name, param_name) VALUES (@script, @param)",
+                                new Dictionary<string, object> { ["@script"] = name, ["@param"] = paramName });
+                        }
+                    } catch (Exception) { }
+                }
             });
         }
 
@@ -221,12 +243,12 @@ namespace SqlNotebook {
                     "data TEXT, PRIMARY KEY (name))");
             }
 
-            // create the sqlnotebook_proc_params table if it does not exist
-            dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_proc_params'");
+            // create the sqlnotebook_script_params table if it does not exist
+            dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_script_params'");
             if (dt.Rows.Count == 0) {
-                Notebook.Execute(@"CREATE TABLE sqlnotebook_proc_params (proc TEXT, par_name TEXT, par_type TEXT, " +
-                    "par_value, PRIMARY KEY (proc, par_name))");
+                Notebook.Execute(@"CREATE TABLE sqlnotebook_script_params (script_name TEXT, param_name TEXT, PRIMARY KEY (script_name, param_name))");
             }
+
         }
     }
 }

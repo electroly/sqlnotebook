@@ -44,7 +44,7 @@ namespace SqlNotebook {
                 }
                 _paddedImageList.Images.Add(newImage);
             }
-            _list.SmallImageList = _paddedImageList;
+            _list.SmallImageList = _detailsLst.SmallImageList = _paddedImageList;
         }
 
         private void HandleNotebookChange(NotebookChangeEventArgs e) {
@@ -71,6 +71,9 @@ namespace SqlNotebook {
         protected override void OnResize(EventArgs e) {
             base.OnResize(e);
             _list.Columns[0].Width = _list.Width - SystemInformation.VerticalScrollBarWidth - 5;
+
+            var detailsColWidth = (_list.Width - SystemInformation.VerticalScrollBarWidth - 5) / 2;
+            _detailsLst.Columns[0].Width = _detailsLst.Columns[1].Width = detailsColWidth;
         }
 
         private void List_ItemActivate(object sender, EventArgs e) {
@@ -139,6 +142,53 @@ namespace SqlNotebook {
         private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
             var isSelection = _list.SelectedItems.Count == 1;
             _deleteMnu.Enabled = isSelection;
+        }
+
+        private void List_SelectedIndexChanged(object sender, EventArgs e) {
+            if (_list.SelectedItems.Count != 1) {
+                return;
+            }
+            var lvi = _list.SelectedItems[0];
+            var notebookItemName = lvi.Text;
+            _detailsLst.Items.Clear();
+            _detailsLst.BeginUpdate();
+            var n = _manager.Notebook;
+            var details = new List<Tuple<string, string>>();
+
+            try {
+                if (lvi.Group.Name == "Table" || lvi.Group.Name == "View") {
+                    n.Invoke(() => {
+                        var dt = n.Query($"PRAGMA table_info (\"{lvi.Text}\")");
+                        for (int i = 0; i < dt.Rows.Count; i++) {
+                            var name = (string)dt.Get(i, "name");
+                            var info = (string)dt.Get(i, "type");
+                            info += Convert.ToInt32(dt.Get(i, "notnull")) == 1 ? " NOT NULL" : "";
+                            info += Convert.ToInt32(dt.Get(i, "pk")) == 1 ? " PRIMARY KEY" : "";
+                            details.Add(Tuple.Create(name, info));
+                        }
+                    });
+                } else if (lvi.Group.Name == "Script") {
+                    n.Invoke(() => {
+                        var dt = n.Query($"SELECT param_name FROM sqlnotebook_script_params WHERE script_name = @name",
+                            new Dictionary<string, object> { ["@name"] = notebookItemName });
+                        for (int i = 0; i < dt.Rows.Count; i++) {
+                            details.Add(Tuple.Create(dt.Get(i, "param_name").ToString(), "parameter"));
+                        }
+                    });
+                }
+            } catch (Exception) { }
+
+            foreach (var detail in details) {
+                var detailLvi = new ListViewItem(_detailsLst.Groups[0]);
+                detailLvi.Text = detail.Item1;
+                detailLvi.SubItems.Add(detail.Item2);
+                if (detail.Item2.Contains("PRIMARY KEY")) {
+                    detailLvi.ImageIndex = 6;
+                }
+                _detailsLst.Items.Add(detailLvi);
+            }
+            _detailsLst.Groups[0].Header = notebookItemName;
+            _detailsLst.EndUpdate();
         }
     }
 }

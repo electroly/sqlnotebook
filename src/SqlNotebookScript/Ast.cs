@@ -15,14 +15,31 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SqlNotebookScript.Ast {
-    public sealed class Script {
-        public Block Block { get; set; } = new Block();
+    public abstract class Node {
+        public virtual IEnumerable<Node> Children { get; } = new Node[0];
+
+        public IEnumerable<Node> Traverse() {
+            var stack = new Stack<Node>();
+            stack.Push(this);
+
+            while (stack.Any()) {
+                var n = stack.Pop();
+                foreach (var child in n.Children.Reverse()) {
+                    stack.Push(child);
+                }
+                yield return n;
+            }
+        }
     }
 
-    public abstract class Node { }
-    
+    public sealed class Script : Node {
+        public Block Block { get; set; } = new Block();
+        public override IEnumerable<Node> Children { get { return new[] { Block }; } }
+    }
+
     public sealed class Expr : Node {
         public string Sql { get; set; }
     }
@@ -31,6 +48,7 @@ namespace SqlNotebookScript.Ast {
 
     public sealed class Block : Node {
         public List<Stmt> Statements = new List<Stmt>();
+        public override IEnumerable<Node> Children { get { return Statements; } }
     }
 
     public sealed class SqlStmt : Stmt {
@@ -40,6 +58,7 @@ namespace SqlNotebookScript.Ast {
     public abstract class AssignmentStmt : Stmt {
         public string VariableName { get; set; }
         public Expr InitialValue { get; set; } // may be null
+        public override IEnumerable<Node> Children { get { return new[] { InitialValue }; } }
     }
 
     public sealed class DeclareStmt : AssignmentStmt {
@@ -52,11 +71,13 @@ namespace SqlNotebookScript.Ast {
         public Expr Condition { get; set; }
         public Block Block { get; set; }
         public Block ElseBlock { get; set; } // may be null
+        public override IEnumerable<Node> Children { get { return new Node[] { Condition, Block, ElseBlock }; } }
     }
 
     public sealed class WhileStmt : Stmt {
         public Expr Condition { get; set; }
         public Block Block { get; set; }
+        public override IEnumerable<Node> Children { get { return new Node[] { Condition, Block }; } }
     }
 
     public sealed class BreakStmt : Stmt { }
@@ -65,6 +86,7 @@ namespace SqlNotebookScript.Ast {
 
     public sealed class PrintStmt : Stmt {
         public Expr Value { get; set; }
+        public override IEnumerable<Node> Children { get { return new[] { Value }; } }
     }
 
     public sealed class ArgumentPair {
@@ -80,12 +102,14 @@ namespace SqlNotebookScript.Ast {
 
     public sealed class ReturnStmt : Stmt {
         public Expr Value { get; set; }
+        public override IEnumerable<Node> Children { get { return new[] { Value }; } }
     }
 
     public sealed class ThrowStmt : Stmt {
         public Expr ErrorNumber { get; set; }
         public Expr Message { get; set; }
         public Expr State { get; set; }
+        public override IEnumerable<Node> Children { get { return new[] { ErrorNumber, Message, State }; } }
     }
 
     public sealed class RethrowStmt : Stmt { }
@@ -93,5 +117,6 @@ namespace SqlNotebookScript.Ast {
     public sealed class TryCatchStmt : Stmt {
         public Block TryBlock { get; set; }
         public Block CatchBlock { get; set; }
+        public override IEnumerable<Node> Children { get { return new[] { TryBlock, CatchBlock }; } }
     }
 }

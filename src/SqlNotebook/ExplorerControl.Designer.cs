@@ -31,13 +31,18 @@
             System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Tables", System.Windows.Forms.HorizontalAlignment.Center);
             System.Windows.Forms.ListViewGroup listViewGroup5 = new System.Windows.Forms.ListViewGroup("Views", System.Windows.Forms.HorizontalAlignment.Center);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExplorerControl));
+            System.Windows.Forms.ListViewGroup listViewGroup6 = new System.Windows.Forms.ListViewGroup("Group", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.ColumnHeader columnHeader1;
+            System.Windows.Forms.ColumnHeader columnHeader2;
             this._list = new System.Windows.Forms.ListView();
             this._contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this._deleteMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._imageList = new System.Windows.Forms.ImageList(this.components);
             this._splitContainer = new System.Windows.Forms.SplitContainer();
-            this.listView1 = new System.Windows.Forms.ListView();
+            this._detailsLst = new System.Windows.Forms.ListView();
             _nameColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this._contextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._splitContainer)).BeginInit();
             this._splitContainer.Panel1.SuspendLayout();
@@ -89,6 +94,7 @@
             this._list.UseCompatibleStateImageBehavior = false;
             this._list.View = System.Windows.Forms.View.Details;
             this._list.ItemActivate += new System.EventHandler(this.List_ItemActivate);
+            this._list.SelectedIndexChanged += new System.EventHandler(this.List_SelectedIndexChanged);
             // 
             // _contextMenuStrip
             // 
@@ -115,6 +121,8 @@
             this._imageList.Images.SetKeyName(2, "script.png");
             this._imageList.Images.SetKeyName(3, "table.png");
             this._imageList.Images.SetKeyName(4, "filter.png");
+            this._imageList.Images.SetKeyName(5, "bullet_black.png");
+            this._imageList.Images.SetKeyName(6, "bullet_key.png");
             // 
             // _splitContainer
             // 
@@ -129,20 +137,41 @@
             // 
             // _splitContainer.Panel2
             // 
-            this._splitContainer.Panel2.Controls.Add(this.listView1);
+            this._splitContainer.Panel2.Controls.Add(this._detailsLst);
             this._splitContainer.Size = new System.Drawing.Size(340, 608);
             this._splitContainer.SplitterDistance = 324;
             this._splitContainer.TabIndex = 1;
             // 
-            // listView1
+            // _detailsLst
             // 
-            this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView1.Location = new System.Drawing.Point(0, 0);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(340, 280);
-            this.listView1.TabIndex = 0;
-            this.listView1.UseCompatibleStateImageBehavior = false;
+            this._detailsLst.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this._detailsLst.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            columnHeader1,
+            columnHeader2});
+            this._detailsLst.Dock = System.Windows.Forms.DockStyle.Fill;
+            listViewGroup6.Header = "Group";
+            listViewGroup6.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
+            listViewGroup6.Name = "Group";
+            this._detailsLst.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
+            listViewGroup6});
+            this._detailsLst.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this._detailsLst.Location = new System.Drawing.Point(0, 0);
+            this._detailsLst.Name = "_detailsLst";
+            this._detailsLst.Size = new System.Drawing.Size(340, 280);
+            this._detailsLst.SmallImageList = this._imageList;
+            this._detailsLst.TabIndex = 0;
+            this._detailsLst.UseCompatibleStateImageBehavior = false;
+            this._detailsLst.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            columnHeader1.Text = "Name";
+            columnHeader1.Width = 157;
+            // 
+            // columnHeader2
+            // 
+            columnHeader2.Text = "Info";
+            columnHeader2.Width = 163;
             // 
             // ExplorerControl
             // 
@@ -161,7 +190,7 @@
 
         #endregion
         private System.Windows.Forms.SplitContainer _splitContainer;
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ListView _detailsLst;
         private System.Windows.Forms.ListView _list;
         private System.Windows.Forms.ImageList _imageList;
         private System.Windows.Forms.ContextMenuStrip _contextMenuStrip;

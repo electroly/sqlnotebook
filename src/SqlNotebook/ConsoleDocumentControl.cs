@@ -155,7 +155,7 @@ namespace SqlNotebook {
                 var columnWidths =
                     from colIndex in Enumerable.Range(0, dt.Columns.Count)
                     let maxLength =
-                        dt.Rows.Cast<DataRow>()
+                        dt.Rows
                         .Select(x => x[colIndex].ToString().Length)
                         .Concat(new[] { dt.Columns[colIndex].Length })
                         .Max()
@@ -170,15 +170,15 @@ namespace SqlNotebook {
                     if (i > 0) {
                         _consoleTxt.Append(" | ");
                     }
-                    _consoleTxt.Append(paddedHeaders[i], _headerFont);
+                    _consoleTxt.Append(paddedHeaders[i], _headerFont, fg: Color.Gray);
                 }
                 _consoleTxt.Append("\n");
                 var sb = new StringBuilder();
-                foreach (var row in dt.Rows.Cast<DataRow>().Take(1000)) {
+                foreach (var row in dt.Rows.Take(1000)) {
                     var paddedValues =
                         (from colIndex in Enumerable.Range(0, dt.Columns.Count)
                             join x in columnWidths on colIndex equals x.ColIndex
-                            select row.ItemArray[colIndex].ToString().Replace("\r", "\\r").Replace("\n", "\\n").PadRight(x.MaxLength))
+                            select row[colIndex].ToString().Replace("\r", "\\r").Replace("\n", "\\n").PadRight(x.MaxLength))
                         .ToList();
                     sb.Append(" ");
                     for (int i = 0; i < dt.Columns.Count; i++) {

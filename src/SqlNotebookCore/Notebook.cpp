@@ -127,6 +127,28 @@ SimpleDataTable^ Notebook::Query(String^ sql, IReadOnlyList<Object^>^ args) {
     return QueryCore(sql, nullptr, args, true);
 }
 
+Object^ Notebook::QueryValue(String^ sql) {
+    return QueryValue(sql, gcnew List<Object^>());
+}
+
+Object^ Notebook::QueryValue(String^ sql, IReadOnlyDictionary<String^, Object^>^ args) {
+    auto dt = Query(sql, args);
+    if (dt->Rows->Count == 1 && dt->Columns->Count == 1) {
+        return dt->Rows[0]->GetValue(0);
+    } else {
+        return nullptr;
+    }
+}
+
+Object^ Notebook::QueryValue(String^ sql, IReadOnlyList<Object^>^ args) {
+    auto dt = Query(sql, args);
+    if (dt->Rows->Count == 1 && dt->Columns->Count == 1) {
+        return dt->Rows[0]->GetValue(0);
+    } else {
+        return nullptr;
+    }
+}
+
 SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
         IReadOnlyList<Object^>^ orderedArgs, bool returnResult) {
     sqlite3_stmt* stmt = nullptr;
