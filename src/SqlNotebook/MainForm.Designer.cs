@@ -99,12 +99,12 @@
             this.toolStripDropDownButton1,
             this.toolStripDropDownButton2,
             this.toolStripSeparator3,
-            this._importBtn,
-            this.toolStripDropDownButton4,
-            this.toolStripSeparator1,
             this._newNoteBtn,
             this._newConsoleBtn,
-            this._newScriptBtn});
+            this._newScriptBtn,
+            this.toolStripSeparator1,
+            this._importBtn,
+            this.toolStripDropDownButton4});
             this._toolStrip.Location = new System.Drawing.Point(0, 0);
             this._toolStrip.Name = "_toolStrip";
             this._toolStrip.Padding = new System.Windows.Forms.Padding(3, 2, 1, 0);
