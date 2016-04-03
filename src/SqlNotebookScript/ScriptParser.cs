@@ -247,7 +247,7 @@ namespace SqlNotebookScript {
 
         private static Ast.Stmt ParseSqlStmt(TokenQueue q) {
             var n = q.Notebook;
-            var prefix = n.FindLongestValidStatementPrefix(q.ToString());
+            var prefix = TrimOurKeywordsFromEnd(n.FindLongestValidStatementPrefix(q.ToString()));
 
             if (prefix.Any()) {
                 // consume the corresponding valid tokens from the queue
@@ -294,8 +294,8 @@ namespace SqlNotebookScript {
         private static Ast.Expr ParseExpr(TokenQueue q) {
             var n = q.Notebook;
             var selectStr = "SELECT ( ";
-            var prefix = n.FindLongestValidStatementPrefix(selectStr + q.ToString());
-            
+            var prefix = TrimOurKeywordsFromEnd(n.FindLongestValidStatementPrefix(selectStr + q.ToString()));
+
             if (prefix.Length > selectStr.Length) {
                 // consume the corresponding valid tokens from the queue
                 int len = selectStr.Length;
@@ -307,6 +307,16 @@ namespace SqlNotebookScript {
             } else {
                 throw new SyntaxException(q);
             }
+        }
+
+        private static string TrimOurKeywordsFromEnd(string sql) {
+            var lcSql = sql.ToLower().Trim();
+            foreach (var x in new[] { "declare", "set", "if", "while", "break", "continue", "print", "exec", "execute", "return", "throw" }) {
+                if (lcSql.EndsWith($" {x}")) {
+                    return sql.Substring(0, lcSql.Length - x.Length - 1);
+                }
+            }
+            return sql;
         }
 
         private static bool PeekExpr(TokenQueue q) {
