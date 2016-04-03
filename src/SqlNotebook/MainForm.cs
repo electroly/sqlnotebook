@@ -64,6 +64,7 @@ namespace SqlNotebook {
             _manager.NotebookItemCloseRequest += Manager_NotebookItemCloseRequest;
             _manager.NotebookItemsSaveRequest += Manager_NotebookItemsSaveRequest;
             _manager.NotebookDirty += (sender, e) => SetDirty();
+            _manager.NotebookItemRename += Manager_NotebookItemRename;
 
             if (isNew) {
                 _manager.NewNote("Getting Started", Resources.GettingStartedRtf);
@@ -72,6 +73,15 @@ namespace SqlNotebook {
             }
 
             Load += (sender, e) => _manager.Rescan();
+        }
+
+        private void Manager_NotebookItemRename(object sender, NotebookItemRenameEventArgs e) {
+            UserControlDockContent ucdc;
+            if (_openItems.TryGetValue(e.Item, out ucdc)) {
+                ucdc.Text = e.NewName;
+                ucdc.Content.ItemName = e.NewName;
+            }
+            _manager.Rescan();
         }
 
         private void Manager_NotebookItemsSaveRequest(object sender, EventArgs e) {
@@ -123,7 +133,7 @@ namespace SqlNotebook {
                     Icon = Resources.ApplicationXpTerminalIco
                 };
                 f.FormClosing += (sender2, e2) => {
-                    _manager.SetItemData(doc.ItemName, doc.RtfText);
+                    _manager.SetItemData(doc.ItemName, doc.DocumentText);
                 };
             } else if (item.Type == NotebookItemType.Script) {
                 var doc = new QueryDocumentControl(item.Name, _manager);
@@ -131,7 +141,7 @@ namespace SqlNotebook {
                     Icon = Resources.ScriptIco
                 };
                 f.FormClosing += (sender2, e2) => {
-                    _manager.SetItemData(doc.ItemName, doc.SqlText);
+                    _manager.SetItemData(doc.ItemName, doc.DocumentText);
                 };
             } else if (item.Type == NotebookItemType.Note) {
                 var doc = new NoteDocumentControl(item.Name, _manager);
@@ -139,7 +149,7 @@ namespace SqlNotebook {
                     Icon = Resources.NoteIco
                 };
                 f.FormClosing += (sender2, e2) => {
-                    _manager.SetItemData(doc.ItemName, doc.RtfText);
+                    _manager.SetItemData(doc.ItemName, doc.DocumentText);
                 };
             } else {
                 return;
@@ -299,20 +309,7 @@ namespace SqlNotebook {
 
         private void SaveOpenItems() {
             foreach (var x in _openItems) {
-                var consoleDoc = x.Value.Content as ConsoleDocumentControl;
-                if (consoleDoc != null) {
-                    _manager.SetItemData(x.Key.Name, consoleDoc.RtfText);
-                }
-
-                var queryDoc = x.Value.Content as QueryDocumentControl;
-                if (queryDoc != null) {
-                    _manager.SetItemData(x.Key.Name, queryDoc.SqlText);
-                }
-
-                var noteDoc = x.Value.Content as NoteDocumentControl;
-                if (noteDoc != null) {
-                    _manager.SetItemData(x.Key.Name, noteDoc.RtfText);
-                }
+                _manager.SetItemData(x.Key.Name, x.Value.Content.DocumentText);
             }
         }
 

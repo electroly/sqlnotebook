@@ -172,7 +172,7 @@ namespace SqlNotebook.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to {\rtf1\adeflang1025\ansi\ansicpg1252\uc1\adeff0\deff0\stshfdbch31505\stshfloch31506\stshfhich31506\stshfbi0\deflang1033\deflangfe1033\themelang1033\themelangfe0\themelangcs0{\fonttbl{\f0\fbidi \froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f34\fbidi \froman\fcharset0\fprq2{\*\panose 02040503050406030204}Cambria Math;}
-        ///{\f39\fbidi \fswiss\fcharset0\fprq2{\*\panose 020f0502020204030204}Calibri;}{\f40\fbidi \fswiss\fcharset0\fprq2{\*\panose 00000000000000000000}MS Shell Dlg 2;}{\f41 [rest of string was truncated]&quot;;.
+        ///{\f39\fbidi \fswiss\fcharset0\fprq2{\*\panose 020f0502020204030204}Calibri;}{\f40\fbidi \fswiss\fcharset0\fprq2{\*\panose 020b0604030504040204}MS Shell Dlg 2;}{\f41 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GettingStartedRtf {
             get {
@@ -256,6 +256,16 @@ namespace SqlNotebook.Properties {
         internal static System.Drawing.Bitmap TextExports {
             get {
                 object obj = ResourceManager.GetObject("TextExports", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TextfieldRename {
+            get {
+                object obj = ResourceManager.GetObject("TextfieldRename", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

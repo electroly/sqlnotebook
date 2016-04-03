@@ -27,10 +27,10 @@ using System.Drawing.Text;
 using System.Diagnostics;
 
 namespace SqlNotebook {
-    public partial class NoteDocumentControl : UserControl {
+    public partial class NoteDocumentControl : UserControl, IDocumentControl {
         private readonly NotebookManager _manager;
 
-        public string RtfText {
+        public string DocumentText {
             get {
                 return _text.Rtf;
             }

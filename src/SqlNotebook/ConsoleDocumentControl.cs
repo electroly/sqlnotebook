@@ -29,7 +29,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using SqlNotebookScript;
 
 namespace SqlNotebook {
-    public partial class ConsoleDocumentControl : UserControl {
+    public partial class ConsoleDocumentControl : UserControl, IDocumentControl {
         private readonly NotebookManager _manager;
         private readonly Notebook _notebook;
         private readonly ConsoleRichTextBox _consoleTxt;
@@ -38,7 +38,7 @@ namespace SqlNotebook {
         private readonly Font _headerFont = new Font("Consolas", 10, FontStyle.Italic);
         private readonly Font _dividerFont = new Font("Arial", 10);
 
-        public string RtfText {
+        public string DocumentText {
             get {
                 return _consoleTxt.Rtf;
             }
@@ -94,7 +94,7 @@ namespace SqlNotebook {
                 return true;
             } catch (Exception ex) {
                 var td = new TaskDialog {
-                    Cancelable = false,
+                    Cancelable = true,
                     Caption = "Console Error",
                     Icon = TaskDialogStandardIcon.Error,
                     InstructionText = "An error occurred.",
@@ -156,34 +156,34 @@ namespace SqlNotebook {
                     from colIndex in Enumerable.Range(0, dt.Columns.Count)
                     let maxLength =
                         dt.Rows
-                        .Select(x => x[colIndex].ToString().Length)
+                        .Select(x => Math.Min(200, x[colIndex].ToString().Length))
                         .Concat(new[] { dt.Columns[colIndex].Length })
                         .Max()
                     select new { ColIndex = colIndex, MaxLength = maxLength };
                 var paddedHeaders =
                     (from colIndex in Enumerable.Range(0, dt.Columns.Count)
-                        join x in columnWidths on colIndex equals x.ColIndex
-                        select dt.Columns[colIndex].PadRight(x.MaxLength))
+                    join x in columnWidths on colIndex equals x.ColIndex
+                    select dt.Columns[colIndex].PadRight(x.MaxLength))
                     .ToList();
-                _consoleTxt.AppendText(" ");
+                _consoleTxt.Append(" ", bg: Color.WhiteSmoke);
                 for (int i = 0; i < dt.Columns.Count; i++) {
                     if (i > 0) {
-                        _consoleTxt.Append(" | ");
+                        _consoleTxt.Append(" │ ", bg: Color.WhiteSmoke);
                     }
-                    _consoleTxt.Append(paddedHeaders[i], _headerFont, fg: Color.Gray);
+                    _consoleTxt.Append(paddedHeaders[i], _headerFont, bg: Color.WhiteSmoke);
                 }
                 _consoleTxt.Append("\n");
                 var sb = new StringBuilder();
                 foreach (var row in dt.Rows.Take(1000)) {
                     var paddedValues =
                         (from colIndex in Enumerable.Range(0, dt.Columns.Count)
-                            join x in columnWidths on colIndex equals x.ColIndex
-                            select row[colIndex].ToString().Replace("\r", "\\r").Replace("\n", "\\n").PadRight(x.MaxLength))
+                        join x in columnWidths on colIndex equals x.ColIndex
+                        select Truncate(row[colIndex].ToString().Replace("\r\n", "¶").Replace("\r", "¶").Replace("\n", "¶").PadRight(x.MaxLength), 200))
                         .ToList();
                     sb.Append(" ");
                     for (int i = 0; i < dt.Columns.Count; i++) {
                         if (i > 0) {
-                            sb.Append(" | ");
+                            sb.Append(" │ ");
                         }
                         sb.Append(paddedValues[i]);
                     }
@@ -191,6 +191,14 @@ namespace SqlNotebook {
                 }
                 _consoleTxt.AppendText(sb.ToString());
                 _consoleTxt.Append($"({dt.Rows.Count} row{(dt.Rows.Count == 1 ? "" : "s")}{(dt.Rows.Count <= 1000 ? "" : ", 1000 shown")})", fg: Color.LightGray);
+            }
+        }
+
+        private string Truncate(string str, int maxLen) {
+            if (str.Length > maxLen) {
+                return str.Substring(0, maxLen - 1) + "…";
+            } else {
+                return str;
             }
         }
     }

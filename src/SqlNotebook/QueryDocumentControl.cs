@@ -29,14 +29,14 @@ using SqlNotebookCore;
 using SqlNotebookScript;
 
 namespace SqlNotebook {
-    public partial class QueryDocumentControl : UserControl {
+    public partial class QueryDocumentControl : UserControl, IDocumentControl {
         private readonly NotebookManager _manager;
         private readonly Notebook _notebook;
         private readonly TextEditorControlEx _textEditor;
         private readonly List<DataTable> _results = new List<DataTable>();
         private int _selectedResultIndex = 0;
 
-        public string SqlText {
+        public string DocumentText {
             get {
                 return _textEditor.Text;
             }

@@ -120,6 +120,7 @@
     </Compile>
     <Compile Include="Extensions.cs" />
     <Compile Include="FloatWindowFactoryEx.cs" />
+    <Compile Include="IDocumentControl.cs" />
     <Compile Include="ImportCsvOptionsForm.cs">
       <SubType>Form</SubType>
     </Compile>

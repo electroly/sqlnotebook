@@ -63,7 +63,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this._thirdPartyTxt.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._thirdPartyTxt.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._thirdPartyTxt.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._thirdPartyTxt.Location = new System.Drawing.Point(12, 98);
             this._thirdPartyTxt.Multiline = true;
             this._thirdPartyTxt.Name = "_thirdPartyTxt";

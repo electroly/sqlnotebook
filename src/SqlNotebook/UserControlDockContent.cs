@@ -19,14 +19,14 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace SqlNotebook {
     public partial class UserControlDockContent : DockContent {
-        public UserControl Content { get; private set; }
+        public IDocumentControl Content { get; private set; }
 
         public UserControlDockContent(string title, UserControl control) {
             InitializeComponent();
             Text = title;
             control.Dock = DockStyle.Fill;
             Controls.Add(control);
-            Content = control;
+            Content = control as IDocumentControl;
         }
     }
 }

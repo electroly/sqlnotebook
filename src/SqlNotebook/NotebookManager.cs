@@ -57,6 +57,15 @@ namespace SqlNotebook {
         }
     }
 
+    public sealed class NotebookItemRenameEventArgs : EventArgs {
+        public NotebookItem Item { get; }
+        public string NewName { get; }
+        public NotebookItemRenameEventArgs(NotebookItem item, string newName) {
+            Item = item;
+            NewName = newName;
+        }
+    }
+
     public sealed class NotebookManager {
         private readonly string _savepointName;
         public Notebook Notebook { get; }
@@ -66,6 +75,7 @@ namespace SqlNotebook {
         public event EventHandler<NotebookItemRequestEventArgs> NotebookItemCloseRequest;
         public event EventHandler NotebookItemsSaveRequest;
         public event EventHandler NotebookDirty;
+        public event EventHandler<NotebookItemRenameEventArgs> NotebookItemRename;
 
         public NotebookManager(Notebook notebook) {
             Notebook = notebook;
@@ -227,6 +237,54 @@ namespace SqlNotebook {
             });
         }
 
+        public void RenameItem(NotebookItem item, string newName) {
+            string lcNewName = newName.ToLower();
+            bool isCaseChange = item.Name.ToLower() == lcNewName;
+
+            Notebook.Invoke(() => {
+                switch (item.Type) {
+                    case NotebookItemType.Console:
+                    case NotebookItemType.Note:
+                    case NotebookItemType.Script:
+                        if (!isCaseChange) {
+                            // is the new name already in use?
+                            var inUse = Notebook.Query("SELECT name FROM sqlnotebook_items")
+                                .Rows.Any(x => ((string)x[0]).ToLower() == lcNewName);
+                            if (inUse) {
+                                throw new Exception($"An item named \"{newName}\" already exists.");
+                            }
+                        }
+
+                        Notebook.Execute("UPDATE sqlnotebook_items SET name = @new_name WHERE name = @old_name",
+                            new Dictionary<string, object> { ["@new_name"] = newName, ["@old_name"] = item.Name });
+
+                        if (item.Type == NotebookItemType.Script) {
+                            Notebook.Execute("UPDATE sqlnotebook_script_params SET script_name = @new_name WHERE script_name = @old_name",
+                                new Dictionary<string, object> { ["@new_name"] = newName, ["@old_name"] = item.Name });
+                        }
+                        break;
+
+                    case NotebookItemType.Table:
+                        Notebook.Execute($"ALTER TABLE \"{item.Name.Replace("\"", "\"\"")}\" RENAME TO \"{newName.Replace("\"", "\"\"")}\"");
+                        break;
+
+                    case NotebookItemType.View:
+                        var createViewSql = (string)Notebook.QueryValue("SELECT sql FROM sqlite_master WHERE name = @old_name",
+                            new Dictionary<string, object> { ["@old_name"] = item.Name });
+                        var tokens = Notebook.Tokenize(createViewSql);
+                        if (tokens.Count < 3 || tokens[0].Type != TokenType.Create || tokens[1].Type != TokenType.View) {
+                            throw new Exception($"Unable to parse the original CREATE VIEW statement for \"{item.Name}\".");
+                        }
+                        var suffix = string.Join(" ", tokens.Select(x => x.Text).Skip(3)); // everything after "CREATE VIEW viewname"
+                        Notebook.Execute($"DROP VIEW \"{item.Name.Replace("\"", "\"\"")}\"");
+                        Notebook.Execute($"CREATE VIEW \"{newName.Replace("\"", "\"\"")}\" {suffix}");
+                        break;
+                }
+            });
+
+            NotebookItemRename?.Invoke(this, new NotebookItemRenameEventArgs(item, newName));
+        }
+
         private T Invoke<T>(Func<T> func) {
             T value = default(T);
             Notebook.Invoke(() => {
@@ -248,7 +306,6 @@ namespace SqlNotebook {
             if (dt.Rows.Count == 0) {
                 Notebook.Execute(@"CREATE TABLE sqlnotebook_script_params (script_name TEXT, param_name TEXT, PRIMARY KEY (script_name, param_name))");
             }
-
         }
     }
 }

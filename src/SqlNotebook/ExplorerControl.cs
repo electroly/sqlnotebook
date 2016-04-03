@@ -145,20 +145,21 @@ namespace SqlNotebook {
         }
 
         private void List_SelectedIndexChanged(object sender, EventArgs e) {
+            _detailsLst.BeginUpdate();
+            _detailsLst.Items.Clear();
             if (_list.SelectedItems.Count != 1) {
+                _detailsLst.EndUpdate();
                 return;
             }
             var lvi = _list.SelectedItems[0];
             var notebookItemName = lvi.Text;
-            _detailsLst.Items.Clear();
-            _detailsLst.BeginUpdate();
             var n = _manager.Notebook;
             var details = new List<Tuple<string, string>>();
 
             try {
                 if (lvi.Group.Name == "Table" || lvi.Group.Name == "View") {
                     n.Invoke(() => {
-                        var dt = n.Query($"PRAGMA table_info (\"{lvi.Text}\")");
+                        var dt = n.Query($"PRAGMA table_info (\"{lvi.Text.Replace("\"", "\"\"")}\")");
                         for (int i = 0; i < dt.Rows.Count; i++) {
                             var name = (string)dt.Get(i, "name");
                             var info = (string)dt.Get(i, "type");
@@ -189,6 +190,40 @@ namespace SqlNotebook {
             }
             _detailsLst.Groups[0].Header = notebookItemName;
             _detailsLst.EndUpdate();
+        }
+
+        private void RenameMnu_Click(object sender, EventArgs e) {
+            if (_list.SelectedItems.Count != 1) {
+                return;
+            }
+            _list.SelectedItems[0].BeginEdit();
+        }
+
+        private void List_AfterLabelEdit(object sender, LabelEditEventArgs e) {
+            e.CancelEdit = true; // if this is a successful edit, we will update the label ourselves
+            var lvi = _list.Items[e.Item];
+
+            try {
+                var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
+                _manager.RenameItem(new NotebookItem(type, lvi.Text), e.Label);
+            } catch (Exception ex) {
+                var td = new TaskDialog {
+                    Cancelable = true,
+                    Caption = "Rename Error",
+                    Icon = TaskDialogStandardIcon.Error,
+                    InstructionText = ex.Message,
+                    StandardButtons = TaskDialogStandardButtons.Ok,
+                    OwnerWindowHandle = ParentForm.Handle,
+                    StartupLocation = TaskDialogStartupLocation.CenterOwner
+                };
+                td.Show();
+            }
+        }
+
+        private void List_KeyDown(object sender, KeyEventArgs e) {
+            if (e.KeyData == Keys.F2 && _list.SelectedItems.Count == 1) {
+                _list.SelectedItems[0].BeginEdit();
+            }
         }
     }
 }
