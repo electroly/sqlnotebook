@@ -62,6 +62,7 @@ namespace SqlNotebook {
 
             _manager.NotebookItemOpenRequest += Manager_NotebookItemOpenRequest;
             _manager.NotebookItemCloseRequest += Manager_NotebookItemCloseRequest;
+            _manager.NotebookItemsSaveRequest += Manager_NotebookItemsSaveRequest;
             _manager.NotebookDirty += (sender, e) => SetDirty();
 
             if (isNew) {
@@ -71,6 +72,10 @@ namespace SqlNotebook {
             }
 
             Load += (sender, e) => _manager.Rescan();
+        }
+
+        private void Manager_NotebookItemsSaveRequest(object sender, EventArgs e) {
+            Invoke(new MethodInvoker(SaveOpenItems));
         }
 
         private void Manager_NotebookItemCloseRequest(object sender, NotebookItemRequestEventArgs e) {
@@ -254,22 +259,7 @@ namespace SqlNotebook {
         }
 
         private bool SaveOrSaveAs() {
-            foreach (var x in _openItems) {
-                var consoleDoc = x.Value.Content as ConsoleDocumentControl;
-                if (consoleDoc != null) {
-                    _manager.SetItemData(x.Key.Name, consoleDoc.RtfText);
-                }
-
-                var queryDoc = x.Value.Content as QueryDocumentControl;
-                if (queryDoc != null) {
-                    _manager.SetItemData(x.Key.Name, queryDoc.SqlText);
-                }
-
-                var noteDoc = x.Value.Content as NoteDocumentControl;
-                if (noteDoc != null) {
-                    _manager.SetItemData(x.Key.Name, noteDoc.RtfText);
-                }
-            }
+            SaveOpenItems();
 
             new WaitForm("Save", "Saving your notebook...", _manager.Save).ShowDialog(this, 25);
 
@@ -306,7 +296,26 @@ namespace SqlNotebook {
             SetTitle();
             return true;
         }
-        
+
+        private void SaveOpenItems() {
+            foreach (var x in _openItems) {
+                var consoleDoc = x.Value.Content as ConsoleDocumentControl;
+                if (consoleDoc != null) {
+                    _manager.SetItemData(x.Key.Name, consoleDoc.RtfText);
+                }
+
+                var queryDoc = x.Value.Content as QueryDocumentControl;
+                if (queryDoc != null) {
+                    _manager.SetItemData(x.Key.Name, queryDoc.SqlText);
+                }
+
+                var noteDoc = x.Value.Content as NoteDocumentControl;
+                if (noteDoc != null) {
+                    _manager.SetItemData(x.Key.Name, noteDoc.RtfText);
+                }
+            }
+        }
+
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
             if (_isDirty) {
                 var shortFilename = _isNew ? "Untitled" : Path.GetFileName(_filePath);
@@ -342,5 +351,6 @@ namespace SqlNotebook {
                 }
             }
         }
+
     }
 }

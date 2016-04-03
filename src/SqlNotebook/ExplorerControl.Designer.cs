@@ -32,17 +32,17 @@
             System.Windows.Forms.ListViewGroup listViewGroup5 = new System.Windows.Forms.ListViewGroup("Views", System.Windows.Forms.HorizontalAlignment.Center);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExplorerControl));
             this._list = new System.Windows.Forms.ListView();
+            this._contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._deleteMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._imageList = new System.Windows.Forms.ImageList(this.components);
             this._splitContainer = new System.Windows.Forms.SplitContainer();
             this.listView1 = new System.Windows.Forms.ListView();
-            this._contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this._deleteMnu = new System.Windows.Forms.ToolStripMenuItem();
             _nameColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this._contextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._splitContainer)).BeginInit();
             this._splitContainer.Panel1.SuspendLayout();
             this._splitContainer.Panel2.SuspendLayout();
             this._splitContainer.SuspendLayout();
-            this._contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // _nameColumn
@@ -90,6 +90,22 @@
             this._list.View = System.Windows.Forms.View.Details;
             this._list.ItemActivate += new System.EventHandler(this.List_ItemActivate);
             // 
+            // _contextMenuStrip
+            // 
+            this._contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._deleteMnu});
+            this._contextMenuStrip.Name = "_contextMenuStrip";
+            this._contextMenuStrip.Size = new System.Drawing.Size(108, 26);
+            this._contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip_Opening);
+            // 
+            // _deleteMnu
+            // 
+            this._deleteMnu.Image = global::SqlNotebook.Properties.Resources.Delete;
+            this._deleteMnu.Name = "_deleteMnu";
+            this._deleteMnu.Size = new System.Drawing.Size(107, 22);
+            this._deleteMnu.Text = "&Delete";
+            this._deleteMnu.Click += new System.EventHandler(this.DeleteMnu_Click);
+            // 
             // _imageList
             // 
             this._imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("_imageList.ImageStream")));
@@ -128,33 +144,17 @@
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             // 
-            // _contextMenuStrip
-            // 
-            this._contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._deleteMnu});
-            this._contextMenuStrip.Name = "_contextMenuStrip";
-            this._contextMenuStrip.Size = new System.Drawing.Size(153, 48);
-            this._contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip_Opening);
-            // 
-            // _deleteMnu
-            // 
-            this._deleteMnu.Image = global::SqlNotebook.Properties.Resources.Delete;
-            this._deleteMnu.Name = "_deleteMnu";
-            this._deleteMnu.Size = new System.Drawing.Size(152, 22);
-            this._deleteMnu.Text = "&Delete";
-            this._deleteMnu.Click += new System.EventHandler(this.DeleteMnu_Click);
-            // 
             // ExplorerControl
             // 
             this.Controls.Add(this._splitContainer);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "ExplorerControl";
             this.Size = new System.Drawing.Size(340, 608);
+            this._contextMenuStrip.ResumeLayout(false);
             this._splitContainer.Panel1.ResumeLayout(false);
             this._splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._splitContainer)).EndInit();
             this._splitContainer.ResumeLayout(false);
-            this._contextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

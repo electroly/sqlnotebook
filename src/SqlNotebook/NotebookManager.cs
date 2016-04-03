@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SqlNotebookCore;
+using SqlNotebookScript;
 
 namespace SqlNotebook {
     public enum NotebookItemType {
@@ -63,8 +64,9 @@ namespace SqlNotebook {
         public event EventHandler<NotebookChangeEventArgs> NotebookChange; // informs the ExplorerControl about changes
         public event EventHandler<NotebookItemRequestEventArgs> NotebookItemOpenRequest;
         public event EventHandler<NotebookItemRequestEventArgs> NotebookItemCloseRequest;
+        public event EventHandler NotebookItemsSaveRequest;
         public event EventHandler NotebookDirty;
-        
+
         public NotebookManager(Notebook notebook) {
             Notebook = notebook;
 
@@ -113,14 +115,20 @@ namespace SqlNotebook {
                 Init();
 
                 // tables and views
-                using (var dt = Notebook.Query("SELECT name, type FROM sqlite_master WHERE name != 'sqlnotebook_items'")) {
+                using (var dt = Notebook.Query(
+                    @"SELECT name, type 
+                    FROM sqlite_master 
+                    WHERE
+                        (type = 'table' OR type = 'view') AND 
+                        name != 'sqlnotebook_items' AND 
+                        name != 'sqlnotebook_proc_params'")) {
                     foreach (DataRow row in dt.Rows) {
                         var type = row.Field<string>("type") == "view" ? NotebookItemType.View : NotebookItemType.Table;
                         items.Add(new NotebookItem(type, row.Field<string>("name")));
                     }
                 }
 
-                // queries, consoles, and notes
+                // consoles, queries, procedures, and notes
                 using (var dt = Notebook.Query("SELECT name, type FROM sqlnotebook_items")) {
                     foreach (DataRow row in dt.Rows) {
                         string name = row.Field<string>("name");
@@ -180,123 +188,62 @@ namespace SqlNotebook {
         }
 
         public string GetItemData(string name) {
-            string data = null;
-            Notebook.Invoke(() => {
+            return Invoke(() => {
                 using (var dt = Notebook.Query("SELECT data FROM sqlnotebook_items WHERE name = @name",
                     new Dictionary<string, object> { ["@name"] = name })) {
                     if (dt.Rows.Count == 1) {
-                        data = dt.Rows.Cast<DataRow>().First().Field<string>("data");
+                        return dt.Rows.Cast<DataRow>().First().Field<string>("data");
                     }
                 }
+                return "";
             });
-            return data;
+        }
+
+        public ScriptOutput ExecuteScript(string code) {
+            NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
+            return Invoke(() => {
+                var parser = new ScriptParser(Notebook);
+                var script = parser.Parse(code);
+                var runner = new ScriptRunner(Notebook);
+                return runner.Execute(script, new Dictionary<string, object>());
+            });
+        }
+
+        private T Invoke<T>(Func<T> func) {
+            T value = default(T);
+            Notebook.Invoke(() => {
+                value = func();
+            });
+            return value;
         }
 
         private void Init() {
             // create the sqlnotebook_items table if it does not exist
             using (var dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_items'")) {
                 if (dt.Rows.Count == 0) {
-                    Notebook.Execute("CREATE TABLE sqlnotebook_items (name TEXT, type TEXT, data TEXT)");
+                    Notebook.Execute(
+                        @"CREATE TABLE sqlnotebook_items (
+                            name TEXT NOT NULL, 
+                            type TEXT NOT NULL, 
+                            data TEXT, 
+                            PRIMARY KEY (name)
+                        )");
                 }
             }
-        }
 
-        /*
-            State 1: Normal
-                if [-] [-] then 2
-                if [/] [*] then 3
-                if ['] then 4
-                if ["] then 5
-                if [;] then 1 (end of statement)
-                else 1
-            State 2: Inside single-line comment
-                if [\n] then 1
-                else 2
-            State 3: Inside multi-line comment
-                if [*] [/] then 1
-                else 3
-            State 4: Inside single-quoted string
-                if ['] ['] then 4
-                if ['] then 1
-                else 4
-            State 5: Inside double-quoted string
-                if ["] ["] then 5
-                if ["] then 1
-                else 5
-            State 6: Inside bracketed string
-                if []] then 1
-                else 6
-        */
-        public static IEnumerable<string> SplitStatements(string multiSql) {
-            multiSql = multiSql + " ";
-            var statements = new List<string>();
-            var sb = new StringBuilder();
-            const int NORMAL = 1;
-            const int SINGLE_LINE_COMMENT = 2;
-            const int MULTI_LINE_COMMENT = 3;
-            const int SINGLE_QUOTED_STRING = 4;
-            const int DOUBLE_QUOTED_STRING = 5;
-            const int BRACKET_STRING = 6;
-            int state = NORMAL;
-            for (int i = 0; i < multiSql.Length - 1; i++) {
-                char ch = multiSql[i];
-                char ch2 = multiSql[i + 1];
-                sb.Append(ch);
-                switch (state) {
-                    case NORMAL:
-                        if (ch == '-' && ch2 == '-') {
-                            state = SINGLE_LINE_COMMENT;
-                            sb.Append(ch2); i++;
-                        } else if (ch == '/' && ch2 == '*') {
-                            state = MULTI_LINE_COMMENT;
-                            sb.Append(ch2); i++;
-                        } else if (ch == '\'') {
-                            state = SINGLE_QUOTED_STRING;
-                        } else if (ch == '"') {
-                            state = DOUBLE_QUOTED_STRING;
-                        } else if (ch == '[') {
-                            state = BRACKET_STRING;
-                        } else if (ch == ';') {
-                            statements.Add(sb.ToString());
-                            sb.Clear();
-                        }
-                        break;
-                    case SINGLE_LINE_COMMENT:
-                        if (ch == '\n') {
-                            state = NORMAL;
-                        }
-                        break;
-                    case MULTI_LINE_COMMENT:
-                        if (ch == '*' && ch2 == '/') {
-                            state = NORMAL;
-                            sb.Append(ch2); i++;
-                        }
-                        break;
-                    case SINGLE_QUOTED_STRING:
-                        if (ch == '\'' && ch2 == '\'') {
-                            state = SINGLE_QUOTED_STRING;
-                            sb.Append(ch2); i++;
-                        } else if (ch == '\'') {
-                            state = NORMAL;
-                        }
-                        break;
-                    case DOUBLE_QUOTED_STRING:
-                        if (ch == '"' && ch2 == '"') {
-                            state = DOUBLE_QUOTED_STRING;
-                            sb.Append(ch2); i++;
-                        } else if (ch == '"') {
-                            state = NORMAL;
-                        }
-                        break;
-                    case BRACKET_STRING:
-                        if (ch == ']') {
-                            state = NORMAL;
-                        }
-                        break;
+            // create the sqlnotebook_proc_params table if it does not exist
+            using (var dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_proc_params'")) {
+                if (dt.Rows.Count == 0) {
+                    Notebook.Execute(
+                        @"CREATE TABLE sqlnotebook_proc_params (
+                            proc TEXT, 
+                            par_name TEXT, 
+                            par_type TEXT, 
+                            par_value, 
+                            PRIMARY KEY (proc, par_name)
+                        )");
                 }
             }
-            statements.Add(sb.ToString());
-            return statements.Where(x => x.Trim().Any()).ToList();
         }
     }
 }

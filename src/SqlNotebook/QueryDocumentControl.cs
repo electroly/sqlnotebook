@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SqlNotebookCore;
+using SqlNotebookScript;
 
 namespace SqlNotebook {
     public partial class QueryDocumentControl : UserControl {
@@ -69,6 +70,9 @@ namespace SqlNotebook {
                 if (initialText != null) {
                     _textEditor.Text = initialText;
                 }
+
+                _textEditor.TextChanged += (sender2, e2) => _manager.SetDirty();
+
                 ShowResult(0);
             };
         }
@@ -104,39 +108,41 @@ namespace SqlNotebook {
         }
 
         private void ExecuteCore(string sql) {
-            var dts = new List<DataTable>();
+            ScriptOutput output = null;
             Exception exception = null;
             var f = new WaitForm("SQL Query", "Running your SQL query...", () => {
-                _notebook.Invoke(() => {
-                    try {
-                        foreach (var statement in NotebookManager.SplitStatements(sql)) {
-                            dts.Add(_notebook.Query(statement));
-                        }
-                    } catch (Exception ex) {
-                        foreach (var dt in dts) {
-                            if (dt != null) {
-                                dt.Dispose();
-                            }
-                        }
-                        dts.Clear();
-                        exception = ex;
-                    }
-                });
+                try {
+                    output = _manager.ExecuteScript(sql);
+                } catch (Exception ex) {
+                    exception = ex;
+                }
             });
             using (f) {
                 f.ShowDialog(ParentForm, 25);
                 if (exception != null) {
                     throw exception;
                 } else {
-                    var resultSets = dts.Where(x => x != null && x.Columns.Count > 0).ToList();
-                    dts.Except(resultSets).ToList().ForEach(x => x?.Dispose());
-                    dts.Clear();
+                    using (output) {
+                        var resultSets = new List<DataTable>(output.DataTables);
+                        output.DataTables.Clear();
 
-                    _grid.DataSource = null;
-                    _results.ForEach(x => x.Dispose());
-                    _results.Clear();
-                    _results.AddRange(resultSets);
-                    ShowResult(0);
+                        if (output.TextOutput.Any()) {
+                            var dt = new DataTable("Output");
+                            dt.Columns.Add("printed_text", typeof(string));
+                            foreach (var line in output.TextOutput) {
+                                var row = dt.NewRow();
+                                row.ItemArray = new object[] { line };
+                                dt.Rows.Add(row);
+                            }
+                            resultSets.Insert(0, dt);
+                        }
+
+                        _grid.DataSource = null;
+                        _results.ForEach(x => x.Dispose());
+                        _results.Clear();
+                        _results.AddRange(resultSets);
+                        ShowResult(0);
+                    }
                 }
             }
         }

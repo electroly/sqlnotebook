@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using SqlNotebookCore;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using SqlNotebookScript;
 
 namespace SqlNotebook {
     public partial class ConsoleDocumentControl : UserControl {
@@ -108,88 +109,95 @@ namespace SqlNotebook {
         }
 
         private void ExecuteCore(string sql) {
-            var dts = new List<DataTable>();
+            ScriptOutput output = null;
             Exception exception = null;
             var f = new WaitForm("SQL Query", "Running your SQL query...", () => {
-                _notebook.Invoke(() => {
-                    try {
-                        foreach (var statement in NotebookManager.SplitStatements(sql)) {
-                            dts.Add(_notebook.Query(statement));
-                        }
-                    } catch (Exception ex) {
-                        foreach (var dt in dts) {
-                            if (dt != null) {
-                                dt.Dispose();
-                            }
-                        }
-                        dts.Clear();
-                        exception = ex;
-                    }
-                });
+                try {
+                    output = _manager.ExecuteScript(sql);
+                } catch (Exception ex) {
+                    exception = ex;
+                }
             });
             using (f) {
-                f.ShowDialog(ParentForm, 25);
+                if (f.ShowDialog(ParentForm, 25) != DialogResult.OK) {
+                    return;
+                }
                 if (exception != null) {
                     throw exception;
                 } else {
-                    _consoleTxt.BeginUpdate();
-                    try {
-                        foreach (var dt in dts) {
-                            if (dt == null || dt.Columns.Count == 0) {
-                                if (dt != null) {
-                                    dt.Dispose();
-                                }
-                            } else {
-                                _consoleTxt.Append("\n");
-                                var columnWidths =
-                                    from colIndex in Enumerable.Range(0, dt.Columns.Count)
-                                    let maxLength =
-                                        dt.Rows.Cast<DataRow>()
-                                        .Select(x => x[colIndex].ToString().Length)
-                                        .Concat(new[] { dt.Columns[colIndex].ColumnName.Length })
-                                        .Max()
-                                    select new { ColIndex = colIndex, MaxLength = maxLength };
-                                var paddedHeaders =
-                                    (from colIndex in Enumerable.Range(0, dt.Columns.Count)
-                                     join x in columnWidths on colIndex equals x.ColIndex
-                                     select dt.Columns[colIndex].ColumnName.PadRight(x.MaxLength))
-                                    .ToList();
-                                _consoleTxt.Append(" ", _headerFont, bg: Color.WhiteSmoke);
-                                for (int i = 0; i < dt.Columns.Count; i++) {
-                                    if (i > 0) {
-                                        _consoleTxt.Append("  ", _dividerFont, bg: Color.WhiteSmoke);
-                                        _consoleTxt.Append("|", _dividerFont, Color.LightGray, Color.LightGray);
-                                        _consoleTxt.Append("  ", _dividerFont, bg: Color.WhiteSmoke);
-                                    }
-                                    _consoleTxt.Append(paddedHeaders[i], _headerFont, bg: Color.WhiteSmoke);
-                                }
-                                _consoleTxt.Append(" \n", _headerFont, bg: Color.WhiteSmoke);
-                                foreach (DataRow row in dt.Rows) {
-                                    var paddedValues =
-                                        (from colIndex in Enumerable.Range(0, dt.Columns.Count)
-                                         join x in columnWidths on colIndex equals x.ColIndex
-                                         select row.ItemArray[colIndex].ToString().PadRight(x.MaxLength))
-                                        .ToList();
-                                    _consoleTxt.Append(" ");
-                                    for (int i = 0; i < dt.Columns.Count; i++) {
-                                        if (i > 0) {
-                                            _consoleTxt.Append("  ", _dividerFont);
-                                            _consoleTxt.Append("|", _dividerFont, Color.LightGray, Color.LightGray);
-                                            _consoleTxt.Append("  ", _dividerFont);
-                                        }
-                                        _consoleTxt.Append(paddedValues[i]);
-                                    }
-                                    _consoleTxt.Append(" \n");
-                                }
-                                _consoleTxt.Append($"({dt.Rows.Count} row{(dt.Rows.Count == 1 ? "" : "s")})", fg: Color.LightGray);
-                                _consoleTxt.ScrollToCaret();
-                                dt.Dispose();
+                    using (output) {
+                        _consoleTxt.BeginUpdate();
+                        try {
+                            foreach (var line in output.TextOutput) {
+                                _consoleTxt.Append($"\n{line}");
                             }
+
+                            foreach (var dt in output.DataTables) {
+                                PrintDataTable(dt);
+                            }
+
+                            if (output.ScalarResult != null) {
+                                _consoleTxt.Append($"\nReturned: {output.ScalarResult}");
+                            }
+
+                            _consoleTxt.Append("\n");
+                        } finally {
+                            _consoleTxt.ScrollToCaret();
+                            _consoleTxt.EndUpdate();
                         }
-                    } finally {
-                        _consoleTxt.EndUpdate();
                     }
                 }
+            }
+        }
+
+        private void PrintDataTable(DataTable dt) {
+            if (dt == null || dt.Columns.Count == 0) {
+                if (dt != null) {
+                    dt.Dispose();
+                }
+            } else {
+                _consoleTxt.Append("\n");
+                var columnWidths =
+                    from colIndex in Enumerable.Range(0, dt.Columns.Count)
+                    let maxLength =
+                        dt.Rows.Cast<DataRow>()
+                        .Select(x => x[colIndex].ToString().Length)
+                        .Concat(new[] { dt.Columns[colIndex].ColumnName.Length })
+                        .Max()
+                    select new { ColIndex = colIndex, MaxLength = maxLength };
+                var paddedHeaders =
+                    (from colIndex in Enumerable.Range(0, dt.Columns.Count)
+                        join x in columnWidths on colIndex equals x.ColIndex
+                        select dt.Columns[colIndex].ColumnName.PadRight(x.MaxLength))
+                    .ToList();
+                _consoleTxt.Append(" ", _headerFont, bg: Color.WhiteSmoke);
+                for (int i = 0; i < dt.Columns.Count; i++) {
+                    if (i > 0) {
+                        _consoleTxt.Append("  ", _dividerFont, bg: Color.WhiteSmoke);
+                        _consoleTxt.Append("|", _dividerFont, Color.LightGray, Color.LightGray);
+                        _consoleTxt.Append("  ", _dividerFont, bg: Color.WhiteSmoke);
+                    }
+                    _consoleTxt.Append(paddedHeaders[i], _headerFont, bg: Color.WhiteSmoke);
+                }
+                _consoleTxt.Append(" \n", _headerFont, bg: Color.WhiteSmoke);
+                foreach (DataRow row in dt.Rows) {
+                    var paddedValues =
+                        (from colIndex in Enumerable.Range(0, dt.Columns.Count)
+                            join x in columnWidths on colIndex equals x.ColIndex
+                            select row.ItemArray[colIndex].ToString().PadRight(x.MaxLength))
+                        .ToList();
+                    _consoleTxt.Append(" ");
+                    for (int i = 0; i < dt.Columns.Count; i++) {
+                        if (i > 0) {
+                            _consoleTxt.Append("  ", _dividerFont);
+                            _consoleTxt.Append("|", _dividerFont, Color.LightGray, Color.LightGray);
+                            _consoleTxt.Append("  ", _dividerFont);
+                        }
+                        _consoleTxt.Append(paddedValues[i]);
+                    }
+                    _consoleTxt.Append(" \n");
+                }
+                _consoleTxt.Append($"({dt.Rows.Count} row{(dt.Rows.Count == 1 ? "" : "s")})", fg: Color.LightGray);
             }
         }
     }

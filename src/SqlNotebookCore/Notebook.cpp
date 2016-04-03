@@ -277,3 +277,65 @@ void Notebook::MoveTo(String^ newFilePath) {
 String^ Notebook::GetFilePath() {
     return _filePath;
 }
+
+static int GetToken(const char* str, int* oldPos, int* pos, int len) {
+    const int TK_SPACE = (int)TokenType::Space;
+    if (*pos >= len) {
+        return 0;
+    }
+    int tokenType, tokenLen;
+    do {
+        tokenLen = SxGetToken((const unsigned char*)&str[*pos], &tokenType);
+        *oldPos = *pos;
+        *pos += tokenLen;
+    } while (tokenType == TK_SPACE && *pos < len);
+
+    return tokenType == TK_SPACE ? 0 : tokenType;
+}
+
+IReadOnlyList<Token^>^ Notebook::Tokenize(String^ input) {
+    auto str = Util::CStr(input);
+    auto cstr = str.c_str();
+    auto list = gcnew List<Token^>();
+    int tokenType = 0, oldPos = 0, pos = 0, len = (int)str.length();
+    while ((tokenType = GetToken(cstr, &oldPos, &pos, len)) > 0) {
+        char* utf8Token = (char*)calloc(pos - oldPos + 1, sizeof(char));
+        memcpy(utf8Token, &cstr[oldPos], pos - oldPos);
+
+        auto token = gcnew Token();
+        token->Type = (TokenType)tokenType;
+        token->Text = Util::Str(utf8Token);
+        token->Utf8Start = oldPos;
+        token->Utf8Length = pos - oldPos;
+        list->Add(token);
+
+        free(utf8Token);
+        oldPos = pos;
+    }
+    return list;
+}
+
+String^ Token::ToString() {
+    return String::Format("{0}: \"{1}\"", Type, Text);
+}
+
+String^ Notebook::FindLongestValidStatementPrefix(String^ input) {
+    auto str = Util::CStr(input);
+    auto cstr = str.c_str();
+    auto parser = SxParserAlloc();
+    auto parse = SxParseAlloc(_sqlite, cstr);
+
+    int tokenType = 0, oldPos = 0, pos = 0, len = (int)str.length();
+    while ((tokenType = GetToken(cstr, &oldPos, &pos, len)) > 0) {
+        SxAdvanceParse(parser, tokenType, &cstr[oldPos], pos - oldPos, parse);
+        if (SxGetParseErrorCount(parse) > 0) {
+            break;
+        }
+        oldPos = pos;
+    }
+
+    SxParserFree(_sqlite, parser, parse);
+
+    auto prefix = str.substr(0, oldPos);
+    return Util::Str(prefix.c_str());
+}

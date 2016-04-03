@@ -111,7 +111,7 @@
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ext\sqlite\sqlite3\sqlite3.vcxproj">
+    <ProjectReference Include="..\sqlite3\sqlite3.vcxproj">
       <Project>{34743fad-099d-4db8-b8a6-c863fec91c77}</Project>
     </ProjectReference>
   </ItemGroup>
