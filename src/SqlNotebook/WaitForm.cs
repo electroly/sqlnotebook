@@ -22,6 +22,7 @@ namespace SqlNotebook {
     public partial class WaitForm : Form {
         public Task WaitTask;
         public Exception ResultException { get; private set; }
+        private Timer _timer;
 
         public WaitForm(string title, string text, Action action) {
             InitializeComponent();
@@ -34,24 +35,27 @@ namespace SqlNotebook {
                 } catch (Exception ex) {
                     ResultException = ex;
                 }
-                if (IsHandleCreated) {
-                    Invoke(new MethodInvoker(() => {
-                        DialogResult = ResultException == null ? DialogResult.OK : DialogResult.Abort;
-                        Close();
-                    }));
-                }
             });
 
-            this.Shown += (sender, e) => {
-                if (WaitTask.IsCompleted) {
+            WaitTask.ContinueWith(t => {
+                Invoke(new MethodInvoker(() => {
                     DialogResult = ResultException == null ? DialogResult.OK : DialogResult.Abort;
                     Close();
-                }
-            };
+                }));
+            });
         }
 
         public DialogResult ShowDialog(IWin32Window owner, int waitMsecBeforeShowing) {
-            WaitTask.Wait(waitMsecBeforeShowing);
+            Location = new System.Drawing.Point(20000, 20000);
+            _timer = new Timer { Interval = waitMsecBeforeShowing };
+            _timer.Tick += (sender, e) => {
+                if (!WaitTask.IsCompleted) {
+                    _timer.Stop();
+                    CenterToParent();
+                }
+            };
+            FormClosing += (sender, e) => _timer.Stop();
+            _timer.Start();
             if (WaitTask.IsCompleted) {
                 return ResultException == null ? DialogResult.OK : DialogResult.Abort;
             } else {
