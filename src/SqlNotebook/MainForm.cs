@@ -44,7 +44,7 @@ namespace SqlNotebook {
             InitializeComponent();
 
             _importer = new Importer(this);
-            _notebook = new Notebook(filePath);
+            _notebook = new Notebook(filePath, isNew);
             _isNew = isNew;
             SetTitle();
             _manager = new NotebookManager(_notebook);
@@ -53,7 +53,6 @@ namespace SqlNotebook {
                 Theme = new VS2012LightTheme(),
                 DocumentStyle = DocumentStyle.DockingWindow
             };
-            _dockPanel.Extender.FloatWindowFactory = new FloatWindowFactoryEx();
             _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
 
             _notebookPane = new UserControlDockContent("Table of Contents", _explorer = new ExplorerControl(_manager, this));
@@ -65,6 +64,16 @@ namespace SqlNotebook {
             _manager.NotebookItemsSaveRequest += Manager_NotebookItemsSaveRequest;
             _manager.NotebookDirty += (sender, e) => SetDirty();
             _manager.NotebookItemRename += Manager_NotebookItemRename;
+            _manager.StatusUpdate += (sender, e) => BeginInvoke(new MethodInvoker((() => {
+                _statusLbl.Text = e.Status;
+                bool oldVisible = _statusProgressbar.Visible;
+                bool newVisible = !string.IsNullOrWhiteSpace(e.Status);
+                if (!oldVisible && newVisible) {
+                    _statusProgressbar.Style = ProgressBarStyle.Continuous;
+                    _statusProgressbar.Style = ProgressBarStyle.Marquee;
+                }
+                _statusProgressbar.Visible = newVisible;
+            })));
 
             if (isNew) {
                 _manager.NewNote("Getting Started", Resources.GettingStartedRtf);
@@ -128,7 +137,7 @@ namespace SqlNotebook {
 
             UserControlDockContent f = null;
             if (item.Type == NotebookItemType.Console) {
-                var doc = new ConsoleDocumentControl(item.Name, _manager);
+                var doc = new ConsoleDocumentControl(item.Name, _manager, this);
                 f = new UserControlDockContent(item.Name, doc) {
                     Icon = Resources.ApplicationXpTerminalIco
                 };
@@ -136,7 +145,7 @@ namespace SqlNotebook {
                     _manager.SetItemData(doc.ItemName, doc.DocumentText);
                 };
             } else if (item.Type == NotebookItemType.Script) {
-                var doc = new QueryDocumentControl(item.Name, _manager);
+                var doc = new QueryDocumentControl(item.Name, _manager, this);
                 f = new UserControlDockContent(item.Name, doc) {
                     Icon = Resources.ScriptIco
                 };
@@ -222,13 +231,22 @@ namespace SqlNotebook {
             }
         }
 
+        public static bool IgnoreF5 = false;
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-            if (keyData == Keys.F5) {
+            if (keyData == Keys.Escape) {
+                _notebook.Interrupt();
+            } else if (keyData == Keys.F5) {
+                if (IgnoreF5) {
+                    return true;
+                }
                 var doc = _dockPanel.ActiveDocument as UserControlDockContent;
                 if (doc != null) {
                     var queryDoc = doc.Content as QueryDocumentControl;
                     if (queryDoc != null) {
-                        queryDoc.Execute();
+                        IgnoreF5 = true;
+                        queryDoc.Execute().ContinueWith((t) => {
+                            IgnoreF5 = false;
+                        });
                         return true;
                     }
                 }
@@ -271,8 +289,6 @@ namespace SqlNotebook {
         private bool SaveOrSaveAs() {
             SaveOpenItems();
 
-            new WaitForm("Save", "Saving your notebook...", _manager.Save).ShowDialog(this, 25);
-
             if (_isNew) {
                 var f = new SaveFileDialog {
                     AddExtension = true,
@@ -288,15 +304,17 @@ namespace SqlNotebook {
                 using (f) {
                     if (f.ShowDialog(this) == DialogResult.OK) {
                         new WaitForm("Save", "Saving your notebook...", () => {
-                            _notebook.Invoke(() => {
-                                _notebook.MoveTo(f.FileName);
-                            });
-                        }).ShowDialog(this, 25);
+                            _manager.SaveAs(f.FileName);
+                        }).ShowDialog(this);
                         _isNew = false;
                     } else {
                         return false;
                     }
                 }
+            } else {
+                new WaitForm("Save", "Saving your notebook...", () => {
+                    _manager.Save();
+                }).ShowDialog(this);
             }
 
             // set this after doing the isNew stuff above so that if you click Save and then cancel the Save As dialog,

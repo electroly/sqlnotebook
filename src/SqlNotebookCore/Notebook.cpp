@@ -14,11 +14,29 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#include <msclr\auto_handle.h>
 #include "SqlNotebookCore.h"
 using namespace SqlNotebookCore;
+using namespace System::IO;
+using namespace System::IO::Compression;
+using namespace msclr;
 
-Notebook::Notebook(String^ filePath) {
-    _filePath = filePath;
+Notebook::Notebook(String^ filePath, bool isNew) {
+    _workingCopyFilePath = Path::GetTempFileName();
+    if (!isNew) {
+        try {
+            auto_handle<ZipArchive> zip(ZipFile::OpenRead(filePath));
+            auto entry = zip->GetEntry("db");
+            auto_handle<Stream> inStream(entry->Open());
+            FileStream outStream(_workingCopyFilePath, FileMode::Create);
+            inStream->CopyTo(%outStream);
+        } catch (Exception^) {
+            File::Delete(_workingCopyFilePath);
+            throw;
+        }
+    }
+
+    _originalFilePath = filePath;
     _threadCancellationTokenSource = gcnew CancellationTokenSource();
     _threadQueue = gcnew BlockingCollection<Action^>();
     _thread = Task::Run(gcnew Action(this, &Notebook::SqliteThread));
@@ -38,6 +56,9 @@ Notebook::!Notebook() {
         sqlite3_close_v2(_sqlite);
         _sqlite = nullptr;
     }
+    try {
+        File::Delete(_workingCopyFilePath);
+    } catch (Exception^) { }
 }
 
 void Notebook::SqliteThread() {
@@ -53,15 +74,10 @@ void Notebook::SqliteThread() {
 }
 
 void Notebook::Init() {
-    auto filePathWstr = Util::WStr(_filePath);
+    auto filePathWstr = Util::WStr(_workingCopyFilePath);
     sqlite3* sqlite;
     SqliteCall(sqlite3_open16(filePathWstr.c_str(), &sqlite));
     _sqlite = sqlite;
-
-    // ensure we have an exclusive lock on the database file
-    Execute("PRAGMA locking_mode = EXCLUSIVE");
-    Execute("BEGIN EXCLUSIVE");
-    Execute("COMMIT");
 
     InstallCsvModule();
     InstallPgModule();
@@ -185,7 +201,7 @@ SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, O
                 int intValue = safe_cast<Int32>(value);
                 SqliteCall(sqlite3_bind_int(stmt, i, intValue));
             } else if (type == Int64::typeid) {
-                long longValue = safe_cast<Int64>(value);
+                int64_t longValue = safe_cast<Int64>(value);
                 SqliteCall(sqlite3_bind_int64(stmt, i, longValue));
             } else if (type == Double::typeid) {
                 double dblValue = safe_cast<Double>(value);
@@ -251,6 +267,8 @@ SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, O
                 throw gcnew InvalidOperationException(L"The notebook file is corrupted.");
             } else if (ret == SQLITE_NOTADB) {
                 throw gcnew InvalidOperationException(L"This is not an SQLite database file.");
+            } else if (ret == SQLITE_INTERRUPT) {
+                throw gcnew UserCancelException(L"SQL query canceled by the user.");
             } else if (ret == SQLITE_ERROR) {
                 SqliteCall(SQLITE_ERROR);
             } else {
@@ -280,16 +298,31 @@ void g_SqliteCall(sqlite3* sqlite, int result) {
     }
 }
 
-void Notebook::MoveTo(String^ newFilePath) {
+void Notebook::Save() {
     SqliteCall(sqlite3_close_v2(_sqlite));
     _sqlite = nullptr;
-    System::IO::File::Copy(_filePath, newFilePath, true);
-    _filePath = newFilePath;
-    Init();
+
+    try {
+        if (File::Exists(_originalFilePath)) {
+            File::Delete(_originalFilePath);
+        }
+        auto_handle<ZipArchive> archive(ZipFile::Open(_originalFilePath, ZipArchiveMode::Create));
+        auto entry = archive->CreateEntry("db", CompressionLevel::Fastest);
+        auto_handle<Stream> outStream(entry->Open());
+        FileStream inStream(_workingCopyFilePath, FileMode::Open);
+        inStream.CopyTo(outStream.get());
+    } finally {
+        Init();
+    }
+}
+
+void Notebook::SaveAs(String^ filePath) {
+    _originalFilePath = filePath;
+    Save();
 }
 
 String^ Notebook::GetFilePath() {
-    return _filePath;
+    return _originalFilePath;
 }
 
 static int GetToken(const char* str, int* oldPos, int* pos, int len) {
@@ -352,6 +385,10 @@ String^ Notebook::FindLongestValidStatementPrefix(String^ input) {
 
     auto prefix = str.substr(0, oldPos);
     return Util::Str(prefix.c_str());
+}
+
+void Notebook::Interrupt() {
+    sqlite3_interrupt(_sqlite);
 }
 
 SimpleDataTable::SimpleDataTable(IReadOnlyList<String^>^ columns, IReadOnlyList<array<Object^>^>^ rows) {

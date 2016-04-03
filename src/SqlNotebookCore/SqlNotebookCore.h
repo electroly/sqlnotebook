@@ -215,14 +215,12 @@ namespace SqlNotebookCore {
 
     public ref class Notebook sealed : public IDisposable {
         public:
-        Notebook(String^ filePath);
+        Notebook(String^ filePath, bool isNew);
         ~Notebook();
         !Notebook();
         void Invoke(Action^ action); // run the action on the sqlite thread
         String^ GetFilePath();
-
-        static IReadOnlyList<Token^>^ Tokenize(String^ input);
-        String^ FindLongestValidStatementPrefix(String^ input);
+        void Interrupt(); // interrupt any currently running SQLite command
 
         // all of these methods must be run on the sqlite thread
         void Execute(String^ sql);
@@ -234,11 +232,15 @@ namespace SqlNotebookCore {
         Object^ QueryValue(String^ sql);
         Object^ QueryValue(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
         Object^ QueryValue(String^ sql, IReadOnlyList<Object^>^ args);
-        void MoveTo(String^ newFilePath);
+        void Save();
+        void SaveAs(String^ filePath);
+        static IReadOnlyList<Token^>^ Tokenize(String^ input);
+        String^ FindLongestValidStatementPrefix(String^ input);
 
         private:
         bool _isDisposed;
-        String^ _filePath;
+        String^ _originalFilePath;
+        String^ _workingCopyFilePath;
         sqlite3* _sqlite;
 
         // the sqlite thread pump
@@ -266,5 +268,10 @@ namespace SqlNotebookCore {
     public ref class SqliteException sealed : public Exception {
         public:
         SqliteException(String^ message) : Exception(message) {}
+    };
+
+    public ref class UserCancelException sealed : public Exception {
+        public:
+        UserCancelException(String^ message) : Exception(message) {}
     };
 }

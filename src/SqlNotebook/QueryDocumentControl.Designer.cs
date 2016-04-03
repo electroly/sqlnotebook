@@ -159,7 +159,7 @@
             this._executeBtn.Name = "_executeBtn";
             this._executeBtn.Size = new System.Drawing.Size(67, 22);
             this._executeBtn.Text = "Execute";
-            this._executeBtn.Click += new System.EventHandler(this._executeBtn_Click);
+            this._executeBtn.Click += new System.EventHandler(this.ExecuteBtn_Click);
             // 
             // toolStripSeparator2
             // 

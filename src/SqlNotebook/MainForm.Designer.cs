@@ -31,6 +31,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this._statusStrip = new System.Windows.Forms.StatusStrip();
+            this._statusLbl = new System.Windows.Forms.ToolStripStatusLabel();
+            this._statusProgressbar = new System.Windows.Forms.ToolStripProgressBar();
             this._toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this._newMnu = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,6 +43,10 @@
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this._aboutMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this._newNoteBtn = new System.Windows.Forms.ToolStripButton();
+            this._newConsoleBtn = new System.Windows.Forms.ToolStripButton();
+            this._newScriptBtn = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this._importBtn = new System.Windows.Forms.ToolStripDropDownButton();
             this._importFileMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.postgreSQLDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,13 +55,10 @@
             this.noneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.recentServersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this._newNoteBtn = new System.Windows.Forms.ToolStripButton();
-            this._newConsoleBtn = new System.Windows.Forms.ToolStripButton();
-            this._newScriptBtn = new System.Windows.Forms.ToolStripButton();
             this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
             this._toolStripContainer.SuspendLayout();
+            this._statusStrip.SuspendLayout();
             this._toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -85,10 +88,30 @@
             // 
             this._statusStrip.BackColor = System.Drawing.SystemColors.Control;
             this._statusStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this._statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._statusLbl,
+            this._statusProgressbar});
             this._statusStrip.Location = new System.Drawing.Point(0, 0);
             this._statusStrip.Name = "_statusStrip";
             this._statusStrip.Size = new System.Drawing.Size(898, 22);
             this._statusStrip.TabIndex = 0;
+            // 
+            // _statusLbl
+            // 
+            this._statusLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._statusLbl.Name = "_statusLbl";
+            this._statusLbl.Size = new System.Drawing.Size(750, 17);
+            this._statusLbl.Spring = true;
+            this._statusLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // _statusProgressbar
+            // 
+            this._statusProgressbar.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this._statusProgressbar.MarqueeAnimationSpeed = 25;
+            this._statusProgressbar.Name = "_statusProgressbar";
+            this._statusProgressbar.Size = new System.Drawing.Size(100, 16);
+            this._statusProgressbar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this._statusProgressbar.Visible = false;
             // 
             // _toolStrip
             // 
@@ -197,6 +220,44 @@
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 23);
             // 
+            // _newNoteBtn
+            // 
+            this._newNoteBtn.Image = global::SqlNotebook.Properties.Resources.NoteAdd;
+            this._newNoteBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._newNoteBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
+            this._newNoteBtn.Name = "_newNoteBtn";
+            this._newNoteBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+            this._newNoteBtn.Size = new System.Drawing.Size(83, 22);
+            this._newNoteBtn.Text = "New note";
+            this._newNoteBtn.Click += new System.EventHandler(this.NewNoteBtn_Click);
+            // 
+            // _newConsoleBtn
+            // 
+            this._newConsoleBtn.Image = global::SqlNotebook.Properties.Resources.ApplicationXpTerminalAdd;
+            this._newConsoleBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._newConsoleBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
+            this._newConsoleBtn.Name = "_newConsoleBtn";
+            this._newConsoleBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+            this._newConsoleBtn.Size = new System.Drawing.Size(100, 22);
+            this._newConsoleBtn.Text = "New console";
+            this._newConsoleBtn.Click += new System.EventHandler(this.NewConsoleBtn_Click);
+            // 
+            // _newScriptBtn
+            // 
+            this._newScriptBtn.Image = global::SqlNotebook.Properties.Resources.ScriptAdd;
+            this._newScriptBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._newScriptBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
+            this._newScriptBtn.Name = "_newScriptBtn";
+            this._newScriptBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+            this._newScriptBtn.Size = new System.Drawing.Size(88, 22);
+            this._newScriptBtn.Text = "New script";
+            this._newScriptBtn.Click += new System.EventHandler(this.NewScriptBtn_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
+            // 
             // _importBtn
             // 
             this._importBtn.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -262,44 +323,6 @@
             this.toolStripDropDownButton4.Size = new System.Drawing.Size(74, 22);
             this.toolStripDropDownButton4.Text = "&Export";
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
-            // 
-            // _newNoteBtn
-            // 
-            this._newNoteBtn.Image = global::SqlNotebook.Properties.Resources.NoteAdd;
-            this._newNoteBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._newNoteBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
-            this._newNoteBtn.Name = "_newNoteBtn";
-            this._newNoteBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this._newNoteBtn.Size = new System.Drawing.Size(83, 22);
-            this._newNoteBtn.Text = "New note";
-            this._newNoteBtn.Click += new System.EventHandler(this.NewNoteBtn_Click);
-            // 
-            // _newConsoleBtn
-            // 
-            this._newConsoleBtn.Image = global::SqlNotebook.Properties.Resources.ApplicationXpTerminalAdd;
-            this._newConsoleBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._newConsoleBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
-            this._newConsoleBtn.Name = "_newConsoleBtn";
-            this._newConsoleBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this._newConsoleBtn.Size = new System.Drawing.Size(100, 22);
-            this._newConsoleBtn.Text = "New console";
-            this._newConsoleBtn.Click += new System.EventHandler(this.NewConsoleBtn_Click);
-            // 
-            // _newScriptBtn
-            // 
-            this._newScriptBtn.Image = global::SqlNotebook.Properties.Resources.ScriptAdd;
-            this._newScriptBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._newScriptBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
-            this._newScriptBtn.Name = "_newScriptBtn";
-            this._newScriptBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this._newScriptBtn.Size = new System.Drawing.Size(88, 22);
-            this._newScriptBtn.Text = "New script";
-            this._newScriptBtn.Click += new System.EventHandler(this.NewScriptBtn_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -318,6 +341,8 @@
             this._toolStripContainer.TopToolStripPanel.PerformLayout();
             this._toolStripContainer.ResumeLayout(false);
             this._toolStripContainer.PerformLayout();
+            this._statusStrip.ResumeLayout(false);
+            this._statusStrip.PerformLayout();
             this._toolStrip.ResumeLayout(false);
             this._toolStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -350,6 +375,8 @@
         private System.Windows.Forms.ToolStripButton _newNoteBtn;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton4;
+        private System.Windows.Forms.ToolStripStatusLabel _statusLbl;
+        private System.Windows.Forms.ToolStripProgressBar _statusProgressbar;
     }
 }
 

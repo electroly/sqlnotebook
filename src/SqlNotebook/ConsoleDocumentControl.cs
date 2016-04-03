@@ -27,9 +27,11 @@ using ICSharpCode.TextEditor;
 using SqlNotebookCore;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SqlNotebookScript;
+using System.Runtime.InteropServices;
 
 namespace SqlNotebook {
     public partial class ConsoleDocumentControl : UserControl, IDocumentControl {
+        private readonly IWin32Window _mainForm;
         private readonly NotebookManager _manager;
         private readonly Notebook _notebook;
         private readonly ConsoleRichTextBox _consoleTxt;
@@ -46,11 +48,12 @@ namespace SqlNotebook {
 
         public string ItemName { get; set; }
 
-        public ConsoleDocumentControl(string name, NotebookManager manager) {
+        public ConsoleDocumentControl(string name, NotebookManager manager, IWin32Window mainForm) {
             InitializeComponent();
             ItemName = name;
             _manager = manager;
             _notebook = manager.Notebook;
+            _mainForm = mainForm;
             _consoleTxt = new ConsoleRichTextBox {
                 Dock = DockStyle.Fill,
                 BackColor = SystemColors.Window,
@@ -67,9 +70,7 @@ namespace SqlNotebook {
                 PromptColor = Color.Red
             };
             Controls.Add(_consoleTxt);
-            _consoleTxt.ConsoleCommand += (sender, e) => {
-                e.WasSuccessful = Execute(e.Command);
-            };
+            _consoleTxt.ConsoleCommand += ConsoleTxt_ConsoleCommand;
 
             Load += (sender, e) => {
                 string initialRtf = _manager.GetItemData(ItemName);
@@ -86,9 +87,13 @@ namespace SqlNotebook {
             };
         }
 
-        private bool Execute(string sql) {
+        private async void ConsoleTxt_ConsoleCommand(object sender, ConsoleCommandEventArgs e) {
+            e.OnComplete(await Execute(e.Command));
+        }
+
+        private async Task<bool> Execute(string sql) {
             try {
-                ExecuteCore(sql);
+                await ExecuteCore(sql);
                 _manager.SetDirty();
                 _manager.Rescan();
                 return true;
@@ -108,54 +113,61 @@ namespace SqlNotebook {
             }
         }
 
-        private void ExecuteCore(string sql) {
+        private static class NativeMethods {
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
+        }
+
+        private async Task ExecuteCore(string sql) {
             ScriptOutput output = null;
             Exception exception = null;
-            var f = new WaitForm("SQL Query", "Running your SQL query...", () => {
+            NativeMethods.EnableWindow(_mainForm.Handle, false);
+            _manager.PushStatus("Running your console command. Press ESC to cancel.");
+            await Task.Run(() => {
                 try {
                     output = _manager.ExecuteScript(sql);
                 } catch (Exception ex) {
                     exception = ex;
                 }
             });
-            using (f) {
-                if (f.ShowDialog(ParentForm, 25) != DialogResult.OK) {
-                    return;
-                }
-                if (exception != null) {
-                    throw exception;
-                } else {
-                    _consoleTxt.BeginUpdate();
-                    try {
-                        foreach (var line in output.TextOutput) {
-                            _consoleTxt.Append($"\n{line}");
-                        }
-
-                        foreach (var dt in output.DataTables) {
-                            PrintDataTable(dt);
-                        }
-
-                        if (output.ScalarResult != null) {
-                            _consoleTxt.Append($"\nReturned: {output.ScalarResult}");
-                        }
-
-                        _consoleTxt.Append("\n");
-                    } finally {
-                        _consoleTxt.SelectionStart = _consoleTxt.Text.Length;
-                        _consoleTxt.ScrollToCaret();
-                        _consoleTxt.EndUpdate();
+            _manager.PopStatus();
+            NativeMethods.EnableWindow(_mainForm.Handle, true);
+            if (exception != null) {
+                throw exception;
+            } else {
+                _consoleTxt.BeginUpdate();
+                try {
+                    foreach (var line in output.TextOutput) {
+                        _consoleTxt.Append($"\n{line}");
                     }
+
+                    foreach (var dt in output.DataTables) {
+                        PrintDataTable(dt);
+                    }
+
+                    if (output.ScalarResult != null) {
+                        _consoleTxt.Append($"\nReturned: {output.ScalarResult}");
+                    }
+
+                    _consoleTxt.Append("\n");
+                } finally {
+                    _consoleTxt.SelectionStart = _consoleTxt.Text.Length;
+                    _consoleTxt.ScrollToCaret();
+                    _consoleTxt.EndUpdate();
                 }
             }
         }
 
         private void PrintDataTable(SimpleDataTable dt) {
+            const int MAX_ROWS = 100;
             if (dt != null && dt.Columns.Count > 0) {
                 _consoleTxt.Append("\n");
                 var columnWidths =
                     from colIndex in Enumerable.Range(0, dt.Columns.Count)
                     let maxLength =
                         dt.Rows
+                        .Take(MAX_ROWS)
                         .Select(x => Math.Min(200, x[colIndex].ToString().Length))
                         .Concat(new[] { dt.Columns[colIndex].Length })
                         .Max()
@@ -174,7 +186,7 @@ namespace SqlNotebook {
                 }
                 _consoleTxt.Append("\n");
                 var sb = new StringBuilder();
-                foreach (var row in dt.Rows.Take(1000)) {
+                foreach (var row in dt.Rows.Take(MAX_ROWS)) {
                     var paddedValues =
                         (from colIndex in Enumerable.Range(0, dt.Columns.Count)
                         join x in columnWidths on colIndex equals x.ColIndex
@@ -190,7 +202,7 @@ namespace SqlNotebook {
                     sb.Append(" \n");
                 }
                 _consoleTxt.AppendText(sb.ToString());
-                _consoleTxt.Append($"({dt.Rows.Count} row{(dt.Rows.Count == 1 ? "" : "s")}{(dt.Rows.Count <= 1000 ? "" : ", 1000 shown")})", fg: Color.LightGray);
+                _consoleTxt.Append($"({dt.Rows.Count} row{(dt.Rows.Count == 1 ? "" : "s")}{(dt.Rows.Count <= MAX_ROWS ? "" : $", {MAX_ROWS} shown")})", fg: Color.LightGray);
             }
         }
 

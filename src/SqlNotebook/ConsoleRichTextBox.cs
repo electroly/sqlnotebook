@@ -21,9 +21,10 @@ using System.Windows.Forms;
 namespace SqlNotebook {
     public sealed class ConsoleCommandEventArgs : EventArgs {
         public string Command { get; }
-        public bool WasSuccessful { get; set; }
-        public ConsoleCommandEventArgs(string command) {
+        public Action<bool> OnComplete { get; set; }
+        public ConsoleCommandEventArgs(string command, Action<bool> onComplete) {
             Command = command;
+            OnComplete = onComplete;
         }
     }
 
@@ -70,20 +71,22 @@ namespace SqlNotebook {
                 e.Handled = true;
                 string command = Text.Substring(_inputStart);
                 ReadOnly = true;
-                BeginInvoke(new MethodInvoker(() => {
-                    var e2 = new ConsoleCommandEventArgs(command);
-                    ConsoleCommand?.Invoke(this, e2);
-                    if (e2.WasSuccessful) {
-                        this.BeginUpdate();
-                        SelectAll();
-                        SelectionProtected = true;
-                        Append("\n");
-                        SelectionStart = Text.Length;
-                        ShowPrompt();
-                        this.EndUpdate();
-                    }
-                    ReadOnly = false;
-                }));
+                var e2 = new ConsoleCommandEventArgs(command, wasSuccessful => {
+                    BeginInvoke(new MethodInvoker(() => {
+                        if (wasSuccessful) {
+                            this.BeginUpdate();
+                            SelectAll();
+                            SelectionProtected = true;
+                            Append("\n");
+                            SelectionStart = Text.Length;
+                            ShowPrompt();
+                            this.EndUpdate();
+                        }
+                        ReadOnly = false;
+                    }));
+                });
+
+                ConsoleCommand?.Invoke(this, e2);
             } else if (e.KeyCode == Keys.Home && SelectionStart >= _inputStart) {
                 this.BeginUpdate();
                 if (e.Shift) {

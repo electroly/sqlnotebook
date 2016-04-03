@@ -27,9 +27,11 @@ using ICSharpCode.TextEditor;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SqlNotebookCore;
 using SqlNotebookScript;
+using System.Runtime.InteropServices;
 
 namespace SqlNotebook {
     public partial class QueryDocumentControl : UserControl, IDocumentControl {
+        private readonly IWin32Window _mainForm;
         private readonly NotebookManager _manager;
         private readonly Notebook _notebook;
         private readonly TextEditorControlEx _textEditor;
@@ -44,11 +46,12 @@ namespace SqlNotebook {
 
         public string ItemName { get; set; }
 
-        public QueryDocumentControl(string name, NotebookManager manager) {
+        public QueryDocumentControl(string name, NotebookManager manager, IWin32Window mainForm) {
             InitializeComponent();
             ItemName = name;
             _manager = manager;
             _notebook = manager.Notebook;
+            _mainForm = mainForm;
 
             _textEditor = new TextEditorControlEx {
                 Dock = DockStyle.Fill,
@@ -77,17 +80,17 @@ namespace SqlNotebook {
             };
         }
 
-        public void Execute() {
-            Execute(_textEditor.Text);
+        public async Task Execute() {
+            await Execute(_textEditor.Text);
         }
 
-        private void _executeBtn_Click(object sender, EventArgs e) {
-            Execute();
+        private async void ExecuteBtn_Click(object sender, EventArgs e) {
+            await Execute();
         }
 
-        private bool Execute(string sql) {
+        private async Task<bool> Execute(string sql) {
             try {
-                ExecuteCore(sql);
+                await ExecuteCore(sql);
                 _manager.SetDirty();
                 _manager.Rescan();
                 return true;
@@ -107,53 +110,61 @@ namespace SqlNotebook {
             }
         }
 
-        private void ExecuteCore(string sql) {
+        private static class NativeMethods {
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
+        }
+
+        private async Task ExecuteCore(string sql) {
             ScriptOutput output = null;
             Exception exception = null;
-            var f = new WaitForm("SQL Query", "Running your SQL query...", () => {
+            NativeMethods.EnableWindow(_mainForm.Handle, false);
+            _manager.PushStatus("Running your script. Press ESC to cancel.");
+            await Task.Run(() => {
                 try {
                     output = _manager.ExecuteScript(sql);
                 } catch (Exception ex) {
                     exception = ex;
                 }
             });
-            using (f) {
-                f.ShowDialog(ParentForm, 25);
-                if (exception != null) {
-                    throw exception;
-                } else {
-                    var resultSets = new List<DataTable>();
+            _manager.PopStatus();
+            NativeMethods.EnableWindow(_mainForm.Handle, true);
 
-                    foreach (var sdt in output.DataTables) {
-                        var dt = new DataTable();
-                        foreach (var col in sdt.Columns) {
-                            dt.Columns.Add(col);
-                        }
-                        foreach (var row in sdt.Rows) {
-                            var dtRow = dt.NewRow();
-                            dtRow.ItemArray = row;
-                            dt.Rows.Add(dtRow);
-                        }
-                        resultSets.Add(dt);
+            if (exception != null) {
+                throw exception;
+            } else {
+                var resultSets = new List<DataTable>();
+
+                foreach (var sdt in output.DataTables) {
+                    var dt = new DataTable();
+                    foreach (var col in sdt.Columns) {
+                        dt.Columns.Add(col);
                     }
-
-                    if (output.TextOutput.Any()) {
-                        var dt = new DataTable("Output");
-                        dt.Columns.Add("printed_text", typeof(string));
-                        foreach (var line in output.TextOutput) {
-                            var row = dt.NewRow();
-                            row.ItemArray = new object[] { line };
-                            dt.Rows.Add(row);
-                        }
-                        resultSets.Insert(0, dt);
+                    foreach (var row in sdt.Rows) {
+                        var dtRow = dt.NewRow();
+                        dtRow.ItemArray = row;
+                        dt.Rows.Add(dtRow);
                     }
-
-                    _grid.DataSource = null;
-                    _results.ForEach(x => x.Dispose());
-                    _results.Clear();
-                    _results.AddRange(resultSets);
-                    ShowResult(0);
+                    resultSets.Add(dt);
                 }
+
+                if (output.TextOutput.Any()) {
+                    var dt = new DataTable("Output");
+                    dt.Columns.Add("printed_text", typeof(string));
+                    foreach (var line in output.TextOutput) {
+                        var row = dt.NewRow();
+                        row.ItemArray = new object[] { line };
+                        dt.Rows.Add(row);
+                    }
+                    resultSets.Insert(0, dt);
+                }
+
+                _grid.DataSource = null;
+                _results.ForEach(x => x.Dispose());
+                _results.Clear();
+                _results.AddRange(resultSets);
+                ShowResult(0);
             }
         }
 

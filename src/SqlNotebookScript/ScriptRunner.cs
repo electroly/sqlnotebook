@@ -52,8 +52,20 @@ namespace SqlNotebookScript {
         public object ErrorState { get; set; }
     }
 
-    public sealed class ScriptException : Exception {
+    public class ScriptException : Exception {
         public ScriptException(string message) : base(message) { }
+    }
+
+    public sealed class UncaughtErrorScriptException : ScriptException {
+        public object ErrorNumber { get; }
+        public object ErrorMessage { get; }
+        public object ErrorState { get; }
+        public UncaughtErrorScriptException(object errorNumber, object errorMessage, object errorState)
+            : base($"Uncaught SQL error.  Message: \"{errorMessage}\", Number: {errorNumber}, State: {errorState}.") {
+            ErrorNumber = errorNumber;
+            ErrorMessage = errorMessage;
+            ErrorState = errorState;
+        }
     }
 
     public sealed class ScriptRunner {
@@ -107,7 +119,7 @@ namespace SqlNotebookScript {
             } else if (env.DidContinue) {
                 throw new ScriptException($"Attempted to CONTINUE outside of a WHILE loop.");
             } else if (env.DidThrow) {
-                throw new ScriptException($"Uncaught error.  Message: {env.ErrorMessage}, Number: {env.ErrorNumber}, State: {env.ErrorState}.");
+                throw new UncaughtErrorScriptException(env.ErrorNumber, env.ErrorMessage, env.ErrorState);
             }
         }
 
@@ -226,7 +238,15 @@ namespace SqlNotebookScript {
             foreach (var arg in stmt.Arguments) {
                 subEnv.Pars[arg.Name.ToLower()] = EvaluateExpr(arg.Value, env);
             }
-            runner.Execute(script, subEnv);
+            try {
+                runner.Execute(script, subEnv);
+            } catch (UncaughtErrorScriptException ex) {
+                env.ErrorNumber = ex.ErrorNumber;
+                env.ErrorMessage = ex.ErrorMessage;
+                env.ErrorState = ex.ErrorState;
+                env.DidThrow = true;
+                return;
+            }
             env.Output.Append(subEnv.Output);
             var returnCode = subEnv.Output.ScalarResult;
             if (stmt.ReturnVariableName != null) {
