@@ -21,7 +21,7 @@ namespace SqlNotebook {
     public partial class UserControlDockContent : DockContent {
         public IDocumentControl Content { get; private set; }
 
-        public UserControlDockContent(string title, UserControl control) {
+        public UserControlDockContent(string title, UserControl control, DockAreas dockAreas = DockAreas.Document) {
             InitializeComponent();
             Text = title;
             control.Dock = DockStyle.Fill;
@@ -29,7 +29,7 @@ namespace SqlNotebook {
             Content = control as IDocumentControl;
 
             // disable floating windows
-            DockAreas = DockAreas.DockLeft | DockAreas.DockTop | DockAreas.DockRight | DockAreas.DockBottom | DockAreas.Document;
+            DockAreas = dockAreas;
         }
     }
 }

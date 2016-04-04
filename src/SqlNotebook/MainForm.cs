@@ -30,7 +30,7 @@ namespace SqlNotebook {
         private readonly DockPanel _dockPanel;
         private NotebookManager _manager;
         private Notebook _notebook;
-        private readonly UserControlDockContent _notebookPane;
+        private readonly UserControlDockContent _contentsPane;
         private readonly Importer _importer;
         private readonly ExplorerControl _explorer;
         private string _filePath {  get { return _notebook.GetFilePath(); } }
@@ -55,9 +55,10 @@ namespace SqlNotebook {
             };
             _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
 
-            _notebookPane = new UserControlDockContent("Table of Contents", _explorer = new ExplorerControl(_manager, this));
-            _notebookPane.CloseButtonVisible = false;
-            _notebookPane.Show(_dockPanel, DockState.DockLeft);
+            _contentsPane = new UserControlDockContent("Table of Contents", _explorer = new ExplorerControl(_manager, this),
+                DockAreas.DockLeft | DockAreas.DockRight);
+            _contentsPane.CloseButtonVisible = false;
+            _contentsPane.Show(_dockPanel, DockState.DockLeft);
 
             _manager.NotebookItemOpenRequest += Manager_NotebookItemOpenRequest;
             _manager.NotebookItemCloseRequest += Manager_NotebookItemCloseRequest;
