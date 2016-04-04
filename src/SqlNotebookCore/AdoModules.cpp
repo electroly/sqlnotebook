@@ -14,88 +14,72 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#include <msclr/auto_handle.h>
 #include "gcroot.h"
 #include "SqlNotebookCore.h"
 using namespace SqlNotebookCore;
+using namespace System::Data;
+using namespace System::Data::SqlClient;
 using namespace System::IO;
 using namespace System::Text;
 using namespace Npgsql;
+using namespace msclr;
+using namespace MySql::Data::MySqlClient;
 
-static sqlite3_module s_pgModule = { 0 };
+private struct AdoCreateInfo {
+    public:
+    gcroot<Func<String^, IDbConnection^>^> ConnectionCreator;
+};
 
-private struct PgTable {
+private struct AdoTable {
     sqlite3_vtab Super;
     gcroot<String^> ConnectionString;
-    gcroot<String^> PgTableName;
+    gcroot<String^> AdoTableName;
     gcroot<List<String^>^> ColumnNames;
+    gcroot<Func<String^, IDbConnection^>^> ConnectionCreator;
     int64_t InitialRowCount;
-    PgTable() {
+    AdoTable() {
         memset(&Super, 0, sizeof(Super));
     }
 };
 
-private struct PgCursor {
+private struct AdoCursor {
     sqlite3_vtab_cursor Super;
-    PgTable* Table;
-    gcroot<NpgsqlConnection^> Connection;
-    gcroot<NpgsqlCommand^> Command;
-    gcroot<NpgsqlDataReader^> Reader;
+    AdoTable* Table;
+    gcroot<IDbConnection^> Connection;
+    gcroot<IDbCommand^> Command;
+    gcroot<IDataReader^> Reader;
     bool IsEof;
 
-    PgCursor() {
+    AdoCursor() {
         memset(&Super, 0, sizeof(Super));
         Table = nullptr;
     }
 };
 
-private ref class PgDataReader : public IDisposable { // for RAII
-    public:
-    PgDataReader(NpgsqlCommand^ command) {
-        _reader = command->ExecuteReader();
-    }
-
-    !PgDataReader() {
-        delete _reader;
-        _reader = nullptr;
-    }
-
-    ~PgDataReader() {
-        if (!_isDisposed) {
-            (*this).!PgDataReader();
-            _isDisposed = true;
-        }
-    }
-
-    NpgsqlDataReader^ operator ->() {
-        return _reader;
-    }
-
-    private:
-    bool _isDisposed;
-    NpgsqlDataReader^ _reader;
-};
-
-static int PgCreate(sqlite3* db, void* pAux, int argc, const char* const* argv, sqlite3_vtab** ppVTab, char** pzErr) {
+static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv, sqlite3_vtab** ppVTab, char** pzErr) {
     // argv[3]: connectionString
     // argv[4]: table name
 
-    PgTable* vtab = nullptr;
+    AdoTable* vtab = nullptr;
+    auto createInfo = (AdoCreateInfo*)pAux;
 
     try {
         if (argc != 5) {
             throw gcnew Exception("Syntax: CREATE VIRTUAL TABLE <name> USING pgsql ('<connection string>', 'table name');");
         }
         auto connStr = Util::Str(argv[3])->Trim(L'\'');
-        auto pgTableName = Util::Str(argv[4])->Trim(L'\'');
-        NpgsqlConnection conn(connStr);
-        conn.Open();
+        auto adoTableName = Util::Str(argv[4])->Trim(L'\'');
+        auto_handle<IDbConnection> conn(createInfo->ConnectionCreator->Invoke(connStr));
+        conn->Open();
 
         // ensure the table exists and detect the column names
         auto columnNames = gcnew List<String^>();
         auto columnTypes = gcnew List<Type^>();
         {
-            NpgsqlCommand cmd("SELECT * FROM \"" + pgTableName->Replace("\"", "\"\"") + "\" WHERE FALSE", %conn);
-            PgDataReader reader(%cmd);
+            auto_handle<IDbCommand> cmd(conn->CreateCommand());
+            cmd->CommandText = "SELECT * FROM \"" + adoTableName->Replace("\"", "\"\"") + "\" WHERE 1 = 0";
+            auto_handle<IDataReader> reader(cmd->ExecuteReader());
             for (int i = 0; i < reader->FieldCount; i++) {
                 columnNames->Add(reader->GetName(i));
                 columnTypes->Add(reader->GetFieldType(i));
@@ -105,30 +89,32 @@ static int PgCreate(sqlite3* db, void* pAux, int argc, const char* const* argv, 
         // get a row count too
         int64_t rowCount = 0;
         {
-            NpgsqlCommand cmd("SELECT COUNT(*) FROM \"" + pgTableName->Replace("\"", "\"\"") + "\"", %conn);
-            rowCount = (int64_t)cmd.ExecuteScalar();
+            auto_handle<IDbCommand> cmd(conn->CreateCommand());
+            cmd->CommandText = "SELECT COUNT(*) FROM \"" + adoTableName->Replace("\"", "\"\"") + "\"";
+            rowCount = Convert::ToInt64(cmd->ExecuteScalar());
         }
 
         // create sqlite structure
-        auto vtab = new PgTable;
+        auto vtab = new AdoTable;
         vtab->ConnectionString = connStr;
-        vtab->PgTableName = pgTableName;
+        vtab->AdoTableName = adoTableName;
         vtab->ColumnNames = columnNames;
         vtab->InitialRowCount = rowCount;
+        vtab->ConnectionCreator = createInfo->ConnectionCreator;
 
         // register the column names and types with pgsql
         auto columnLines = gcnew List<String^>();
         for (int i = 0; i < columnNames->Count; i++) {
             auto t = columnTypes[i];
             String^ sqlType;
-            if (t == Int16::typeid || t == Int32::typeid || t == Int64::typeid || t == Byte::typeid || t == bool::typeid) {
+            if (t == Int16::typeid || t == Int32::typeid || t == Int64::typeid || t == Byte::typeid || t == Boolean::typeid) {
                 sqlType = "integer";
-            } else if (t == float::typeid || t == double::typeid || t == Decimal::typeid) {
+            } else if (t == Single::typeid || t == Double::typeid || t == Decimal::typeid) {
                 sqlType = "real";
             } else {
                 sqlType = "text";
             }
-            columnLines->Add(columnNames[i] + " " + sqlType);
+            columnLines->Add("\"" + columnNames[i]->Replace("\"", "\"\"") + "\" " + sqlType);
         }
         auto createSql = "CREATE TABLE a (" + String::Join(", ", columnLines) + ")";
         g_SqliteCall(db, sqlite3_declare_vtab(db, Util::CStr(createSql).c_str()));
@@ -137,23 +123,23 @@ static int PgCreate(sqlite3* db, void* pAux, int argc, const char* const* argv, 
         return SQLITE_OK;
     } catch (Exception^ ex) {
         delete vtab;
-        *pzErr = sqlite3_mprintf("PgCreate: %s", Util::CStr(ex->Message).c_str());
+        *pzErr = sqlite3_mprintf("AdoCreate: %s", Util::CStr(ex->Message).c_str());
         return SQLITE_ERROR;
     }
 }
 
-static int PgDestroy(sqlite3_vtab* pVTab) {
-    delete (PgTable*)pVTab;
+static int AdoDestroy(sqlite3_vtab* pVTab) {
+    delete (AdoTable*)pVTab;
     return SQLITE_OK;
 }
 
-static int PgBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
-    auto vtab = (PgTable*)pVTab;
+static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
+    auto vtab = (AdoTable*)pVTab;
     
-    // build a pgsql query corresponding to the request
+    // build a query corresponding to the request
     auto sb = gcnew StringBuilder();
-    sb->Append("SELECT *, substring(md5(cast(ctid as text)) from 1 for 16) AS __rowid FROM \"");
-    sb->Append(vtab->PgTableName);
+    sb->Append("SELECT * FROM \"");
+    sb->Append(vtab->AdoTableName);
     sb->Append("\"");
 
     // where clause
@@ -209,27 +195,27 @@ static int PgBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
     return SQLITE_OK;
 }
 
-static int PgOpen(sqlite3_vtab* pVTab, sqlite3_vtab_cursor** ppCursor) {
-    auto cursor = new PgCursor;
-    cursor->Table = (PgTable*)pVTab;
-    cursor->Connection = gcnew NpgsqlConnection(cursor->Table->ConnectionString);
+static int AdoOpen(sqlite3_vtab* pVTab, sqlite3_vtab_cursor** ppCursor) {
+    auto cursor = new AdoCursor;
+    cursor->Table = (AdoTable*)pVTab;
+    cursor->Connection = cursor->Table->ConnectionCreator->Invoke(cursor->Table->ConnectionString);
     cursor->Connection->Open();
     *ppCursor = &cursor->Super;
     return SQLITE_OK;
 }
 
-static int PgClose(sqlite3_vtab_cursor* pCur) {
-    auto cursor = (PgCursor*)pCur;
+static int AdoClose(sqlite3_vtab_cursor* pCur) {
+    auto cursor = (AdoCursor*)pCur;
     
-    NpgsqlDataReader^ reader = cursor->Reader;
+    IDataReader^ reader = cursor->Reader;
     delete reader;
     cursor->Reader = nullptr;
 
-    NpgsqlCommand^ command = cursor->Command;
+    IDbCommand^ command = cursor->Command;
     delete command;
     cursor->Command = nullptr;
 
-    NpgsqlConnection^ conn = cursor->Connection;
+    IDbConnection^ conn = cursor->Connection;
     delete conn;
     cursor->Connection = nullptr;
     
@@ -237,20 +223,21 @@ static int PgClose(sqlite3_vtab_cursor* pCur) {
     return SQLITE_OK;
 }
 
-static int PgFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxStr, int argc, sqlite3_value** argv) {
+static int AdoFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxStr, int argc, sqlite3_value** argv) {
     try {
-        auto cursor = (PgCursor*)pCur;
+        auto cursor = (AdoCursor*)pCur;
         auto sql = Util::Str(idxStr);
-        if ((NpgsqlCommand^)cursor->Command != nullptr) {
+        if ((IDbCommand^)cursor->Command != nullptr) {
             // why does this happen?
             cursor->Command->Cancel();
             delete cursor->Reader;
             delete cursor->Command;
             delete cursor->Connection;
-            cursor->Connection = gcnew NpgsqlConnection(cursor->Table->ConnectionString);
+            cursor->Connection = cursor->Table->ConnectionCreator->Invoke(cursor->Table->ConnectionString);
             cursor->Connection->Open();
         }
-        auto cmd = gcnew NpgsqlCommand(sql, cursor->Connection);
+        auto cmd = cursor->Connection->CreateCommand();
+        cmd->CommandText = sql;
         for (int i = 0; i < argc; i++) {
             Object^ argVal = nullptr;
             switch (sqlite3_value_type(argv[i])) {
@@ -270,7 +257,10 @@ static int PgFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxStr, i
                     throw gcnew Exception("Data type not supported.");
             }
             auto varName = "@arg" + (i + 1).ToString();
-            cmd->Parameters->Add(gcnew NpgsqlParameter(varName, argVal));
+            auto parameter = cmd->CreateParameter();
+            parameter->ParameterName = varName;
+            parameter->Value = argVal;
+            cmd->Parameters->Add(parameter);
         }
         auto reader = cmd->ExecuteReader();
         cursor->Command = cmd;
@@ -282,14 +272,14 @@ static int PgFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxStr, i
     }
 }
 
-static int PgNext(sqlite3_vtab_cursor* pCur) {
-    auto cursor = (PgCursor*)pCur;
+static int AdoNext(sqlite3_vtab_cursor* pCur) {
+    auto cursor = (AdoCursor*)pCur;
     cursor->IsEof = !cursor->Reader->Read();
     return SQLITE_OK;
 }
 
-static int PgEof(sqlite3_vtab_cursor* pCur) {
-    auto cursor = (PgCursor*)pCur;
+static int AdoEof(sqlite3_vtab_cursor* pCur) {
+    auto cursor = (AdoCursor*)pCur;
     return cursor->IsEof ? 1 : 0;
 }
 
@@ -300,9 +290,9 @@ static void ResultText16(sqlite3_context* ctx, String^ str) {
     sqlite3_result_text16(ctx, wstrCopy, (int)lenB, free);
 }
 
-static int PgColumn(sqlite3_vtab_cursor* pCur, sqlite3_context* ctx, int n) {
+static int AdoColumn(sqlite3_vtab_cursor* pCur, sqlite3_context* ctx, int n) {
     try {
-        auto cursor = (PgCursor*)pCur;
+        auto cursor = (AdoCursor*)pCur;
         if (cursor->IsEof) {
             return SQLITE_ERROR;
         }
@@ -328,8 +318,9 @@ static int PgColumn(sqlite3_vtab_cursor* pCur, sqlite3_context* ctx, int n) {
         } else if (type == Boolean::typeid) {
             sqlite3_result_int(ctx, cursor->Reader->GetBoolean(n) ? 1 : 0);
         } else if (type == NpgsqlTypes::NpgsqlDate::typeid) {
-            ResultText16(ctx, ((DateTime)cursor->Reader->GetDate(n)).ToString("yyyy-MM-dd"));
-        } else if (type == NpgsqlTypes::NpgsqlDateTime::typeid) {
+            auto reader = (NpgsqlDataReader^)(IDataReader^)cursor->Reader;
+            ResultText16(ctx, ((DateTime)reader->GetDate(n)).ToString("yyyy-MM-dd"));
+        } else if (type == NpgsqlTypes::NpgsqlDateTime::typeid || type == DateTime::typeid) {
             ResultText16(ctx, ((DateTime)cursor->Reader->GetDateTime(n)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
         } else {
             ResultText16(ctx, cursor->Reader->GetValue(n)->ToString());
@@ -340,34 +331,79 @@ static int PgColumn(sqlite3_vtab_cursor* pCur, sqlite3_context* ctx, int n) {
     }
 }
 
-static int PgRowid(sqlite3_vtab_cursor* pCur, sqlite3_int64* pRowid) {
-    auto cursor = (PgCursor*)pCur;
-    auto hashHex = cursor->Reader->GetString(cursor->Table->ColumnNames->Count);
-    *pRowid = Convert::ToInt64(hashHex, 16);
+static int AdoRowid(sqlite3_vtab_cursor* pCur, sqlite3_int64* pRowid) {
+    auto cursor = (AdoCursor*)pCur;
+    array<Object^>^ values = gcnew array<Object^>(cursor->Table->ColumnNames->Count);
+    cursor->Reader->GetValues(values);
+    int64_t hash = 0;
+    for each (auto value in values) {
+        hash ^= value->GetHashCode();
+        hash << 2;
+    }
+    *pRowid = hash;
     return SQLITE_OK;
 }
 
-static int PgRename(sqlite3_vtab* pVtab, const char* zNew) {
+static int AdoRename(sqlite3_vtab* pVtab, const char* zNew) {
     // don't care
     return SQLITE_OK;
 }
 
+static void AdoPopulateModule(sqlite3_module* module) {
+    module->iVersion = 1;
+    module->xCreate = AdoCreate;
+    module->xConnect = AdoCreate;
+    module->xBestIndex = AdoBestIndex;
+    module->xDisconnect = AdoDestroy;
+    module->xDestroy = AdoDestroy;
+    module->xOpen = AdoOpen;
+    module->xClose = AdoClose;
+    module->xFilter = AdoFilter;
+    module->xNext = AdoNext;
+    module->xEof = AdoEof;
+    module->xColumn = AdoColumn;
+    module->xRowid = AdoRowid;
+    module->xRename = AdoRename;
+}
+
+// --- PostgreSQL ---
+static sqlite3_module s_pgModule = { 0 };
+static AdoCreateInfo s_pgCreateInfo;
+static IDbConnection^ PgCreateConnection(String^ connStr) {
+    return gcnew NpgsqlConnection(connStr);
+}
 void Notebook::InstallPgModule() {
     if (s_pgModule.iVersion != 1) {
-        s_pgModule.iVersion = 1;
-        s_pgModule.xCreate = PgCreate;
-        s_pgModule.xConnect = PgCreate;
-        s_pgModule.xBestIndex = PgBestIndex;
-        s_pgModule.xDisconnect = PgDestroy;
-        s_pgModule.xDestroy = PgDestroy;
-        s_pgModule.xOpen = PgOpen;
-        s_pgModule.xClose = PgClose;
-        s_pgModule.xFilter = PgFilter;
-        s_pgModule.xNext = PgNext;
-        s_pgModule.xEof = PgEof;
-        s_pgModule.xColumn = PgColumn;
-        s_pgModule.xRowid = PgRowid;
-        s_pgModule.xRename = PgRename;
+        AdoPopulateModule(&s_pgModule);
+        s_pgCreateInfo.ConnectionCreator = gcnew Func<String^, IDbConnection^>(PgCreateConnection);
     }
-    SqliteCall(sqlite3_create_module_v2(_sqlite, "pgsql", &s_pgModule, NULL, NULL));
+    SqliteCall(sqlite3_create_module_v2(_sqlite, "pgsql", &s_pgModule, &s_pgCreateInfo, NULL));
+}
+
+// --- Microsoft SQL Server ---
+static sqlite3_module s_msModule = { 0 };
+static AdoCreateInfo s_msCreateInfo;
+static IDbConnection^ MsCreateConnection(String^ connStr) {
+    return gcnew SqlConnection(connStr);
+}
+void Notebook::InstallMsModule() {
+    if (s_msModule.iVersion != 1) {
+        AdoPopulateModule(&s_msModule);
+        s_msCreateInfo.ConnectionCreator = gcnew Func<String^, IDbConnection^>(MsCreateConnection);
+    }
+    SqliteCall(sqlite3_create_module_v2(_sqlite, "mssql", &s_msModule, &s_msCreateInfo, NULL));
+}
+
+// --- MySQL ---
+static sqlite3_module s_myModule = { 0 };
+static AdoCreateInfo s_myCreateInfo;
+static IDbConnection^ MyCreateConnection(String^ connStr) {
+    return gcnew MySqlConnection(connStr);
+}
+void Notebook::InstallMyModule() {
+    if (s_myModule.iVersion != 1) {
+        AdoPopulateModule(&s_myModule);
+        s_myCreateInfo.ConnectionCreator = gcnew Func<String^, IDbConnection^>(MyCreateConnection);
+    }
+    SqliteCall(sqlite3_create_module_v2(_sqlite, "mysql", &s_myModule, &s_myCreateInfo, NULL));
 }

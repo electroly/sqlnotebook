@@ -252,6 +252,8 @@ namespace SqlNotebookCore {
             IReadOnlyList<Object^>^ orderedArgs, bool returnResult);
         void InstallCsvModule();
         void InstallPgModule();
+        void InstallMsModule();
+        void InstallMyModule();
         void SqliteCall(int result);
         void SqliteThread();
         void Init();

@@ -16,6 +16,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,6 +26,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using MySql.Data.MySqlClient;
 using SqlNotebookCore;
 
 namespace SqlNotebook {
@@ -254,14 +258,122 @@ namespace SqlNotebook {
         }
     }
 
-    public sealed class PgImportSession : IDatabaseImportSession {
-        private Npgsql.NpgsqlConnectionStringBuilder _builder = new Npgsql.NpgsqlConnectionStringBuilder();
+    public sealed class PgImportSession : AdoImportSession<Npgsql.NpgsqlConnectionStringBuilder> {
+        public override string ProductName { get; } = "PostgreSQL";
+
+        public override string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
+            return $"CREATE VIRTUAL TABLE \"{notebookTableName.Replace("\"", "\"\"")}\" USING pgsql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
+        }
+
+        protected override IDbConnection CreateConnection(Npgsql.NpgsqlConnectionStringBuilder builder) {
+            return new Npgsql.NpgsqlConnection(builder);
+        }
+
+        protected override void ReadTableNames(IDbConnection connection) {
+            var tableNames = new List<string>();
+            using (var cmd = connection.CreateCommand()) {
+                cmd.CommandText = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name";
+                using (var reader = cmd.ExecuteReader()) {
+                    while (reader.Read()) {
+                        tableNames.Add(reader.GetString(0));
+                    }
+                }
+            }
+            TableNames = tableNames;
+        }
+
+        protected override Npgsql.NpgsqlConnectionStringBuilder CreateBuilder(string connStr) {
+            return new Npgsql.NpgsqlConnectionStringBuilder(connStr);
+        }
+
+        protected override string GetDisplayName() {
+            return $"{_builder.Database} on {_builder.Host} (PostgreSQL)";
+        }
+    }
+
+    public sealed class MsImportSession : AdoImportSession<SqlConnectionStringBuilder> {
+        public override string ProductName { get; } = "Microsoft SQL Server";
+
+        public override string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
+            return $"CREATE VIRTUAL TABLE \"{notebookTableName.Replace("\"", "\"\"")}\" USING mssql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
+        }
+
+        protected override IDbConnection CreateConnection(SqlConnectionStringBuilder builder) {
+            return new SqlConnection(builder.ConnectionString);
+        }
+
+        protected override void ReadTableNames(IDbConnection connection) {
+            var tableNames = new List<string>();
+            using (var cmd = connection.CreateCommand()) {
+                cmd.CommandText = "SELECT table_name FROM information_schema.tables ORDER BY table_name";
+                using (var reader = cmd.ExecuteReader()) {
+                    while (reader.Read()) {
+                        tableNames.Add(reader.GetString(0));
+                    }
+                }
+            }
+            TableNames = tableNames;
+        }
+
+        protected override SqlConnectionStringBuilder CreateBuilder(string connStr) {
+            return new SqlConnectionStringBuilder(connStr);
+        }
+
+        protected override string GetDisplayName() {
+            return $"{_builder.InitialCatalog} on {_builder.DataSource} (Microsoft SQL Server)";
+        }
+    }
+
+    public sealed class MyImportSession : AdoImportSession<MySqlConnectionStringBuilder> {
+        public override string ProductName { get; } = "MySQL";
+
+        public override string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
+            return $"CREATE VIRTUAL TABLE \"{notebookTableName.Replace("\"", "\"\"")}\" USING mysql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
+        }
+
+        protected override IDbConnection CreateConnection(MySqlConnectionStringBuilder builder) {
+            return new MySqlConnection(builder.ConnectionString);
+        }
+
+        protected override void ReadTableNames(IDbConnection connection) {
+            var tableNames = new List<string>();
+            using (var cmd = connection.CreateCommand()) {
+                cmd.CommandText = "SELECT table_name FROM information_schema.tables ORDER BY table_name";
+                using (var reader = cmd.ExecuteReader()) {
+                    while (reader.Read()) {
+                        tableNames.Add(reader.GetString(0));
+                    }
+                }
+            }
+            TableNames = tableNames;
+        }
+
+        protected override MySqlConnectionStringBuilder CreateBuilder(string connStr) {
+            return new MySqlConnectionStringBuilder(connStr);
+        }
+
+        protected override string GetDisplayName() {
+            return $"{_builder.Database} on {_builder.Server} (MySQL)";
+        }
+    }
+
+    public abstract class AdoImportSession<TConnectionStringBuilder> : IDatabaseImportSession
+        where TConnectionStringBuilder : DbConnectionStringBuilder, new() {
+
+        public abstract string ProductName { get; }
+        public abstract string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName);
+        protected abstract IDbConnection CreateConnection(TConnectionStringBuilder builder);
+        protected abstract void ReadTableNames(IDbConnection connection);
+        protected abstract TConnectionStringBuilder CreateBuilder(string connStr);
+        protected abstract string GetDisplayName();
+
+        protected TConnectionStringBuilder _builder = new TConnectionStringBuilder();
 
         public bool FromConnectForm(IWin32Window owner) {
             var successfulConnect = false;
 
             do {
-                using (var f = new ImportConnectionForm("Connect to PostgreSQL", _builder)) {
+                using (var f = new ImportConnectionForm($"Connect to {ProductName}", _builder)) {
                     if (f.ShowDialog(owner) != DialogResult.OK) {
                         return false;
                     }
@@ -276,22 +388,12 @@ namespace SqlNotebook {
         private bool DoConnect(IWin32Window owner) {
             bool successfulConnect = false;
             Action action = () => {
-                using (var connection = new Npgsql.NpgsqlConnection(_builder)) {
+                using (var connection = CreateConnection(_builder)) {
                     connection.Open();
-
-                    var tableNames = new List<string>();
-                    using (var cmd = connection.CreateCommand()) {
-                        cmd.CommandText = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name";
-                        using (var reader = cmd.ExecuteReader()) {
-                            while (reader.Read()) {
-                                tableNames.Add(reader.GetString(0));
-                            }
-                        }
-                    }
-                    TableNames = tableNames;
+                    ReadTableNames(connection);
                 }
             };
-            using (var f = new WaitForm("SQL Notebook", "Accessing PostgreSQL server...", action)) {
+            using (var f = new WaitForm("SQL Notebook", $"Accessing {ProductName}...", action)) {
                 f.ShowDialog(owner);
                 if (f.ResultException == null) {
                     successfulConnect = true;
@@ -300,7 +402,7 @@ namespace SqlNotebook {
                         Cancelable = true,
                         Caption = "Connection Error",
                         Icon = TaskDialogStandardIcon.Error,
-                        InstructionText = "The connection to the PostgreSQL server failed.",
+                        InstructionText = $"The connection to {ProductName} failed.",
                         StandardButtons = TaskDialogStandardButtons.Ok,
                         OwnerWindowHandle = owner.Handle,
                         StartupLocation = TaskDialogStartupLocation.CenterOwner,
@@ -313,22 +415,18 @@ namespace SqlNotebook {
         }
 
         public bool FromRecent(RecentDataSource recent, IWin32Window owner) {
-            _builder = new Npgsql.NpgsqlConnectionStringBuilder(recent.ConnectionString);
+            _builder = CreateBuilder(recent.ConnectionString);
             return DoConnect(owner);
         }
 
-        public IReadOnlyList<string> TableNames { get; private set; } = new string[0];
+        public IReadOnlyList<string> TableNames { get; protected set; } = new string[0];
 
         public void AddToRecentlyUsed(Importer importer) {
             importer.RecentlyUsed.Add(new RecentDataSource {
                 ConnectionString = _builder.ConnectionString,
-                DisplayName = $"{_builder.Database} on {_builder.Host} (PostgreSQL)",
-                ImportSessionType = typeof(PgImportSession)
+                DisplayName = GetDisplayName(),
+                ImportSessionType = this.GetType()
             });
-        }
-
-        public string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
-            return $"CREATE VIRTUAL TABLE \"{notebookTableName.Replace("\"", "\"\"")}\" USING pgsql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
         }
     }
 }

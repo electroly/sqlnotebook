@@ -228,6 +228,22 @@ namespace SqlNotebook {
             }
         }
 
+        private async void ImportMssqlMnu_Click(object sender, EventArgs e) {
+            try {
+                await _importer.DoDatabaseImport<MsImportSession>();
+            } catch (Exception ex) {
+                ErrorBox("Import Error", ex.Message);
+            }
+        }
+
+        private async void ImportMysqlMnu_Click(object sender, EventArgs e) {
+            try {
+                await _importer.DoDatabaseImport<MyImportSession>();
+            } catch (Exception ex) {
+                ErrorBox("Import Error", ex.Message);
+            }
+        }
+
         private void ErrorBox(string title, string message, string details = null) {
             var d = new TaskDialog {
                 Caption = title,
@@ -402,6 +418,5 @@ namespace SqlNotebook {
                 }
             }
         }
-
     }
 }

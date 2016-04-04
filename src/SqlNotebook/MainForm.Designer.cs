@@ -50,11 +50,13 @@
             this._importBtn = new System.Windows.Forms.ToolStripDropDownButton();
             this._importFileMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._importPostgresMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._importMssqlMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.recentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.recentServersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
+            this._importMysqlMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
             this._toolStripContainer.SuspendLayout();
@@ -266,7 +268,9 @@
             // 
             this._importBtn.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._importFileMnu,
+            this._importMssqlMnu,
             this._importPostgresMnu,
+            this._importMysqlMnu,
             this.toolStripSeparator2,
             this.recentToolStripMenuItem,
             this.recentServersToolStripMenuItem});
@@ -281,28 +285,35 @@
             // _importFileMnu
             // 
             this._importFileMnu.Name = "_importFileMnu";
-            this._importFileMnu.Size = new System.Drawing.Size(175, 22);
+            this._importFileMnu.Size = new System.Drawing.Size(224, 22);
             this._importFileMnu.Text = "From &file...";
             this._importFileMnu.Click += new System.EventHandler(this.ImportFileMnu_Click);
             // 
             // _importPostgresMnu
             // 
             this._importPostgresMnu.Name = "_importPostgresMnu";
-            this._importPostgresMnu.Size = new System.Drawing.Size(175, 22);
+            this._importPostgresMnu.Size = new System.Drawing.Size(224, 22);
             this._importPostgresMnu.Text = "From &PostgreSQL...";
             this._importPostgresMnu.Click += new System.EventHandler(this.ImportPostgresMnu_Click);
+            // 
+            // _importMssqlMnu
+            // 
+            this._importMssqlMnu.Name = "_importMssqlMnu";
+            this._importMssqlMnu.Size = new System.Drawing.Size(224, 22);
+            this._importMssqlMnu.Text = "From &Microsoft SQL Server...";
+            this._importMssqlMnu.Click += new System.EventHandler(this.ImportMssqlMnu_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(221, 6);
             // 
             // recentToolStripMenuItem
             // 
             this.recentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.noneToolStripMenuItem});
             this.recentToolStripMenuItem.Name = "recentToolStripMenuItem";
-            this.recentToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.recentToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.recentToolStripMenuItem.Text = "Recent files";
             // 
             // noneToolStripMenuItem
@@ -315,7 +326,7 @@
             // recentServersToolStripMenuItem
             // 
             this.recentServersToolStripMenuItem.Name = "recentServersToolStripMenuItem";
-            this.recentServersToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.recentServersToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.recentServersToolStripMenuItem.Text = "Recent servers";
             // 
             // toolStripDropDownButton4
@@ -327,6 +338,13 @@
             this.toolStripDropDownButton4.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
             this.toolStripDropDownButton4.Size = new System.Drawing.Size(74, 22);
             this.toolStripDropDownButton4.Text = "&Export";
+            // 
+            // _importMysqlMnu
+            // 
+            this._importMysqlMnu.Name = "_importMysqlMnu";
+            this._importMysqlMnu.Size = new System.Drawing.Size(224, 22);
+            this._importMysqlMnu.Text = "From M&ySQL...";
+            this._importMysqlMnu.Click += new System.EventHandler(this.ImportMysqlMnu_Click);
             // 
             // MainForm
             // 
@@ -382,6 +400,8 @@
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton4;
         private System.Windows.Forms.ToolStripStatusLabel _statusLbl;
         private System.Windows.Forms.ToolStripProgressBar _statusProgressbar;
+        private System.Windows.Forms.ToolStripMenuItem _importMssqlMnu;
+        private System.Windows.Forms.ToolStripMenuItem _importMysqlMnu;
     }
 }
 

@@ -14,7 +14,7 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include <msclr\auto_handle.h>
+#include <msclr/auto_handle.h>
 #include "SqlNotebookCore.h"
 using namespace SqlNotebookCore;
 using namespace System::IO;
@@ -81,6 +81,8 @@ void Notebook::Init() {
 
     InstallCsvModule();
     InstallPgModule();
+    InstallMsModule();
+    InstallMyModule();
 }
 
 private ref class InvokeClosure {
