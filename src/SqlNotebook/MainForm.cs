@@ -77,8 +77,11 @@ namespace SqlNotebook {
 
             if (isNew) {
                 _manager.NewNote("Getting Started", Resources.GettingStartedRtf);
-                Load += (sender, e) => OpenItem(new NotebookItem(NotebookItemType.Note, "Getting Started"));
-                SetDirty();
+                Load += (sender, e) => {
+                    OpenItem(new NotebookItem(NotebookItemType.Note, "Getting Started"));
+                    _isDirty = false;
+                    SetTitle();
+                };
             }
 
             Load += (sender, e) => _manager.Rescan();
