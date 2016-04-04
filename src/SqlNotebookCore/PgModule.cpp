@@ -23,115 +23,9 @@ using namespace Npgsql;
 
 static sqlite3_module s_pgModule = { 0 };
 
-private ref class Lock sealed : IDisposable { // for RAII
-    public:
-    Lock(Object^ lockObject) {
-        _lockObject = lockObject;
-        Monitor::Enter(lockObject);
-    }
-
-    ~Lock() {
-        if (!_isDisposed) {
-            this->!Lock();
-            _isDisposed = true;
-        }
-    }
-
-    !Lock() {
-        Monitor::Exit(_lockObject);
-    }
-
-    private:
-    bool _isDisposed;
-    Object^ _lockObject;
-};
-
-private ref class PgPoolTarget sealed {
-    public:
-    PgPoolTarget(String^ connectionString) {
-        _connectionString = connectionString;
-    }
-
-    // don't use this directly; use PgPoolConnection instead
-    NpgsqlConnection^ Borrow() {
-        Lock lock(_lock);
-        if (_availableConnections->Count > 0) {
-            return _availableConnections->Pop();
-        } else {
-            auto conn = gcnew NpgsqlConnection();
-            conn->ConnectionString = _connectionString;
-            conn->Open();
-            return conn;
-        }
-    }
-
-    // don't use this directly; use PgPoolConnection instead
-    void Return(NpgsqlConnection^ borrowedConnection) {
-        Lock lock(_lock);
-        _availableConnections->Push(borrowedConnection);
-    }
-
-    private:
-    String^ _connectionString;
-    Stack<NpgsqlConnection^>^ _availableConnections = gcnew Stack<NpgsqlConnection^>();
-    Object^ _lock = gcnew Object();
-};
-
-private ref class PgPoolConnection sealed : public IDisposable { // for RAII
-    public:
-    PgPoolConnection(PgPoolTarget^ target) {
-        _target = target;
-        _connection = _target->Borrow();
-    }
-
-    ~PgPoolConnection() {
-        if (!_isDisposed) {
-            this->!PgPoolConnection();
-            _isDisposed = true;
-        }
-    }
-
-    !PgPoolConnection() {
-        _target->Return(_connection);
-        _connection = nullptr;
-    }
-
-    NpgsqlConnection^ Get() {
-        return _connection;
-    }
-
-    operator NpgsqlConnection^() {
-        return _connection;
-    }
-
-    private:
-    bool _isDisposed;
-    PgPoolTarget^ _target;
-    NpgsqlConnection^ _connection;
-};
-
-private ref class PgPool abstract sealed {
-    public:
-    static PgPoolTarget^ Get(String^ connectionString) {
-        Lock lock(_lock);
-        PgPoolTarget^ target;
-        if (_targets->TryGetValue(connectionString, target)) {
-            return target;
-        } else {
-            target = gcnew PgPoolTarget(connectionString);
-            _targets[connectionString] = target;
-            return target;
-        }
-    }
-
-    private:
-    static initonly Dictionary<String^, PgPoolTarget^>^ _targets = gcnew Dictionary<String^, PgPoolTarget^>();
-    static initonly Object^ _lock = gcnew Object();
-};
-
 private struct PgTable {
     sqlite3_vtab Super;
-    gcroot<PgPoolTarget^> Pool;
+    gcroot<String^> ConnectionString;
     gcroot<String^> PgTableName;
     gcroot<List<String^>^> ColumnNames;
     int64_t InitialRowCount;
@@ -143,7 +37,7 @@ private struct PgTable {
 private struct PgCursor {
     sqlite3_vtab_cursor Super;
     PgTable* Table;
-    gcroot<PgPoolConnection^> Connection;
+    gcroot<NpgsqlConnection^> Connection;
     gcroot<NpgsqlCommand^> Command;
     gcroot<NpgsqlDataReader^> Reader;
     bool IsEof;
@@ -151,9 +45,6 @@ private struct PgCursor {
     PgCursor() {
         memset(&Super, 0, sizeof(Super));
         Table = nullptr;
-    }
-    NpgsqlConnection^ GetConnection() {
-        return (PgPoolConnection^)Connection;
     }
 };
 
@@ -196,14 +87,14 @@ static int PgCreate(sqlite3* db, void* pAux, int argc, const char* const* argv, 
         }
         auto connStr = Util::Str(argv[3])->Trim(L'\'');
         auto pgTableName = Util::Str(argv[4])->Trim(L'\'');
-        auto pool = PgPool::Get(connStr);
-        PgPoolConnection conn(pool);
+        NpgsqlConnection conn(connStr);
+        conn.Open();
 
         // ensure the table exists and detect the column names
         auto columnNames = gcnew List<String^>();
         auto columnTypes = gcnew List<Type^>();
         {
-            NpgsqlCommand cmd("SELECT * FROM \"" + pgTableName->Replace("\"", "\"\"") + "\" WHERE FALSE", conn);
+            NpgsqlCommand cmd("SELECT * FROM \"" + pgTableName->Replace("\"", "\"\"") + "\" WHERE FALSE", %conn);
             PgDataReader reader(%cmd);
             for (int i = 0; i < reader->FieldCount; i++) {
                 columnNames->Add(reader->GetName(i));
@@ -214,13 +105,13 @@ static int PgCreate(sqlite3* db, void* pAux, int argc, const char* const* argv, 
         // get a row count too
         int64_t rowCount = 0;
         {
-            NpgsqlCommand cmd("SELECT COUNT(*) FROM \"" + pgTableName->Replace("\"", "\"\"") + "\"", conn);
+            NpgsqlCommand cmd("SELECT COUNT(*) FROM \"" + pgTableName->Replace("\"", "\"\"") + "\"", %conn);
             rowCount = (int64_t)cmd.ExecuteScalar();
         }
 
         // create sqlite structure
         auto vtab = new PgTable;
-        vtab->Pool = pool;
+        vtab->ConnectionString = connStr;
         vtab->PgTableName = pgTableName;
         vtab->ColumnNames = columnNames;
         vtab->InitialRowCount = rowCount;
@@ -321,7 +212,8 @@ static int PgBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
 static int PgOpen(sqlite3_vtab* pVTab, sqlite3_vtab_cursor** ppCursor) {
     auto cursor = new PgCursor;
     cursor->Table = (PgTable*)pVTab;
-    cursor->Connection = gcnew PgPoolConnection(cursor->Table->Pool);
+    cursor->Connection = gcnew NpgsqlConnection(cursor->Table->ConnectionString);
+    cursor->Connection->Open();
     *ppCursor = &cursor->Super;
     return SQLITE_OK;
 }
@@ -337,7 +229,7 @@ static int PgClose(sqlite3_vtab_cursor* pCur) {
     delete command;
     cursor->Command = nullptr;
 
-    PgPoolConnection^ conn = cursor->Connection;
+    NpgsqlConnection^ conn = cursor->Connection;
     delete conn;
     cursor->Connection = nullptr;
     
@@ -349,7 +241,16 @@ static int PgFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxStr, i
     try {
         auto cursor = (PgCursor*)pCur;
         auto sql = Util::Str(idxStr);
-        auto cmd = gcnew NpgsqlCommand(sql, cursor->GetConnection());
+        if ((NpgsqlCommand^)cursor->Command != nullptr) {
+            // why does this happen?
+            cursor->Command->Cancel();
+            delete cursor->Reader;
+            delete cursor->Command;
+            delete cursor->Connection;
+            cursor->Connection = gcnew NpgsqlConnection(cursor->Table->ConnectionString);
+            cursor->Connection->Open();
+        }
+        auto cmd = gcnew NpgsqlCommand(sql, cursor->Connection);
         for (int i = 0; i < argc; i++) {
             Object^ argVal = nullptr;
             switch (sqlite3_value_type(argv[i])) {
