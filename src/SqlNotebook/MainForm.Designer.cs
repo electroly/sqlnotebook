@@ -100,13 +100,14 @@
             // 
             this._statusLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._statusLbl.Name = "_statusLbl";
-            this._statusLbl.Size = new System.Drawing.Size(750, 17);
+            this._statusLbl.Size = new System.Drawing.Size(746, 17);
             this._statusLbl.Spring = true;
             this._statusLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // _statusProgressbar
             // 
             this._statusProgressbar.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this._statusProgressbar.Margin = new System.Windows.Forms.Padding(1, 3, 5, 3);
             this._statusProgressbar.MarqueeAnimationSpeed = 25;
             this._statusProgressbar.Name = "_statusProgressbar";
             this._statusProgressbar.Size = new System.Drawing.Size(100, 16);

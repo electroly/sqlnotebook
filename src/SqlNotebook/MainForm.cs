@@ -44,7 +44,15 @@ namespace SqlNotebook {
         public MainForm(string filePath, bool isNew) {
             InitializeComponent();
 
-            _notebook = new Notebook(filePath, isNew);
+            if (isNew) {
+                _notebook = new Notebook(filePath, isNew);
+            } else {
+                var f = new WaitForm("SQL Notebook", $"Opening notebook \"{Path.GetFileNameWithoutExtension(filePath)}\"", () => {
+                    _notebook = new Notebook(filePath, isNew);
+                });
+                f.StartPosition = FormStartPosition.CenterScreen;
+                f.ShowDialog();
+            }
             _isNew = isNew;
             SetTitle();
             _manager = new NotebookManager(_notebook);

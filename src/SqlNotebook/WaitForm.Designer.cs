@@ -29,12 +29,12 @@
             // 
             // _infoTxt
             // 
-            this._infoTxt.AutoSize = true;
+            this._infoTxt.AutoEllipsis = true;
             this._infoTxt.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._infoTxt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))));
             this._infoTxt.Location = new System.Drawing.Point(11, 9);
             this._infoTxt.Name = "_infoTxt";
-            this._infoTxt.Size = new System.Drawing.Size(191, 21);
+            this._infoTxt.Size = new System.Drawing.Size(296, 39);
             this._infoTxt.TabIndex = 0;
             this._infoTxt.Text = "Running your SQL query...";
             // 
@@ -44,7 +44,7 @@
             this.progressBar1.Location = new System.Drawing.Point(15, 51);
             this.progressBar1.MarqueeAnimationSpeed = 25;
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(265, 15);
+            this.progressBar1.Size = new System.Drawing.Size(292, 15);
             this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.progressBar1.TabIndex = 4;
             // 
@@ -53,7 +53,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(292, 83);
+            this.ClientSize = new System.Drawing.Size(319, 83);
             this.ControlBox = false;
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this._infoTxt);
@@ -67,7 +67,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "SQL Query";
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
