@@ -1,5 +1,6 @@
 Release/
 Debug/
+publish/
 
 # Windows image file caches
 Thumbs.db

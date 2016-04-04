@@ -9,22 +9,29 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SqlNotebook</RootNamespace>
     <AssemblyName>SqlNotebook</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>publish\</PublishUrl>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <PublishUrl>..\..\publish\</PublishUrl>
     <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Background</UpdateMode>
+    <UpdateInterval>2</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdatePeriodically>true</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <InstallUrl>http://sqlnotebook.com/install/</InstallUrl>
+    <SupportUrl>https://github.com/electroly/sqlnotebook</SupportUrl>
+    <ProductName>SQL Notebook</ProductName>
+    <PublisherName>Brian Luft</PublisherName>
+    <WebPage>publish.html</WebPage>
+    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
+    <ApplicationRevision>3</ApplicationRevision>
+    <ApplicationVersion>1.0.0.3</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -254,9 +261,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.6 %28x86 and x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -264,12 +271,24 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Visual.C++.14.0.x64">
+      <Visible>False</Visible>
+      <ProductName>Visual C++ "14" Runtime Libraries %28x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <FileAssociation Include=".sqlnb">
+      <Visible>False</Visible>
+      <Description>SQL Notebook file</Description>
+      <Progid>SqlNotebook.File</Progid>
+      <DefaultIcon>SqlNotebookIcon.ico</DefaultIcon>
+    </FileAssociation>
+  </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SqlNotebookIcon32.png" />
     <None Include="Resources\SqlNotebookIcon48.png" />
-    <Content Include="Resources\ThirdPartyLicenses.txt" />
+    <None Include="Resources\ThirdPartyLicenses.txt" />
     <Content Include="SqlNotebookIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
