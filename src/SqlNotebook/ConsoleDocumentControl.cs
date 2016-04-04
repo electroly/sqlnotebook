@@ -120,6 +120,12 @@ namespace SqlNotebook {
         }
 
         private async Task ExecuteCore(string sql) {
+            if (sql.Trim().ToLower() == "clear") {
+                _consoleTxt.Text = "";
+                _consoleTxt.Append(" ");
+                return;
+            }
+
             ScriptOutput output = null;
             Exception exception = null;
             NativeMethods.EnableWindow(_mainForm.Handle, false);
