@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
+using System.Linq;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
@@ -48,24 +48,26 @@ namespace SqlNotebook {
         }
 
         private void HandleNotebookChange(NotebookChangeEventArgs e) {
-            BeginInvoke(new MethodInvoker(() => {
-                _list.BeginUpdate();
-                foreach (var item in e.RemovedItems) {
-                    foreach (ListViewItem lvi in _list.Items) {
-                        if (lvi.Text == item.Name) {
-                            lvi.Remove();
-                            break;
+            if (e.RemovedItems.Any() || e.AddedItems.Any()) {
+                BeginInvoke(new MethodInvoker(() => {
+                    _list.BeginUpdate();
+                    foreach (var item in e.RemovedItems) {
+                        foreach (ListViewItem lvi in _list.Items) {
+                            if (lvi.Text == item.Name) {
+                                lvi.Remove();
+                                break;
+                            }
                         }
                     }
-                }
-                foreach (var item in e.AddedItems) {
-                    var lvi = _list.Items.Add(item.Name);
-                    lvi.Group = _list.Groups[item.Type.ToString()];
-                    lvi.ImageIndex = (int)item.Type;
-                }
-                _list.Sort();
-                _list.EndUpdate();
-            }));
+                    foreach (var item in e.AddedItems) {
+                        var lvi = _list.Items.Add(item.Name);
+                        lvi.Group = _list.Groups[item.Type.ToString()];
+                        lvi.ImageIndex = (int)item.Type;
+                    }
+                    _list.Sort();
+                    _list.EndUpdate();
+                }));
+            }
         }
 
         protected override void OnResize(EventArgs e) {
