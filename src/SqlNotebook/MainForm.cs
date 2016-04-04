@@ -83,7 +83,15 @@ namespace SqlNotebook {
                     _statusProgressbar.Style = ProgressBarStyle.Continuous;
                     _statusProgressbar.Style = ProgressBarStyle.Marquee;
                 }
-                _statusProgressbar.Visible = newVisible;
+                if (oldVisible != newVisible) {
+                    if (newVisible) {
+                        _statusLbl.Visible = true;
+                        _statusProgressbar.Visible = true;
+                    } else {
+                        _statusProgressbar.Visible = false;
+                        _statusLbl.Visible = false;
+                    }
+                }
             })));
 
             if (isNew) {

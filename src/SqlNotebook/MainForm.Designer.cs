@@ -99,10 +99,13 @@
             // _statusLbl
             // 
             this._statusLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._statusLbl.Image = global::SqlNotebook.Properties.Resources.Hourglass;
+            this._statusLbl.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Name = "_statusLbl";
             this._statusLbl.Size = new System.Drawing.Size(746, 17);
             this._statusLbl.Spring = true;
             this._statusLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._statusLbl.Visible = false;
             // 
             // _statusProgressbar
             // 
