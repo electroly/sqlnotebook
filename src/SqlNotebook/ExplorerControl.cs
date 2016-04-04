@@ -113,28 +113,12 @@ namespace SqlNotebook {
             }
 
             var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
-            _manager.CloseItem(new NotebookItem(type, name));
+            var item = new NotebookItem(type, name);
+            _manager.CloseItem(item);
 
             new WaitForm("Delete", "Deleting the selected item...", () => {
-                _manager.Notebook.Invoke(() => {
-                    switch (type) {
-                        case NotebookItemType.Console:
-                        case NotebookItemType.Script:
-                        case NotebookItemType.Note:
-                            _manager.Notebook.Execute("DELETE FROM sqlnotebook_items WHERE name = @name", 
-                                new Dictionary<string, object> { ["@name"] = name });
-                            break;
-
-                        case NotebookItemType.Table:
-                            _manager.Notebook.Execute($"DROP TABLE \"{name.Replace("\"", "\"\"")}\"");
-                            break;
-
-                        case NotebookItemType.View:
-                            _manager.Notebook.Execute($"DROP VIEW \"{name.Replace("\"", "\"\"")}\"");
-                            break;
-                    }
-                });
-            }).ShowDialog(this, 25);
+                _manager.DeleteItem(item);
+            }).ShowDialog(this);
 
             _manager.Rescan();
         }

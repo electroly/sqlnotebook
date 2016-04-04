@@ -122,7 +122,7 @@ namespace SqlNotebook {
         private void SetDirty() {
             if (!_isDirty) {
                 _isDirty = true;
-                SetTitle();
+                BeginInvoke(new MethodInvoker(SetTitle));
             }
         }
 

@@ -153,21 +153,15 @@ namespace SqlNotebook {
         }
 
         public string NewConsole() {
-            var x = NewItem("console");
-            SetDirty();
-            return x;
+            return NewItem("console");
         }
 
         public string NewScript() {
-            var x = NewItem("script");
-            SetDirty();
-            return x;
+            return NewItem("script");
         }
 
         public string NewNote(string name = null, string data = null) {
-            var x = NewItem("note", name, data);
-            SetDirty();
-            return x;
+            return NewItem("note", name, data);
         }
 
         private string NewItem(string type, string name = null, string data = null) {
@@ -184,6 +178,7 @@ namespace SqlNotebook {
                     new Dictionary<string, object> { ["@name"] = name, ["@type"] = type, ["@data"] = data ?? ""});
             });
             Rescan();
+            SetDirty();
             return name;
         }
 
@@ -237,6 +232,28 @@ namespace SqlNotebook {
             });
         }
 
+        public void DeleteItem(NotebookItem item) {
+            Notebook.Invoke(() => {
+                switch (item.Type) {
+                    case NotebookItemType.Console:
+                    case NotebookItemType.Script:
+                    case NotebookItemType.Note:
+                        Notebook.Execute("DELETE FROM sqlnotebook_items WHERE name = @name",
+                            new Dictionary<string, object> { ["@name"] = item.Name });
+                        break;
+
+                    case NotebookItemType.Table:
+                        Notebook.Execute($"DROP TABLE \"{item.Name.Replace("\"", "\"\"")}\"");
+                        break;
+
+                    case NotebookItemType.View:
+                        Notebook.Execute($"DROP VIEW \"{item.Name.Replace("\"", "\"\"")}\"");
+                        break;
+                }
+            });
+            SetDirty();
+        }
+
         public void RenameItem(NotebookItem item, string newName) {
             string lcNewName = newName.ToLower();
             bool isCaseChange = item.Name.ToLower() == lcNewName;
@@ -283,6 +300,7 @@ namespace SqlNotebook {
             });
 
             NotebookItemRename?.Invoke(this, new NotebookItemRenameEventArgs(item, newName));
+            SetDirty();
         }
 
         public void PushStatus(string status) {
