@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -43,7 +44,6 @@ namespace SqlNotebook {
 
         public MainForm(string filePath, bool isNew) {
             InitializeComponent();
-
             if (isNew) {
                 _notebook = new Notebook(filePath, isNew);
             } else {
@@ -215,6 +215,14 @@ namespace SqlNotebook {
         private async void ImportFileMnu_Click(object sender, EventArgs e) {
             try {
                 await _importer.DoFileImport();
+            } catch (Exception ex) {
+                ErrorBox("Import Error", ex.Message);
+            }
+        }
+
+        private async void ImportPostgresMnu_Click(object sender, EventArgs e) {
+            try {
+                await _importer.DoDatabaseImport<PgImportSession>();
             } catch (Exception ex) {
                 ErrorBox("Import Error", ex.Message);
             }

@@ -74,8 +74,9 @@ namespace SqlNotebook {
             base.OnResize(e);
             _list.Columns[0].Width = _list.Width - SystemInformation.VerticalScrollBarWidth - 5;
 
-            var detailsColWidth = (_list.Width - SystemInformation.VerticalScrollBarWidth - 5) / 2;
-            _detailsLst.Columns[0].Width = _detailsLst.Columns[1].Width = detailsColWidth;
+            var detailsColWidth = (_list.Width - SystemInformation.VerticalScrollBarWidth - 5) / 3;
+            _detailsLst.Columns[0].Width = detailsColWidth * 2;
+            _detailsLst.Columns[1].Width = detailsColWidth;
         }
 
         private void List_ItemActivate(object sender, EventArgs e) {

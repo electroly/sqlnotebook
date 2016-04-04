@@ -49,7 +49,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this._importBtn = new System.Windows.Forms.ToolStripDropDownButton();
             this._importFileMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this.postgreSQLDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._importPostgresMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.recentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -102,7 +102,7 @@
             this._statusLbl.Image = global::SqlNotebook.Properties.Resources.Hourglass;
             this._statusLbl.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Name = "_statusLbl";
-            this._statusLbl.Size = new System.Drawing.Size(746, 17);
+            this._statusLbl.Size = new System.Drawing.Size(777, 17);
             this._statusLbl.Spring = true;
             this._statusLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Visible = false;
@@ -266,7 +266,7 @@
             // 
             this._importBtn.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._importFileMnu,
-            this.postgreSQLDatabaseToolStripMenuItem,
+            this._importPostgresMnu,
             this.toolStripSeparator2,
             this.recentToolStripMenuItem,
             this.recentServersToolStripMenuItem});
@@ -285,11 +285,12 @@
             this._importFileMnu.Text = "From &file...";
             this._importFileMnu.Click += new System.EventHandler(this.ImportFileMnu_Click);
             // 
-            // postgreSQLDatabaseToolStripMenuItem
+            // _importPostgresMnu
             // 
-            this.postgreSQLDatabaseToolStripMenuItem.Name = "postgreSQLDatabaseToolStripMenuItem";
-            this.postgreSQLDatabaseToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.postgreSQLDatabaseToolStripMenuItem.Text = "From &PostgreSQL...";
+            this._importPostgresMnu.Name = "_importPostgresMnu";
+            this._importPostgresMnu.Size = new System.Drawing.Size(175, 22);
+            this._importPostgresMnu.Text = "From &PostgreSQL...";
+            this._importPostgresMnu.Click += new System.EventHandler(this.ImportPostgresMnu_Click);
             // 
             // toolStripSeparator2
             // 
@@ -361,7 +362,7 @@
         private System.Windows.Forms.ToolStripButton _newConsoleBtn;
         private System.Windows.Forms.ToolStripDropDownButton _importBtn;
         private System.Windows.Forms.ToolStripMenuItem _importFileMnu;
-        private System.Windows.Forms.ToolStripMenuItem postgreSQLDatabaseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem _importPostgresMnu;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem recentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem noneToolStripMenuItem;

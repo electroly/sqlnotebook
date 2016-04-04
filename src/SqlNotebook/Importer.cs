@@ -84,14 +84,14 @@ namespace SqlNotebook {
 
         public async Task DoDatabaseImport<T>() where T : IDatabaseImportSession, new() {
             var session = new T();
-            if (session.ShowConnectForm(_owner)) {
+            if (session.FromConnectForm(_owner)) {
                await DoCommonImport(session);
             }
         }
 
         public async Task DoRecentImport(RecentDataSource recent) {
             var session = (IImportSession)Activator.CreateInstance(recent.ImportSessionType);
-            session.FromConnectionString(recent.ConnectionString);
+            session.FromRecent(recent, _owner);
             await DoCommonImport(session);
         }
 
@@ -196,7 +196,7 @@ namespace SqlNotebook {
     }
 
     public interface IImportSession {
-        void FromConnectionString(string connectionString);
+        bool FromRecent(RecentDataSource recent, IWin32Window owner);
         IReadOnlyList<string> TableNames { get; }
         string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName);
         void AddToRecentlyUsed(Importer importer);
@@ -209,7 +209,7 @@ namespace SqlNotebook {
     }
 
     public interface IDatabaseImportSession : IImportSession {
-        bool ShowConnectForm(IWin32Window owner);
+        bool FromConnectForm(IWin32Window owner);
     }
 
     public sealed class CsvImportSession : IFileImportSession {
@@ -228,6 +228,11 @@ namespace SqlNotebook {
             _tableName = regex.Replace(Path.GetFileNameWithoutExtension(_filePath), "_").ToLower();
         }
 
+        public bool FromRecent(RecentDataSource recent, IWin32Window owner) {
+            FromFilePath(recent.ConnectionString);
+            return true;
+        }
+
         public IReadOnlyList<string> TableNames {
             get {
                 return new[] { _tableName };
@@ -240,17 +245,90 @@ namespace SqlNotebook {
             return $"CREATE VIRTUAL TABLE \"{notebookTableName.Replace("\"", "\"\"")}\" USING csv ('{_filePath.Replace("'", "''")}', {(FileHasHeaderRow ? "HEADER" : "NO_HEADER")})";
         }
 
-        public void FromConnectionString(string connectionString) {
-            // the "connection string" is just the file path
-            FromFilePath(connectionString);
-        }
-
         public void AddToRecentlyUsed(Importer importer) {
             importer.RecentlyUsed.Add(new RecentDataSource {
                 ConnectionString = _filePath,
                 DisplayName = Path.GetFileName(_filePath),
                 ImportSessionType = typeof(CsvImportSession)
             });
+        }
+    }
+
+    public sealed class PgImportSession : IDatabaseImportSession {
+        private Npgsql.NpgsqlConnectionStringBuilder _builder = new Npgsql.NpgsqlConnectionStringBuilder();
+
+        public bool FromConnectForm(IWin32Window owner) {
+            var successfulConnect = false;
+
+            do {
+                using (var f = new ImportConnectionForm("Connect to PostgreSQL", _builder)) {
+                    if (f.ShowDialog(owner) != DialogResult.OK) {
+                        return false;
+                    }
+                }
+
+                successfulConnect = DoConnect(owner);
+            } while (!successfulConnect);
+
+            return true;
+        }
+
+        private bool DoConnect(IWin32Window owner) {
+            bool successfulConnect = false;
+            Action action = () => {
+                using (var connection = new Npgsql.NpgsqlConnection(_builder)) {
+                    connection.Open();
+
+                    var tableNames = new List<string>();
+                    using (var cmd = connection.CreateCommand()) {
+                        cmd.CommandText = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name";
+                        using (var reader = cmd.ExecuteReader()) {
+                            while (reader.Read()) {
+                                tableNames.Add(reader.GetString(0));
+                            }
+                        }
+                    }
+                    TableNames = tableNames;
+                }
+            };
+            using (var f = new WaitForm("SQL Notebook", "Accessing PostgreSQL server...", action)) {
+                f.ShowDialog(owner);
+                if (f.ResultException == null) {
+                    successfulConnect = true;
+                } else {
+                    var td = new TaskDialog {
+                        Cancelable = true,
+                        Caption = "Connection Error",
+                        Icon = TaskDialogStandardIcon.Error,
+                        InstructionText = "The connection to the PostgreSQL server failed.",
+                        StandardButtons = TaskDialogStandardButtons.Ok,
+                        OwnerWindowHandle = owner.Handle,
+                        StartupLocation = TaskDialogStartupLocation.CenterOwner,
+                        Text = f.ResultException.Message
+                    };
+                    td.Show();
+                }
+            }
+            return successfulConnect;
+        }
+
+        public bool FromRecent(RecentDataSource recent, IWin32Window owner) {
+            _builder = new Npgsql.NpgsqlConnectionStringBuilder(recent.ConnectionString);
+            return DoConnect(owner);
+        }
+
+        public IReadOnlyList<string> TableNames { get; private set; } = new string[0];
+
+        public void AddToRecentlyUsed(Importer importer) {
+            importer.RecentlyUsed.Add(new RecentDataSource {
+                ConnectionString = _builder.ConnectionString,
+                DisplayName = $"{_builder.Database} on {_builder.Host} (PostgreSQL)",
+                ImportSessionType = typeof(PgImportSession)
+            });
+        }
+
+        public string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
+            return $"CREATE VIRTUAL TABLE \"{notebookTableName.Replace("\"", "\"\"")}\" USING pgsql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
         }
     }
 }
