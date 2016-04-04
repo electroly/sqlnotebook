@@ -28,6 +28,7 @@ namespace SqlNotebook {
 
         public IReadOnlyList<SelectedTable> SelectedTables { get; private set; }
         public bool CsvHasHeaderRow { get; private set; }
+        public bool CopyData { get; private set; }
 
         private readonly IReadOnlyList<string> _sourceTableNames;
         private readonly List<string> _targetTableNames;
@@ -40,6 +41,11 @@ namespace SqlNotebook {
                 _csvHeaderChk.Visible = false;
                 _tablesGrp.Height += (_tablesGrp.Top - _csvHeaderChk.Top);
                 _tablesGrp.Top = _csvHeaderChk.Top;
+            }
+
+            // choose to copy instead of link by default for file sources
+            if (session is IFileImportSession) {
+                _methodCopyRad.Checked = true;
             }
 
             _sourceTableNames = session.TableNames;
@@ -70,7 +76,7 @@ namespace SqlNotebook {
 
         private void EnableDisableButtons() {
             bool hasSelection = _listBox.SelectedIndex >= 0;
-            _renameTableBtn.Enabled = _previewBtn.Enabled = hasSelection;
+            _renameTableBtn.Enabled = hasSelection;
         }
 
         private void RenameTableBtn_Click(object sender, EventArgs e) {
@@ -88,8 +94,21 @@ namespace SqlNotebook {
             }
         }
 
-        private void PreviewBtn_Click(object sender, EventArgs e) {
-
+        private void OkBtn_Click(object sender, EventArgs e) {
+            var tables = new List<SelectedTable>();
+            for (int i = 0; i < _sourceTableNames.Count; i++) {
+                var srcName = _sourceTableNames[i];
+                var dstName = _targetTableNames[i];
+                var isSelected = _listBox.GetItemChecked(i);
+                if (isSelected) {
+                    tables.Add(new SelectedTable { SourceName = srcName, TargetName = dstName });
+                }
+            }
+            SelectedTables = tables;
+            CsvHasHeaderRow = _csvHeaderChk.Checked;
+            CopyData = _methodCopyRad.Checked;
+            DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }

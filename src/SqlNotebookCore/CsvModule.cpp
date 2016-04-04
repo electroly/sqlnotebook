@@ -123,10 +123,10 @@ static int CsvCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
         // inform sqlite of the column structure
         auto createTableLines = gcnew List<String^>();
         for each (auto col in columnNames) {
-            createTableLines->Add(col + " TEXT");
+            createTableLines->Add("\"" + col->Replace("\"", "\"\"") + "\"");
         }
         auto createTableSql = gcnew StringBuilder("CREATE TABLE a (");
-        createTableSql->Append(String::Join(",", createTableLines));
+        createTableSql->Append(String::Join(" , ", createTableLines));
         createTableSql->Append(")");
         g_SqliteCall(db, sqlite3_declare_vtab(db, Util::CStr(createTableSql->ToString()).c_str()));
 

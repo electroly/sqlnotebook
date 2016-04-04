@@ -110,16 +110,9 @@ namespace SqlNotebook {
             }
         }
 
-        private static class NativeMethods {
-            [DllImport("user32.dll")]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
-        }
-
         private async Task ExecuteCore(string sql) {
             ScriptOutput output = null;
             Exception exception = null;
-            NativeMethods.EnableWindow(_mainForm.Handle, false);
             _manager.PushStatus("Running your script. Press ESC to cancel.");
             await Task.Run(() => {
                 try {
@@ -129,7 +122,6 @@ namespace SqlNotebook {
                 }
             });
             _manager.PopStatus();
-            NativeMethods.EnableWindow(_mainForm.Handle, true);
 
             if (exception != null) {
                 throw exception;

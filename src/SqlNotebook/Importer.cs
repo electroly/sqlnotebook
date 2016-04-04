@@ -22,6 +22,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using SqlNotebookCore;
 
 namespace SqlNotebook {
     public sealed class RecentDataSource {
@@ -31,7 +33,9 @@ namespace SqlNotebook {
     }
 
     public sealed class Importer {
-        private IWin32Window _owner;
+        private readonly NotebookManager _manager;
+        private readonly Notebook _notebook;
+        private readonly IWin32Window _owner;
 
         private readonly IReadOnlyList<Type> _fileSessionTypes = new[] {
             typeof(CsvImportSession)
@@ -39,11 +43,13 @@ namespace SqlNotebook {
 
         public List<RecentDataSource> RecentlyUsed = new List<RecentDataSource>();
 
-        public Importer(IWin32Window owner) {
+        public Importer(NotebookManager manager, IWin32Window owner) {
+            _manager = manager;
+            _notebook = manager.Notebook;
             _owner = owner;
         }
 
-        public void DoFileImport() {
+        public async Task DoFileImport() {
             var fileSessions =
                 (from type in _fileSessionTypes
                  let typeSession = (IFileImportSession)Activator.CreateInstance(type)
@@ -73,28 +79,118 @@ namespace SqlNotebook {
                 throw new Exception("Unrecognized file extension: " + fileExt);
             }
             session.FromFilePath(filePath);
-            DoCommonImport(session);
+            await DoCommonImport(session);
         }
 
-        public void DoDatabaseImport<T>() where T : IDatabaseImportSession, new() {
+        public async Task DoDatabaseImport<T>() where T : IDatabaseImportSession, new() {
             var session = new T();
             if (session.ShowConnectForm(_owner)) {
-               DoCommonImport(session);
+               await DoCommonImport(session);
             }
         }
 
-        public void DoRecentImport(RecentDataSource recent) {
+        public async Task DoRecentImport(RecentDataSource recent) {
             var session = (IImportSession)Activator.CreateInstance(recent.ImportSessionType);
             session.FromConnectionString(recent.ConnectionString);
-            DoCommonImport(session);
+            await DoCommonImport(session);
         }
 
-        private void DoCommonImport(IImportSession session) {
+        private async Task DoCommonImport(IImportSession session) {
+            IReadOnlyList<ImportPreviewForm.SelectedTable> selectedTables = null;
+            bool csvHasHeaderRow = false, copyData = false;
+
             using (var frm = new ImportPreviewForm(session)) {
                 if (frm.ShowDialog(_owner) != DialogResult.OK) {
                     return;
                 }
+                selectedTables = frm.SelectedTables;
+                csvHasHeaderRow = frm.CsvHasHeaderRow;
+                copyData = frm.CopyData;
+            }
 
+            var fileSession = session as IFileImportSession;
+            if (fileSession != null) {
+                fileSession.FileHasHeaderRow = csvHasHeaderRow;
+            }
+
+            Action import = () => {
+                _notebook.Invoke(() => {
+                    _notebook.Execute("BEGIN");
+
+                    try {
+                        foreach (var selectedTable in selectedTables) {
+                            if (copyData) {
+                                if (_notebook.QueryValue("SELECT name FROM sqlite_master WHERE name = '__temp_import'") != null) {
+                                    _notebook.Execute("DROP TABLE __temp_import");
+                                }
+                                
+                                _notebook.Execute(session.GetCreateVirtualTableStatement(selectedTable.SourceName, "__temp_import"));
+
+                                // create the target physical table with the same schema as the virtual table
+                                var tableCols = _notebook.Query($"PRAGMA table_info (__temp_import)");
+                                var lines = new List<string>();
+                                var pks = new string[tableCols.Rows.Count];
+                                for (int i = 0; i < tableCols.Rows.Count; i++) {
+                                    var name = Convert.ToString(tableCols.Get(i, "name"));
+                                    var type = Convert.ToString(tableCols.Get(i, "type"));
+                                    var notNull = Convert.ToInt32(tableCols.Get(i, "notnull")) == 1;
+                                    var pk = Convert.ToInt32(tableCols.Get(i, "pk"));
+                                    if (pk > 0) {
+                                        pks[pk - 1] = name;
+                                    }
+                                    lines.Add($"\"{name.Replace("\"", "\"\"")}\" {type} {(notNull ? "NOT NULL" : "")}");
+                                }
+                                var pkList = string.Join(" , ", pks.Where(x => x != null).Select(x => $"\"{x.Replace("\"", "\"\"")}\""));
+                                if (pkList.Any()) {
+                                    lines.Add($"PRIMARY KEY ( {pkList} )");
+                                }
+                                _notebook.Execute($"CREATE TABLE \"{selectedTable.TargetName.Replace("\"", "\"\"")}\" ( {string.Join(" , ", lines)} )");
+
+                                // copy all data from the virtual table to the physical table
+                                _notebook.Execute($"INSERT INTO \"{selectedTable.TargetName.Replace("\"", "\"\"")}\" SELECT * FROM __temp_import");
+
+                                // we're done with this import
+                                _notebook.Execute($"DROP TABLE __temp_import");
+                            } else {
+                                // just create the virtual table
+                                _notebook.Execute(session.GetCreateVirtualTableStatement(selectedTable.SourceName, selectedTable.TargetName));
+                            }
+                        }
+
+                        _notebook.Execute("COMMIT");
+                    } catch {
+                        try { _notebook.Execute("ROLLBACK"); } catch { }
+                        throw;
+                    }
+                });
+            };
+
+            _manager.PushStatus("Importing the selected tables. Press ESC to cancel.");
+            Exception exception = null;
+            await Task.Run(() => {
+                try {
+                    import();
+                } catch (Exception ex) {
+                    exception = ex;
+                }
+            });
+            _manager.PopStatus();
+            _manager.Rescan();
+
+            if (exception == null) {
+                _manager.SetDirty();
+            } else {
+                var td = new TaskDialog {
+                    Cancelable = true,
+                    Caption = "Import Error",
+                    Icon = TaskDialogStandardIcon.Error,
+                    InstructionText = "The import failed.",
+                    StandardButtons = TaskDialogStandardButtons.Ok,
+                    OwnerWindowHandle = _owner.Handle,
+                    StartupLocation = TaskDialogStartupLocation.CenterOwner,
+                    Text = exception.Message
+                };
+                td.Show();
             }
         }
     }
@@ -102,8 +198,6 @@ namespace SqlNotebook {
     public interface IImportSession {
         void FromConnectionString(string connectionString);
         IReadOnlyList<string> TableNames { get; }
-        bool HasTableOptions { get; }
-        void ShowTableOptionsForm(IWin32Window owner, string tableName);
         string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName);
         void AddToRecentlyUsed(Importer importer);
     }
@@ -111,6 +205,7 @@ namespace SqlNotebook {
     public interface IFileImportSession : IImportSession {
         IReadOnlyList<string> SupportedFileExtensions { get; }
         void FromFilePath(string filePath);
+        bool FileHasHeaderRow { get; set; }
     }
 
     public interface IDatabaseImportSession : IImportSession {
@@ -120,7 +215,6 @@ namespace SqlNotebook {
     public sealed class CsvImportSession : IFileImportSession {
         private string _filePath;
         private string _tableName;
-        private CsvImportTableOptions _tableOptions = new CsvImportTableOptions { HasHeaderRow = true };
 
         public IReadOnlyList<string> SupportedFileExtensions {
             get {
@@ -140,20 +234,10 @@ namespace SqlNotebook {
             }
         }
 
-        public bool HasTableOptions {
-            get {
-                return true;
-            }
-        }
-
-        public void ShowTableOptionsForm(IWin32Window owner, string tableName) {
-            using (var f = new ImportCsvOptionsForm()) {
-                f.ShowDialog(owner);
-            }
-        }
+        public bool FileHasHeaderRow { get; set; }
 
         public string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
-            return $"CREATE VIRTUAL TABLE \"{notebookTableName}\" USING csv ('{_filePath}', {(_tableOptions.HasHeaderRow ? "HEADER" : "NO_HEADER")})";
+            return $"CREATE VIRTUAL TABLE \"{notebookTableName.Replace("\"", "\"\"")}\" USING csv ('{_filePath.Replace("'", "''")}', {(FileHasHeaderRow ? "HEADER" : "NO_HEADER")})";
         }
 
         public void FromConnectionString(string connectionString) {
@@ -168,9 +252,5 @@ namespace SqlNotebook {
                 ImportSessionType = typeof(CsvImportSession)
             });
         }
-    }
-
-    public sealed class CsvImportTableOptions {
-        public bool HasHeaderRow;
     }
 }

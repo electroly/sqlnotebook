@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SqlNotebook.Properties;
@@ -43,11 +44,11 @@ namespace SqlNotebook {
         public MainForm(string filePath, bool isNew) {
             InitializeComponent();
 
-            _importer = new Importer(this);
             _notebook = new Notebook(filePath, isNew);
             _isNew = isNew;
             SetTitle();
             _manager = new NotebookManager(_notebook);
+            _importer = new Importer(_manager, this);
             _dockPanel = new DockPanel {
                 Dock = DockStyle.Fill,
                 Theme = new VS2012LightTheme(),
@@ -67,6 +68,7 @@ namespace SqlNotebook {
             _manager.NotebookItemRename += Manager_NotebookItemRename;
             _manager.StatusUpdate += (sender, e) => BeginInvoke(new MethodInvoker((() => {
                 _statusLbl.Text = e.Status;
+                NativeMethods.EnableWindow(Handle, !e.Status.Any());
                 bool oldVisible = _statusProgressbar.Visible;
                 bool newVisible = !string.IsNullOrWhiteSpace(e.Status);
                 if (!oldVisible && newVisible) {
@@ -86,6 +88,12 @@ namespace SqlNotebook {
             }
 
             Load += (sender, e) => _manager.Rescan();
+        }
+
+        private static class NativeMethods {
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
         }
 
         private void Manager_NotebookItemRename(object sender, NotebookItemRenameEventArgs e) {
@@ -188,9 +196,9 @@ namespace SqlNotebook {
             }
         }
 
-        private void ImportFileMnu_Click(object sender, EventArgs e) {
+        private async void ImportFileMnu_Click(object sender, EventArgs e) {
             try {
-                _importer.DoFileImport();
+                await _importer.DoFileImport();
             } catch (Exception ex) {
                 ErrorBox("Import Error", ex.Message);
             }
@@ -337,7 +345,7 @@ namespace SqlNotebook {
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
             if (_isDirty) {
-                var shortFilename = _isNew ? "Untitled" : Path.GetFileName(_filePath);
+                var shortFilename = _isNew ? "Untitled" : Path.GetFileNameWithoutExtension(_filePath);
                 var d = new TaskDialog {
                     Caption = "SQL Notebook",
                     InstructionText = $"Do you want to save changes to {shortFilename}?",
