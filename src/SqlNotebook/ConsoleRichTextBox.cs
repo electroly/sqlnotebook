@@ -102,5 +102,18 @@ namespace SqlNotebook {
             }
             base.OnKeyDown(e);
         }
+
+        protected override void OnTextChanged(EventArgs e) {
+            base.OnTextChanged(e);
+            this.BeginUpdate();
+            var oldSelStart = SelectionStart;
+            var oldSelLen = SelectionLength;
+            SelectionStart = _inputStart;
+            SelectionLength = Text.Length;
+            SelectionProtected = false;
+            SelectionStart = oldSelStart;
+            SelectionLength = oldSelLen;
+            this.EndUpdate();
+        }
     }
 }

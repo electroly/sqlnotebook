@@ -58,6 +58,7 @@
             this._recentServersMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._recentServersNoneMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripButton();
+            this._saveAsMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
             this._toolStripContainer.SuspendLayout();
@@ -150,6 +151,7 @@
             this._newMnu,
             this._openMnu,
             this._saveMnu,
+            this._saveAsMnu,
             this.toolStripSeparator4,
             this._exitMnu});
             this.toolStripDropDownButton1.Image = global::SqlNotebook.Properties.Resources.DatabaseTable;
@@ -166,7 +168,7 @@
             this._newMnu.Name = "_newMnu";
             this._newMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this._newMnu.Size = new System.Drawing.Size(155, 22);
-            this._newMnu.Text = "New";
+            this._newMnu.Text = "&New";
             this._newMnu.Click += new System.EventHandler(this.NewMnu_Click);
             // 
             // _openMnu
@@ -175,7 +177,7 @@
             this._openMnu.Name = "_openMnu";
             this._openMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this._openMnu.Size = new System.Drawing.Size(155, 22);
-            this._openMnu.Text = "Open...";
+            this._openMnu.Text = "&Open...";
             this._openMnu.Click += new System.EventHandler(this.OpenMnu_Click);
             // 
             // _saveMnu
@@ -184,7 +186,7 @@
             this._saveMnu.Name = "_saveMnu";
             this._saveMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this._saveMnu.Size = new System.Drawing.Size(155, 22);
-            this._saveMnu.Text = "Save";
+            this._saveMnu.Text = "&Save";
             this._saveMnu.Click += new System.EventHandler(this.SaveMnu_Click);
             // 
             // toolStripSeparator4
@@ -358,6 +360,13 @@
             this.toolStripDropDownButton4.Size = new System.Drawing.Size(74, 22);
             this.toolStripDropDownButton4.Text = "&Export...";
             // 
+            // _saveAsMnu
+            // 
+            this._saveAsMnu.Name = "_saveAsMnu";
+            this._saveAsMnu.Size = new System.Drawing.Size(155, 22);
+            this._saveAsMnu.Text = "Save &as";
+            this._saveAsMnu.Click += new System.EventHandler(this.SaveAsMnu_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -415,6 +424,7 @@
         private System.Windows.Forms.ToolStripMenuItem _importMysqlMnu;
         private System.Windows.Forms.ToolStripMenuItem _recentServersNoneMnu;
         private System.Windows.Forms.ToolStripButton toolStripDropDownButton4;
+        private System.Windows.Forms.ToolStripMenuItem _saveAsMnu;
     }
 }
 

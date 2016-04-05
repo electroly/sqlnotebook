@@ -156,6 +156,7 @@
             // 
             // _splitContainer.Panel1
             // 
+            this._splitContainer.Panel1.BackColor = System.Drawing.SystemColors.Window;
             this._splitContainer.Panel1.Controls.Add(this._list);
             // 
             // _splitContainer.Panel2
@@ -179,6 +180,7 @@
             listViewGroup6});
             this._detailsLst.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this._detailsLst.Location = new System.Drawing.Point(0, 0);
+            this._detailsLst.MultiSelect = false;
             this._detailsLst.Name = "_detailsLst";
             this._detailsLst.Size = new System.Drawing.Size(340, 280);
             this._detailsLst.SmallImageList = this._imageList;

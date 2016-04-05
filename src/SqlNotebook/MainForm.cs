@@ -344,10 +344,10 @@ namespace SqlNotebook {
             SaveOrSaveAs();
         }
 
-        private bool SaveOrSaveAs() {
+        private bool SaveOrSaveAs(bool saveAs = false) {
             SaveOpenItems();
 
-            if (_isNew) {
+            if (_isNew || saveAs) {
                 var f = new SaveFileDialog {
                     AddExtension = true,
                     AutoUpgradeEnabled = true,
@@ -451,6 +451,10 @@ namespace SqlNotebook {
             }
 
             noneMenu.Visible = !items.Any();
+        }
+
+        private void SaveAsMnu_Click(object sender, EventArgs e) {
+            SaveOrSaveAs(saveAs: true);
         }
     }
 }
