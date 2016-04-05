@@ -57,7 +57,7 @@
             this._recentFilesNoneMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._recentServersMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._recentServersNoneMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripButton();
             this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
             this._toolStripContainer.SuspendLayout();
@@ -356,7 +356,7 @@
             this.toolStripDropDownButton4.Name = "toolStripDropDownButton4";
             this.toolStripDropDownButton4.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
             this.toolStripDropDownButton4.Size = new System.Drawing.Size(74, 22);
-            this.toolStripDropDownButton4.Text = "&Export";
+            this.toolStripDropDownButton4.Text = "&Export...";
             // 
             // MainForm
             // 
@@ -409,12 +409,12 @@
         private System.Windows.Forms.ToolStripButton _newScriptBtn;
         private System.Windows.Forms.ToolStripButton _newNoteBtn;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton4;
         private System.Windows.Forms.ToolStripStatusLabel _statusLbl;
         private System.Windows.Forms.ToolStripProgressBar _statusProgressbar;
         private System.Windows.Forms.ToolStripMenuItem _importMssqlMnu;
         private System.Windows.Forms.ToolStripMenuItem _importMysqlMnu;
         private System.Windows.Forms.ToolStripMenuItem _recentServersNoneMnu;
+        private System.Windows.Forms.ToolStripButton toolStripDropDownButton4;
     }
 }
 

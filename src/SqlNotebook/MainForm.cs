@@ -172,14 +172,6 @@ namespace SqlNotebook {
                 f.FormClosing += (sender2, e2) => {
                     _manager.SetItemData(doc.ItemName, doc.DocumentText);
                 };
-            } else if (item.Type == NotebookItemType.Script) {
-                var doc = new QueryDocumentControl(item.Name, _manager, this);
-                f = new UserControlDockContent(item.Name, doc) {
-                    Icon = Resources.ScriptIco
-                };
-                f.FormClosing += (sender2, e2) => {
-                    _manager.SetItemData(doc.ItemName, doc.DocumentText);
-                };
             } else if (item.Type == NotebookItemType.Note) {
                 var doc = new NoteDocumentControl(item.Name, _manager);
                 f = new UserControlDockContent(item.Name, doc) {
@@ -189,7 +181,21 @@ namespace SqlNotebook {
                     _manager.SetItemData(doc.ItemName, doc.DocumentText);
                 };
             } else {
-                return;
+                bool runImmediately = false;
+                if (item.Type == NotebookItemType.Table || item.Type == NotebookItemType.View) {
+                    var name = _manager.NewScript();
+                    _manager.SetItemData(name, $"SELECT * FROM \"{item.Name.Replace("\"", "\"\"")}\" LIMIT 1000");
+                    item = new NotebookItem(NotebookItemType.Script, name);
+                    runImmediately = true;
+                }
+
+                var doc = new QueryDocumentControl(item.Name, _manager, this, runImmediately);
+                f = new UserControlDockContent(item.Name, doc) {
+                    Icon = Resources.ScriptIco
+                };
+                f.FormClosing += (sender2, e2) => {
+                    _manager.SetItemData(doc.ItemName, doc.DocumentText);
+                };
             }
 
             f.FormClosed += (sender2, e2) => {
