@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MySql.Data.MySqlClient;
+using Npgsql;
 using SqlNotebookCore;
 
 namespace SqlNotebook {
@@ -44,8 +45,6 @@ namespace SqlNotebook {
         private readonly IReadOnlyList<Type> _fileSessionTypes = new[] {
             typeof(CsvImportSession)
         };
-
-        public List<RecentDataSource> RecentlyUsed = new List<RecentDataSource>();
 
         public Importer(NotebookManager manager, IWin32Window owner) {
             _manager = manager;
@@ -162,6 +161,7 @@ namespace SqlNotebook {
                         }
 
                         _notebook.Execute("COMMIT");
+                        session.AddToRecentlyUsed();
                     } catch {
                         try { _notebook.Execute("ROLLBACK"); } catch { }
                         throw;
@@ -203,7 +203,7 @@ namespace SqlNotebook {
         bool FromRecent(RecentDataSource recent, IWin32Window owner);
         IReadOnlyList<string> TableNames { get; }
         string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName);
-        void AddToRecentlyUsed(Importer importer);
+        void AddToRecentlyUsed();
     }
 
     public interface IFileImportSession : IImportSession {
@@ -249,11 +249,11 @@ namespace SqlNotebook {
             return $"CREATE VIRTUAL TABLE \"{notebookTableName.Replace("\"", "\"\"")}\" USING csv ('{_filePath.Replace("'", "''")}', {(FileHasHeaderRow ? "HEADER" : "NO_HEADER")})";
         }
 
-        public void AddToRecentlyUsed(Importer importer) {
-            importer.RecentlyUsed.Add(new RecentDataSource {
+        public void AddToRecentlyUsed() {
+            RecentDataSources.Add(new RecentDataSource {
                 ConnectionString = _filePath,
                 DisplayName = Path.GetFileName(_filePath),
-                ImportSessionType = typeof(CsvImportSession)
+                ImportSessionType = this.GetType()
             });
         }
     }
@@ -289,6 +289,22 @@ namespace SqlNotebook {
         protected override string GetDisplayName() {
             return $"{_builder.Database} on {_builder.Host} (PostgreSQL)";
         }
+
+        protected override ImportConnectionForm.BasicOptions GetBasicOptions(NpgsqlConnectionStringBuilder builder) {
+            return new ImportConnectionForm.BasicOptions {
+                Server = builder.Host,
+                Database = builder.Database,
+                Username = builder.Username,
+                Password = builder.Password
+            };
+        }
+
+        protected override void SetBasicOptions(NpgsqlConnectionStringBuilder builder, ImportConnectionForm.BasicOptions opt) {
+            builder.Host = opt.Server;
+            builder.Database = opt.Database;
+            builder.Username = opt.Username;
+            builder.Password = opt.Password;
+        }
     }
 
     public sealed class MsImportSession : AdoImportSession<SqlConnectionStringBuilder> {
@@ -321,6 +337,24 @@ namespace SqlNotebook {
 
         protected override string GetDisplayName() {
             return $"{_builder.InitialCatalog} on {_builder.DataSource} (Microsoft SQL Server)";
+        }
+
+        protected override ImportConnectionForm.BasicOptions GetBasicOptions(SqlConnectionStringBuilder builder) {
+            return new ImportConnectionForm.BasicOptions {
+                Server = builder.DataSource,
+                Database = builder.InitialCatalog,
+                Username = builder.UserID,
+                Password = builder.Password,
+                UseWindowsAuth = builder.IntegratedSecurity
+            };
+        }
+
+        protected override void SetBasicOptions(SqlConnectionStringBuilder builder, ImportConnectionForm.BasicOptions opt) {
+            builder.DataSource = opt.Server;
+            builder.InitialCatalog = opt.Database;
+            builder.UserID = opt.Username;
+            builder.Password = opt.Password;
+            builder.IntegratedSecurity = opt.UseWindowsAuth;
         }
     }
 
@@ -355,6 +389,22 @@ namespace SqlNotebook {
         protected override string GetDisplayName() {
             return $"{_builder.Database} on {_builder.Server} (MySQL)";
         }
+
+        protected override ImportConnectionForm.BasicOptions GetBasicOptions(MySqlConnectionStringBuilder builder) {
+            return new ImportConnectionForm.BasicOptions {
+                Server = builder.Server,
+                Database = builder.Database,
+                Username = builder.UserID,
+                Password = builder.Password
+            };
+        }
+
+        protected override void SetBasicOptions(MySqlConnectionStringBuilder builder, ImportConnectionForm.BasicOptions opt) {
+            builder.Server = opt.Server;
+            builder.Database = opt.Database;
+            builder.UserID = opt.Username;
+            builder.Password = opt.Password;
+        }
     }
 
     public abstract class AdoImportSession<TConnectionStringBuilder> : IDatabaseImportSession
@@ -366,6 +416,8 @@ namespace SqlNotebook {
         protected abstract void ReadTableNames(IDbConnection connection);
         protected abstract TConnectionStringBuilder CreateBuilder(string connStr);
         protected abstract string GetDisplayName();
+        protected abstract ImportConnectionForm.BasicOptions GetBasicOptions(TConnectionStringBuilder builder);
+        protected abstract void SetBasicOptions(TConnectionStringBuilder builder, ImportConnectionForm.BasicOptions opt);
 
         protected TConnectionStringBuilder _builder = new TConnectionStringBuilder();
 
@@ -373,7 +425,13 @@ namespace SqlNotebook {
             var successfulConnect = false;
 
             do {
-                using (var f = new ImportConnectionForm($"Connect to {ProductName}", _builder)) {
+                var f = new ImportConnectionForm(
+                    $"Connect to {ProductName}", 
+                    _builder,
+                    b => GetBasicOptions((TConnectionStringBuilder)b),
+                    (b, o) => SetBasicOptions((TConnectionStringBuilder)b, o));
+
+                using (f) {
                     if (f.ShowDialog(owner) != DialogResult.OK) {
                         return false;
                     }
@@ -421,8 +479,8 @@ namespace SqlNotebook {
 
         public IReadOnlyList<string> TableNames { get; protected set; } = new string[0];
 
-        public void AddToRecentlyUsed(Importer importer) {
-            importer.RecentlyUsed.Add(new RecentDataSource {
+        public void AddToRecentlyUsed() {
+            RecentDataSources.Add(new RecentDataSource {
                 ConnectionString = _builder.ConnectionString,
                 DisplayName = GetDisplayName(),
                 ImportSessionType = this.GetType()

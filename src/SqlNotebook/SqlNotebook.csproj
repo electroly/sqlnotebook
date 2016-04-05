@@ -176,6 +176,7 @@
       <DependentUpon>QueryDocumentControl.cs</DependentUpon>
     </Compile>
     <Compile Include="ConsoleRichTextBox.cs" />
+    <Compile Include="RecentDataSources.cs" />
     <Compile Include="UserControlDockContent.cs">
       <SubType>Form</SubType>
     </Compile>

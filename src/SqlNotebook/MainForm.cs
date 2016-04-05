@@ -418,5 +418,33 @@ namespace SqlNotebook {
                 }
             }
         }
+
+        private void RecentFilesMnu_DropDownOpening(object sender, EventArgs e) {
+            PopulateRecentMenu(typeof(IFileImportSession), _recentFilesMnu, _recentFilesNoneMnu);
+        }
+
+        private void RecentServersMnu_DropDownOpening(object sender, EventArgs e) {
+            PopulateRecentMenu(typeof(IDatabaseImportSession), _recentServersMnu, _recentServersNoneMnu);
+        }
+
+        private void PopulateRecentMenu(Type sessionType, ToolStripMenuItem menu, ToolStripMenuItem noneMenu) {
+            while (menu.DropDownItems.Count > 1) {
+                menu.DropDownItems.RemoveAt(1);
+            }
+
+            var items = RecentDataSources.List
+                .Where(x => x.ImportSessionType.GetInterfaces().Contains(sessionType))
+                .Reverse();
+
+            foreach (var item in items) {
+                var tsmi = new ToolStripMenuItem(item.DisplayName);
+                tsmi.Click += async (sender2, e2) => {
+                    await new Importer(_manager, this).DoRecentImport(item);
+                };
+                menu.DropDownItems.Add(tsmi);
+            }
+
+            noneMenu.Visible = !items.Any();
+        }
     }
 }
