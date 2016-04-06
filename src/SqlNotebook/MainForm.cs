@@ -78,7 +78,8 @@ namespace SqlNotebook {
             _manager.NotebookItemRename += Manager_NotebookItemRename;
             _manager.StatusUpdate += (sender, e) => BeginInvoke(new MethodInvoker((() => {
                 _statusLbl.Text = e.Status;
-                NativeMethods.EnableWindow(Handle, !e.Status.Any());
+                NativeMethods.EnableWindow(_dockPanel.Handle, !e.Status.Any());
+                NativeMethods.EnableWindow(_toolStrip.Handle, !e.Status.Any());
                 bool oldVisible = _statusProgressbar.Visible;
                 bool newVisible = !string.IsNullOrWhiteSpace(e.Status);
                 if (!oldVisible && newVisible) {
@@ -460,6 +461,8 @@ namespace SqlNotebook {
         }
 
         private async void ExportMnu_Click(object sender, EventArgs e) {
+            SaveOpenItems();
+
             var scripts = _manager.Items.Where(x => x.Type == NotebookItemType.Script).Select(x => x.Name);
             string scriptName;
             bool doSaveAs;
