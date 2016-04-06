@@ -77,6 +77,25 @@ namespace SqlNotebookScript {
         }
     }
 
+    public static class ScriptParserExtensions {
+        public static string GetUnescapedText(this Token token) {
+            var x = token.Text;
+            if (x == "") {
+                return x;
+            } else if (x.First() == '"' && x.Last() == '"') {
+                return x.Substring(1, x.Length - 2).Replace("\"\"", "\"");
+            } else if (x.First() == '\'' && x.Last() == '\'') {
+                return x.Substring(1, x.Length - 2).Replace("''", "'");
+            } else if (x.First() == '`' && x.Last() == '`') {
+                return x.Substring(1, x.Length - 2).Replace("``", "`");
+            } else if (x.First() == '[' && x.Last() == ']') {
+                return x.Substring(1, x.Length - 2).Replace("]]", "]");
+            } else {
+                return x;
+            }
+        }
+    }
+
     public sealed class ScriptParser {
         private readonly Notebook _notebook;
 
@@ -180,12 +199,12 @@ namespace SqlNotebookScript {
             }
 
             if (q.PeekToken().Type == TokenType.String || q.PeekToken().Type == TokenType.Id) {
-                stmt.ScriptName = q.Take().Text;
+                stmt.ScriptName = q.Take().GetUnescapedText();
             } else {
                 throw new SyntaxException(new[] { "string", "identifier" }, q);
             }
 
-            while (IsVariableName(q.Peek()) && q.Peek(1) == "=") {
+            while (IsVariableName(q.PeekToken()?.GetUnescapedText() ?? "") && q.Peek(1) == "=") {
                 var arg = new Ast.ArgumentPair();
                 arg.Name = ParseVariableName(q);
                 q.Take("=");
@@ -271,9 +290,9 @@ namespace SqlNotebookScript {
 
         private static string ParseVariableName(TokenQueue q) {
             var t = q.PeekToken();
-            if (t != null && t.Type == TokenType.Variable && IsVariableName(t.Text)) {
+            if (t != null && t.Type == TokenType.Variable && IsVariableName(t.GetUnescapedText())) {
                 q.Take();
-                return t.Text;
+                return t.GetUnescapedText();
             } else {
                 throw new SyntaxException(new[] { "variable name starting with @ $ :" }, q);
             }

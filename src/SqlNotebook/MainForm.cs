@@ -21,10 +21,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SqlNotebook.Properties;
 using SqlNotebookCore;
+using SqlNotebookScript;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SqlNotebook {
@@ -456,5 +458,88 @@ namespace SqlNotebook {
         private void SaveAsMnu_Click(object sender, EventArgs e) {
             SaveOrSaveAs(saveAs: true);
         }
+
+        private async void ExportMnu_Click(object sender, EventArgs e) {
+            var scripts = _manager.Items.Where(x => x.Type == NotebookItemType.Script).Select(x => x.Name);
+            string scriptName;
+            bool doSaveAs;
+
+            using (var f = new ExportForm(scripts)) {
+                var result = f.ShowDialog(this);
+                scriptName = f.ScriptName;
+                if (result == DialogResult.Yes) {
+                    doSaveAs = false; // open
+                } else if (result == DialogResult.No) {
+                    doSaveAs = true; // save
+                } else {
+                    return;
+                }
+            }
+
+            string filePath;
+            if (doSaveAs) {
+                var f = new SaveFileDialog {
+                    AddExtension = true,
+                    AutoUpgradeEnabled = true,
+                    CheckPathExists = true,
+                    DefaultExt = ".csv",
+                    Filter = "CSV files|*.csv",
+                    OverwritePrompt = true,
+                    SupportMultiDottedExtensions = true,
+                    Title = "Save CSV As",
+                    ValidateNames = true
+                };
+                using (f) {
+                    if (f.ShowDialog(this) == DialogResult.OK) {
+                        filePath = f.FileName;
+                    } else {
+                        return;
+                    }
+                }
+            } else {
+                filePath = GetTemporaryExportFilePath();
+            }
+
+            _manager.PushStatus("Running the selected script. Press ESC to cancel.");
+            try {
+                var output = await Task.Run(() => _manager.ExecuteScript($"EXECUTE \"{scriptName.Replace("\"", "\"\"")}\""));
+                _manager.PopStatus();
+                _manager.PushStatus("Writing CSV file. Please wait.");
+                await Task.Run(() => {
+                    using (var stream = File.CreateText(filePath)) {
+                        output.WriteCsv(stream);
+                    }
+                });
+            } catch (Exception ex) {
+                ErrorBox("Export Error", "The data export failed.", ex.Message);
+                return;
+            } finally {
+                _manager.PopStatus();
+            }
+
+            if (doSaveAs) {
+                // if the user selected "save as", then open Explorer and select the file
+                Process.Start(new ProcessStartInfo {
+                    FileName = "explorer.exe",
+                    Arguments = $"/e, /select, \"{filePath}\""
+                });
+            } else {
+                // if the user selected "open", then open the CSV file directly
+                Process.Start(filePath);
+            }
+        }
+
+        private static string GetTemporaryExportFilePath() {
+            var tempPath = Path.GetTempPath();
+            for (int i = 1; i < 100; i++) {
+                var tempFilePath = Path.Combine(tempPath, $"Exported{(i == 1 ? "" : i.ToString())}.csv");
+                try {
+                    File.Delete(tempFilePath); // make sure the file isn't in use
+                    return tempFilePath;
+                } catch { }
+            }
+            return Path.Combine(tempPath, $"{Guid.NewGuid()}.csv");
+        }
     }
 }
+ 

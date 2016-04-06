@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using SqlNotebookCore;
 
@@ -31,6 +32,41 @@ namespace SqlNotebookScript {
             x.DataTables.Clear();
             TextOutput.AddRange(x.TextOutput);
             x.TextOutput.Clear();
+        }
+
+        public void WriteCsv(StreamWriter s) {
+            foreach (var dt in DataTables) {
+                s.WriteLine(string.Join(",", dt.Columns.Select(EscapeCsv)));
+                foreach (var row in dt.Rows) {
+                    s.WriteLine(string.Join(",", row.Select(EscapeCsv)));
+                }
+                s.WriteLine();
+            }
+        }
+
+        private static string EscapeCsv(object val) {
+            var str = val.ToString();
+            if (StringRequiresEscape(str)) {
+                return $"\"{str.Replace("\"", "\"\"")}\"";
+            } else {
+                return str;
+            }
+        }
+
+        private static bool StringRequiresEscape(string str) {
+            if (str == "") {
+                return false;
+            }
+
+            return
+                char.IsWhiteSpace(str.First()) ||
+                char.IsWhiteSpace(str.Last()) ||
+                (str.Length > 1 && str.First() == '0') ||
+                str.Any(CharRequiresEscape);
+        }
+
+        private static bool CharRequiresEscape(char ch) {
+            return ch == '"' || ch == '\'' || ch == ',' || ch == '\r' || ch == '\n' || ch == '\t';
         }
     }
 

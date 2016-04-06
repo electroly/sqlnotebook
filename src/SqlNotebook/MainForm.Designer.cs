@@ -38,6 +38,7 @@
             this._newMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._openMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._saveMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._saveAsMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this._exitMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
@@ -57,8 +58,7 @@
             this._recentFilesNoneMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._recentServersMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._recentServersNoneMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripButton();
-            this._saveAsMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._exportMnu = new System.Windows.Forms.ToolStripButton();
             this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
             this._toolStripContainer.SuspendLayout();
@@ -135,7 +135,7 @@
             this._newScriptBtn,
             this.toolStripSeparator1,
             this._importBtn,
-            this.toolStripDropDownButton4});
+            this._exportMnu});
             this._toolStrip.Location = new System.Drawing.Point(0, 0);
             this._toolStrip.Name = "_toolStrip";
             this._toolStrip.Padding = new System.Windows.Forms.Padding(3, 2, 1, 0);
@@ -188,6 +188,13 @@
             this._saveMnu.Size = new System.Drawing.Size(155, 22);
             this._saveMnu.Text = "&Save";
             this._saveMnu.Click += new System.EventHandler(this.SaveMnu_Click);
+            // 
+            // _saveAsMnu
+            // 
+            this._saveAsMnu.Name = "_saveAsMnu";
+            this._saveAsMnu.Size = new System.Drawing.Size(155, 22);
+            this._saveAsMnu.Text = "Save &as";
+            this._saveAsMnu.Click += new System.EventHandler(this.SaveAsMnu_Click);
             // 
             // toolStripSeparator4
             // 
@@ -350,22 +357,16 @@
             this._recentServersNoneMnu.Size = new System.Drawing.Size(109, 22);
             this._recentServersNoneMnu.Text = "(none)";
             // 
-            // toolStripDropDownButton4
+            // _exportMnu
             // 
-            this.toolStripDropDownButton4.Image = global::SqlNotebook.Properties.Resources.TextExports;
-            this.toolStripDropDownButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton4.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
-            this.toolStripDropDownButton4.Name = "toolStripDropDownButton4";
-            this.toolStripDropDownButton4.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this.toolStripDropDownButton4.Size = new System.Drawing.Size(74, 22);
-            this.toolStripDropDownButton4.Text = "&Export...";
-            // 
-            // _saveAsMnu
-            // 
-            this._saveAsMnu.Name = "_saveAsMnu";
-            this._saveAsMnu.Size = new System.Drawing.Size(155, 22);
-            this._saveAsMnu.Text = "Save &as";
-            this._saveAsMnu.Click += new System.EventHandler(this.SaveAsMnu_Click);
+            this._exportMnu.Image = global::SqlNotebook.Properties.Resources.TextExports;
+            this._exportMnu.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._exportMnu.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
+            this._exportMnu.Name = "_exportMnu";
+            this._exportMnu.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+            this._exportMnu.Size = new System.Drawing.Size(74, 22);
+            this._exportMnu.Text = "&Export...";
+            this._exportMnu.Click += new System.EventHandler(this.ExportMnu_Click);
             // 
             // MainForm
             // 
@@ -423,7 +424,7 @@
         private System.Windows.Forms.ToolStripMenuItem _importMssqlMnu;
         private System.Windows.Forms.ToolStripMenuItem _importMysqlMnu;
         private System.Windows.Forms.ToolStripMenuItem _recentServersNoneMnu;
-        private System.Windows.Forms.ToolStripButton toolStripDropDownButton4;
+        private System.Windows.Forms.ToolStripButton _exportMnu;
         private System.Windows.Forms.ToolStripMenuItem _saveAsMnu;
     }
 }
