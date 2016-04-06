@@ -15,7 +15,9 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
@@ -30,18 +32,27 @@ namespace SqlNotebook {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            var clickOnceFiles = AppDomain.CurrentDomain.SetupInformation.ActivationArguments?.ActivationData ?? new string[0];
+            foreach (var extraFilePath in clickOnceFiles.Skip(1)) {
+                Process.Start(Application.ExecutablePath, $"\"{extraFilePath}");
+            }
+
             string filePath;
             bool isNew;
-            if (Environment.GetCommandLineArgs().Length == 2) {
+            if (clickOnceFiles.Any()) {
+                filePath = clickOnceFiles.First();
+                isNew = false;
+            } else if (Environment.GetCommandLineArgs().Length == 2) {
                 filePath = Environment.GetCommandLineArgs()[1];
-                if (!File.Exists(filePath)) {
-                    MessageBox.Show("File does not exist: " + filePath);
-                    return;
-                }
                 isNew = false;
             } else {
                 filePath = Path.GetTempFileName();
                 isNew = true;
+            }
+
+            if (!File.Exists(filePath)) {
+                MessageBox.Show("File does not exist: " + filePath);
+                return;
             }
 
             try {

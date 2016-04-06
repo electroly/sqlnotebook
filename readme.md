@@ -1,15 +1,20 @@
 # SQL Notebook
+##➔ [Download & Install](http://sqlnotebook.com/install/setup.exe) &nbsp;&nbsp;&nbsp; ➔ [Documentation](https://github.com/electroly/sqlnotebook/wiki)
 
 SQL Notebook is a Windows desktop application for ad hoc data wrangling.  At its core, it is a frontend for SQLite database files.  The SQLite engine is augmented with additional functionality beyond its basic support for SQL queries:
 
-- External data sources can be linked in and queried interchangeably with local tables.  Remote data is not physically copied into the notebook file unless requested; instead, the data source is queried on-the-fly.  Any combination of data sources can be used together in the same SQL query.  Supported data sources: Microsoft SQL Server, PostgreSQL, MySQL.
+- External data sources can be linked in and queried interchangeably with local tables.  Remote data is not physically copied into the notebook file unless requested; instead, the data source is queried on-the-fly.  Any combination of data sources can be used together in the same SQL query.  Support for the following databases is built in:  
 
-- Common file types can be imported into the notebook as local tables.  Supported file types: CSV, Excel (`.xls` and `.xlsx`).
+    - Microsoft SQL Server
+    - PostgreSQL
+    - MySQL
 
-- The language is extended to support familiar structured programming constructs:
+- CSV and Excel files can be imported into the notebook as local tables.
+
+- The SQL language is extended to support familiar structured programming constructs:
     - Variables (`DECLARE`, `SET`)
     - Control flow (`IF`/`ELSE`, `WHILE`)
-    - Error handling (`THROW`, `BEGIN TRY`/`BEGIN CATCH`)
+    - Error handling (`THROW`, `TRY`/`CATCH`)
     - Stored procedures (`EXECUTE`)
 
 SQL Notebook allows the user to create three types of documents stored inside the notebook file:
