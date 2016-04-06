@@ -24,6 +24,7 @@ namespace SqlNotebook {
         public AboutForm() {
             InitializeComponent();
             _thirdPartyTxt.Text = Resources.ThirdPartyLicenses;
+            Text += $" {Application.ProductVersion}";
         }
 
         private void OkBtn_Click(object sender, EventArgs e) {
