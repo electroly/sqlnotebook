@@ -188,8 +188,9 @@ namespace SqlNotebookCore {
         UPlus = 156,
         Register = 157,
         Asterisk = 158,
-        Space = 159,
-        Illegal = 160
+        Span = 159,
+        Space = 160,
+        Illegal = 161
     };
 
     public ref class Token sealed {
