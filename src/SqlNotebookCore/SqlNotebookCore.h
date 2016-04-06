@@ -251,7 +251,6 @@ namespace SqlNotebookCore {
 
         SimpleDataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
             IReadOnlyList<Object^>^ orderedArgs, bool returnResult);
-        void InstallCsvModule();
         void InstallPgModule();
         void InstallMsModule();
         void InstallMyModule();

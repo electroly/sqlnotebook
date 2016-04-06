@@ -23,7 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            System.Windows.Forms.GroupBox groupBox2;
+            this._methodGrp = new System.Windows.Forms.GroupBox();
             this._methodLinkRad = new System.Windows.Forms.RadioButton();
             this._methodCopyRad = new System.Windows.Forms.RadioButton();
             this._tablesGrp = new System.Windows.Forms.GroupBox();
@@ -34,23 +34,22 @@
             this._okBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
             this._csvHeaderChk = new System.Windows.Forms.CheckBox();
-            groupBox2 = new System.Windows.Forms.GroupBox();
-            groupBox2.SuspendLayout();
+            this._methodGrp.SuspendLayout();
             this._tablesGrp.SuspendLayout();
             this.SuspendLayout();
             // 
-            // groupBox2
+            // _methodGrp
             // 
-            groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this._methodGrp.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            groupBox2.Controls.Add(this._methodLinkRad);
-            groupBox2.Controls.Add(this._methodCopyRad);
-            groupBox2.Location = new System.Drawing.Point(12, 208);
-            groupBox2.Name = "groupBox2";
-            groupBox2.Size = new System.Drawing.Size(281, 79);
-            groupBox2.TabIndex = 1;
-            groupBox2.TabStop = false;
-            groupBox2.Text = "Method";
+            this._methodGrp.Controls.Add(this._methodLinkRad);
+            this._methodGrp.Controls.Add(this._methodCopyRad);
+            this._methodGrp.Location = new System.Drawing.Point(12, 208);
+            this._methodGrp.Name = "_methodGrp";
+            this._methodGrp.Size = new System.Drawing.Size(281, 79);
+            this._methodGrp.TabIndex = 1;
+            this._methodGrp.TabStop = false;
+            this._methodGrp.Text = "Method";
             // 
             // _methodLinkRad
             // 
@@ -178,7 +177,7 @@
             this.CancelButton = this._cancelBtn;
             this.ClientSize = new System.Drawing.Size(305, 340);
             this.Controls.Add(this._csvHeaderChk);
-            this.Controls.Add(groupBox2);
+            this.Controls.Add(this._methodGrp);
             this.Controls.Add(this._tablesGrp);
             this.Controls.Add(this._cancelBtn);
             this.Controls.Add(this._okBtn);
@@ -192,8 +191,8 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Import";
-            groupBox2.ResumeLayout(false);
-            groupBox2.PerformLayout();
+            this._methodGrp.ResumeLayout(false);
+            this._methodGrp.PerformLayout();
             this._tablesGrp.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -211,5 +210,6 @@
         private System.Windows.Forms.Button _selectAllBtn;
         private System.Windows.Forms.CheckBox _csvHeaderChk;
         private System.Windows.Forms.GroupBox _tablesGrp;
+        private System.Windows.Forms.GroupBox _methodGrp;
     }
 }

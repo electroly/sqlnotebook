@@ -79,7 +79,6 @@ void Notebook::Init() {
     SqliteCall(sqlite3_open16(filePathWstr.c_str(), &sqlite));
     _sqlite = sqlite;
 
-    InstallCsvModule();
     InstallPgModule();
     InstallMsModule();
     InstallMyModule();
@@ -193,7 +192,7 @@ SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, O
                     throw gcnew ArgumentException(errMsg);
                 }
             } else if (orderedArgs != nullptr) {
-                value = orderedArgs[i];
+                value = orderedArgs[i - 1];
             } else {
                 throw gcnew ArgumentException("namedArgs or orderedArgs must be non-null.");
             }

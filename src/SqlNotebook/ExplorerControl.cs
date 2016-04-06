@@ -89,6 +89,10 @@ namespace SqlNotebook {
         }
 
         private void DeleteMnu_Click(object sender, EventArgs e) {
+            DoDelete();
+        }
+
+        private void DoDelete() {
             if (_list.SelectedItems.Count != 1) {
                 return;
             }
@@ -212,8 +216,12 @@ namespace SqlNotebook {
         }
 
         private void List_KeyDown(object sender, KeyEventArgs e) {
-            if (e.KeyData == Keys.F2 && _list.SelectedItems.Count == 1) {
-                _list.SelectedItems[0].BeginEdit();
+            if (_list.SelectedItems.Count == 1) {
+                if (e.KeyData == Keys.F2) {
+                    _list.SelectedItems[0].BeginEdit();
+                } else if (e.KeyCode == Keys.Delete) {
+                    DoDelete();
+                }
             }
         }
     }

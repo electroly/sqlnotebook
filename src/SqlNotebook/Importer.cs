@@ -25,6 +25,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.VisualBasic.FileIO;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MySql.Data.MySqlClient;
 using Npgsql;
@@ -112,6 +113,7 @@ namespace SqlNotebook {
             }
 
             var fileSession = session as IFileImportSession;
+            var dbSession = session as IDatabaseImportSession;
             if (fileSession != null) {
                 fileSession.FileHasHeaderRow = csvHasHeaderRow;
             }
@@ -121,43 +123,12 @@ namespace SqlNotebook {
                     _notebook.Execute("BEGIN");
 
                     try {
-                        foreach (var selectedTable in selectedTables) {
-                            if (copyData) {
-                                if (_notebook.QueryValue("SELECT name FROM sqlite_master WHERE name = '__temp_import'") != null) {
-                                    _notebook.Execute("DROP TABLE __temp_import");
-                                }
-                                
-                                _notebook.Execute(session.GetCreateVirtualTableStatement(selectedTable.SourceName, "__temp_import"));
-
-                                // create the target physical table with the same schema as the virtual table
-                                var tableCols = _notebook.Query($"PRAGMA table_info (__temp_import)");
-                                var lines = new List<string>();
-                                var pks = new string[tableCols.Rows.Count];
-                                for (int i = 0; i < tableCols.Rows.Count; i++) {
-                                    var name = Convert.ToString(tableCols.Get(i, "name"));
-                                    var type = Convert.ToString(tableCols.Get(i, "type"));
-                                    var notNull = Convert.ToInt32(tableCols.Get(i, "notnull")) == 1;
-                                    var pk = Convert.ToInt32(tableCols.Get(i, "pk"));
-                                    if (pk > 0) {
-                                        pks[pk - 1] = name;
-                                    }
-                                    lines.Add($"\"{name.Replace("\"", "\"\"")}\" {type} {(notNull ? "NOT NULL" : "")}");
-                                }
-                                var pkList = string.Join(" , ", pks.Where(x => x != null).Select(x => $"\"{x.Replace("\"", "\"\"")}\""));
-                                if (pkList.Any()) {
-                                    lines.Add($"PRIMARY KEY ( {pkList} )");
-                                }
-                                _notebook.Execute($"CREATE TABLE \"{selectedTable.TargetName.Replace("\"", "\"\"")}\" ( {string.Join(" , ", lines)} )");
-
-                                // copy all data from the virtual table to the physical table
-                                _notebook.Execute($"INSERT INTO \"{selectedTable.TargetName.Replace("\"", "\"\"")}\" SELECT * FROM __temp_import");
-
-                                // we're done with this import
-                                _notebook.Execute($"DROP TABLE __temp_import");
-                            } else {
-                                // just create the virtual table
-                                _notebook.Execute(session.GetCreateVirtualTableStatement(selectedTable.SourceName, selectedTable.TargetName));
-                            }
+                        if (dbSession != null) {
+                            DoDatabaseImport(selectedTables, copyData, dbSession);
+                        } else if (fileSession != null) {
+                            DoDatabaseImport(selectedTables, fileSession);
+                        } else {
+                            throw new InvalidOperationException("Unexpected session type.");
                         }
 
                         _notebook.Execute("COMMIT");
@@ -197,12 +168,60 @@ namespace SqlNotebook {
                 td.Show();
             }
         }
+
+        private void DoDatabaseImport(IReadOnlyList<ImportPreviewForm.SelectedTable> selectedTables, IFileImportSession fileSession) {
+            fileSession.PerformImport(
+                _notebook,
+                selectedTables.Select(x => x.SourceName).ToList(),
+                selectedTables.Select(x => x.TargetName).ToList()
+            );
+        }
+
+        private void DoDatabaseImport(IReadOnlyList<ImportPreviewForm.SelectedTable> selectedTables, bool copyData, IDatabaseImportSession dbSession) {
+            foreach (var selectedTable in selectedTables) {
+                if (copyData) {
+                    if (_notebook.QueryValue("SELECT name FROM sqlite_master WHERE name = '__temp_import'") != null) {
+                        _notebook.Execute("DROP TABLE __temp_import");
+                    }
+
+                    _notebook.Execute(dbSession.GetCreateVirtualTableStatement(selectedTable.SourceName, "__temp_import"));
+
+                    // create the target physical table with the same schema as the virtual table
+                    var tableCols = _notebook.Query($"PRAGMA table_info (__temp_import)");
+                    var lines = new List<string>();
+                    var pks = new string[tableCols.Rows.Count];
+                    for (int i = 0; i < tableCols.Rows.Count; i++) {
+                        var name = Convert.ToString(tableCols.Get(i, "name"));
+                        var type = Convert.ToString(tableCols.Get(i, "type"));
+                        var notNull = Convert.ToInt32(tableCols.Get(i, "notnull")) == 1;
+                        var pk = Convert.ToInt32(tableCols.Get(i, "pk"));
+                        if (pk > 0) {
+                            pks[pk - 1] = name;
+                        }
+                        lines.Add($"\"{name.Replace("\"", "\"\"")}\" {type} {(notNull ? "NOT NULL" : "")}");
+                    }
+                    var pkList = string.Join(" , ", pks.Where(x => x != null).Select(x => $"\"{x.Replace("\"", "\"\"")}\""));
+                    if (pkList.Any()) {
+                        lines.Add($"PRIMARY KEY ( {pkList} )");
+                    }
+                    _notebook.Execute($"CREATE TABLE \"{selectedTable.TargetName.Replace("\"", "\"\"")}\" ( {string.Join(" , ", lines)} )");
+
+                    // copy all data from the virtual table to the physical table
+                    _notebook.Execute($"INSERT INTO \"{selectedTable.TargetName.Replace("\"", "\"\"")}\" SELECT * FROM __temp_import");
+
+                    // we're done with this import
+                    _notebook.Execute($"DROP TABLE __temp_import");
+                } else {
+                    // just create the virtual table
+                    _notebook.Execute(dbSession.GetCreateVirtualTableStatement(selectedTable.SourceName, selectedTable.TargetName));
+                }
+            }
+        }
     }
 
     public interface IImportSession {
         bool FromRecent(RecentDataSource recent, IWin32Window owner);
         IReadOnlyList<string> TableNames { get; }
-        string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName);
         void AddToRecentlyUsed();
     }
 
@@ -210,10 +229,13 @@ namespace SqlNotebook {
         IReadOnlyList<string> SupportedFileExtensions { get; }
         void FromFilePath(string filePath);
         bool FileHasHeaderRow { get; set; }
+        void PerformImport(Notebook notebook, IReadOnlyList<string> sourceTableNames, IReadOnlyList<string> targetTableNames);
+                // called on the SQLite thread
     }
 
     public interface IDatabaseImportSession : IImportSession {
         bool FromConnectForm(IWin32Window owner);
+        string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName);
     }
 
     public sealed class CsvImportSession : IFileImportSession {
@@ -256,6 +278,70 @@ namespace SqlNotebook {
                 ImportSessionType = this.GetType()
             });
         }
+
+        public static Regex _nonAlphaNumericUnderscoreRegex = new Regex("[^A-Za-z0-9_]");
+        public void PerformImport(Notebook notebook, IReadOnlyList<string> sourceTableNames, IReadOnlyList<string> targetTableNames) {
+            var sourceTableName = sourceTableNames.Single();
+            var targetTableName = targetTableNames.Single();
+
+            using (var parser = NewParser(_filePath)) {
+                var columnNames = new List<string>();
+                if (FileHasHeaderRow) {
+                    var cells = parser.ReadFields();
+                    foreach (var cell in cells) {
+                        var prefix = _nonAlphaNumericUnderscoreRegex.Replace(cell, "_");
+                        var name = CreateUniqueName(prefix, columnNames);
+                        columnNames.Add(name);
+                    }
+                }
+
+                var firstRow = true;
+                string insertSql = null;
+                var row = new object[columnNames.Count];
+                while (!parser.EndOfData) {
+                    var cells = parser.ReadFields();
+
+                    if (firstRow) {
+                        if (!FileHasHeaderRow) {
+                            for (int i = 0; i < cells.Length; i++) {
+                                columnNames.Add(CreateUniqueName("col", columnNames));
+                            }
+                        }
+
+                        var columnList = string.Join(" , ", columnNames.Select(x => $"\"{x.Replace("\"", "\"\"")}\""));
+                        notebook.Execute($"CREATE TABLE \"{targetTableName.Replace("\"", "\"\"")}\" ( {columnList} )");
+                        insertSql = $"INSERT INTO \"{targetTableName.Replace("\"", "\"\"")}\" VALUES " +
+                            $"( {string.Join(",", columnNames.Select((x, i) => $"?{i + 1}"))} )";
+                        firstRow = false;
+                    }
+
+                    for (int i = 0; i < cells.Length; i++) {
+                        row[i] = cells[i];
+                    }
+                    for (int i = cells.Length; i < row.Length; i++) {
+                        row[i] = null;
+                    }
+                    notebook.Execute(insertSql, row);
+                }
+            }
+        }
+
+        private static string CreateUniqueName(string prefix, IReadOnlyList<string> existingNames) {
+            var name = prefix; // first try it without a number on the end
+            int suffix = 2;
+            while (existingNames.Contains(name)) {
+                name = prefix + (suffix++);
+            }
+            return name;
+        }
+
+        private static TextFieldParser NewParser(string filePath) {
+            var x = new TextFieldParser(filePath);
+            x.HasFieldsEnclosedInQuotes = true;
+            x.SetDelimiters(",");
+            return x;
+        }
+
     }
 
     public sealed class PgImportSession : AdoImportSession<Npgsql.NpgsqlConnectionStringBuilder> {

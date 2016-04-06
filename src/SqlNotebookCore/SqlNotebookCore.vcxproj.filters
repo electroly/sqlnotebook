@@ -7,7 +7,6 @@
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Notebook.cpp" />
-    <ClCompile Include="CsvModule.cpp" />
     <ClCompile Include="AdoModules.cpp" />
   </ItemGroup>
 </Project>

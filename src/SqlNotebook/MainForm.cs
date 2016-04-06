@@ -76,7 +76,30 @@ namespace SqlNotebook {
             _manager.NotebookItemsSaveRequest += Manager_NotebookItemsSaveRequest;
             _manager.NotebookDirty += (sender, e) => SetDirty();
             _manager.NotebookItemRename += Manager_NotebookItemRename;
-            _manager.StatusUpdate += (sender, e) => BeginInvoke(new MethodInvoker((() => {
+            _manager.StatusUpdate += Manager_StatusUpdate;
+
+            if (isNew) {
+                _manager.NewNote("Getting Started", Resources.GettingStartedRtf);
+                Load += (sender, e) => {
+                    OpenItem(new NotebookItem(NotebookItemType.Note, "Getting Started"));
+                    _isDirty = false;
+                    SetTitle();
+                };
+            }
+
+            Load += (sender, e) => _manager.Rescan();
+        }
+
+        private void Manager_StatusUpdate(object sender, StatusUpdateEventArgs e) {
+            BeginInvoke(new MethodInvoker((() => {
+                bool busyThen = _statusLbl.Text.Any();
+                bool busyNow = e.Status.Any();
+                if (!busyThen && busyNow) {
+                    this.BeginTaskbarProgress();
+                } else if (busyThen && !busyNow) {
+                    this.EndTaskbarProgress();
+                }
+
                 _statusLbl.Text = e.Status;
                 NativeMethods.EnableWindow(_dockPanel.Handle, !e.Status.Any());
                 NativeMethods.EnableWindow(_toolStrip.Handle, !e.Status.Any());
@@ -96,17 +119,6 @@ namespace SqlNotebook {
                     }
                 }
             })));
-
-            if (isNew) {
-                _manager.NewNote("Getting Started", Resources.GettingStartedRtf);
-                Load += (sender, e) => {
-                    OpenItem(new NotebookItem(NotebookItemType.Note, "Getting Started"));
-                    _isDirty = false;
-                    SetTitle();
-                };
-            }
-
-            Load += (sender, e) => _manager.Rescan();
         }
 
         private static class NativeMethods {

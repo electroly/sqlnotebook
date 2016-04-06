@@ -43,8 +43,9 @@ namespace SqlNotebook {
                 _tablesGrp.Top = _csvHeaderChk.Top;
             }
 
-            // choose to copy instead of link by default for file sources
+            // always copy instead of link for file sources
             if (session is IFileImportSession) {
+                _methodGrp.Enabled = false;
                 _methodCopyRad.Checked = true;
             }
 
