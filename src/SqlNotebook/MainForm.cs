@@ -202,7 +202,7 @@ namespace SqlNotebook {
                 bool runImmediately = false;
                 if (item.Type == NotebookItemType.Table || item.Type == NotebookItemType.View) {
                     var name = _manager.NewScript();
-                    _manager.SetItemData(name, $"SELECT * FROM \"{item.Name.Replace("\"", "\"\"")}\" LIMIT 1000");
+                    _manager.SetItemData(name, $"SELECT * FROM {item.Name.DoubleQuote()} LIMIT 1000");
                     item = new NotebookItem(NotebookItemType.Script, name);
                     runImmediately = true;
                 }
@@ -520,7 +520,7 @@ namespace SqlNotebook {
 
             _manager.PushStatus("Running the selected script. Press ESC to cancel.");
             try {
-                var output = await Task.Run(() => _manager.ExecuteScript($"EXECUTE \"{scriptName.Replace("\"", "\"\"")}\""));
+                var output = await Task.Run(() => _manager.ExecuteScript($"EXECUTE {scriptName.DoubleQuote()}"));
                 _manager.PopStatus();
                 _manager.PushStatus("Writing CSV file. Please wait.");
                 await Task.Run(() => {

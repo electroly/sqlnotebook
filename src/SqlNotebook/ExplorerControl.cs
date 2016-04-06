@@ -150,7 +150,7 @@ namespace SqlNotebook {
             try {
                 if (lvi.Group.Name == "Table" || lvi.Group.Name == "View") {
                     n.Invoke(() => {
-                        var dt = n.Query($"PRAGMA table_info (\"{lvi.Text.Replace("\"", "\"\"")}\")");
+                        var dt = n.Query($"PRAGMA table_info ({lvi.Text.DoubleQuote()})");
                         for (int i = 0; i < dt.Rows.Count; i++) {
                             var name = (string)dt.Get(i, "name");
                             var info = (string)dt.Get(i, "type");

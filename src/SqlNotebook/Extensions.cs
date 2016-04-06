@@ -128,5 +128,9 @@ namespace SqlNotebook {
             if (_taskbarSupported)
                 _taskbar.SetProgressValue(hwnd, (ulong)(value * 1000), 1000);
         }
+
+        public static string DoubleQuote(this string str) {
+            return $"\"{str.Replace("\"", "\"\"")}\"";
+        }
     }
 }

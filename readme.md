@@ -2,12 +2,9 @@
 
 SQL Notebook is a Windows desktop application for ad hoc data wrangling.  At its core, it is a frontend for SQLite database files.  The SQLite engine is augmented with additional functionality beyond its basic support for SQL queries:
 
-- External data sources can be linked in and queried interchangeably with local tables.  The data is not copied into the SQLite database file; instead, the data source is queried on-the-fly.  Any combination of data sources can be used together in the same SQL query.  Supported data sources are:
+- External data sources can be linked in and queried interchangeably with local tables.  Remote data is not physically copied into the notebook file unless requested; instead, the data source is queried on-the-fly.  Any combination of data sources can be used together in the same SQL query.  Supported data sources: Microsoft SQL Server, PostgreSQL, MySQL.
 
-    - PostgreSQL
-    - MySQL
-    - Microsoft SQL Server
-    - CSV files
+- Common file types can be imported into the notebook as local tables.  Supported file types: CSV, Excel (`.xls` and `.xlsx`).
 
 - The language is extended to support familiar structured programming constructs:
     - Variables (`DECLARE`, `SET`)

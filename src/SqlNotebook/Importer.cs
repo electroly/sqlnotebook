@@ -25,6 +25,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Excel;
 using Microsoft.VisualBasic.FileIO;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MySql.Data.MySqlClient;
@@ -44,13 +45,23 @@ namespace SqlNotebook {
         private readonly IWin32Window _owner;
 
         private readonly IReadOnlyList<Type> _fileSessionTypes = new[] {
-            typeof(CsvImportSession)
+            typeof(CsvImportSession),
+            typeof(ExcelImportSession)
         };
 
         public Importer(NotebookManager manager, IWin32Window owner) {
             _manager = manager;
             _notebook = manager.Notebook;
             _owner = owner;
+        }
+
+        public static string CreateUniqueName(string prefix, IReadOnlyList<string> existingNames) {
+            var name = prefix; // first try it without a number on the end
+            int suffix = 2;
+            while (existingNames.Contains(name)) {
+                name = prefix + (suffix++);
+            }
+            return name;
         }
 
         public async Task DoFileImport() {
@@ -198,16 +209,16 @@ namespace SqlNotebook {
                         if (pk > 0) {
                             pks[pk - 1] = name;
                         }
-                        lines.Add($"\"{name.Replace("\"", "\"\"")}\" {type} {(notNull ? "NOT NULL" : "")}");
+                        lines.Add($"{name.DoubleQuote()} {type} {(notNull ? "NOT NULL" : "")}");
                     }
-                    var pkList = string.Join(" , ", pks.Where(x => x != null).Select(x => $"\"{x.Replace("\"", "\"\"")}\""));
+                    var pkList = string.Join(" , ", pks.Where(x => x != null).Select(x => x.DoubleQuote()));
                     if (pkList.Any()) {
                         lines.Add($"PRIMARY KEY ( {pkList} )");
                     }
-                    _notebook.Execute($"CREATE TABLE \"{selectedTable.TargetName.Replace("\"", "\"\"")}\" ( {string.Join(" , ", lines)} )");
+                    _notebook.Execute($"CREATE TABLE {selectedTable.TargetName.DoubleQuote()} ( {string.Join(" , ", lines)} )");
 
                     // copy all data from the virtual table to the physical table
-                    _notebook.Execute($"INSERT INTO \"{selectedTable.TargetName.Replace("\"", "\"\"")}\" SELECT * FROM __temp_import");
+                    _notebook.Execute($"INSERT INTO {selectedTable.TargetName.DoubleQuote()} SELECT * FROM __temp_import");
 
                     // we're done with this import
                     _notebook.Execute($"DROP TABLE __temp_import");
@@ -267,10 +278,6 @@ namespace SqlNotebook {
 
         public bool FileHasHeaderRow { get; set; }
 
-        public string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
-            return $"CREATE VIRTUAL TABLE \"{notebookTableName.Replace("\"", "\"\"")}\" USING csv ('{_filePath.Replace("'", "''")}', {(FileHasHeaderRow ? "HEADER" : "NO_HEADER")})";
-        }
-
         public void AddToRecentlyUsed() {
             RecentDataSources.Add(new RecentDataSource {
                 ConnectionString = _filePath,
@@ -290,7 +297,7 @@ namespace SqlNotebook {
                     var cells = parser.ReadFields();
                     foreach (var cell in cells) {
                         var prefix = _nonAlphaNumericUnderscoreRegex.Replace(cell, "_");
-                        var name = CreateUniqueName(prefix, columnNames);
+                        var name = Importer.CreateUniqueName(prefix, columnNames);
                         columnNames.Add(name);
                     }
                 }
@@ -304,13 +311,13 @@ namespace SqlNotebook {
                     if (firstRow) {
                         if (!FileHasHeaderRow) {
                             for (int i = 0; i < cells.Length; i++) {
-                                columnNames.Add(CreateUniqueName("col", columnNames));
+                                columnNames.Add(Importer.CreateUniqueName("col", columnNames));
                             }
                         }
 
-                        var columnList = string.Join(" , ", columnNames.Select(x => $"\"{x.Replace("\"", "\"\"")}\""));
-                        notebook.Execute($"CREATE TABLE \"{targetTableName.Replace("\"", "\"\"")}\" ( {columnList} )");
-                        insertSql = $"INSERT INTO \"{targetTableName.Replace("\"", "\"\"")}\" VALUES " +
+                        var columnList = string.Join(" , ", columnNames.Select(x => x.DoubleQuote()));
+                        notebook.Execute($"CREATE TABLE {targetTableName.DoubleQuote()} ( {columnList} )");
+                        insertSql = $"INSERT INTO {targetTableName.DoubleQuote()} VALUES " +
                             $"( {string.Join(",", columnNames.Select((x, i) => $"?{i + 1}"))} )";
                         firstRow = false;
                     }
@@ -344,11 +351,92 @@ namespace SqlNotebook {
 
     }
 
+    public sealed class ExcelImportSession : IFileImportSession {
+        private string _filePath;
+
+        public IReadOnlyList<string> SupportedFileExtensions {
+            get {
+                return new[] { ".xls", ".xlsx" };
+            }
+        }
+
+        private IExcelDataReader CreateReader(string filePath, Stream stream) {
+            IExcelDataReader x;
+            if (Path.GetExtension(filePath).ToLower() == ".xls") {
+                x = ExcelReaderFactory.CreateBinaryReader(stream);
+            } else {
+                x = ExcelReaderFactory.CreateOpenXmlReader(stream);
+            }
+            x.IsFirstRowAsColumnNames = FileHasHeaderRow;
+            return x;
+        }
+
+        public void FromFilePath(string filePath) {
+            _filePath = filePath;
+
+            using (var stream = File.OpenRead(filePath))
+            using (var reader = CreateReader(filePath, stream)) {
+                var tableNames = new List<string>();
+                for (int i = 0; i < reader.ResultsCount; i++) {
+                    tableNames.Add(Importer.CreateUniqueName(reader.Name, tableNames));
+                    reader.NextResult();
+                }
+                TableNames = tableNames;
+            }
+        }
+
+        public bool FromRecent(RecentDataSource recent, IWin32Window owner) {
+            FromFilePath(recent.ConnectionString);
+            return true;
+        }
+
+        public IReadOnlyList<string> TableNames { get; private set; } = new string[0];
+
+        public bool FileHasHeaderRow { get; set; }
+
+        public void AddToRecentlyUsed() {
+            RecentDataSources.Add(new RecentDataSource {
+                ConnectionString = _filePath,
+                DisplayName = Path.GetFileName(_filePath),
+                ImportSessionType = this.GetType()
+            });
+        }
+
+        public void PerformImport(Notebook notebook, IReadOnlyList<string> sourceTableNames, IReadOnlyList<string> targetTableNames) {
+            using (var stream = File.OpenRead(_filePath))
+            using (var reader = CreateReader(_filePath, stream))
+            using (var dataSet = reader.AsDataSet()) {
+                for (int i = 0; i < sourceTableNames.Count; i++) {
+                    var sourceName = sourceTableNames[i];
+                    var targetName = targetTableNames[i];
+                    var dt = dataSet.Tables[IndexOf(sourceTableNames, sourceName)];
+                    var columnNames = dt.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
+                    var quotedCols = columnNames.Select(x => x.DoubleQuote());
+                    notebook.Execute($"CREATE TABLE {targetName.DoubleQuote()} ({string.Join(",", quotedCols)})");
+                    var insertSql = $"INSERT INTO {targetName.DoubleQuote()} VALUES " +
+                        $"( {string.Join(",", columnNames.Select((x, j) => $"?{j + 1}"))} )";
+                    foreach (DataRow row in dt.Rows) {
+                        notebook.Execute(insertSql, row.ItemArray);
+                    }
+                }
+            }
+        }
+
+        private static int IndexOf(IReadOnlyList<string> list, string item) {
+            for (int i = 0; i < list.Count; i++) {
+                if (list[i] == item) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+    }
+
     public sealed class PgImportSession : AdoImportSession<Npgsql.NpgsqlConnectionStringBuilder> {
         public override string ProductName { get; } = "PostgreSQL";
 
         public override string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
-            return $"CREATE VIRTUAL TABLE \"{notebookTableName.Replace("\"", "\"\"")}\" USING pgsql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
+            return $"CREATE VIRTUAL TABLE {notebookTableName.DoubleQuote()} USING pgsql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
         }
 
         protected override IDbConnection CreateConnection(Npgsql.NpgsqlConnectionStringBuilder builder) {
@@ -397,7 +485,7 @@ namespace SqlNotebook {
         public override string ProductName { get; } = "Microsoft SQL Server";
 
         public override string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
-            return $"CREATE VIRTUAL TABLE \"{notebookTableName.Replace("\"", "\"\"")}\" USING mssql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
+            return $"CREATE VIRTUAL TABLE {notebookTableName.DoubleQuote()} USING mssql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
         }
 
         protected override IDbConnection CreateConnection(SqlConnectionStringBuilder builder) {
@@ -448,7 +536,7 @@ namespace SqlNotebook {
         public override string ProductName { get; } = "MySQL";
 
         public override string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
-            return $"CREATE VIRTUAL TABLE \"{notebookTableName.Replace("\"", "\"\"")}\" USING mysql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
+            return $"CREATE VIRTUAL TABLE {notebookTableName.DoubleQuote()} USING mysql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
         }
 
         protected override IDbConnection CreateConnection(MySqlConnectionStringBuilder builder) {

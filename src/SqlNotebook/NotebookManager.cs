@@ -243,11 +243,11 @@ namespace SqlNotebook {
                         break;
 
                     case NotebookItemType.Table:
-                        Notebook.Execute($"DROP TABLE \"{item.Name.Replace("\"", "\"\"")}\"");
+                        Notebook.Execute($"DROP TABLE {item.Name.DoubleQuote()}");
                         break;
 
                     case NotebookItemType.View:
-                        Notebook.Execute($"DROP VIEW \"{item.Name.Replace("\"", "\"\"")}\"");
+                        Notebook.Execute($"DROP VIEW {item.Name.DoubleQuote()}");
                         break;
                 }
             });
@@ -282,7 +282,7 @@ namespace SqlNotebook {
                         break;
 
                     case NotebookItemType.Table:
-                        Notebook.Execute($"ALTER TABLE \"{item.Name.Replace("\"", "\"\"")}\" RENAME TO \"{newName.Replace("\"", "\"\"")}\"");
+                        Notebook.Execute($"ALTER TABLE {item.Name.DoubleQuote()} RENAME TO \"{newName.Replace("\"", "\"\"")}\"");
                         break;
 
                     case NotebookItemType.View:
@@ -293,8 +293,8 @@ namespace SqlNotebook {
                             throw new Exception($"Unable to parse the original CREATE VIEW statement for \"{item.Name}\".");
                         }
                         var suffix = string.Join(" ", tokens.Select(x => x.Text).Skip(3)); // everything after "CREATE VIEW viewname"
-                        Notebook.Execute($"DROP VIEW \"{item.Name.Replace("\"", "\"\"")}\"");
-                        Notebook.Execute($"CREATE VIEW \"{newName.Replace("\"", "\"\"")}\" {suffix}");
+                        Notebook.Execute($"DROP VIEW {item.Name.DoubleQuote()}");
+                        Notebook.Execute($"CREATE VIEW {newName.DoubleQuote()} {suffix}");
                         break;
                 }
             });
