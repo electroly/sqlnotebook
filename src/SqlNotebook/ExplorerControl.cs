@@ -190,6 +190,10 @@ namespace SqlNotebook {
             e.CancelEdit = true; // if this is a successful edit, we will update the label ourselves
             var lvi = _list.Items[e.Item];
 
+            if (e.Label == null) {
+                return; // user did not change the name
+            }
+
             try {
                 var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
                 _manager.RenameItem(new NotebookItem(type, lvi.Text), e.Label);

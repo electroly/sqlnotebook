@@ -120,6 +120,9 @@ namespace SqlNotebook {
             if (_openItems.TryGetValue(e.Item, out ucdc)) {
                 ucdc.Text = e.NewName;
                 ucdc.Content.ItemName = e.NewName;
+                _openItems.Remove(e.Item);
+                var newItem = new NotebookItem(e.Item.Type, e.NewName);
+                _openItems.Add(newItem, ucdc);
             }
             _manager.Rescan();
         }
@@ -542,6 +545,18 @@ namespace SqlNotebook {
                 } catch { }
             }
             return Path.Combine(tempPath, $"{Guid.NewGuid()}.csv");
+        }
+
+        private void SqliteDocMnu_Click(object sender, EventArgs e) {
+            Process.Start("https://sqlite.org/docs.html");
+        }
+
+        private void WikiMnu_Click(object sender, EventArgs e) {
+            Process.Start("https://github.com/electroly/sqlnotebook/wiki");
+        }
+
+        private void ReportIssueMnu_Click(object sender, EventArgs e) {
+            Process.Start("https://github.com/electroly/sqlnotebook/issues/new");
         }
     }
 }

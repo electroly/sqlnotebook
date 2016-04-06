@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
             this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this._statusStrip = new System.Windows.Forms.StatusStrip();
             this._statusLbl = new System.Windows.Forms.ToolStripStatusLabel();
@@ -42,6 +44,8 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this._exitMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
+            this._sqliteDocMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._wikiMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._aboutMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this._newNoteBtn = new System.Windows.Forms.ToolStripButton();
@@ -59,6 +63,9 @@
             this._recentServersMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._recentServersNoneMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._exportMnu = new System.Windows.Forms.ToolStripButton();
+            this._reportIssueMnu = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
             this._toolStripContainer.SuspendLayout();
@@ -213,6 +220,11 @@
             // 
             this.toolStripDropDownButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._sqliteDocMnu,
+            this._wikiMnu,
+            toolStripSeparator5,
+            this._reportIssueMnu,
+            toolStripSeparator6,
             this._aboutMnu});
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -222,10 +234,31 @@
             this.toolStripDropDownButton2.Size = new System.Drawing.Size(50, 22);
             this.toolStripDropDownButton2.Text = "&Help";
             // 
+            // _sqliteDocMnu
+            // 
+            this._sqliteDocMnu.Image = global::SqlNotebook.Properties.Resources.Bookmark;
+            this._sqliteDocMnu.Name = "_sqliteDocMnu";
+            this._sqliteDocMnu.Size = new System.Drawing.Size(225, 22);
+            this._sqliteDocMnu.Text = "Open SQLite documentation";
+            this._sqliteDocMnu.Click += new System.EventHandler(this.SqliteDocMnu_Click);
+            // 
+            // _wikiMnu
+            // 
+            this._wikiMnu.Image = global::SqlNotebook.Properties.Resources.Bookmark;
+            this._wikiMnu.Name = "_wikiMnu";
+            this._wikiMnu.Size = new System.Drawing.Size(225, 22);
+            this._wikiMnu.Text = "Open SQL Notebook wiki";
+            this._wikiMnu.Click += new System.EventHandler(this.WikiMnu_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new System.Drawing.Size(222, 6);
+            // 
             // _aboutMnu
             // 
             this._aboutMnu.Name = "_aboutMnu";
-            this._aboutMnu.Size = new System.Drawing.Size(187, 22);
+            this._aboutMnu.Size = new System.Drawing.Size(225, 22);
             this._aboutMnu.Text = "About SQL Notebook";
             this._aboutMnu.Click += new System.EventHandler(this.AboutMnu_Click);
             // 
@@ -368,6 +401,18 @@
             this._exportMnu.Text = "&Export...";
             this._exportMnu.Click += new System.EventHandler(this.ExportMnu_Click);
             // 
+            // _reportIssueMnu
+            // 
+            this._reportIssueMnu.Name = "_reportIssueMnu";
+            this._reportIssueMnu.Size = new System.Drawing.Size(225, 22);
+            this._reportIssueMnu.Text = "Report an issue";
+            this._reportIssueMnu.Click += new System.EventHandler(this.ReportIssueMnu_Click);
+            // 
+            // toolStripSeparator6
+            // 
+            toolStripSeparator6.Name = "toolStripSeparator6";
+            toolStripSeparator6.Size = new System.Drawing.Size(222, 6);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -426,6 +471,9 @@
         private System.Windows.Forms.ToolStripMenuItem _recentServersNoneMnu;
         private System.Windows.Forms.ToolStripButton _exportMnu;
         private System.Windows.Forms.ToolStripMenuItem _saveAsMnu;
+        private System.Windows.Forms.ToolStripMenuItem _sqliteDocMnu;
+        private System.Windows.Forms.ToolStripMenuItem _wikiMnu;
+        private System.Windows.Forms.ToolStripMenuItem _reportIssueMnu;
     }
 }
 
