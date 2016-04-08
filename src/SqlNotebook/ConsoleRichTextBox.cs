@@ -31,7 +31,7 @@ namespace SqlNotebook {
     public sealed class ConsoleRichTextBox : RichTextBox {
         private int _inputStart = 0;
 
-        public string PromptText { get; set; } = ">>";
+        public string PromptText { get; set; } = ">";
         public Font PromptFont { get; set; }
         public Color PromptColor { get; set; } = Color.Black;
         public event EventHandler<ConsoleCommandEventArgs> ConsoleCommand;
@@ -50,7 +50,9 @@ namespace SqlNotebook {
             SelectionProtected = true;
             SelectionStart = Text.Length;
             SelectionProtected = false;
+            AppendText("\n");
             ScrollToCaret();
+            SelectionStart = Text.Length - 1;
             this.EndUpdate();
         }
 
@@ -77,7 +79,6 @@ namespace SqlNotebook {
                             this.BeginUpdate();
                             SelectAll();
                             SelectionProtected = true;
-                            Append("\n");
                             SelectionStart = Text.Length;
                             ShowPrompt();
                             this.EndUpdate();

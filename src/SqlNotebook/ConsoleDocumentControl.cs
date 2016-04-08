@@ -149,8 +149,6 @@ namespace SqlNotebook {
 
                     _consoleTxt.Append("\n");
                 } finally {
-                    _consoleTxt.SelectionStart = _consoleTxt.Text.Length;
-                    _consoleTxt.ScrollToCaret();
                     _consoleTxt.EndUpdate();
                 }
             }
