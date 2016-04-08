@@ -29,6 +29,9 @@ namespace SqlNotebook {
 
         public ExplorerControl(NotebookManager manager, IWin32Window mainForm) {
             InitializeComponent();
+            _list.EnableDoubleBuffer();
+            _detailsLst.EnableDoubleBuffer();
+
             _mainForm = mainForm;
             _manager = manager;
             _manager.NotebookChange += (sender, e) => HandleNotebookChange(e);
