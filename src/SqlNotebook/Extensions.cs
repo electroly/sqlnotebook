@@ -146,9 +146,40 @@ namespace SqlNotebook {
             return $"\"{str.Replace("\"", "\"\"")}\"";
         }
 
-        public static void EnableDoubleBuffer(this Control self) {
+        public static void EnableDoubleBuffer(this ListView self) {
             typeof(ListView).GetMethod("SetStyle", BindingFlags.NonPublic | BindingFlags.Instance)
                 .Invoke(self, new object[] { ControlStyles.OptimizedDoubleBuffer, true });
         }
+
+        public static void InstallCopyPasteHandling(this RichTextBox richTextBox, bool allowRtfPaste) {
+            richTextBox.AllowDrop = false;
+            richTextBox.EnableAutoDragDrop = false;
+            richTextBox.ShortcutsEnabled = false;
+            richTextBox.PreviewKeyDown += (sender, e) => {
+                var isCtrlC = e.Control && !e.Alt && !e.Shift && e.KeyCode == Keys.C;
+                var isCtrlIns = e.Control && !e.Alt && !e.Shift && e.KeyCode == Keys.Insert;
+                var isCtrlV = e.Control && !e.Alt && !e.Shift && e.KeyCode == Keys.V;
+                var isShiftIns = !e.Control && !e.Alt && e.Shift && e.KeyCode == Keys.Insert;
+                if (isCtrlC || isCtrlIns) {
+                    richTextBox.Copy();
+                } else if (isCtrlV || isShiftIns) {
+                    if (richTextBox.SelectionProtected) {
+                        System.Media.SystemSounds.Exclamation.Play();
+                    } else if (allowRtfPaste && Clipboard.ContainsText(TextDataFormat.Rtf)) {
+                        string unprotectedRtf;
+                        using (var offscreen = new RichTextBox { Rtf = Clipboard.GetText(TextDataFormat.Rtf) }) {
+                            offscreen.SelectAll();
+                            offscreen.SelectionProtected = false;
+                            unprotectedRtf = offscreen.Rtf;
+                        }
+                        richTextBox.SelectedRtf = unprotectedRtf;
+                    } else if (Clipboard.ContainsText()) {
+                        richTextBox.SelectedText = Clipboard.GetText();
+                    }
+                }
+            };
+        }
+
+
     }
 }

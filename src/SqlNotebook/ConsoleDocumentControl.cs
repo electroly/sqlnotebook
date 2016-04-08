@@ -60,16 +60,15 @@ namespace SqlNotebook {
                 BorderStyle = BorderStyle.None,
                 AutoWordSelection = true,
                 Font = _font,
-                EnableAutoDragDrop = false,
                 Multiline = true,
                 ScrollBars = RichTextBoxScrollBars.Both,
-                ShortcutsEnabled = true,
                 WordWrap = false,
                 PromptFont = _promptFont,
                 PromptText = ">",
                 PromptColor = Color.Red
             };
             Controls.Add(_consoleTxt);
+            _consoleTxt.InstallCopyPasteHandling(allowRtfPaste: false);
             _consoleTxt.ConsoleCommand += ConsoleTxt_ConsoleCommand;
 
             Load += (sender, e) => {

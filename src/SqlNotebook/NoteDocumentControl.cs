@@ -52,6 +52,8 @@ namespace SqlNotebook {
                 }
                 Text_SelectionChanged(this, EventArgs.Empty);
             };
+
+            _text.InstallCopyPasteHandling(allowRtfPaste: true);
         }
 
         private void FontMnu_Click(object sender, EventArgs e) {
@@ -80,13 +82,6 @@ namespace SqlNotebook {
         }
 
         private void Text_TextChanged(object sender, EventArgs e) {
-            _text.BeginUpdate();
-            int oldStart = _text.SelectionStart;
-            int oldLength = _text.SelectionLength;
-            _text.SelectAll();
-            _text.SelectionProtected = false;
-            _text.Select(oldStart, oldLength);
-            _text.EndUpdate();
             _manager.SetDirty();
         }
 
