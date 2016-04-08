@@ -297,7 +297,9 @@ static int AdoColumn(sqlite3_vtab_cursor* pCur, sqlite3_context* ctx, int n) {
             return SQLITE_ERROR;
         }
         auto type = cursor->Reader->GetFieldType(n);
-        if (type == Int16::typeid) {
+        if (cursor->Reader->IsDBNull(n)) {
+            sqlite3_result_null(ctx);
+        } else if (type == Int16::typeid) {
             sqlite3_result_int(ctx, cursor->Reader->GetInt16(n));
         } else if (type == Int32::typeid) {
             sqlite3_result_int(ctx, cursor->Reader->GetInt32(n));
