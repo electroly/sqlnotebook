@@ -40,7 +40,6 @@ namespace SqlNotebookScript {
                 foreach (var row in dt.Rows) {
                     s.WriteLine(string.Join(",", row.Select(EscapeCsv)));
                 }
-                s.WriteLine();
             }
         }
 
