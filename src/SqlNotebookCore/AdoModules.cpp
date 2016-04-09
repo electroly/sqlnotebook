@@ -28,7 +28,6 @@ using namespace msclr;
 using namespace MySql::Data::MySqlClient;
 
 private struct AdoCreateInfo {
-    public:
     gcroot<Func<String^, IDbConnection^>^> ConnectionCreator;
     gcroot<String^> SelectRandomSampleSql; // should contain {0} as a placeholder for the escaped table name including surrounding quotes
 };
@@ -40,7 +39,10 @@ private struct AdoTable {
     gcroot<List<String^>^> ColumnNames;
     gcroot<Func<String^, IDbConnection^>^> ConnectionCreator;
     int64_t InitialRowCount;
-    gcroot<Dictionary<String^, int64_t>^> EstimatedRowsByColumn; // column name => estimated rows
+
+    // column name => estimated rows as a fraction (0-1) of the total row count
+    gcroot<Dictionary<String^, double>^> EstimatedRowsPercentByColumn; 
+
     AdoTable() {
         memset(&Super, 0, sizeof(Super));
     }
@@ -138,12 +140,11 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
             }
             // this is the average number of rows we expect any arbitrary value to appear in the column
             // for instance, if the column is a list of 500 coin flips 0 or 1, an average around 250 is expected
-            vtab->EstimatedRowsByColumn = gcnew Dictionary<String^, int64_t>(colCount); // column name => estimated rows
-            double multiplier = vtab->InitialRowCount / sampleSize;
+            vtab->EstimatedRowsPercentByColumn = gcnew Dictionary<String^, double>(colCount);
             for (int i = 0; i < colCount; i++) {
                 auto name = columnNames[i];
-                auto value = Math::Max((int64_t)1, (int64_t)(Enumerable::Average(colDicts[i]->Values) * multiplier));
-                vtab->EstimatedRowsByColumn->default[name] = value;
+                auto value = Enumerable::Average(colDicts[i]->Values) / sampleSize;
+                vtab->EstimatedRowsPercentByColumn->default[name] = value;
 #ifdef _DEBUG
                 System::Diagnostics::Debug::WriteLine("   Column " + name + " estimated rows per unique value = " + value.ToString());
 #endif
@@ -198,7 +199,7 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
 
     // where clause
     int argvIndex = 1;
-    auto estimatedRows = vtab->InitialRowCount;
+    double estimatedRowsPercent = 1;
     if (info->nConstraint > 0) {
         sb->Append(" WHERE ");
         auto terms = gcnew List<String^>();
@@ -226,13 +227,7 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
             terms->Add("\"" + columnName->Replace("\"", "\"\"") + "\"" + op + "@arg" + argvIndex);
             argvIndex++;
 
-            int64_t constraintEstimatedRows = estimatedRows;
-            if (vtab->EstimatedRowsByColumn->TryGetValue(columnName, constraintEstimatedRows)) {
-                estimatedRows = Math::Min(estimatedRows, constraintEstimatedRows);
-#ifdef _DEBUG
-                System::Diagnostics::Debug::WriteLine("   Column " + columnName + ", ~" + constraintEstimatedRows.ToString() + " rows");
-#endif
-            }
+            estimatedRowsPercent *= vtab->EstimatedRowsPercentByColumn->default[columnName];
         }
         sb->Append(String::Join(" AND ", terms));
     }
@@ -255,10 +250,10 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
     info->idxNum = 0;
     info->idxStr = sqlite3_mprintf("%s", sql.c_str());
     info->needToFreeIdxStr = true;
-    info->estimatedRows = estimatedRows;
-    info->estimatedCost = (double)(estimatedRows * (1.0 + 0.3 * argvIndex));
-        // wild guess of the effect of each WHERE constraint. we just want to induce sqlite to give us as many
-        // constraints as possible for a given query.
+    info->estimatedRows = Math::Max(int64_t(1), int64_t(estimatedRowsPercent * vtab->InitialRowCount));
+    info->estimatedCost = (double)info->estimatedRows + 10000000;
+        // the large constant is to make sure remote queries are always considered vastly more expensive than local
+        // queries, while not affecting the relative cost of different remote query plans
 
     return SQLITE_OK;
 }
@@ -420,7 +415,7 @@ static int AdoRowid(sqlite3_vtab_cursor* pCur, sqlite3_int64* pRowid) {
     int64_t hash = 0;
     for each (auto value in values) {
         hash ^= value->GetHashCode();
-        hash << 2;
+        hash <<= 2;
     }
     *pRowid = hash;
     return SQLITE_OK;
@@ -458,7 +453,7 @@ void Notebook::InstallPgModule() {
     if (s_pgModule.iVersion != 1) {
         AdoPopulateModule(&s_pgModule);
         s_pgCreateInfo.ConnectionCreator = gcnew Func<String^, IDbConnection^>(PgCreateConnection);
-        s_pgCreateInfo.SelectRandomSampleSql = "SELECT * FROM {0} ORDER BY RANDOM() LIMIT 1000;";
+        s_pgCreateInfo.SelectRandomSampleSql = "SELECT * FROM {0} ORDER BY RANDOM() LIMIT 5000;";
     }
     SqliteCall(sqlite3_create_module_v2(_sqlite, "pgsql", &s_pgModule, &s_pgCreateInfo, NULL));
 }
@@ -473,7 +468,7 @@ void Notebook::InstallMsModule() {
     if (s_msModule.iVersion != 1) {
         AdoPopulateModule(&s_msModule);
         s_msCreateInfo.ConnectionCreator = gcnew Func<String^, IDbConnection^>(MsCreateConnection);
-        s_msCreateInfo.SelectRandomSampleSql = "SELECT TOP 1000 * FROM {0} ORDER BY NEWID();";
+        s_msCreateInfo.SelectRandomSampleSql = "SELECT TOP 5000 * FROM {0} ORDER BY NEWID();";
     }
     SqliteCall(sqlite3_create_module_v2(_sqlite, "mssql", &s_msModule, &s_msCreateInfo, NULL));
 }
@@ -488,7 +483,7 @@ void Notebook::InstallMyModule() {
     if (s_myModule.iVersion != 1) {
         AdoPopulateModule(&s_myModule);
         s_myCreateInfo.ConnectionCreator = gcnew Func<String^, IDbConnection^>(MyCreateConnection);
-        s_myCreateInfo.SelectRandomSampleSql = "SELECT * FROM {0} ORDER BY RAND() LIMIT 1000;";
+        s_myCreateInfo.SelectRandomSampleSql = "SELECT * FROM {0} ORDER BY RAND() LIMIT 5000;";
     }
     SqliteCall(sqlite3_create_module_v2(_sqlite, "mysql", &s_myModule, &s_myCreateInfo, NULL));
 }
