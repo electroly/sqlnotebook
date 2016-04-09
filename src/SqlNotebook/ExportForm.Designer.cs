@@ -25,8 +25,11 @@
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Label label1;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportForm));
             System.Windows.Forms.ColumnHeader columnHeader1;
+            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Scripts", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.ListViewGroup listViewGroup5 = new System.Windows.Forms.ListViewGroup("Tables", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.ListViewGroup listViewGroup6 = new System.Windows.Forms.ListViewGroup("Views", System.Windows.Forms.HorizontalAlignment.Center);
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportForm));
             this._openBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
             this._saveBtn = new System.Windows.Forms.Button();
@@ -42,9 +45,9 @@
             label1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             label1.Location = new System.Drawing.Point(12, 9);
             label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(185, 21);
+            label1.Size = new System.Drawing.Size(187, 21);
             label1.TabIndex = 0;
-            label1.Text = "&Choose a script to export.";
+            label1.Text = "&Choose an item to export.";
             // 
             // _openBtn
             // 
@@ -88,6 +91,19 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this._list.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             columnHeader1});
+            listViewGroup4.Header = "Scripts";
+            listViewGroup4.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
+            listViewGroup4.Name = "Script";
+            listViewGroup5.Header = "Tables";
+            listViewGroup5.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
+            listViewGroup5.Name = "Table";
+            listViewGroup6.Header = "Views";
+            listViewGroup6.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
+            listViewGroup6.Name = "View";
+            this._list.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
+            listViewGroup4,
+            listViewGroup5,
+            listViewGroup6});
             this._list.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this._list.LabelWrap = false;
             this._list.Location = new System.Drawing.Point(12, 38);
@@ -106,6 +122,8 @@
             this._imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("_imageList.ImageStream")));
             this._imageList.TransparentColor = System.Drawing.Color.Transparent;
             this._imageList.Images.SetKeyName(0, "script.png");
+            this._imageList.Images.SetKeyName(1, "table.png");
+            this._imageList.Images.SetKeyName(2, "filter.png");
             // 
             // ExportForm
             // 

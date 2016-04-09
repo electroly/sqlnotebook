@@ -479,12 +479,14 @@ namespace SqlNotebook {
             SaveOpenItems();
 
             var scripts = _manager.Items.Where(x => x.Type == NotebookItemType.Script).Select(x => x.Name);
-            string scriptName;
+            var tables = _manager.Items.Where(x => x.Type == NotebookItemType.Table).Select(x => x.Name);
+            var views = _manager.Items.Where(x => x.Type == NotebookItemType.View).Select(x => x.Name);
+            NotebookItem item;
             bool doSaveAs;
 
-            using (var f = new ExportForm(scripts)) {
+            using (var f = new ExportForm(scripts, tables, views)) {
                 var result = f.ShowDialog(this);
-                scriptName = f.ScriptName;
+                item = f.NotebookItem;
                 if (result == DialogResult.Yes) {
                     doSaveAs = false; // open
                 } else if (result == DialogResult.No) {
@@ -520,7 +522,14 @@ namespace SqlNotebook {
 
             _manager.PushStatus("Running the selected script. Press ESC to cancel.");
             try {
-                var output = await Task.Run(() => _manager.ExecuteScript($"EXECUTE {scriptName.DoubleQuote()}"));
+                string sql;
+                if (item.Type == NotebookItemType.Script) {
+                    sql = $"EXECUTE {item.Name.DoubleQuote()}";
+                } else {
+                    sql = $"SELECT * FROM {item.Name.DoubleQuote()}";
+                }
+
+                var output = await Task.Run(() => _manager.ExecuteScript(sql));
                 _manager.PopStatus();
                 _manager.PushStatus("Writing CSV file. Please wait.");
                 await Task.Run(() => {

@@ -180,6 +180,20 @@ namespace SqlNotebook {
             };
         }
 
+        public static ImageList PadListViewIcons(this ImageList imageList) {
+            ImageList paddedImageList = new ImageList {
+                ImageSize = new Size(25, 17),
+                ColorDepth = ColorDepth.Depth32Bit
+            };
+            foreach (Image image in imageList.Images) {
+                var newImage = new Bitmap(25, 17, image.PixelFormat);
+                using (var g = Graphics.FromImage(newImage)) {
+                    g.DrawImage(image, 7, 1);
+                }
+                paddedImageList.Images.Add(newImage);
+            }
 
+            return paddedImageList;
+        }
     }
 }

@@ -20,27 +20,48 @@ using System.Windows.Forms;
 
 namespace SqlNotebook {
     public partial class ExportForm : Form {
-        public string ScriptName { get; private set; }
+        public NotebookItem NotebookItem { get; private set; }
+        private ImageList _paddedImageList;
 
-        public ExportForm(IEnumerable<string> scripts) {
+        public ExportForm(IEnumerable<string> scripts, IEnumerable<string> tables, IEnumerable<string> views) {
             InitializeComponent();
+            _list.SmallImageList = _paddedImageList = _imageList.PadListViewIcons();
+
             foreach (var name in scripts) {
-                _list.Items.Add(name).ImageIndex = 0;
+                var lvi = _list.Items.Add(name);
+                lvi.ImageIndex = 0;
+                lvi.Group = _list.Groups[0];
+            }
+            foreach (var name in tables) {
+                var lvi = _list.Items.Add(name);
+                lvi.ImageIndex = 1;
+                lvi.Group = _list.Groups[1];
+            }
+            foreach (var name in views) {
+                var lvi = _list.Items.Add(name);
+                lvi.ImageIndex = 2;
+                lvi.Group = _list.Groups[2];
             }
             _list.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
         }
 
         private void OpenBtn_Click(object sender, EventArgs e) {
             if (_list.SelectedIndices.Count == 1) {
-                ScriptName = _list.SelectedItems[0].Text;
+                SetNotebookItem();
                 DialogResult = DialogResult.Yes;
                 Close();
             }
         }
 
+        private void SetNotebookItem() {
+            var lvi = _list.SelectedItems[0];
+            var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
+            NotebookItem = new NotebookItem(type, lvi.Text);
+        }
+
         private void SaveBtn_Click(object sender, EventArgs e) {
             if (_list.SelectedIndices.Count == 1) {
-                ScriptName = _list.SelectedItems[0].Text;
+                SetNotebookItem();
                 DialogResult = DialogResult.No;
                 Close();
             }

@@ -36,18 +36,7 @@ namespace SqlNotebook {
             _manager = manager;
             _manager.NotebookChange += (sender, e) => HandleNotebookChange(e);
 
-            _paddedImageList = new ImageList {
-                ImageSize = new Size(25, 17),
-                ColorDepth = ColorDepth.Depth32Bit
-            };
-            foreach (Image image in _imageList.Images) {
-                var newImage = new Bitmap(25, 17, image.PixelFormat);
-                using (var g = Graphics.FromImage(newImage)) {
-                    g.DrawImage(image, 7, 1);
-                }
-                _paddedImageList.Images.Add(newImage);
-            }
-            _list.SmallImageList = _detailsLst.SmallImageList = _paddedImageList;
+            _list.SmallImageList = _detailsLst.SmallImageList = _paddedImageList = _imageList.PadListViewIcons();
         }
 
         private void HandleNotebookChange(NotebookChangeEventArgs e) {
