@@ -21,6 +21,7 @@ using namespace SqlNotebookCore;
 using namespace System::Data;
 using namespace System::Data::SqlClient;
 using namespace System::IO;
+using namespace System::Linq;
 using namespace System::Text;
 using namespace Npgsql;
 using namespace msclr;
@@ -29,6 +30,7 @@ using namespace MySql::Data::MySqlClient;
 private struct AdoCreateInfo {
     public:
     gcroot<Func<String^, IDbConnection^>^> ConnectionCreator;
+    gcroot<String^> SelectRandomSampleSql; // should contain {0} as a placeholder for the escaped table name including surrounding quotes
 };
 
 private struct AdoTable {
@@ -38,6 +40,7 @@ private struct AdoTable {
     gcroot<List<String^>^> ColumnNames;
     gcroot<Func<String^, IDbConnection^>^> ConnectionCreator;
     int64_t InitialRowCount;
+    gcroot<Dictionary<String^, int64_t>^> EstimatedRowsByColumn; // column name => estimated rows
     AdoTable() {
         memset(&Super, 0, sizeof(Super));
     }
@@ -60,6 +63,9 @@ private struct AdoCursor {
 static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv, sqlite3_vtab** ppVTab, char** pzErr) {
     // argv[3]: connectionString
     // argv[4]: table name
+#ifdef _DEBUG
+    System::Diagnostics::Debug::WriteLine("AdoCreate");
+#endif
 
     AdoTable* vtab = nullptr;
     auto createInfo = (AdoCreateInfo*)pAux;
@@ -86,21 +92,63 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
             }
         }
 
-        // get a row count too
-        int64_t rowCount = 0;
-        {
-            auto_handle<IDbCommand> cmd(conn->CreateCommand());
-            cmd->CommandText = "SELECT COUNT(*) FROM \"" + adoTableName->Replace("\"", "\"\"") + "\"";
-            rowCount = Convert::ToInt64(cmd->ExecuteScalar());
-        }
-
         // create sqlite structure
         auto vtab = new AdoTable;
         vtab->ConnectionString = connStr;
         vtab->AdoTableName = adoTableName;
         vtab->ColumnNames = columnNames;
-        vtab->InitialRowCount = rowCount;
         vtab->ConnectionCreator = createInfo->ConnectionCreator;
+
+        // get the row count
+        {
+            auto_handle<IDbCommand> cmd(conn->CreateCommand());
+            cmd->CommandText = "SELECT COUNT(*) FROM \"" + adoTableName->Replace("\"", "\"\"") + "\"";
+            vtab->InitialRowCount = Convert::ToInt64(cmd->ExecuteScalar());
+        }
+
+        // take a random sample of rows and compute some basic statistics
+        {
+            auto_handle<IDbCommand> cmd(conn->CreateCommand());
+            cmd->CommandText = createInfo->SelectRandomSampleSql->Replace("{0}", "\"" + adoTableName->Replace("\"", "\"\"") + "\"");
+            auto_handle<IDataReader> reader(cmd->ExecuteReader());
+
+            auto colCount = columnNames->Count;
+
+            // hash code => number of appearances of that hash in the column
+            auto colDicts = gcnew array<Dictionary<int, int>^>(colCount);
+
+            for (int i = 0; i < colCount; i++) {
+                colDicts[i] = gcnew Dictionary<int, int>();
+            }
+            auto row = gcnew array<Object^>(colCount);
+            int sampleSize = 0;
+            while (reader->Read()) {
+                sampleSize++;
+                reader->GetValues(row);
+                for (int i = 0; i < colCount; i++) {
+                    auto colDict = colDicts[i];
+                    int hash = row[i] == nullptr ? 0 : row[i]->GetHashCode();
+                    int count;
+                    if (colDict->TryGetValue(hash, count)) {
+                        colDict[hash] = count + 1;
+                    } else {
+                        colDict[hash] = 1;
+                    }
+                }
+            }
+            // this is the average number of rows we expect any arbitrary value to appear in the column
+            // for instance, if the column is a list of 500 coin flips 0 or 1, an average around 250 is expected
+            vtab->EstimatedRowsByColumn = gcnew Dictionary<String^, int64_t>(colCount); // column name => estimated rows
+            double multiplier = vtab->InitialRowCount / sampleSize;
+            for (int i = 0; i < colCount; i++) {
+                auto name = columnNames[i];
+                auto value = Math::Max((int64_t)1, (int64_t)(Enumerable::Average(colDicts[i]->Values) * multiplier));
+                vtab->EstimatedRowsByColumn->default[name] = value;
+#ifdef _DEBUG
+                System::Diagnostics::Debug::WriteLine("   Column " + name + " estimated rows per unique value = " + value.ToString());
+#endif
+            }
+        }
 
         // register the column names and types with pgsql
         auto columnLines = gcnew List<String^>();
@@ -129,13 +177,19 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
 }
 
 static int AdoDestroy(sqlite3_vtab* pVTab) {
+#ifdef _DEBUG
+    System::Diagnostics::Debug::WriteLine("AdoDestroy");
+#endif
     delete (AdoTable*)pVTab;
     return SQLITE_OK;
 }
 
 static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
     auto vtab = (AdoTable*)pVTab;
-    
+#ifdef _DEBUG
+    System::Diagnostics::Debug::WriteLine("AdoBestIndex - " + vtab->AdoTableName);
+#endif
+
     // build a query corresponding to the request
     auto sb = gcnew StringBuilder();
     sb->Append("SELECT * FROM \"");
@@ -144,6 +198,7 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
 
     // where clause
     int argvIndex = 1;
+    auto estimatedRows = vtab->InitialRowCount;
     if (info->nConstraint > 0) {
         sb->Append(" WHERE ");
         auto terms = gcnew List<String^>();
@@ -167,8 +222,17 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
 
             info->aConstraintUsage[i].argvIndex = argvIndex;
             info->aConstraintUsage[i].omit = true;
-            terms->Add(vtab->ColumnNames->default[info->aConstraint[i].iColumn] + op + "@arg" + argvIndex);
+            auto columnName = vtab->ColumnNames->default[info->aConstraint[i].iColumn];
+            terms->Add("\"" + columnName->Replace("\"", "\"\"") + "\"" + op + "@arg" + argvIndex);
             argvIndex++;
+
+            int64_t constraintEstimatedRows = estimatedRows;
+            if (vtab->EstimatedRowsByColumn->TryGetValue(columnName, constraintEstimatedRows)) {
+                estimatedRows = Math::Min(estimatedRows, constraintEstimatedRows);
+#ifdef _DEBUG
+                System::Diagnostics::Debug::WriteLine("   Column " + columnName + ", ~" + constraintEstimatedRows.ToString() + " rows");
+#endif
+            }
         }
         sb->Append(String::Join(" AND ", terms));
     }
@@ -184,13 +248,15 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
         info->orderByConsumed = true;
     }
 
+#ifdef _DEBUG
+    System::Diagnostics::Debug::WriteLine(sb);
+#endif
     auto sql = Util::CStr(sb->ToString());
     info->idxNum = 0;
     info->idxStr = sqlite3_mprintf("%s", sql.c_str());
     info->needToFreeIdxStr = true;
-    int64_t wildGuess = vtab->InitialRowCount / argvIndex;
-    info->estimatedRows = wildGuess;
-    info->estimatedCost = (double)wildGuess;
+    info->estimatedRows = estimatedRows;
+    info->estimatedCost = (double)(estimatedRows * (1.0 + 0.3 * argvIndex));
         // wild guess of the effect of each WHERE constraint. we just want to induce sqlite to give us as many
         // constraints as possible for a given query.
 
@@ -198,7 +264,7 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
 }
 
 static int AdoOpen(sqlite3_vtab* pVTab, sqlite3_vtab_cursor** ppCursor) {
-#ifdef DEBUG
+#ifdef _DEBUG
     System::Diagnostics::Debug::WriteLine("AdoOpen");
 #endif
     auto cursor = new AdoCursor;
@@ -210,7 +276,7 @@ static int AdoOpen(sqlite3_vtab* pVTab, sqlite3_vtab_cursor** ppCursor) {
 }
 
 static int AdoClose(sqlite3_vtab_cursor* pCur) {
-#ifdef DEBUG
+#ifdef _DEBUG
     System::Diagnostics::Debug::WriteLine("AdoClose");
 #endif
     auto cursor = (AdoCursor*)pCur;
@@ -232,7 +298,7 @@ static int AdoClose(sqlite3_vtab_cursor* pCur) {
 }
 
 static int AdoFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxStr, int argc, sqlite3_value** argv) {
-#ifdef DEBUG
+#ifdef _DEBUG
     System::Diagnostics::Debug::WriteLine("AdoFilter: " + Util::Str(idxStr));
 #endif
     try {
@@ -272,6 +338,9 @@ static int AdoFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxStr, 
             parameter->ParameterName = varName;
             parameter->Value = argVal;
             cmd->Parameters->Add(parameter);
+#ifdef _DEBUG
+            System::Diagnostics::Debug::WriteLine("   " + varName + " = " + argVal->ToString());
+#endif
         }
         auto reader = cmd->ExecuteReader();
         cursor->Command = cmd;
@@ -389,6 +458,7 @@ void Notebook::InstallPgModule() {
     if (s_pgModule.iVersion != 1) {
         AdoPopulateModule(&s_pgModule);
         s_pgCreateInfo.ConnectionCreator = gcnew Func<String^, IDbConnection^>(PgCreateConnection);
+        s_pgCreateInfo.SelectRandomSampleSql = "SELECT * FROM {0} ORDER BY RANDOM() LIMIT 1000;";
     }
     SqliteCall(sqlite3_create_module_v2(_sqlite, "pgsql", &s_pgModule, &s_pgCreateInfo, NULL));
 }
@@ -403,6 +473,7 @@ void Notebook::InstallMsModule() {
     if (s_msModule.iVersion != 1) {
         AdoPopulateModule(&s_msModule);
         s_msCreateInfo.ConnectionCreator = gcnew Func<String^, IDbConnection^>(MsCreateConnection);
+        s_msCreateInfo.SelectRandomSampleSql = "SELECT TOP 1000 * FROM {0} ORDER BY NEWID();";
     }
     SqliteCall(sqlite3_create_module_v2(_sqlite, "mssql", &s_msModule, &s_msCreateInfo, NULL));
 }
@@ -417,6 +488,7 @@ void Notebook::InstallMyModule() {
     if (s_myModule.iVersion != 1) {
         AdoPopulateModule(&s_myModule);
         s_myCreateInfo.ConnectionCreator = gcnew Func<String^, IDbConnection^>(MyCreateConnection);
+        s_myCreateInfo.SelectRandomSampleSql = "SELECT * FROM {0} ORDER BY RAND() LIMIT 1000;";
     }
     SqliteCall(sqlite3_create_module_v2(_sqlite, "mysql", &s_myModule, &s_myCreateInfo, NULL));
 }
