@@ -54,6 +54,7 @@ private struct AdoCursor {
     gcroot<IDbConnection^> Connection;
     gcroot<IDbCommand^> Command;
     gcroot<IDataReader^> Reader;
+    gcroot<String^> ReaderSql;
     bool IsEof;
 
     AdoCursor() {
@@ -299,47 +300,59 @@ static int AdoFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxStr, 
     try {
         auto cursor = (AdoCursor*)pCur;
         auto sql = Util::Str(idxStr);
-        if ((IDbCommand^)cursor->Command != nullptr) {
-            // why does this happen?
-            cursor->Command->Cancel();
-            delete cursor->Reader;
-            delete cursor->Command;
-            delete cursor->Connection;
-            cursor->Connection = cursor->Table->ConnectionCreator->Invoke(cursor->Table->ConnectionString);
-            cursor->Connection->Open();
-        }
-        auto cmd = cursor->Connection->CreateCommand();
-        cmd->CommandText = sql;
+        auto args = gcnew array<Object^>(argc);
+
         for (int i = 0; i < argc; i++) {
-            Object^ argVal = nullptr;
             switch (sqlite3_value_type(argv[i])) {
                 case SQLITE_INTEGER:
-                    argVal = sqlite3_value_int64(argv[i]);
+                    args[i] = sqlite3_value_int64(argv[i]);
                     break;
                 case SQLITE_FLOAT:
-                    argVal = sqlite3_value_double(argv[i]);
+                    args[i] = sqlite3_value_double(argv[i]);
                     break;
                 case SQLITE_NULL:
-                    argVal = DBNull::Value;
+                    args[i] = DBNull::Value;
                     break;
                 case SQLITE_TEXT:
-                    argVal = Util::Str((const wchar_t*)sqlite3_value_text16(argv[i]));
+                    args[i] = Util::Str((const wchar_t*)sqlite3_value_text16(argv[i]));
                     break;
                 default:
                     throw gcnew Exception("Data type not supported.");
             }
-            auto varName = "@arg" + (i + 1).ToString();
-            auto parameter = cmd->CreateParameter();
-            parameter->ParameterName = varName;
-            parameter->Value = argVal;
-            cmd->Parameters->Add(parameter);
-#ifdef _DEBUG
-            System::Diagnostics::Debug::WriteLine("   " + varName + " = " + argVal->ToString());
-#endif
         }
-        auto reader = cmd->ExecuteReader();
-        cursor->Command = cmd;
-        cursor->Reader = reader;
+
+        delete cursor->Reader;
+        cursor->Reader = nullptr;
+
+        if ((String^)cursor->ReaderSql != nullptr && sql == cursor->ReaderSql) {
+            // sqlite is issuing new arguments for the same statement
+            for (int i = 0; i < argc; i++) {
+                auto parameter = (IDataParameter^)cursor->Command->Parameters[i];
+                parameter->Value = args[i];
+#ifdef _DEBUG
+                System::Diagnostics::Debug::WriteLine("   Change: " + parameter->ParameterName + " = " + args[i]->ToString());
+#endif
+            }
+        } else {
+            // brand new statement
+            delete cursor->Command;
+            cursor->Command = cursor->Connection->CreateCommand();
+            cursor->Command->CommandText = sql;
+
+            for (int i = 0; i < argc; i++) {
+                auto varName = "@arg" + (i + 1).ToString();
+                auto parameter = cursor->Command->CreateParameter();
+                parameter->ParameterName = varName;
+                parameter->Value = args[i];
+                cursor->Command->Parameters->Add(parameter);
+#ifdef _DEBUG
+                System::Diagnostics::Debug::WriteLine("   " + varName + " = " + args[i]->ToString());
+#endif
+            }
+        }
+
+        cursor->Reader = cursor->Command->ExecuteReader();
+        cursor->ReaderSql = sql;
         cursor->IsEof = !cursor->Reader->Read();
         return SQLITE_OK;
     } catch (Exception^) {
