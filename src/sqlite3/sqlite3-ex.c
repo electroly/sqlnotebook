@@ -2,9 +2,12 @@
 #error This file should be compiled as C.
 #endif
 
+#define SQLITE_ENABLE_FTS5 1
+#define SQLITE_ENABLE_API_ARMOR 1
+#define SQLITE_SOUNDEX 1 
 #include "../../ext/sqlite/sqlite3.c"
 
-struct yyParser* SxParserAlloc() {
+struct yyParser* SxParserAlloc(void) {
     return sqlite3ParserAlloc(sqlite3Malloc);
 }
 
@@ -15,16 +18,12 @@ void SxParserFree(sqlite3* db, struct yyParser* pEngine, struct Parse* pParse) {
         sqlite3VdbeDelete(pParse->pVdbe);
         pParse->pVdbe = 0;
     }
-#ifndef SQLITE_OMIT_SHARED_CACHE
     if (pParse->nested == 0) {
         sqlite3DbFree(db, pParse->aTableLock);
         pParse->aTableLock = 0;
         pParse->nTableLock = 0;
     }
-#endif
-#ifndef SQLITE_OMIT_VIRTUALTABLE
     sqlite3_free(pParse->apVtabLock);
-#endif
     sqlite3DeleteTable(db, pParse->pNewTable);
     sqlite3WithDelete(db, pParse->pWithToFree);
     sqlite3DeleteTrigger(db, pParse->pNewTrigger);

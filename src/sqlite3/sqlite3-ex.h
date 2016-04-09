@@ -3,7 +3,7 @@
 #include "../../ext/sqlite/sqlite3.h"
 
 extern "C" {
-    struct yyParser* SxParserAlloc();
+    struct yyParser* SxParserAlloc(void);
     struct Parse* SxParseAlloc(sqlite3* db, const char* str);
     void SxParserFree(sqlite3* db, struct yyParser* parser, struct Parse* parse);
     void SxAdvanceParse(struct yyParser* parser, int tokenType, const char* tokenPtr, int tokenLen, struct Parse* parse);
