@@ -143,13 +143,14 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
     sb->Append("\"");
 
     // where clause
+    int argvIndex = 1;
     if (info->nConstraint > 0) {
         sb->Append(" WHERE ");
         auto terms = gcnew List<String^>();
-        int argvIndex = 1;
         for (int i = 0; i < info->nConstraint; i++) {
             if (info->aConstraint[i].iColumn == -1) {
-                // rowid instead of a column. we don't support this type of constraint.
+                continue; // rowid instead of a column. we don't support this type of constraint.
+            } else if (!info->aConstraint[i].usable) {
                 continue;
             }
 
@@ -187,8 +188,9 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
     info->idxNum = 0;
     info->idxStr = sqlite3_mprintf("%s", sql.c_str());
     info->needToFreeIdxStr = true;
-    info->estimatedRows = vtab->InitialRowCount / (1 + info->nConstraint);
-    info->estimatedCost = (double)info->estimatedRows;
+    int64_t wildGuess = vtab->InitialRowCount / argvIndex;
+    info->estimatedRows = wildGuess;
+    info->estimatedCost = (double)wildGuess;
         // wild guess of the effect of each WHERE constraint. we just want to induce sqlite to give us as many
         // constraints as possible for a given query.
 
@@ -196,6 +198,9 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
 }
 
 static int AdoOpen(sqlite3_vtab* pVTab, sqlite3_vtab_cursor** ppCursor) {
+#ifdef DEBUG
+    System::Diagnostics::Debug::WriteLine("AdoOpen");
+#endif
     auto cursor = new AdoCursor;
     cursor->Table = (AdoTable*)pVTab;
     cursor->Connection = cursor->Table->ConnectionCreator->Invoke(cursor->Table->ConnectionString);
@@ -205,6 +210,9 @@ static int AdoOpen(sqlite3_vtab* pVTab, sqlite3_vtab_cursor** ppCursor) {
 }
 
 static int AdoClose(sqlite3_vtab_cursor* pCur) {
+#ifdef DEBUG
+    System::Diagnostics::Debug::WriteLine("AdoClose");
+#endif
     auto cursor = (AdoCursor*)pCur;
     
     IDataReader^ reader = cursor->Reader;
@@ -224,6 +232,9 @@ static int AdoClose(sqlite3_vtab_cursor* pCur) {
 }
 
 static int AdoFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxStr, int argc, sqlite3_value** argv) {
+#ifdef DEBUG
+    System::Diagnostics::Debug::WriteLine("AdoFilter: " + Util::Str(idxStr));
+#endif
     try {
         auto cursor = (AdoCursor*)pCur;
         auto sql = Util::Str(idxStr);
