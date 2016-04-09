@@ -24,7 +24,6 @@
         /// </summary>
         private void InitializeComponent() {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QueryDocumentControl));
             this._splitContainer = new System.Windows.Forms.SplitContainer();
             this._sqlPanel = new System.Windows.Forms.Panel();
@@ -63,7 +62,6 @@
             // _splitContainer.Panel2
             // 
             this._splitContainer.Panel2.Controls.Add(this.toolStripContainer1);
-            this._splitContainer.Panel2.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._splitContainer.Size = new System.Drawing.Size(482, 410);
             this._splitContainer.SplitterDistance = 158;
             this._splitContainer.SplitterWidth = 5;
@@ -105,14 +103,6 @@
             this._grid.BackgroundColor = System.Drawing.SystemColors.Window;
             this._grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._grid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._grid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
@@ -122,8 +112,8 @@
             this._grid.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             this._grid.RowHeadersVisible = false;
             this._grid.RowHeadersWidth = 25;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._grid.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._grid.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this._grid.ShowCellErrors = false;
             this._grid.ShowCellToolTips = false;
