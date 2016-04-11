@@ -481,7 +481,7 @@ void Notebook::InstallMsModule() {
     if (s_msModule.iVersion != 1) {
         AdoPopulateModule(&s_msModule);
         s_msCreateInfo.ConnectionCreator = gcnew Func<String^, IDbConnection^>(MsCreateConnection);
-        s_msCreateInfo.SelectRandomSampleSql = "SELECT TOP 5000 * FROM {0} ORDER BY NEWID();";
+        s_msCreateInfo.SelectRandomSampleSql = "SELECT * FROM {0} TABLESAMPLE (5000 ROWS);";
     }
     SqliteCall(sqlite3_create_module_v2(_sqlite, "mssql", &s_msModule, &s_msCreateInfo, NULL));
 }
