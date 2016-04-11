@@ -130,16 +130,6 @@ DeleteIfExists "sqlite-doc/images"
 DeleteIfExists "sqlite-doc/session"
 
 # Create sqlite-doc.txt
-function FirstLineContaining([String[]]$haystack, [String]$needle) {
-Write-Host "FLC: " ($haystack | Measure).Count
-    foreach ($line in $haystack) {
-        if ($line.Contains($needle)) {
-            return $line
-        }
-    }
-    return ""
-}
-
 function ReadDocFile($filePath) {
     $lines = [System.IO.File]::ReadAllLines($filePath)
     $data = [System.String]::Join([System.Environment]::NewLine, $lines)
