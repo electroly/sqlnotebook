@@ -23,6 +23,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using HtmlAgilityPack;
 using SqlNotebook.Properties;
 using SqlNotebookCore;
@@ -38,6 +39,11 @@ namespace SqlNotebook {
 
         public HelpServer() {
             var filePath = GetHelpNotebookPath();
+            if (File.Exists(filePath) && File.GetLastWriteTime(filePath) < File.GetLastWriteTime(Application.ExecutablePath)) {
+                // help file is outdated; regenerate it
+                File.Delete(filePath);
+            }
+
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             var isNew = !File.Exists(filePath);
             _notebook = new Notebook(filePath, isNew);
@@ -77,18 +83,30 @@ namespace SqlNotebook {
                     ParseHtml(file.Content, out text, out title);
 
                     _notebook.Execute("INSERT INTO docs VALUES (@id, @path, @book, @title, @html)", new Dictionary<string, object> {
-                        ["@id"] = i,
-                        ["@path"] = file.RelativeFilePath,
-                        ["@book"] = "SQLite Documentation",
-                        ["@title"] = title,
-                        ["@html"] = file.Content
+                        ["@id"] = i, ["@path"] = file.RelativeFilePath, ["@book"] = "SQLite Documentation", ["@title"] = title, ["@html"] = file.Content
                     });
                     _notebook.Execute("INSERT INTO docs_fts VALUES (@id, @title, @text)", new Dictionary<string, object> {
-                        ["@id"] = i,
-                        ["@title"] = title,
-                        ["@text"] = text
+                        ["@id"] = i, ["@title"] = title, ["@text"] = text
                     });
                 }
+
+                // SQL Notebook help files
+                var sqlNbFiles = new[] {
+                    new { Path = ".\\extended-syntax.html", Html = Resources.DocExtendedSyntaxHtml }
+                };
+                foreach (var sqlNbFile in sqlNbFiles) {
+                    string text, title;
+                    ParseHtml(sqlNbFile.Html, out text, out title);
+
+                    _notebook.Execute("INSERT INTO docs VALUES (@id, @path, @book, @title, @html)", new Dictionary<string, object> {
+                        ["@id"] = i, ["@path"] = sqlNbFile.Path, ["@book"] = "SQL Notebook Help", ["@title"] = title, ["@html"] = sqlNbFile.Html
+                    });
+                    _notebook.Execute("INSERT INTO docs_fts VALUES (@id, @title, @text)", new Dictionary<string, object> {
+                        ["@id"] = i, ["@title"] = title, ["@text"] = text
+                    });
+                    i++;
+                }
+
                 _notebook.Execute("ANALYZE");
                 _notebook.Save();
             });
@@ -104,7 +122,7 @@ namespace SqlNotebook {
         }
 
         private static void ParseHtml(string html, out string text, out string title) {
-            var htmlDoc = new HtmlDocument();
+            var htmlDoc = new HtmlAgilityPack.HtmlDocument();
             htmlDoc.OptionDefaultStreamEncoding = Encoding.UTF8;
             htmlDoc.LoadHtml(html);
             var stack = new Stack<HtmlNode>();
@@ -159,6 +177,8 @@ namespace SqlNotebook {
                             bytes = Resources.PageWhiteTextPng;
                         } else if (rawUrl == "/link.png") {
                             bytes = Resources.LinkGo32Png;
+                        } else if (rawUrl == "/extended-syntax.html") {
+                            bytes = Encoding.UTF8.GetBytes(header + Resources.DocExtendedSyntaxHtml);
                         } else if (rawUrl.StartsWith("/search?q=")) {
                             var keyword = WebUtility.UrlDecode(rawUrl.Substring("/search?q=".Length));
                             bytes = Encoding.UTF8.GetBytes(header + BuildSearchHtml(keyword));
@@ -204,18 +224,14 @@ namespace SqlNotebook {
                         vertical-align: middle;
                         margin-right: 10px;
                     }}
-                    a {{
-                        position: relative;
-                        top: -3px;
-                        left: 3px;
-                    }}
                     h1 {{
                         margin-bottom: -12px;
                     }}
                 </style>
                 <h2><img src=""/link.png"" class=""header-icon"">Quick Links</h2>
                   <ul>
-                    <li><a href='/sqlite-doc/lang.html'>SQL Syntax</a></li>
+                    <li><a href='/sqlite-doc/lang.html'>Basic SQL Syntax</a></li>
+                    <li><a href='/extended-syntax.html'>Extended SQL Notebook Syntax</a></li>
                     <li><a href='/sqlite-doc/lang_corefunc.html'>SQL Functions</a></li>
                     <li><a href='/sqlite-doc/lang_datefunc.html'>Date & Time Functions</a></li>
                     <li><a href='/sqlite-doc/lang_aggfunc.html'>Aggregate Functions</a></li>

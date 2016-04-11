@@ -161,6 +161,22 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+        ///&lt;title&gt;Structured Programming in SQL Notebook&lt;/title&gt;
+        ///
+        ///&lt;h1&gt;Structured Programming in SQL Notebook&lt;/h1&gt;
+        ///&lt;p&gt;
+        ///    SQL Notebook provides a basic set of structured programming constructs that can be used from scripts and consoles.  They are roughly modeled on T-SQL&apos;s control flow syntax.  Semicolons are not required, but may be optionally included at the end of statements.  The use of semicolons may help resolve parsing ambiguities.
+        ///&lt;/p&gt;
+        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string DocExtendedSyntaxHtml {
+            get {
+                return ResourceManager.GetString("DocExtendedSyntaxHtml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Folder {
@@ -218,7 +234,7 @@ namespace SqlNotebook.Properties {
         ///    padding-left: 10px;
         ///    max-width: 800px;
         ///}
-        ///pre {
+        ///pre, tt {
         ///    font-family: Consolas;
         ///    font-size: 9pt;
         ///}

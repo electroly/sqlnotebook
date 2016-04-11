@@ -211,4 +211,7 @@
   <data name="LinkGo32Png" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\link_go32.png.binary;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="DocExtendedSyntaxHtml" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\doc\extended-syntax.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>
