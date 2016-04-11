@@ -101,6 +101,16 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BookPicture32Png {
+            get {
+                object obj = ResourceManager.GetObject("BookPicture32Png", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap ControlPlayBlue {
@@ -193,10 +203,59 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Help {
+            get {
+                object obj = ResourceManager.GetObject("Help", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to body {
+        ///    font-family: Calibri;
+        ///    font-size: 10pt;
+        ///    padding-bottom: 50px;
+        ///    padding-left: 10px;
+        ///    max-width: 800px;
+        ///}
+        ///pre {
+        ///    font-family: Consolas;
+        ///    font-size: 9pt;
+        ///}
+        ///a {
+        ///    text-decoration: none;
+        ///}
+        ///a:hover {
+        ///    text-decoration: underline;
+        ///}
+        ///button {
+        ///    display: none;
+        ///}
+        ///.
+        /// </summary>
+        internal static string HelpCss {
+            get {
+                return ResourceManager.GetString("HelpCss", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Hourglass {
             get {
                 object obj = ResourceManager.GetObject("Hourglass", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] LinkGo32Png {
+            get {
+                object obj = ResourceManager.GetObject("LinkGo32Png", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
@@ -231,6 +290,16 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] PageWhiteTextPng {
+            get {
+                object obj = ResourceManager.GetObject("PageWhiteTextPng", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap ScriptAdd {
@@ -247,6 +316,16 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("ScriptIco", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SqliteDocZip {
+            get {
+                object obj = ResourceManager.GetObject("SqliteDocZip", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

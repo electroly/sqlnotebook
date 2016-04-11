@@ -101,9 +101,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SqlClient">
-      <HintPath>..\packages\System.Data.SqlClient.4.0.0-beta-23516\lib\net46\System.Data.SqlClient.dll</HintPath>
-    </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml" />

@@ -1,0 +1,20 @@
+body {
+    font-family: Calibri;
+    font-size: 10pt;
+    padding-bottom: 50px;
+    padding-left: 10px;
+    max-width: 800px;
+}
+pre {
+    font-family: Consolas;
+    font-size: 9pt;
+}
+a {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+button {
+    display: none;
+}

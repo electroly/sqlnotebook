@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -26,7 +25,6 @@ using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SqlNotebook.Properties;
 using SqlNotebookCore;
-using SqlNotebookScript;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SqlNotebook {
@@ -40,12 +38,30 @@ namespace SqlNotebook {
         private string _filePath {  get { return _notebook.GetFilePath(); } }
         private bool _isNew;
         private bool _isDirty;
+        private UserControlDockContent _helpDoc;
+        private HelpServer _helpServer;
+        private CueToolStripTextBox _searchTxt;
 
         private readonly Dictionary<NotebookItem, UserControlDockContent> _openItems
             = new Dictionary<NotebookItem, UserControlDockContent>();
 
         public MainForm(string filePath, bool isNew) {
             InitializeComponent();
+            _toolStrip.Items.Add(_searchTxt = new CueToolStripTextBox {
+                Alignment = ToolStripItemAlignment.Right,
+                CueText = "Search Help",
+                AutoSize = false
+            });
+            _searchTxt.InnerTextBox.KeyDown += async (sender, e) => {
+                if (e.KeyCode == Keys.Enter) {
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                    var text = _searchTxt.Text;
+                    await OpenHelp("/search?q=" + System.Net.WebUtility.UrlEncode(text));
+                    _searchTxt.Text = "";
+                }
+            };
+
             if (isNew) {
                 _notebook = new Notebook(filePath, isNew);
             } else {
@@ -568,16 +584,37 @@ namespace SqlNotebook {
             return Path.Combine(tempPath, $"{Guid.NewGuid()}.csv");
         }
 
-        private void SqliteDocMnu_Click(object sender, EventArgs e) {
-            Process.Start("https://sqlite.org/docs.html");
-        }
-
-        private void WikiMnu_Click(object sender, EventArgs e) {
-            Process.Start("https://github.com/electroly/sqlnotebook/wiki");
-        }
-
         private void ReportIssueMnu_Click(object sender, EventArgs e) {
             Process.Start("https://github.com/electroly/sqlnotebook/issues/new");
+        }
+
+        private async Task OpenHelp(string path) {
+            if (_helpServer == null) {
+                _manager.PushStatus("Starting help server...");
+                await Task.Run(() => _helpServer = new HelpServer());
+                _manager.PopStatus();
+            }
+
+            string url = $"http://127.0.0.1:{_helpServer.PortNumber}{path}";
+
+            BeginInvoke(new MethodInvoker(() => {
+                HelpDocumentControl helpCtl;
+                if (_helpDoc != null) {
+                    helpCtl = (HelpDocumentControl)_helpDoc.Content;
+                } else {
+                    helpCtl = new HelpDocumentControl(() => _helpServer.PortNumber) { Dock = DockStyle.Fill };
+                    _helpDoc = new UserControlDockContent("Help Viewer", helpCtl);
+                    _helpDoc.FormClosed += (sender, e) => _helpDoc = null;
+                    _helpDoc.Show(_dockPanel);
+                }
+                helpCtl.Navigate(url);
+                _helpDoc.Activate();
+                _helpDoc.Focus();
+            }));
+        }
+
+        private async void ViewDocMnu_Click(object sender, EventArgs e) {
+            await OpenHelp($"/index.html");
         }
     }
 }

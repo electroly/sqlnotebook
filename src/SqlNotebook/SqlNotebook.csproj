@@ -84,6 +84,10 @@
       <HintPath>..\packages\ExcelDataReader.2.1.2.3\lib\net45\Excel.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
@@ -106,19 +110,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.NonGeneric, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.NonGeneric.4.0.0\lib\net46\System.Collections.NonGeneric.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Common, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.Common.4.0.0\lib\net46\System.Data.Common.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Data.SqlClient, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SqlClient.4.0.0-beta-23516\lib\net46\System.Data.SqlClient.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -142,6 +136,9 @@
     <Compile Include="ConsoleDocumentControl.Designer.cs">
       <DependentUpon>ConsoleDocumentControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="CueToolStripTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ExportForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -149,6 +146,13 @@
       <DependentUpon>ExportForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Extensions.cs" />
+    <Compile Include="HelpDocumentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="HelpDocumentControl.Designer.cs">
+      <DependentUpon>HelpDocumentControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HelpServer.cs" />
     <Compile Include="IDocumentControl.cs" />
     <Compile Include="ImportConnectionForm.cs">
       <SubType>Form</SubType>
@@ -219,6 +223,9 @@
     <EmbeddedResource Include="ExportForm.resx">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="HelpDocumentControl.resx">
+      <DependentUpon>HelpDocumentControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ImportConnectionForm.resx">
       <DependentUpon>ImportConnectionForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -264,6 +271,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <None Include="Resources\GettingStarted.rtf" />
+    <None Include="Resources\sqlite-doc.zip" />
     <None Include="SqlNotebook_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -316,9 +324,14 @@
     <None Include="Resources\SqlNotebookIcon32.png" />
     <None Include="Resources\SqlNotebookIcon48.png" />
     <None Include="Resources\ThirdPartyLicenses.txt" />
+    <None Include="Resources\Help.css" />
     <Content Include="SqlNotebookIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -ExecutionPolicy RemoteSigned -NonInteractive -Command .'$(ProjectDir)Resources\generate-sqlite-doc-zip.ps1'
+</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

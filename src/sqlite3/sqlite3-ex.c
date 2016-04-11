@@ -4,7 +4,9 @@
 
 #define SQLITE_ENABLE_FTS5 1
 #define SQLITE_ENABLE_API_ARMOR 1
-#define SQLITE_SOUNDEX 1 
+#define SQLITE_SOUNDEX 1
+#define SQLITE_ENABLE_JSON1 1
+#define SQLITE_ENABLE_DBSTAT_VTAB 1
 #include "../../ext/sqlite/sqlite3.c"
 
 struct yyParser* SxParserAlloc(void) {

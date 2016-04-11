@@ -28,9 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this._statusStrip = new System.Windows.Forms.StatusStrip();
             this._statusLbl = new System.Windows.Forms.ToolStripStatusLabel();
@@ -44,8 +43,8 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this._exitMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
-            this._sqliteDocMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this._wikiMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._viewDocMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._reportIssueMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._aboutMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this._newNoteBtn = new System.Windows.Forms.ToolStripButton();
@@ -63,8 +62,6 @@
             this._recentServersMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._recentServersNoneMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._exportMnu = new System.Windows.Forms.ToolStripButton();
-            this._reportIssueMnu = new System.Windows.Forms.ToolStripMenuItem();
-            toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
@@ -72,6 +69,11 @@
             this._statusStrip.SuspendLayout();
             this._toolStrip.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // toolStripSeparator6
+            // 
+            toolStripSeparator6.Name = "toolStripSeparator6";
+            toolStripSeparator6.Size = new System.Drawing.Size(200, 6);
             // 
             // _toolStripContainer
             // 
@@ -82,7 +84,7 @@
             // 
             // _toolStripContainer.ContentPanel
             // 
-            this._toolStripContainer.ContentPanel.Size = new System.Drawing.Size(898, 729);
+            this._toolStripContainer.ContentPanel.Size = new System.Drawing.Size(898, 727);
             this._toolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this._toolStripContainer.Location = new System.Drawing.Point(0, 0);
             this._toolStripContainer.Name = "_toolStripContainer";
@@ -145,9 +147,9 @@
             this._exportMnu});
             this._toolStrip.Location = new System.Drawing.Point(0, 0);
             this._toolStrip.Name = "_toolStrip";
-            this._toolStrip.Padding = new System.Windows.Forms.Padding(3, 2, 1, 0);
+            this._toolStrip.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
             this._toolStrip.ShowItemToolTips = false;
-            this._toolStrip.Size = new System.Drawing.Size(898, 29);
+            this._toolStrip.Size = new System.Drawing.Size(898, 31);
             this._toolStrip.Stretch = true;
             this._toolStrip.TabIndex = 1;
             // 
@@ -165,8 +167,8 @@
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Padding = new System.Windows.Forms.Padding(3, 0, 5, 0);
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(46, 22);
+            this.toolStripDropDownButton1.Padding = new System.Windows.Forms.Padding(3, 3, 5, 3);
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(46, 26);
             this.toolStripDropDownButton1.Text = "&File";
             // 
             // _newMnu
@@ -220,9 +222,7 @@
             // 
             this.toolStripDropDownButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._sqliteDocMnu,
-            this._wikiMnu,
-            toolStripSeparator5,
+            this._viewDocMnu,
             this._reportIssueMnu,
             toolStripSeparator6,
             this._aboutMnu});
@@ -230,35 +230,30 @@
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
-            this.toolStripDropDownButton2.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this.toolStripDropDownButton2.Size = new System.Drawing.Size(50, 22);
+            this.toolStripDropDownButton2.Padding = new System.Windows.Forms.Padding(0, 3, 5, 3);
+            this.toolStripDropDownButton2.Size = new System.Drawing.Size(50, 26);
             this.toolStripDropDownButton2.Text = "&Help";
             // 
-            // _sqliteDocMnu
+            // _viewDocMnu
             // 
-            this._sqliteDocMnu.Image = global::SqlNotebook.Properties.Resources.Bookmark;
-            this._sqliteDocMnu.Name = "_sqliteDocMnu";
-            this._sqliteDocMnu.Size = new System.Drawing.Size(225, 22);
-            this._sqliteDocMnu.Text = "Open SQLite documentation";
-            this._sqliteDocMnu.Click += new System.EventHandler(this.SqliteDocMnu_Click);
+            this._viewDocMnu.Image = global::SqlNotebook.Properties.Resources.Help;
+            this._viewDocMnu.Name = "_viewDocMnu";
+            this._viewDocMnu.ShortcutKeys = System.Windows.Forms.Keys.F1;
+            this._viewDocMnu.Size = new System.Drawing.Size(203, 22);
+            this._viewDocMnu.Text = "View documentation";
+            this._viewDocMnu.Click += new System.EventHandler(this.ViewDocMnu_Click);
             // 
-            // _wikiMnu
+            // _reportIssueMnu
             // 
-            this._wikiMnu.Image = global::SqlNotebook.Properties.Resources.Bookmark;
-            this._wikiMnu.Name = "_wikiMnu";
-            this._wikiMnu.Size = new System.Drawing.Size(225, 22);
-            this._wikiMnu.Text = "Open SQL Notebook wiki";
-            this._wikiMnu.Click += new System.EventHandler(this.WikiMnu_Click);
-            // 
-            // toolStripSeparator5
-            // 
-            toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new System.Drawing.Size(222, 6);
+            this._reportIssueMnu.Name = "_reportIssueMnu";
+            this._reportIssueMnu.Size = new System.Drawing.Size(203, 22);
+            this._reportIssueMnu.Text = "Report an issue";
+            this._reportIssueMnu.Click += new System.EventHandler(this.ReportIssueMnu_Click);
             // 
             // _aboutMnu
             // 
             this._aboutMnu.Name = "_aboutMnu";
-            this._aboutMnu.Size = new System.Drawing.Size(225, 22);
+            this._aboutMnu.Size = new System.Drawing.Size(203, 22);
             this._aboutMnu.Text = "About SQL Notebook";
             this._aboutMnu.Click += new System.EventHandler(this.AboutMnu_Click);
             // 
@@ -275,8 +270,8 @@
             this._newNoteBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._newNoteBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
             this._newNoteBtn.Name = "_newNoteBtn";
-            this._newNoteBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this._newNoteBtn.Size = new System.Drawing.Size(83, 22);
+            this._newNoteBtn.Padding = new System.Windows.Forms.Padding(0, 3, 5, 3);
+            this._newNoteBtn.Size = new System.Drawing.Size(83, 26);
             this._newNoteBtn.Text = "New note";
             this._newNoteBtn.Click += new System.EventHandler(this.NewNoteBtn_Click);
             // 
@@ -286,8 +281,8 @@
             this._newConsoleBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._newConsoleBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
             this._newConsoleBtn.Name = "_newConsoleBtn";
-            this._newConsoleBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this._newConsoleBtn.Size = new System.Drawing.Size(100, 22);
+            this._newConsoleBtn.Padding = new System.Windows.Forms.Padding(0, 3, 5, 3);
+            this._newConsoleBtn.Size = new System.Drawing.Size(100, 26);
             this._newConsoleBtn.Text = "New console";
             this._newConsoleBtn.Click += new System.EventHandler(this.NewConsoleBtn_Click);
             // 
@@ -297,15 +292,15 @@
             this._newScriptBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._newScriptBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
             this._newScriptBtn.Name = "_newScriptBtn";
-            this._newScriptBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this._newScriptBtn.Size = new System.Drawing.Size(88, 22);
+            this._newScriptBtn.Padding = new System.Windows.Forms.Padding(0, 3, 5, 3);
+            this._newScriptBtn.Size = new System.Drawing.Size(88, 26);
             this._newScriptBtn.Text = "New script";
             this._newScriptBtn.Click += new System.EventHandler(this.NewScriptBtn_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
             // 
             // _importBtn
             // 
@@ -321,8 +316,8 @@
             this._importBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._importBtn.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
             this._importBtn.Name = "_importBtn";
-            this._importBtn.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this._importBtn.Size = new System.Drawing.Size(77, 22);
+            this._importBtn.Padding = new System.Windows.Forms.Padding(0, 3, 5, 3);
+            this._importBtn.Size = new System.Drawing.Size(77, 26);
             this._importBtn.Text = "&Import";
             // 
             // _importFileMnu
@@ -396,22 +391,10 @@
             this._exportMnu.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._exportMnu.Margin = new System.Windows.Forms.Padding(0, 1, 0, 4);
             this._exportMnu.Name = "_exportMnu";
-            this._exportMnu.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this._exportMnu.Size = new System.Drawing.Size(74, 22);
+            this._exportMnu.Padding = new System.Windows.Forms.Padding(0, 3, 5, 3);
+            this._exportMnu.Size = new System.Drawing.Size(74, 26);
             this._exportMnu.Text = "&Export...";
             this._exportMnu.Click += new System.EventHandler(this.ExportMnu_Click);
-            // 
-            // _reportIssueMnu
-            // 
-            this._reportIssueMnu.Name = "_reportIssueMnu";
-            this._reportIssueMnu.Size = new System.Drawing.Size(225, 22);
-            this._reportIssueMnu.Text = "Report an issue";
-            this._reportIssueMnu.Click += new System.EventHandler(this.ReportIssueMnu_Click);
-            // 
-            // toolStripSeparator6
-            // 
-            toolStripSeparator6.Name = "toolStripSeparator6";
-            toolStripSeparator6.Size = new System.Drawing.Size(222, 6);
             // 
             // MainForm
             // 
@@ -471,9 +454,8 @@
         private System.Windows.Forms.ToolStripMenuItem _recentServersNoneMnu;
         private System.Windows.Forms.ToolStripButton _exportMnu;
         private System.Windows.Forms.ToolStripMenuItem _saveAsMnu;
-        private System.Windows.Forms.ToolStripMenuItem _sqliteDocMnu;
-        private System.Windows.Forms.ToolStripMenuItem _wikiMnu;
         private System.Windows.Forms.ToolStripMenuItem _reportIssueMnu;
+        private System.Windows.Forms.ToolStripMenuItem _viewDocMnu;
     }
 }
 
