@@ -1,17 +1,14 @@
 # SQL Notebook
-##➔ [Download & Install](http://sqlnotebook.com/install/setup.exe) &nbsp;&nbsp;&nbsp; ➔ [Documentation](https://github.com/electroly/sqlnotebook/wiki)
+<a href="https://i.imgur.com/krDY0Wo.png" target="_blank"><img src="https://i.imgur.com/dhObQEU.png" align="right"></a>
+### ➔ [**Download & Install**](http://sqlnotebook.com/install/setup.exe)
 
-SQL Notebook is a Windows desktop application for ad hoc data wrangling.  At its core, it is a frontend for SQLite database files.  The SQLite engine is augmented with additional functionality beyond its basic support for SQL queries:
+SQL Notebook is a Windows desktop application for **ad hoc data wrangling**.  At its core, it is a frontend for SQLite database files.  The SQLite engine is augmented with additional functionality beyond its basic support for SQL queries:
 
-- External data sources can be linked in and queried interchangeably with local tables.  Remote data is not physically copied into the notebook file unless requested; instead, the data source is queried on-the-fly.  Any combination of data sources can be used together in the same SQL query.  Support for the following databases is built in:  
+- External data sources can be linked in and queried interchangeably with local tables.  Remote data is not physically copied into the notebook file unless requested; instead, the data source is queried on-the-fly.  Any combination of data sources can be used together in the same SQL query.  Support for **Microsoft SQL Server**, **PostgreSQL** and **MySQL** databases is built-in.
 
-    - Microsoft SQL Server
-    - PostgreSQL
-    - MySQL
+- **CSV** and **Excel** files can be imported into the notebook as local tables.
 
-- CSV and Excel files can be imported into the notebook as local tables.
-
-- The SQL language is extended to support familiar structured programming constructs:
+- The SQL language is extended to support familiar **structured programming** constructs:
     - Variables (`DECLARE`, `SET`)
     - Control flow (`IF`/`ELSE`, `WHILE`)
     - Error handling (`THROW`, `TRY`/`CATCH`)
@@ -25,4 +22,4 @@ SQL Notebook allows the user to create three types of documents stored inside th
 
 - **Notes**: User-readable documentation in RTF format.  The editor supports basic text formatting.
 
-When the user is satisfied with the results, SQL Notebook can export the script output to a CSV file.
+SQL Notebook can export tables, views, and the output of scripts to CSV files for use in other applications.  An in-app searchable help system provides quick access to all SQLite documentation as well as SQL Notebook help files.
