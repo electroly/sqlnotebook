@@ -1,5 +1,5 @@
-<a href="https://i.imgur.com/krDY0Wo.png" target="_blank"><img src="https://i.imgur.com/dhObQEU.png" align="right"></a>
-<img src="https://i.imgur.com/iGGhDDN.png">
+<a href="https://raw.githubusercontent.com/electroly/sqlnotebook/master/art/screenshot.png" target="_blank"><img src="https://raw.githubusercontent.com/electroly/sqlnotebook/master/art/screenshot-thumb.png" align="right"></a>
+<img src="https://raw.githubusercontent.com/electroly/sqlnotebook/master/art/icon-title.png">
 ### ➔ [**Download & Install**](http://sqlnotebook.com/install/setup.exe)
 
 SQL Notebook is a Windows desktop application for **ad hoc data wrangling**.  At its core, it is a frontend for SQLite database files.  The SQLite engine is augmented with additional functionality beyond its basic support for SQL queries:
