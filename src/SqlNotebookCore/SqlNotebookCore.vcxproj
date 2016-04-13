@@ -60,7 +60,7 @@
       <AdditionalIncludeDirectories>..\..\ext\sqlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\ext\sqlite;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4248 %(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
@@ -78,7 +78,7 @@
       <AdditionalIncludeDirectories>..\..\ext\sqlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\ext\sqlite;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4248 %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -110,11 +110,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="HttpServer.cpp" />
     <ClCompile Include="Notebook.cpp" />
     <ClCompile Include="AdoModules.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\libmicrohttpd\libmicrohttpd.vcxproj">
+      <Project>{67448caf-d2c9-48d9-945c-13389bd4e608}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\sqlite3\sqlite3.vcxproj">
       <Project>{34743fad-099d-4db8-b8a6-c863fec91c77}</Project>
     </ProjectReference>

@@ -22,7 +22,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using HtmlAgilityPack;
 using SqlNotebook.Properties;
@@ -31,11 +30,10 @@ using SqlNotebookCore;
 namespace SqlNotebook {
     public sealed class HelpServer : IDisposable {
         private readonly Notebook _notebook;
-        private readonly HttpListener _httpListener;
-        private readonly WebClient _webClient = new WebClient();
+        private readonly HttpServer _httpServer;
         private string _indexHtml = "";
 
-        public int PortNumber { get; private set; }
+        public ushort PortNumber { get; private set; }
 
         public HelpServer() {
             var filePath = GetHelpNotebookPath();
@@ -53,7 +51,7 @@ namespace SqlNotebook {
             _notebook.Invoke(() => {
                 _indexHtml = BuildIndexHtml();
             });
-            _httpListener = StartListener();
+            _httpServer = StartHttpServer();
         }
 
         private void InitNewNotebook(string filePath) {
@@ -150,69 +148,73 @@ namespace SqlNotebook {
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SQL Notebook", "Help.sqlnb");
         }
 
-        private HttpListener StartListener() {
-            var listener = new HttpListener();
+        private HttpServer StartHttpServer() {
             PortNumber = FindUnusedPort();
-            listener.Prefixes.Add($"http://127.0.0.1:{PortNumber}/");
-            listener.Start();
-
-            Task.Run(() => {
-                while (listener.IsListening) {
-                    var context = listener.GetContext();
-                    // handle this request on a separate thread
-                    Task.Run(() => {
-                        var rawUrl = context.Request.RawUrl;
-                        byte[] bytes;
-                        var header = "<!DOCTYPE html><style>" + Resources.HelpCss + "</style><meta http-equiv=\"Pragma\" content=\"no-cache\">";
-
-                        if (rawUrl.StartsWith("/sqlite-doc/") && (rawUrl.EndsWith(".jpg") || rawUrl.EndsWith(".gif") || rawUrl.EndsWith(".png"))) {
-                            // we don't store images in our resources, instead we download them on-the-fly
-                            var sqliteUrl = rawUrl.Replace("/sqlite-doc", "http://www.sqlite.org");
-                            bytes = _webClient.DownloadData(sqliteUrl);
-                        } else if (rawUrl == "/index.html") {
-                            bytes = Encoding.UTF8.GetBytes(header + _indexHtml);
-                        } else if (rawUrl == "/book.png") {
-                            bytes = Resources.BookPicture32Png;
-                        } else if (rawUrl == "/page.png") {
-                            bytes = Resources.PageWhiteTextPng;
-                        } else if (rawUrl == "/link.png") {
-                            bytes = Resources.LinkGo32Png;
-                        } else if (rawUrl == "/extended-syntax.html") {
-                            bytes = Encoding.UTF8.GetBytes(header + Resources.DocExtendedSyntaxHtml);
-                        } else if (rawUrl.StartsWith("/search?q=")) {
-                            var keyword = WebUtility.UrlDecode(rawUrl.Substring("/search?q=".Length));
-                            bytes = Encoding.UTF8.GetBytes(header + BuildSearchHtml(keyword));
-                        } else {
-                            var path = "." + context.Request.RawUrl.Replace("/", "\\");
-                            string html = null;
-                            _notebook.Invoke(() => {
-                                html = _notebook.QueryValue("SELECT html FROM docs WHERE path = @path", new Dictionary<string, object> {
-                                    ["@path"] = path
-                                }) as string;
-                            });
-                            if (html == null) {
-                                html = "The requested document is not available in the SQL Notebook help collection.";
+            var server = new HttpServer(PortNumber);
+            server.Request += (sender, e) => {
+                var rawUrl = e.Url;
+                byte[] bytes;
+                var header = "<!DOCTYPE html><style>" + Resources.HelpCss + "</style><meta http-equiv=\"Pragma\" content=\"no-cache\">" +
+                    @"<script>
+                        function hideorshow(btn, obj) {
+                            var x = document.getElementById(obj);
+                            var b = document.getElementById(btn);
+                            if (x.style.display != 'none') {
+                                x.style.display = 'none';
+                                b.innerHTML = 'show';
+                            } else {
+                                x.style.display = '';
+                                b.innerHTML = 'hide';
                             }
-                            bytes = Encoding.UTF8.GetBytes(header + html);
+                            return false;
                         }
-                        context.Response.ContentLength64 = bytes.Length;
-                        using (var outStream = context.Response.OutputStream) {
-                            outStream.Write(bytes, 0, bytes.Length);
-                        }
+                    </script>";
+
+                if (rawUrl.StartsWith("/sqlite-doc/") && (rawUrl.EndsWith(".jpg") || rawUrl.EndsWith(".gif") || rawUrl.EndsWith(".png"))) {
+                    // we don't store images in our resources, instead we download them on-the-fly
+                    var sqliteUrl = rawUrl.Replace("/sqlite-doc", "http://www.sqlite.org");
+                    using (var webClient = new WebClient()) {
+                        bytes = webClient.DownloadData(sqliteUrl);
+                    }
+                } else if (rawUrl == "/index.html") {
+                    bytes = Encoding.UTF8.GetBytes(header + _indexHtml);
+                } else if (rawUrl == "/book.png") {
+                    bytes = Resources.BookPicture32Png;
+                } else if (rawUrl == "/page.png") {
+                    bytes = Resources.PageWhiteTextPng;
+                } else if (rawUrl == "/link.png") {
+                    bytes = Resources.LinkGo32Png;
+                } else if (rawUrl == "/extended-syntax.html") {
+                    bytes = Encoding.UTF8.GetBytes(header + Resources.DocExtendedSyntaxHtml);
+                } else if (rawUrl.StartsWith("/search?q=")) {
+                    var keyword = rawUrl.Substring("/search?q=".Length);
+                    bytes = Encoding.UTF8.GetBytes(header + BuildSearchHtml(keyword));
+                } else {
+                    var path = "." + rawUrl.Replace("/", "\\");
+                    string html = null;
+                    _notebook.Invoke(() => {
+                        html = _notebook.QueryValue("SELECT html FROM docs WHERE path = @path", new Dictionary<string, object> {
+                            ["@path"] = path
+                        }) as string;
                     });
+                    if (html == null) {
+                        html = "The requested document is not available in the SQL Notebook help collection.";
+                    }
+                    bytes = Encoding.UTF8.GetBytes(header + html);
                 }
-            });
-            return listener;
+                e.Result = bytes;
+            };
+            return server;
         }
 
-        private static int FindUnusedPort() {
+        private static ushort FindUnusedPort() {
             // this function is inherently racy; another application could bind to this port before the caller has a
             // chance to do so.  it at least limits the chance of collision to that race situation.
             var listener = new TcpListener(IPAddress.Loopback, 0);
             listener.Start();
             int port = ((IPEndPoint)listener.LocalEndpoint).Port;
             listener.Stop();
-            return port;
+            return (ushort)port;
         }
 
         private string BuildIndexHtml() { // run from notebook thread
@@ -292,8 +294,8 @@ namespace SqlNotebook {
         void Dispose(bool disposing) {
             if (!_disposed) {
                 if (disposing) {
+                    _httpServer.Dispose();
                     _notebook.Dispose();
-                    _httpListener.Stop();
                 }
                 _disposed = true;
             }

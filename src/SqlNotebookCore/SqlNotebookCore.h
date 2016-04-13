@@ -17,6 +17,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <msclr/gcroot.h>
 #include "../sqlite3/sqlite3-ex.h"
 using namespace System;
 using namespace System::Data;
@@ -25,6 +26,7 @@ using namespace System::Threading;
 using namespace System::Threading::Tasks;
 using namespace System::Runtime::InteropServices;
 using namespace System::Collections::Concurrent;
+using namespace msclr;
 
 void g_SqliteCall(sqlite3* sqlite, int result); // handle the errcode by throwing if non-SQLITE_OK
 
@@ -275,5 +277,27 @@ namespace SqlNotebookCore {
     public ref class UserCancelException sealed : public Exception {
         public:
         UserCancelException(String^ message) : Exception(message) {}
+    };
+
+    public ref class HttpRequestEventArgs sealed : public EventArgs {
+        public:
+        String^ Url;
+        array<Byte>^ Result;
+    };
+
+    public ref class HttpServer sealed : public IDisposable {
+        public:
+        HttpServer(uint16_t port);
+        ~HttpServer();
+        !HttpServer();
+        event EventHandler<HttpRequestEventArgs^>^ Request;
+
+        internal:
+        void SendRequestEvent(HttpRequestEventArgs^ e);
+
+        private:
+        bool _isDisposed;
+        void* _mhd;
+        void* _thisRef; // gcroot<HttpServer^>*
     };
 }

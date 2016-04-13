@@ -8,5 +8,6 @@
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Notebook.cpp" />
     <ClCompile Include="AdoModules.cpp" />
+    <ClCompile Include="HttpServer.cpp" />
   </ItemGroup>
 </Project>
