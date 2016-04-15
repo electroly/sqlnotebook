@@ -131,7 +131,8 @@ namespace SqlNotebook {
                     WHERE
                         (type = 'table' OR type = 'view') AND 
                         name != 'sqlnotebook_items' AND 
-                        name != 'sqlnotebook_script_params'");
+                        name != 'sqlnotebook_script_params' AND
+                        name != 'sqlnotebook_last_error' ");
                 for (int i = 0; i < dt.Rows.Count; i++) {
                     var type = (string)dt.Get(i, "type") == "view" ? NotebookItemType.View : NotebookItemType.Table;
                     items.Add(new NotebookItem(type, (string)dt.Get(i, "name")));
@@ -333,6 +334,12 @@ namespace SqlNotebook {
             dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_script_params'");
             if (dt.Rows.Count == 0) {
                 Notebook.Execute(@"CREATE TABLE sqlnotebook_script_params (script_name TEXT, param_name TEXT, PRIMARY KEY (script_name, param_name))");
+            }
+
+            // create the sqlnotebook_last_error table if it does not exist
+            dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_last_error'");
+            if (dt.Rows.Count == 0) {
+                Notebook.Execute(@"CREATE TABLE sqlnotebook_last_error (error_number, error_message, error_state)");
             }
         }
     }

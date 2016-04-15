@@ -240,6 +240,9 @@ namespace SqlNotebookCore {
         static IReadOnlyList<Token^>^ Tokenize(String^ input);
         String^ FindLongestValidStatementPrefix(String^ input);
 
+        internal:
+        static void SqliteResult(sqlite3_context* ctx, Object^ value);
+
         private:
         bool _isDisposed;
         String^ _originalFilePath;
@@ -252,6 +255,7 @@ namespace SqlNotebookCore {
         void InstallPgModule();
         void InstallMsModule();
         void InstallMyModule();
+        void InstallErrorAccessorFunctions();
         void SqliteCall(int result);
         void Init();
     };

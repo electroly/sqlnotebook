@@ -68,6 +68,7 @@ void Notebook::Init() {
     InstallPgModule();
     InstallMsModule();
     InstallMyModule();
+    InstallErrorAccessorFunctions();
 }
 
 void Notebook::Invoke(Action^ action) {
@@ -349,6 +350,111 @@ String^ Notebook::FindLongestValidStatementPrefix(String^ input) {
 
 void Notebook::Interrupt() {
     sqlite3_interrupt(_sqlite);
+}
+
+static void ErrorNumberFunc(sqlite3_context* ctx, int, sqlite3_value**) {
+    Notebook^ notebook = *(gcroot<Notebook^>*)sqlite3_user_data(ctx);
+    Notebook::SqliteResult(ctx, notebook->QueryValue("SELECT error_number FROM sqlnotebook_last_error"));
+}
+
+static void ErrorMessageFunc(sqlite3_context* ctx, int, sqlite3_value**) {
+    Notebook^ notebook = *(gcroot<Notebook^>*)sqlite3_user_data(ctx);
+    Notebook::SqliteResult(ctx, notebook->QueryValue("SELECT error_message FROM sqlnotebook_last_error"));
+}
+
+static void ErrorStateFunc(sqlite3_context* ctx, int, sqlite3_value**) {
+    Notebook^ notebook = *(gcroot<Notebook^>*)sqlite3_user_data(ctx);
+    Notebook::SqliteResult(ctx, notebook->QueryValue("SELECT error_state FROM sqlnotebook_last_error"));
+}
+
+static void DeleteGcrootNotebook(void* ptr) {
+    delete (gcroot<Notebook^>*)ptr;
+}
+
+void Notebook::InstallErrorAccessorFunctions() {
+    SqliteCall(sqlite3_create_function_v2(
+        /* db */ _sqlite,
+        /* zFunctionName */ "error_number",
+        /* nArg */ 0,
+        /* eTextRep */ SQLITE_UTF16,
+        /* pApp */ new gcroot<Notebook^>(this),
+        /* xFunc */ ErrorNumberFunc,
+        /* xStep */ nullptr,
+        /* xFinal */ nullptr,
+        /* xDestroy */ DeleteGcrootNotebook
+    ));
+    
+    SqliteCall(sqlite3_create_function_v2(
+        /* db */ _sqlite,
+        /* zFunctionName */ "error_message",
+        /* nArg */ 0,
+        /* eTextRep */ SQLITE_UTF16,
+        /* pApp */ new gcroot<Notebook^>(this),
+        /* xFunc */ ErrorMessageFunc,
+        /* xStep */ nullptr,
+        /* xFinal */ nullptr,
+        /* xDestroy */ DeleteGcrootNotebook
+    ));
+
+    SqliteCall(sqlite3_create_function_v2(
+        /* db */ _sqlite,
+        /* zFunctionName */ "error_state",
+        /* nArg */ 0,
+        /* eTextRep */ SQLITE_UTF16,
+        /* pApp */ new gcroot<Notebook^>(this),
+        /* xFunc */ ErrorStateFunc,
+        /* xStep */ nullptr,
+        /* xFinal */ nullptr,
+        /* xDestroy */ DeleteGcrootNotebook
+    ));
+}
+
+static void ResultText16(sqlite3_context* ctx, String^ str) {
+    auto wstr = Util::WStr(str);
+    auto wstrCopy = _wcsdup(wstr.c_str());
+    auto lenB = wstr.size() * sizeof(wchar_t);
+    sqlite3_result_text16(ctx, wstrCopy, (int)lenB, free);
+}
+
+void Notebook::SqliteResult(sqlite3_context* ctx, Object^ value) {
+    if (value == nullptr) {
+        sqlite3_result_null(ctx);
+        return;
+    }
+    auto type = value->GetType();
+    if (type == DBNull::typeid) {
+        sqlite3_result_null(ctx);
+    } else if (type == Int16::typeid) {
+        sqlite3_result_int(ctx, (Int16)value);
+    } else if (type == Int32::typeid) {
+        sqlite3_result_int(ctx, (Int32)value);
+    } else if (type == Int64::typeid) {
+        sqlite3_result_int64(ctx, (Int64)value);
+    } else if (type == Byte::typeid) {
+        sqlite3_result_int(ctx, (Byte)value);
+    } else if (type == Single::typeid) {
+        sqlite3_result_double(ctx, (Single)value);
+    } else if (type == Double::typeid) {
+        sqlite3_result_double(ctx, (Double)value);
+    } else if (type == Decimal::typeid) {
+        sqlite3_result_double(ctx, (double)(Decimal)value);
+    } else if (type == String::typeid) {
+        ResultText16(ctx, (String^)value);
+    } else if (type == Char::typeid) {
+        ResultText16(ctx, gcnew String((Char)value, 1));
+    } else if (type == Boolean::typeid) {
+        sqlite3_result_int(ctx, (Boolean)value ? 1 : 0);
+    } else if (type == NpgsqlTypes::NpgsqlDate::typeid) {
+        ResultText16(ctx, ((DateTime)(NpgsqlTypes::NpgsqlDate)value).ToString("yyyy-MM-dd"));
+    } else if (type == NpgsqlTypes::NpgsqlDateTime::typeid) {
+        ResultText16(ctx, ((DateTime)(NpgsqlTypes::NpgsqlDateTime)value).ToString("yyyy-MM-dd"));
+    } else if (type == DateTime::typeid) {
+        ResultText16(ctx, ((DateTime)value).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+    } else if (type == DateTimeOffset::typeid) {
+        ResultText16(ctx, ((DateTimeOffset)value).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+    } else {
+        ResultText16(ctx, value->ToString());
+    }
 }
 
 SimpleDataTable::SimpleDataTable(IReadOnlyList<String^>^ columns, IReadOnlyList<array<Object^>^>^ rows) {

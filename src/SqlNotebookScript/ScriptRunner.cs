@@ -302,6 +302,15 @@ namespace SqlNotebookScript {
             env.ErrorMessage = EvaluateExpr(stmt.Message, env);
             env.ErrorState = EvaluateExpr(stmt.State, env);
             env.DidThrow = true;
+
+            // make the error number, message, and state available via the error_number(), error_message(), and 
+            // error_state() functions.  they simply read from the sqlnotebook_last_error table.
+            _notebook.Execute("DELETE FROM sqlnotebook_last_error");
+            _notebook.Execute("INSERT INTO sqlnotebook_last_error VALUES (@num, @msg, @state)", new Dictionary<string, object> {
+                ["@num"] = env.ErrorNumber,
+                ["@msg"] = env.ErrorMessage,
+                ["@state"] = env.ErrorState
+            });
         }
 
         private void ExecuteRethrowStmt(Ast.RethrowStmt stmt, ScriptEnv env) {
