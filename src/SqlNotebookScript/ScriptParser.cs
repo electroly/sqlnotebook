@@ -257,15 +257,23 @@ namespace SqlNotebookScript {
         }
 
         private static Ast.Stmt ParseTryCatchStmt(TokenQueue q) {
+            var stmt = new Ast.TryCatchStmt();
+
             q.Take("begin");
             q.Take("try");
-            var stmt = new Ast.TryCatchStmt();
-            stmt.TryBlock = ParseBlock(q);
+            stmt.TryBlock = new Ast.Block();
+            while (q.Peek() != "end") {
+                stmt.TryBlock.Statements.Add(ParseStmt(q));
+            }
             q.Take("end");
             q.Take("try");
+
             q.Take("begin");
             q.Take("catch");
-            stmt.CatchBlock = ParseBlock(q);
+            stmt.CatchBlock = new Ast.Block();
+            while (q.Peek() != "end") {
+                stmt.CatchBlock.Statements.Add(ParseStmt(q));
+            }
             q.Take("end");
             q.Take("catch");
             return stmt;
