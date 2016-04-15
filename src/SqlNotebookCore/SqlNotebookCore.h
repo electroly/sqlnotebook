@@ -245,11 +245,7 @@ namespace SqlNotebookCore {
         String^ _originalFilePath;
         String^ _workingCopyFilePath;
         sqlite3* _sqlite;
-
-        // the sqlite thread pump
-        Task^ _thread;
-        CancellationTokenSource^ _threadCancellationTokenSource;
-        BlockingCollection<Action^>^ _threadQueue;
+        Object^ _lock;
 
         SimpleDataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
             IReadOnlyList<Object^>^ orderedArgs, bool returnResult);
@@ -257,7 +253,6 @@ namespace SqlNotebookCore {
         void InstallMsModule();
         void InstallMyModule();
         void SqliteCall(int result);
-        void SqliteThread();
         void Init();
     };
 

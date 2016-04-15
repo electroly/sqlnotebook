@@ -37,9 +37,7 @@ Notebook::Notebook(String^ filePath, bool isNew) {
     }
 
     _originalFilePath = filePath;
-    _threadCancellationTokenSource = gcnew CancellationTokenSource();
-    _threadQueue = gcnew BlockingCollection<Action^>();
-    _thread = Task::Run(gcnew Action(this, &Notebook::SqliteThread));
+    _lock = gcnew Object();
     Invoke(gcnew Action(this, &Notebook::Init));
 }
 
@@ -61,18 +59,6 @@ Notebook::!Notebook() {
     } catch (Exception^) { }
 }
 
-void Notebook::SqliteThread() {
-    auto stopToken = _threadCancellationTokenSource->Token;
-    try {
-        while (!stopToken.IsCancellationRequested) {
-            auto action = _threadQueue->Take(stopToken);
-            action();
-        }
-    } catch (OperationCanceledException^) {
-        // ok
-    }
-}
-
 void Notebook::Init() {
     auto filePathWstr = Util::WStr(_workingCopyFilePath);
     sqlite3* sqlite;
@@ -84,40 +70,13 @@ void Notebook::Init() {
     InstallMyModule();
 }
 
-private ref class InvokeClosure {
-    public:
-    Action^ UserAction = nullptr;
-    BlockingCollection<Action^>^ ThreadQueue = nullptr;
-    Exception^ CaughtException = nullptr;
-    
-    void Invoke() {
-        _sem = gcnew Semaphore(0, 1);
-        ThreadQueue->Add(gcnew Action(this, &InvokeClosure::RunOnThread));
-        // RunOnThread will release the semaphore when it completes
-        _sem->WaitOne();
-        if (CaughtException != nullptr) {
-            throw CaughtException;
-        }
-    }
-
-    private:
-    Semaphore^ _sem;
-    
-    void RunOnThread() {
-        try {
-            UserAction();
-        } catch (Exception^ ex) {
-            CaughtException = ex;
-        }
-        _sem->Release();
-    }
-};
-
 void Notebook::Invoke(Action^ action) {
-    auto x = gcnew InvokeClosure();
-    x->UserAction = action;
-    x->ThreadQueue = _threadQueue;
-    x->Invoke();
+    Monitor::Enter(_lock);
+    try {
+        action();
+    } finally {
+        Monitor::Exit(_lock);
+    }
 }
 
 void Notebook::Execute(String^ sql) {
