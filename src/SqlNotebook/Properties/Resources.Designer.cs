@@ -177,6 +177,24 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+        ///&lt;title&gt;Error Functions&lt;/title&gt;
+        ///
+        ///&lt;h1&gt;Error Functions&lt;/h1&gt;
+        ///&lt;p&gt;
+        ///	SQL Notebook provides structured error handling using &lt;a href=&quot;extended-syntax.html#try&quot;&gt;TRY/CATCH&lt;/a&gt; statements.  Inside the &lt;tt&gt;CATCH&lt;/tt&gt; block, the following functions may be used to retrieve the error information provided by the &lt;tt&gt;THROW&lt;/tt&gt; statement.
+        ///&lt;/p&gt;
+        ///&lt;ul&gt;
+        ///    &lt;li&gt;&lt;a href=&quot;#error_number&quot;&gt;ERROR_NUMBER() Function&lt;/a&gt;&lt;/li&gt;
+        ///    &lt;li&gt;&lt;a href=&quot;#error_message&quot;&gt;ERRO [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ErrorFunctionsHtml {
+            get {
+                return ResourceManager.GetString("ErrorFunctionsHtml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Folder {
@@ -243,9 +261,6 @@ namespace SqlNotebook.Properties {
         ///}
         ///a:hover {
         ///    text-decoration: underline;
-        ///}
-        ///button {
-        ///    display: none;
         ///}
         ///.
         /// </summary>

@@ -1,0 +1,40 @@
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Error Functions</title>
+
+<h1>Error Functions</h1>
+<p>
+	SQL Notebook provides structured error handling using <a href="extended-syntax.html#try">TRY/CATCH</a> statements.  Inside the <tt>CATCH</tt> block, the following functions may be used to retrieve the error information provided by the <tt>THROW</tt> statement.
+</p>
+<ul>
+    <li><a href="#error_number">ERROR_NUMBER() Function</a></li>
+    <li><a href="#error_message">ERROR_MESSAGE() Function</a></li>
+    <li><a href="#error_state">ERROR_STATE() Function</a></li>
+</ul>
+<br>
+
+<a name="error_number"></a>
+<h2>ERROR_NUMBER() Function</h2>
+<p>
+    <b>Syntax:</b> <tt>SELECT ERROR_NUMBER()</tt>
+</p><p>
+    Returns the error number (the first value passed to <tt>THROW</tt>).  If no error number was provided by the <tt>THROW</tt> statement, then <tt>null</tt> is returned.  The value may be of any type; the <tt>THROW</tt> statement does not restrict the types of its arguments.
+</p>
+<br>
+
+<a name="error_message"></a>
+<h2>ERROR_MESSAGE() Function</h2>
+<p>
+    <b>Syntax:</b> <tt>SELECT ERROR_MESSAGE()</tt>
+</p><p>
+    Returns the error message (the second value passed to <tt>THROW</tt>).  If no error message was provided by the <tt>THROW</tt> statement, then <tt>null</tt> is returned.  The value may be of any type; the <tt>THROW</tt> statement does not restrict the types of its arguments.
+</p>
+<br>
+
+<a name="error_state"></a>
+<h2>ERROR_STATE() Function</h2>
+<p>
+    <b>Syntax:</b> <tt>SELECT ERROR_STATE()</tt>
+</p><p>
+    Returns the error state (the third value passed to <tt>THROW</tt>).  If no error number was provided by the <tt>THROW</tt> statement, then <tt>null</tt> is returned.  The value may be of any type; the <tt>THROW</tt> statement does not restrict the types of its arguments.
+</p>
+<br>
