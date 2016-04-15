@@ -28,7 +28,9 @@ namespace SqlNotebookScript.Ast {
             while (stack.Any()) {
                 var n = stack.Pop();
                 foreach (var child in n.Children.Reverse()) {
-                    stack.Push(child);
+                    if (child != null) {
+                        stack.Push(child);
+                    }
                 }
                 yield return n;
             }
