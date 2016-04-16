@@ -62,7 +62,7 @@ namespace SqlNotebook {
 
         private void FontMnu_Click(object sender, EventArgs e) {
             var f = new FontDialog {
-                Font = _text.SelectionFont,
+                Font = _text.SelectionFont ?? _text.Font,
                 Color = _text.SelectionColor,
                 FontMustExist = true,
                 ShowApply = true,
@@ -94,14 +94,17 @@ namespace SqlNotebook {
         }
 
         private void UpdateToolbar() {
-            var f = _text.SelectionFont ?? _text.Font;
-            _boldBtn.Checked = f.Bold;
-            _italicBtn.Checked = f.Italic;
-            _underlineBtn.Checked = f.Underline;
-            _strikeBtn.Checked = f.Strikeout;
+            var f = _text.SelectionFont;
+            bool multipleFonts = f == null;
+            _boldBtn.Checked = f?.Bold ?? false;
+            _italicBtn.Checked = f?.Italic ?? false;
+            _underlineBtn.Checked = f?.Underline ?? false;
+            _strikeBtn.Checked = f?.Strikeout ?? false;
             _alignLeftBtn.Checked = _text.SelectionAlignment == HorizontalAlignment.Left;
             _alignCenterBtn.Checked = _text.SelectionAlignment == HorizontalAlignment.Center;
             _alignRightBtn.Checked = _text.SelectionAlignment == HorizontalAlignment.Right;
+            _boldBtn.Enabled = _italicBtn.Enabled = _underlineBtn.Enabled = _strikeBtn.Enabled = 
+                _fontSizeUpBtn.Enabled = _fontSizeDownBtn.Enabled = f != null;
         }
 
         private void FontSizeUpBtn_Click(object sender, EventArgs e) {
