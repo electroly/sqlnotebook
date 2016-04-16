@@ -299,6 +299,7 @@ namespace SqlNotebookCore {
         String^ GetFilePath();
         void Interrupt(); // interrupt any currently running SQLite command
         property NotebookUserData^ UserData { NotebookUserData^ get() { return _userData; } }
+        IReadOnlyDictionary<String^, String^>^ GetScripts(); // lowercase script name -> script code
 
         // all of these methods must be run on the sqlite thread
         void Execute(String^ sql);

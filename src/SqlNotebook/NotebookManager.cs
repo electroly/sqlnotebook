@@ -224,7 +224,7 @@ namespace SqlNotebook {
             return Invoke(() => {
                 var parser = new ScriptParser(Notebook);
                 var script = parser.Parse(code);
-                var runner = new ScriptRunner(Notebook);
+                var runner = new ScriptRunner(Notebook, Notebook.GetScripts());
                 return runner.Execute(script, new Dictionary<string, object>());
             });
         }

@@ -106,9 +106,11 @@ namespace SqlNotebookScript {
     public sealed class ScriptRunner {
         private readonly Notebook _notebook;
         private readonly IReadOnlyDictionary<Type, Action<Ast.Stmt, ScriptEnv>> _stmtRunners;
+        private readonly IReadOnlyDictionary<string, string> _scripts; // lowercase script name -> script code
 
-        public ScriptRunner(Notebook notebook) {
+        public ScriptRunner(Notebook notebook, IReadOnlyDictionary<string, string> scripts) {
             _notebook = notebook;
+            _scripts = scripts;
             _stmtRunners = new Dictionary<Type, Action<Ast.Stmt, ScriptEnv>> {
                 [typeof(Ast.SqlStmt)] = (s, e) => ExecuteSqlStmt((Ast.SqlStmt)s, e),
                 [typeof(Ast.DeclareStmt)] = (s, e) => ExecuteDeclareStmt((Ast.DeclareStmt)s, e),
@@ -126,12 +128,12 @@ namespace SqlNotebookScript {
             };
         }
 
-        private string GetItemData(string name) {
-            var itemRec = _notebook.UserData.Items.FirstOrDefault(x => x.Name == name);
-            if (itemRec == null) {
-                return "";
+        private string GetScriptCode(string name) {
+            string code;
+            if (_scripts.TryGetValue(name.ToLower(), out code)) {
+                return code ?? "";
             } else {
-                return itemRec.Data;
+                throw new ScriptException($"There is no script named \"{name}\".");
             }
         }
 
@@ -266,8 +268,8 @@ namespace SqlNotebookScript {
 
         private void ExecuteExecuteStmt(Ast.ExecuteStmt stmt, ScriptEnv env) {
             var parser = new ScriptParser(_notebook);
-            var runner = new ScriptRunner(_notebook);
-            var script = parser.Parse(GetItemData(stmt.ScriptName));
+            var runner = new ScriptRunner(_notebook, _scripts);
+            var script = parser.Parse(GetScriptCode(stmt.ScriptName));
             var subEnv = new ScriptEnv();
             foreach (var arg in stmt.Arguments) {
                 subEnv.Pars[arg.Name.ToLower()] = EvaluateExpr(arg.Value, env);

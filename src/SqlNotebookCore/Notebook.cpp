@@ -486,6 +486,16 @@ void Notebook::SqliteResult(sqlite3_context* ctx, Object^ value) {
     }
 }
 
+IReadOnlyDictionary<String^, String^>^ Notebook::GetScripts() {
+    auto dict = gcnew Dictionary<String^, String^>();
+    for each (auto item in UserData->Items) {
+        if (item->Type == "Script") {
+            dict->Add(item->Name->ToLower(), item->Data == nullptr ? "" : item->Data);
+        }
+    }
+    return dict;
+}
+
 SimpleDataTable::SimpleDataTable(IReadOnlyList<String^>^ columns, IReadOnlyList<array<Object^>^>^ rows) {
     Columns = columns;
     Rows = rows;
