@@ -9,6 +9,7 @@
 #define SQLITE_ENABLE_DBSTAT_VTAB 1
 #define SQLITE_DEFAULT_FOREIGN_KEYS 1
 #define SQLITE_DEFAULT_LOCKING_MODE 1
+#define SQLITE_THREADSAFE 2
 #include "../../ext/sqlite/sqlite3.c"
 
 struct yyParser* SxParserAlloc(void) {
