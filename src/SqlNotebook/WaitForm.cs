@@ -15,6 +15,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -33,6 +34,9 @@ namespace SqlNotebook {
                     action();
                 } catch (Exception ex) {
                     ResultException = ex;
+                }
+                while (!IsHandleCreated) {
+                    Thread.Sleep(1);
                 }
                 BeginInvoke(new MethodInvoker(() => {
                     DialogResult = ResultException == null ? DialogResult.OK : DialogResult.Abort;
