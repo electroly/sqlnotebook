@@ -86,6 +86,7 @@
             this._text.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.Text_LinkClicked);
             this._text.SelectionChanged += new System.EventHandler(this.Text_SelectionChanged);
             this._text.TextChanged += new System.EventHandler(this.Text_TextChanged);
+            this._text.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.Text_PreviewKeyDown);
             // 
             // _contextMenuStrip
             // 

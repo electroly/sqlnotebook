@@ -160,5 +160,17 @@ namespace SqlNotebook {
                 Process.Start(e.LinkText);
             }
         }
+
+        private void Text_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e) {
+            if (e.Control && !e.Alt && !e.Shift) {
+                if (e.KeyCode == Keys.Z) {
+                    _text.Undo();
+                } else if (e.KeyCode == Keys.Y) {
+                    _text.Redo();
+                } else if (e.KeyCode == Keys.A) {
+                    _text.SelectAll();
+                }
+            }
+        }
     }
 }
