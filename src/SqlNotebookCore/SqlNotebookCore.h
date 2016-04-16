@@ -315,6 +315,7 @@ namespace SqlNotebookCore {
         void SaveAs(String^ filePath);
         static IReadOnlyList<Token^>^ Tokenize(String^ input);
         String^ FindLongestValidStatementPrefix(String^ input);
+        bool IsTransactionActive();
 
         internal:
         static void SqliteResult(sqlite3_context* ctx, Object^ value);

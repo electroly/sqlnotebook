@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this._statusStrip = new System.Windows.Forms.StatusStrip();
+            this._openTransactionLbl = new System.Windows.Forms.ToolStripStatusLabel();
             this._statusLbl = new System.Windows.Forms.ToolStripStatusLabel();
             this._statusProgressbar = new System.Windows.Forms.ToolStripProgressBar();
             this._toolStrip = new System.Windows.Forms.ToolStrip();
@@ -102,6 +103,7 @@
             this._statusStrip.BackColor = System.Drawing.SystemColors.Control;
             this._statusStrip.Dock = System.Windows.Forms.DockStyle.None;
             this._statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._openTransactionLbl,
             this._statusLbl,
             this._statusProgressbar});
             this._statusStrip.Location = new System.Drawing.Point(0, 0);
@@ -109,13 +111,24 @@
             this._statusStrip.Size = new System.Drawing.Size(898, 22);
             this._statusStrip.TabIndex = 0;
             // 
+            // _openTransactionLbl
+            // 
+            this._openTransactionLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._openTransactionLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this._openTransactionLbl.Name = "_openTransactionLbl";
+            this._openTransactionLbl.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
+            this._openTransactionLbl.Size = new System.Drawing.Size(193, 17);
+            this._openTransactionLbl.Text = "A database transaction is active.";
+            this._openTransactionLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._openTransactionLbl.Visible = false;
+            // 
             // _statusLbl
             // 
             this._statusLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._statusLbl.Image = global::SqlNotebook.Properties.Resources.Hourglass;
             this._statusLbl.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Name = "_statusLbl";
-            this._statusLbl.Size = new System.Drawing.Size(777, 17);
+            this._statusLbl.Size = new System.Drawing.Size(553, 17);
             this._statusLbl.Spring = true;
             this._statusLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Visible = false;
@@ -456,6 +469,7 @@
         private System.Windows.Forms.ToolStripMenuItem _saveAsMnu;
         private System.Windows.Forms.ToolStripMenuItem _reportIssueMnu;
         private System.Windows.Forms.ToolStripMenuItem _viewDocMnu;
+        private System.Windows.Forms.ToolStripStatusLabel _openTransactionLbl;
     }
 }
 

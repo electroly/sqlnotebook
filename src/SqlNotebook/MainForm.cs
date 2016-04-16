@@ -42,6 +42,7 @@ namespace SqlNotebook {
         private CueToolStripTextBox _searchTxt;
         private Slot<bool> _isDirty = new Slot<bool>();
         private Slot<bool> _operationInProgress = new Slot<bool>();
+        private Slot<bool> _isTransactionOpen = new Slot<bool>();
 
         private readonly Dictionary<NotebookItem, UserControlDockContent> _openItems
             = new Dictionary<NotebookItem, UserControlDockContent>();
@@ -76,7 +77,7 @@ namespace SqlNotebook {
                 }
             }
             _isNew = isNew;
-            _manager = new NotebookManager(_notebook);
+            _manager = new NotebookManager(_notebook, _isTransactionOpen);
             _importer = new Importer(_manager, this);
             _dockPanel = new DockPanel {
                 Dock = DockStyle.Fill,
@@ -116,12 +117,18 @@ namespace SqlNotebook {
             };
 
             Slot.Bind(
-                () => _importBtn.Enabled = _exportMnu.Enabled = _exitMnu.Enabled = _saveAsMnu.Enabled = !_operationInProgress,
+                () => _importBtn.Enabled = _saveAsMnu.Enabled = !_operationInProgress && !_isTransactionOpen,
+                _operationInProgress, _isTransactionOpen);
+            Slot.Bind(
+                () => _exportMnu.Enabled = !_operationInProgress,
                 _operationInProgress);
             Slot.Bind(
-                () => _saveMnu.Enabled = !_operationInProgress && _isDirty,
-                _operationInProgress, _isDirty);
+                () => _saveMnu.Enabled = !_operationInProgress && _isDirty && !_isTransactionOpen,
+                _operationInProgress, _isDirty, _isTransactionOpen);
             _isDirty.Change += (a, b) => SetTitle();
+            Slot.Bind(
+                () => BeginInvoke(new MethodInvoker(() => _openTransactionLbl.Visible = _isTransactionOpen)),
+                _isTransactionOpen);
 
             if (isNew) {
                 _manager.NewNote("Getting Started", Resources.GettingStartedRtf);
@@ -408,6 +415,8 @@ namespace SqlNotebook {
             // the file remains dirty. since untitled files are in stored in temporary files it doesn't matter that we
             // saved to it despite the cancelation.
             _isDirty.Value = false;
+
+            _manager.Rescan();
             return true;
         }
 

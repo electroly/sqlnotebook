@@ -496,6 +496,10 @@ IReadOnlyDictionary<String^, String^>^ Notebook::GetScripts() {
     return dict;
 }
 
+bool Notebook::IsTransactionActive() {
+    return sqlite3_get_autocommit(_sqlite) == 0;
+}
+
 SimpleDataTable::SimpleDataTable(IReadOnlyList<String^>^ columns, IReadOnlyList<array<Object^>^>^ rows) {
     Columns = columns;
     Rows = rows;

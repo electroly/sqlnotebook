@@ -84,9 +84,11 @@ namespace SqlNotebook {
         public event EventHandler NotebookDirty;
         public event EventHandler<NotebookItemRenameEventArgs> NotebookItemRename;
         public event EventHandler<StatusUpdateEventArgs> StatusUpdate;
+        private readonly Slot<bool> _isTransactionOpen;
 
-        public NotebookManager(Notebook notebook) {
+        public NotebookManager(Notebook notebook, Slot<bool> isTransactionOpen) {
             Notebook = notebook;
+            _isTransactionOpen = isTransactionOpen;
         }
 
         public void Save() {
@@ -108,6 +110,13 @@ namespace SqlNotebook {
             var removedItems = Items.Except(newItems).Except(ignoredItems).ToList();
             Items = newItems.Concat(ignoredItems).ToList();
             NotebookChange?.Invoke(this, new NotebookChangeEventArgs(addedItems, removedItems));
+
+            if (!notebookItemsOnly) {
+                // also check the transaction status
+                Notebook.Invoke(() => {
+                    _isTransactionOpen.Value = Notebook.IsTransactionActive();
+                });
+            }
         }
 
         public void OpenItem(NotebookItem item) {
