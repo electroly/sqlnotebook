@@ -37,6 +37,7 @@ namespace SqlNotebook {
         private readonly TextEditorControlEx _textEditor;
         private readonly List<DataTable> _results = new List<DataTable>();
         private int _selectedResultIndex = 0;
+        private readonly Slot<bool> _operationInProgress;
 
         public string DocumentText {
             get {
@@ -50,12 +51,13 @@ namespace SqlNotebook {
             _manager.SetItemData(ItemName, DocumentText);
         }
 
-        public QueryDocumentControl(string name, NotebookManager manager, IWin32Window mainForm, bool runImmediately = false) {
+        public QueryDocumentControl(string name, NotebookManager manager, IWin32Window mainForm, Slot<bool> operationInProgress, bool runImmediately = false) {
             InitializeComponent();
             ItemName = name;
             _manager = manager;
             _notebook = manager.Notebook;
             _mainForm = mainForm;
+            _operationInProgress = operationInProgress;
 
             _textEditor = new TextEditorControlEx {
                 Dock = DockStyle.Fill,
@@ -98,6 +100,10 @@ namespace SqlNotebook {
 
         private async Task<bool> Execute(string sql) {
             try {
+                if (_operationInProgress) {
+                    throw new Exception("Another operation is already in progress.");
+                }
+
                 await ExecuteCore(sql);
                 _manager.SetDirty();
                 _manager.Rescan();

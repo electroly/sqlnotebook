@@ -99,11 +99,14 @@ namespace SqlNotebook {
             Notebook.Invoke(() => Notebook.SaveAs(filePath));
         }
 
-        public void Rescan() {
-            var newItems = ReadItems();
+        public void Rescan(bool notebookItemsOnly = false) {
+            var ignoredItems = notebookItemsOnly
+                ? Items.Where(x => x.Type == NotebookItemType.Table || x.Type == NotebookItemType.View).ToList()
+                : new List<NotebookItem>();
+            var newItems = ReadItems(notebookItemsOnly);
             var addedItems = newItems.Except(Items).ToList();
-            var removedItems = Items.Except(newItems).ToList();
-            Items = newItems;
+            var removedItems = Items.Except(newItems).Except(ignoredItems).ToList();
+            Items = newItems.Concat(ignoredItems).ToList();
             NotebookChange?.Invoke(this, new NotebookChangeEventArgs(addedItems, removedItems));
         }
 
@@ -119,22 +122,26 @@ namespace SqlNotebook {
             NotebookDirty?.Invoke(this, EventArgs.Empty);
         }
 
-        private IReadOnlyList<NotebookItem> ReadItems() {
+        private IReadOnlyList<NotebookItem> ReadItems(bool notebookItemsOnly) {
             var items = new List<NotebookItem>();
-            Notebook.Invoke(() => {
-                // tables and views
-                var dt = Notebook.Query("SELECT name, type FROM sqlite_master WHERE type = 'table' OR type = 'view' ");
-                for (int i = 0; i < dt.Rows.Count; i++) {
-                    var type = (string)dt.Get(i, "type") == "view" ? NotebookItemType.View : NotebookItemType.Table;
-                    items.Add(new NotebookItem(type, (string)dt.Get(i, "name")));
-                }
 
-                // notes, consoles, and scripts
-                items.AddRange(
-                    from x in Notebook.UserData.Items
-                    select new NotebookItem((NotebookItemType)Enum.Parse(typeof(NotebookItemType), x.Type), x.Name)
-                );
-            });
+            if (!notebookItemsOnly) {
+                Notebook.Invoke(() => {
+                    // tables and views
+                    var dt = Notebook.Query("SELECT name, type FROM sqlite_master WHERE type = 'table' OR type = 'view' ");
+                    for (int i = 0; i < dt.Rows.Count; i++) {
+                        var type = (string)dt.Get(i, "type") == "view" ? NotebookItemType.View : NotebookItemType.Table;
+                        items.Add(new NotebookItem(type, (string)dt.Get(i, "name")));
+                    }
+                });
+            }
+
+            // notes, consoles, and scripts
+            items.AddRange(
+                from x in Notebook.UserData.Items
+                select new NotebookItem((NotebookItemType)Enum.Parse(typeof(NotebookItemType), x.Type), x.Name)
+            );
+
             return items;
         }
 
@@ -159,7 +166,7 @@ namespace SqlNotebook {
             }
             var itemRec = new NotebookItemRecord { Name = name, Data = data ?? "", Type = type };
             Notebook.UserData.Items.Add(itemRec);
-            Rescan();
+            Rescan(notebookItemsOnly: true);
             SetDirty();
             return name;
         }
@@ -254,32 +261,34 @@ namespace SqlNotebook {
             string lcNewName = newName.ToLower();
             bool isCaseChange = item.Name.ToLower() == lcNewName;
 
-            Notebook.Invoke(() => {
-                switch (item.Type) {
-                    case NotebookItemType.Console:
-                    case NotebookItemType.Note:
-                    case NotebookItemType.Script:
-                        if (!isCaseChange) {
-                            // is the new name already in use?
-                            if (Notebook.UserData.Items.Any(x => x.Name.ToLower() == lcNewName)) {
-                                throw new Exception($"An item named \"{newName}\" already exists.");
-                            }
+            switch (item.Type) {
+                case NotebookItemType.Console:
+                case NotebookItemType.Note:
+                case NotebookItemType.Script:
+                    if (!isCaseChange) {
+                        // is the new name already in use?
+                        if (Notebook.UserData.Items.Any(x => x.Name.ToLower() == lcNewName)) {
+                            throw new Exception($"An item named \"{newName}\" already exists.");
                         }
+                    }
 
-                        var itemRec = Notebook.UserData.Items.Single(x => x.Name == item.Name);
-                        itemRec.Name = newName;
+                    var itemRec = Notebook.UserData.Items.Single(x => x.Name == item.Name);
+                    itemRec.Name = newName;
 
-                        if (item.Type == NotebookItemType.Script) {
-                            var scriptParamRec = Notebook.UserData.ScriptParameters.Single(x => x.ScriptName == item.Name);
-                            scriptParamRec.ScriptName = newName;
-                        }
-                        break;
+                    if (item.Type == NotebookItemType.Script) {
+                        var scriptParamRec = Notebook.UserData.ScriptParameters.Single(x => x.ScriptName == item.Name);
+                        scriptParamRec.ScriptName = newName;
+                    }
+                    break;
 
-                    case NotebookItemType.Table:
+                case NotebookItemType.Table:
+                    Notebook.Invoke(() => {
                         Notebook.Execute($"ALTER TABLE {item.Name.DoubleQuote()} RENAME TO \"{newName.Replace("\"", "\"\"")}\"");
-                        break;
+                    });
+                    break;
 
-                    case NotebookItemType.View:
+                case NotebookItemType.View:
+                    Notebook.Invoke(() => {
                         var createViewSql = (string)Notebook.QueryValue("SELECT sql FROM sqlite_master WHERE name = @old_name",
                             new Dictionary<string, object> { ["@old_name"] = item.Name });
                         var tokens = Notebook.Tokenize(createViewSql);
@@ -289,9 +298,9 @@ namespace SqlNotebook {
                         var suffix = string.Join(" ", tokens.Select(x => x.Text).Skip(3)); // everything after "CREATE VIEW viewname"
                         Notebook.Execute($"DROP VIEW {item.Name.DoubleQuote()}");
                         Notebook.Execute($"CREATE VIEW {newName.DoubleQuote()} {suffix}");
-                        break;
-                }
-            });
+                    });
+                    break;
+            }
 
             NotebookItemRename?.Invoke(this, new NotebookItemRenameEventArgs(item, newName));
             SetDirty();

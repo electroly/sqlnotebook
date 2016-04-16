@@ -37,10 +37,11 @@ namespace SqlNotebook {
         private readonly ExplorerControl _explorer;
         private string _filePath {  get { return _notebook.GetFilePath(); } }
         private bool _isNew;
-        private bool _isDirty;
         private UserControlDockContent _helpDoc;
         private HelpServer _helpServer;
         private CueToolStripTextBox _searchTxt;
+        private Slot<bool> _isDirty = new Slot<bool>();
+        private Slot<bool> _operationInProgress = new Slot<bool>();
 
         private readonly Dictionary<NotebookItem, UserControlDockContent> _openItems
             = new Dictionary<NotebookItem, UserControlDockContent>();
@@ -75,7 +76,6 @@ namespace SqlNotebook {
                 }
             }
             _isNew = isNew;
-            SetTitle();
             _manager = new NotebookManager(_notebook);
             _importer = new Importer(_manager, this);
             _dockPanel = new DockPanel {
@@ -85,7 +85,8 @@ namespace SqlNotebook {
             };
             _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
 
-            _contentsPane = new UserControlDockContent("Table of Contents", _explorer = new ExplorerControl(_manager, this),
+            _contentsPane = new UserControlDockContent("Table of Contents", 
+                _explorer = new ExplorerControl(_manager, this, _operationInProgress),
                 DockAreas.DockLeft | DockAreas.DockRight);
             _contentsPane.CloseButtonVisible = false;
             _contentsPane.Show(_dockPanel, DockState.DockLeft);
@@ -97,12 +98,36 @@ namespace SqlNotebook {
             _manager.NotebookItemRename += Manager_NotebookItemRename;
             _manager.StatusUpdate += Manager_StatusUpdate;
 
+            // show a progressbar in the taskbar button and the statusbar when a operation is in progress
+            _operationInProgress.Change += (oldValue, newValue) => {
+                if (!oldValue && newValue) {
+                    this.BeginTaskbarProgress();
+                    _statusLbl.Visible = true;
+
+                    // this restarts the statusbar progress marquee from the beginning
+                    _statusProgressbar.Style = ProgressBarStyle.Continuous;
+                    _statusProgressbar.Style = ProgressBarStyle.Marquee;
+                    _statusProgressbar.Visible = true;
+                } else if (oldValue && !newValue) {
+                    this.EndTaskbarProgress();
+                    _statusProgressbar.Visible = false;
+                    _statusLbl.Visible = false;
+                }
+            };
+
+            Slot.Bind(
+                () => _importBtn.Enabled = _exportMnu.Enabled = _exitMnu.Enabled = _saveAsMnu.Enabled = !_operationInProgress,
+                _operationInProgress);
+            Slot.Bind(
+                () => _saveMnu.Enabled = !_operationInProgress && _isDirty,
+                _operationInProgress, _isDirty);
+            _isDirty.Change += (a, b) => SetTitle();
+
             if (isNew) {
                 _manager.NewNote("Getting Started", Resources.GettingStartedRtf);
                 Load += (sender, e) => {
                     OpenItem(new NotebookItem(NotebookItemType.Note, "Getting Started"));
-                    _isDirty = false;
-                    SetTitle();
+                    _isDirty.Value = false;
                 };
             }
 
@@ -111,39 +136,9 @@ namespace SqlNotebook {
 
         private void Manager_StatusUpdate(object sender, StatusUpdateEventArgs e) {
             BeginInvoke(new MethodInvoker((() => {
-                bool busyThen = _statusLbl.Text.Any();
-                bool busyNow = e.Status.Any();
-                if (!busyThen && busyNow) {
-                    this.BeginTaskbarProgress();
-                } else if (busyThen && !busyNow) {
-                    this.EndTaskbarProgress();
-                }
-
+                _operationInProgress.Value = e.Status.Any();
                 _statusLbl.Text = e.Status;
-                NativeMethods.EnableWindow(_dockPanel.Handle, !e.Status.Any());
-                NativeMethods.EnableWindow(_toolStrip.Handle, !e.Status.Any());
-                bool oldVisible = _statusProgressbar.Visible;
-                bool newVisible = !string.IsNullOrWhiteSpace(e.Status);
-                if (!oldVisible && newVisible) {
-                    _statusProgressbar.Style = ProgressBarStyle.Continuous;
-                    _statusProgressbar.Style = ProgressBarStyle.Marquee;
-                }
-                if (oldVisible != newVisible) {
-                    if (newVisible) {
-                        _statusLbl.Visible = true;
-                        _statusProgressbar.Visible = true;
-                    } else {
-                        _statusProgressbar.Visible = false;
-                        _statusLbl.Visible = false;
-                    }
-                }
             })));
-        }
-
-        private static class NativeMethods {
-            [DllImport("user32.dll")]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
         }
 
         private void Manager_NotebookItemRename(object sender, NotebookItemRenameEventArgs e) {
@@ -155,7 +150,8 @@ namespace SqlNotebook {
                 var newItem = new NotebookItem(e.Item.Type, e.NewName);
                 _openItems.Add(newItem, ucdc);
             }
-            _manager.Rescan();
+            var isTableOrView = e.Item.Type == NotebookItemType.Table || e.Item.Type == NotebookItemType.View;
+            _manager.Rescan(notebookItemsOnly: !isTableOrView);
         }
 
         private void Manager_NotebookItemsSaveRequest(object sender, EventArgs e) {
@@ -178,14 +174,10 @@ namespace SqlNotebook {
             }
             var star = _isDirty ? "*" : "";
             Text = $"{prefix}{star} - SQL Notebook";
-            _saveMnu.Enabled = _isDirty;
         }
 
         private void SetDirty() {
-            if (!_isDirty) {
-                _isDirty = true;
-                BeginInvoke(new MethodInvoker(SetTitle));
-            }
+            _isDirty.Value = true;
         }
 
         private void Manager_NotebookItemOpenRequest(object sender, NotebookItemRequestEventArgs e) {
@@ -201,18 +193,21 @@ namespace SqlNotebook {
             }
 
             UserControlDockContent f = null;
+            Func<string> getName = null;
             if (item.Type == NotebookItemType.Console) {
-                var doc = new ConsoleDocumentControl(item.Name, _manager, this);
+                var doc = new ConsoleDocumentControl(item.Name, _manager, this, _operationInProgress);
                 f = new UserControlDockContent(item.Name, doc) {
                     Icon = Resources.ApplicationXpTerminalIco
                 };
                 f.FormClosing += (sender2, e2) => doc.Save();
+                getName = () => doc.ItemName;
             } else if (item.Type == NotebookItemType.Note) {
                 var doc = new NoteDocumentControl(item.Name, _manager);
                 f = new UserControlDockContent(item.Name, doc) {
                     Icon = Resources.NoteIco
                 };
                 f.FormClosing += (sender2, e2) => doc.Save();
+                getName = () => doc.ItemName;
             } else {
                 bool runImmediately = false;
                 if (item.Type == NotebookItemType.Table || item.Type == NotebookItemType.View) {
@@ -222,15 +217,18 @@ namespace SqlNotebook {
                     runImmediately = true;
                 }
 
-                var doc = new QueryDocumentControl(item.Name, _manager, this, runImmediately);
+                var doc = new QueryDocumentControl(item.Name, _manager, this, _operationInProgress, runImmediately);
                 f = new UserControlDockContent(item.Name, doc) {
                     Icon = Resources.ScriptIco
                 };
                 f.FormClosing += (sender2, e2) => doc.Save();
+                getName = () => doc.ItemName;
             }
 
             f.FormClosed += (sender2, e2) => {
-                _openItems.Remove(item);
+                // the item may have been renamed since we opened it, so make sure to use getName() for the current
+                // name instead of closing over item.Name.
+                _openItems.Remove(new NotebookItem(item.Type, getName()));
             };
             f.Show(_dockPanel);
             _openItems[item] = f;
@@ -409,8 +407,7 @@ namespace SqlNotebook {
             // set this after doing the isNew stuff above so that if you click Save and then cancel the Save As dialog,
             // the file remains dirty. since untitled files are in stored in temporary files it doesn't matter that we
             // saved to it despite the cancelation.
-            _isDirty = false;
-            SetTitle();
+            _isDirty.Value = false;
             return true;
         }
 
@@ -421,6 +418,13 @@ namespace SqlNotebook {
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
+            if (_operationInProgress) {
+                ErrorBox("SQL Notebook", "An operation is in progress.", 
+                    "Please cancel the operation or wait for it to complete before exiting from SQL Notebook.");
+                e.Cancel = true;
+                return;
+            }
+
             if (_isDirty) {
                 var shortFilename = _isNew ? "Untitled" : Path.GetFileNameWithoutExtension(_filePath);
                 var d = new TaskDialog {

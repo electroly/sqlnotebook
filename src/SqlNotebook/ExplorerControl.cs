@@ -26,17 +26,25 @@ namespace SqlNotebook {
         private readonly NotebookManager _manager;
         private readonly ImageList _paddedImageList;
         private readonly IWin32Window _mainForm;
+        private readonly Slot<bool> _operationInProgress;
 
-        public ExplorerControl(NotebookManager manager, IWin32Window mainForm) {
+        public ExplorerControl(NotebookManager manager, IWin32Window mainForm, Slot<bool> operationInProgress) {
             InitializeComponent();
             _list.EnableDoubleBuffer();
             _detailsLst.EnableDoubleBuffer();
 
             _mainForm = mainForm;
             _manager = manager;
+            _operationInProgress = operationInProgress;
             _manager.NotebookChange += (sender, e) => HandleNotebookChange(e);
 
             _list.SmallImageList = _detailsLst.SmallImageList = _paddedImageList = _imageList.PadListViewIcons();
+
+            _operationInProgress.Change += (a, b) => {
+                if (a && !b) {
+                    List_SelectedIndexChanged(null, EventArgs.Empty);
+                }
+            };
         }
 
         private void HandleNotebookChange(NotebookChangeEventArgs e) {
@@ -90,6 +98,23 @@ namespace SqlNotebook {
             }
             var lvi = _list.SelectedItems[0];
             var name = lvi.Text;
+            var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
+
+            // can't delete tables or views if an operation is in progress
+            bool isTableOrView = type == NotebookItemType.Table || type == NotebookItemType.View;
+            if (isTableOrView && _operationInProgress) {
+                var errDlg = new TaskDialog {
+                    Caption = "Delete Item",
+                    InstructionText = $"Cannot delete tables or views while an operation is in progress.",
+                    Text = "Please wait until the current operation finishes, and then try again.",
+                    StartupLocation = TaskDialogStartupLocation.CenterOwner,
+                    OwnerWindowHandle = _mainForm.Handle,
+                    Icon = TaskDialogStandardIcon.Warning,
+                    Cancelable = true
+                };
+                errDlg.Show();
+                return;
+            }
 
             var d = new TaskDialog {
                 Caption = "Delete Item",
@@ -111,7 +136,6 @@ namespace SqlNotebook {
                 }
             }
 
-            var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
             var item = new NotebookItem(type, name);
             _manager.CloseItem(item);
 
@@ -119,7 +143,7 @@ namespace SqlNotebook {
                 _manager.DeleteItem(item);
             }).ShowDialog(this);
 
-            _manager.Rescan();
+            _manager.Rescan(notebookItemsOnly: !isTableOrView);
         }
 
         private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
@@ -141,16 +165,18 @@ namespace SqlNotebook {
 
             try {
                 if (lvi.Group.Name == "Table" || lvi.Group.Name == "View") {
-                    n.Invoke(() => {
-                        var dt = n.Query($"PRAGMA table_info ({lvi.Text.DoubleQuote()})");
-                        for (int i = 0; i < dt.Rows.Count; i++) {
-                            var name = (string)dt.Get(i, "name");
-                            var info = (string)dt.Get(i, "type");
-                            info += Convert.ToInt32(dt.Get(i, "notnull")) == 1 ? " NOT NULL" : "";
-                            info += Convert.ToInt32(dt.Get(i, "pk")) >= 1 ? " PRIMARY KEY" : "";
-                            details.Add(Tuple.Create(name, info));
-                        }
-                    });
+                    if (!_operationInProgress) {
+                        n.Invoke(() => {
+                            var dt = n.Query($"PRAGMA table_info ({lvi.Text.DoubleQuote()})");
+                            for (int i = 0; i < dt.Rows.Count; i++) {
+                                var name = (string)dt.Get(i, "name");
+                                var info = (string)dt.Get(i, "type");
+                                info += Convert.ToInt32(dt.Get(i, "notnull")) == 1 ? " NOT NULL" : "";
+                                info += Convert.ToInt32(dt.Get(i, "pk")) >= 1 ? " PRIMARY KEY" : "";
+                                details.Add(Tuple.Create(name, info));
+                            }
+                        });
+                    }
                 } else if (lvi.Group.Name == "Script") {
                     var paramRec = n.UserData.ScriptParameters.FirstOrDefault(x => x.ScriptName == notebookItemName);
                     if (paramRec != null) {
@@ -175,22 +201,37 @@ namespace SqlNotebook {
         }
 
         private void RenameMnu_Click(object sender, EventArgs e) {
-            if (_list.SelectedItems.Count != 1) {
-                return;
+            if (_list.SelectedItems.Count == 1) {
+                _list.SelectedItems[0].BeginEdit();
             }
-            _list.SelectedItems[0].BeginEdit();
         }
 
         private void List_AfterLabelEdit(object sender, LabelEditEventArgs e) {
             e.CancelEdit = true; // if this is a successful edit, we will update the label ourselves
             var lvi = _list.Items[e.Item];
+            var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
 
             if (e.Label == null) {
                 return; // user did not change the name
             }
 
+            // can't delete tables or views if an operation is in progress
+            bool isTableOrView = type == NotebookItemType.Table || type == NotebookItemType.View;
+            if (isTableOrView && _operationInProgress) {
+                var errDlg = new TaskDialog {
+                    Caption = "Delete Item",
+                    InstructionText = $"Cannot rename tables or views while an operation is in progress.",
+                    Text = "Please wait until the current operation finishes, and then try again.",
+                    StartupLocation = TaskDialogStartupLocation.CenterOwner,
+                    OwnerWindowHandle = _mainForm.Handle,
+                    Icon = TaskDialogStandardIcon.Warning,
+                    Cancelable = true
+                };
+                errDlg.Show();
+                return;
+            }
+
             try {
-                var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
                 _manager.RenameItem(new NotebookItem(type, lvi.Text), e.Label);
             } catch (Exception ex) {
                 var td = new TaskDialog {

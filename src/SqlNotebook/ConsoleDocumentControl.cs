@@ -39,6 +39,7 @@ namespace SqlNotebook {
         private readonly Font _font = new Font("Consolas", 10);
         private readonly Font _headerFont = new Font("Consolas", 10, FontStyle.Italic);
         private readonly Font _dividerFont = new Font("Arial", 10);
+        private readonly Slot<bool> _operationInProgress;
 
         public string DocumentText {
             get {
@@ -53,12 +54,13 @@ namespace SqlNotebook {
             _manager.SetConsoleHistory(ItemName, _consoleTxt.History);
         }
 
-        public ConsoleDocumentControl(string name, NotebookManager manager, IWin32Window mainForm) {
+        public ConsoleDocumentControl(string name, NotebookManager manager, IWin32Window mainForm, Slot<bool> operationInProgress) {
             InitializeComponent();
             ItemName = name;
             _manager = manager;
             _notebook = manager.Notebook;
             _mainForm = mainForm;
+            _operationInProgress = operationInProgress;
             _consoleTxt = new ConsoleRichTextBox {
                 Dock = DockStyle.Fill,
                 BackColor = SystemColors.Window,
@@ -98,6 +100,11 @@ namespace SqlNotebook {
 
         private async Task<bool> Execute(string sql) {
             try {
+                if (_operationInProgress) {
+                    throw new Exception("Another operation is already in progress.");
+                }
+                _consoleTxt.ReadOnly = true;
+
                 await ExecuteCore(sql);
                 _manager.SetDirty();
                 _manager.Rescan();
@@ -115,6 +122,8 @@ namespace SqlNotebook {
                 };
                 td.Show();
                 return false;
+            } finally {
+                _consoleTxt.ReadOnly = false;
             }
         }
 
