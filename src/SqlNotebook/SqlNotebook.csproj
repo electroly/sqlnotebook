@@ -321,8 +321,8 @@
   <ItemGroup>
     <None Include="Resources\SqlNotebookIcon32.png" />
     <None Include="Resources\SqlNotebookIcon48.png" />
-    <None Include="Resources\ThirdPartyLicenses.txt" />
     <None Include="Resources\Help.css" />
+    <None Include="Resources\ThirdPartyLicenses.html" />
     <Content Include="SqlNotebookIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

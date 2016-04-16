@@ -23,7 +23,7 @@ namespace SqlNotebook {
     public partial class AboutForm : Form {
         public AboutForm() {
             InitializeComponent();
-            _thirdPartyTxt.Text = Resources.ThirdPartyLicenses;
+            _webBrowser.DocumentText = Resources.ThirdPartyLicensesHtml;
             Text += $" {Application.ProductVersion}";
         }
 

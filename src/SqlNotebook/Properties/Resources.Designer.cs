@@ -225,8 +225,10 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {\rtf1\adeflang1025\ansi\ansicpg1252\uc1\adeff0\deff0\stshfdbch31505\stshfloch31506\stshfhich31506\stshfbi0\deflang1033\deflangfe1033\themelang1033\themelangfe0\themelangcs0{\fonttbl{\f0\fbidi \froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f34\fbidi \froman\fcharset0\fprq2{\*\panose 02040503050406030204}Cambria Math;}
-        ///{\f39\fbidi \fswiss\fcharset0\fprq2{\*\panose 020f0502020204030204}Calibri;}{\f40\fbidi \fswiss\fcharset0\fprq2{\*\panose 020b0604030504040204}MS Shell Dlg 2;}{\f41 [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033\deflangfe1033{\fonttbl{\f0\fswiss\fprq2\fcharset0 Calibri;}{\f1\fswiss\fprq2\fcharset0 MS Shell Dlg 2;}{\f2\fswiss\fprq2\fcharset1 Segoe UI Symbol;}{\f3\fnil\fcharset0 Calibri;}{\f4\fmodern\fprq1\fcharset0 Consolas;}}
+        ///{\colortbl ;\red0\green0\blue0;\red0\green0\blue255;\red255\green0\blue0;}
+        ///{\*\generator Riched20 10.0.10586}{\*\mmathPr\mnaryLim0\mdispDef1\mwrapIndent1440 }\viewkind4\uc1 
+        ///\pard\nowidctlpar\cf1\b\f0\fs32 Getting Started with SQL Noteboo [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GettingStartedRtf {
             get {
@@ -421,14 +423,24 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SQLite
-        ///https://www.sqlite.org
-        ///
-        ///All of the code and documentation in SQLite has been dedicated to the public domain by the authors. All code authors, and representatives of the companies they work for, have signed affidavits dedicating their contributions to the public domain and originals of those signed affidavits are stored in a firesafe at the main offices of Hwaci. Anyone is free to copy, modify, publish, use, compile, sell, or distribute the original SQLite code, either in source code form or as a c [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+        ///&lt;style&gt;
+        ///* { font-family: Calibri; font-size: 10pt; }
+        ///a { text-decoration: none; }
+        ///a:hover { text-decoration: underline; }
+        ///&lt;/style&gt;
+        ///Third party licenses:
+        ///&lt;ul&gt;
+        ///&lt;li&gt;&lt;a href=&quot;#sqlite&quot;&gt;SQLite&lt;/a&gt;&lt;/li&gt;
+        ///&lt;li&gt;&lt;a href=&quot;#fatcow&quot;&gt;Free FatCow-Farm Fresh Icons&lt;/a&gt;&lt;/li&gt;
+        ///&lt;li&gt;&lt;a href=&quot;#dockpanelsuite&quot;&gt;DockPanelSuite&lt;/a&gt;&lt;/li&gt;
+        ///&lt;li&gt;&lt;a href=&quot;#texteditor&quot;&gt;ICSharpCode.TextEditor&lt;/a&gt;&lt;/li&gt;
+        ///&lt;li&gt;&lt;a href=&quot;#sharpziplib&quot;&gt;SharpZipLib&lt;/a&gt;&lt;/li&gt; [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ThirdPartyLicenses {
+        internal static string ThirdPartyLicensesHtml {
             get {
-                return ResourceManager.GetString("ThirdPartyLicenses", resourceCulture);
+                return ResourceManager.GetString("ThirdPartyLicensesHtml", resourceCulture);
             }
         }
     }

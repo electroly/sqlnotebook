@@ -25,16 +25,17 @@
         private void InitializeComponent() {
             System.Windows.Forms.Button _okBtn;
             System.Windows.Forms.PictureBox pictureBox1;
-            this._thirdPartyTxt = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this._githubLnk = new System.Windows.Forms.LinkLabel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this._webBrowser = new System.Windows.Forms.WebBrowser();
+            this.panel2 = new System.Windows.Forms.Panel();
             _okBtn = new System.Windows.Forms.Button();
             pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // _okBtn
@@ -56,31 +57,6 @@
             pictureBox1.Size = new System.Drawing.Size(48, 48);
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
-            // 
-            // _thirdPartyTxt
-            // 
-            this._thirdPartyTxt.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this._thirdPartyTxt.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._thirdPartyTxt.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._thirdPartyTxt.Location = new System.Drawing.Point(12, 98);
-            this._thirdPartyTxt.Multiline = true;
-            this._thirdPartyTxt.Name = "_thirdPartyTxt";
-            this._thirdPartyTxt.ReadOnly = true;
-            this._thirdPartyTxt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this._thirdPartyTxt.Size = new System.Drawing.Size(444, 202);
-            this._thirdPartyTxt.TabIndex = 3;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.SystemColors.Control;
-            this.label1.Location = new System.Drawing.Point(9, 80);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(112, 15);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Third party licenses:";
             // 
             // label2
             // 
@@ -130,14 +106,40 @@
             this.panel1.Size = new System.Drawing.Size(470, 74);
             this.panel1.TabIndex = 7;
             // 
+            // _webBrowser
+            // 
+            this._webBrowser.AllowWebBrowserDrop = false;
+            this._webBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this._webBrowser.IsWebBrowserContextMenuEnabled = false;
+            this._webBrowser.Location = new System.Drawing.Point(0, 0);
+            this._webBrowser.MinimumSize = new System.Drawing.Size(20, 20);
+            this._webBrowser.Name = "_webBrowser";
+            this._webBrowser.ScriptErrorsSuppressed = true;
+            this._webBrowser.Size = new System.Drawing.Size(468, 226);
+            this._webBrowser.TabIndex = 8;
+            this._webBrowser.WebBrowserShortcutsEnabled = false;
+            // 
+            // panel2
+            // 
+            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this._webBrowser);
+            this.panel2.Location = new System.Drawing.Point(-1, 72);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(470, 228);
+            this.panel2.TabIndex = 9;
+            // 
             // AboutForm
             // 
             this.AcceptButton = _okBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(468, 344);
-            this.Controls.Add(this._thirdPartyTxt);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(_okBtn);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -153,18 +155,17 @@
             ((System.ComponentModel.ISupportInitialize)(pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox _thirdPartyTxt;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.LinkLabel _githubLnk;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.WebBrowser _webBrowser;
+        private System.Windows.Forms.Panel panel2;
     }
 }
