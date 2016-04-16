@@ -127,13 +127,12 @@ namespace SqlNotebookScript {
         }
 
         private string GetItemData(string name) {
-            string data = null;
-            var dt = _notebook.Query("SELECT data FROM sqlnotebook_items WHERE name = @name",
-                new Dictionary<string, object> { ["@name"] = name });
-            if (dt.Rows.Count == 1) {
-                data = (string)dt.Get(0, "data");
+            var itemRec = _notebook.UserData.Items.FirstOrDefault(x => x.Name == name);
+            if (itemRec == null) {
+                return "";
+            } else {
+                return itemRec.Data;
             }
-            return data;
         }
 
         // must be run from the SQLite thread
@@ -304,13 +303,10 @@ namespace SqlNotebookScript {
             env.DidThrow = true;
 
             // make the error number, message, and state available via the error_number(), error_message(), and 
-            // error_state() functions.  they simply read from the sqlnotebook_last_error table.
-            _notebook.Execute("DELETE FROM sqlnotebook_last_error");
-            _notebook.Execute("INSERT INTO sqlnotebook_last_error VALUES (@num, @msg, @state)", new Dictionary<string, object> {
-                ["@num"] = env.ErrorNumber,
-                ["@msg"] = env.ErrorMessage,
-                ["@state"] = env.ErrorState
-            });
+            // error_state() functions.
+            _notebook.UserData.LastError.ErrorNumber = env.ErrorNumber;
+            _notebook.UserData.LastError.ErrorMessage = env.ErrorMessage;
+            _notebook.UserData.LastError.ErrorState = env.ErrorState;
         }
 
         private void ExecuteRethrowStmt(Ast.RethrowStmt stmt, ScriptEnv env) {

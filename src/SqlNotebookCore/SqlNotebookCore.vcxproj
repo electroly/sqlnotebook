@@ -95,6 +95,9 @@
     <Reference Include="MySql.Data">
       <HintPath>..\packages\MySql.Data.6.9.8\lib\net45\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Npgsql">
       <HintPath>..\packages\Npgsql.3.0.5\lib\net45\Npgsql.dll</HintPath>
     </Reference>

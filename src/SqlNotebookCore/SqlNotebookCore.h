@@ -216,50 +216,6 @@ namespace SqlNotebookCore {
         IReadOnlyDictionary<String^, int>^ _columnIndices;
     };
 
-    public ref class Notebook sealed : public IDisposable {
-        public:
-        Notebook(String^ filePath, bool isNew);
-        ~Notebook();
-        !Notebook();
-        void Invoke(Action^ action); // run the action on the sqlite thread
-        String^ GetFilePath();
-        void Interrupt(); // interrupt any currently running SQLite command
-
-        // all of these methods must be run on the sqlite thread
-        void Execute(String^ sql);
-        void Execute(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
-        void Execute(String^ sql, IReadOnlyList<Object^>^ args);
-        SimpleDataTable^ Query(String^ sql);
-        SimpleDataTable^ Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
-        SimpleDataTable^ Query(String^ sql, IReadOnlyList<Object^>^ args);
-        Object^ QueryValue(String^ sql);
-        Object^ QueryValue(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
-        Object^ QueryValue(String^ sql, IReadOnlyList<Object^>^ args);
-        void Save();
-        void SaveAs(String^ filePath);
-        static IReadOnlyList<Token^>^ Tokenize(String^ input);
-        String^ FindLongestValidStatementPrefix(String^ input);
-
-        internal:
-        static void SqliteResult(sqlite3_context* ctx, Object^ value);
-
-        private:
-        bool _isDisposed;
-        String^ _originalFilePath;
-        String^ _workingCopyFilePath;
-        sqlite3* _sqlite;
-        Object^ _lock;
-
-        SimpleDataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
-            IReadOnlyList<Object^>^ orderedArgs, bool returnResult);
-        void InstallPgModule();
-        void InstallMsModule();
-        void InstallMyModule();
-        void InstallErrorAccessorFunctions();
-        void SqliteCall(int result);
-        void Init();
-    };
-
     public ref class Util abstract sealed {
         public:
         static std::wstring WStr(String^ mstr); // to UTF-16
@@ -298,5 +254,85 @@ namespace SqlNotebookCore {
         bool _isDisposed;
         void* _mhd;
         void* _thisRef; // gcroot<HttpServer^>*
+    };
+
+    public ref class NotebookItemRecord sealed {
+        public:
+        String^ Name;
+        String^ Type;
+        String^ Data;
+    };
+
+    public ref class ScriptParameterRecord sealed {
+        public:
+        String^ ScriptName;
+        List<String^>^ ParamNames = gcnew List<String^>();
+    };
+
+    public ref class LastErrorRecord sealed {
+        public:
+        Object^ ErrorNumber;
+        Object^ ErrorMessage;
+        Object^ ErrorState;
+    };
+
+    public ref class ConsoleHistoryRecord sealed {
+        public:
+        String^ Name;
+        List<String^>^ History = gcnew List<String^>();
+    };
+
+    public ref class NotebookUserData sealed {
+        public:
+        List<NotebookItemRecord^>^ Items = gcnew List<NotebookItemRecord^>();
+        List<ScriptParameterRecord^>^ ScriptParameters = gcnew List<ScriptParameterRecord^>();
+        LastErrorRecord^ LastError = gcnew LastErrorRecord();
+        List<ConsoleHistoryRecord^>^ ConsoleHistories = gcnew List<ConsoleHistoryRecord^>();
+    };
+
+    public ref class Notebook sealed : public IDisposable {
+        public:
+        Notebook(String^ filePath, bool isNew);
+        ~Notebook();
+        !Notebook();
+        void Invoke(Action^ action); // run the action on the sqlite thread
+        String^ GetFilePath();
+        void Interrupt(); // interrupt any currently running SQLite command
+        property NotebookUserData^ UserData { NotebookUserData^ get() { return _userData; } }
+
+        // all of these methods must be run on the sqlite thread
+        void Execute(String^ sql);
+        void Execute(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
+        void Execute(String^ sql, IReadOnlyList<Object^>^ args);
+        SimpleDataTable^ Query(String^ sql);
+        SimpleDataTable^ Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
+        SimpleDataTable^ Query(String^ sql, IReadOnlyList<Object^>^ args);
+        Object^ QueryValue(String^ sql);
+        Object^ QueryValue(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
+        Object^ QueryValue(String^ sql, IReadOnlyList<Object^>^ args);
+        void Save();
+        void SaveAs(String^ filePath);
+        static IReadOnlyList<Token^>^ Tokenize(String^ input);
+        String^ FindLongestValidStatementPrefix(String^ input);
+
+        internal:
+        static void SqliteResult(sqlite3_context* ctx, Object^ value);
+
+        private:
+        bool _isDisposed;
+        String^ _originalFilePath;
+        String^ _workingCopyFilePath;
+        sqlite3* _sqlite;
+        Object^ _lock;
+        NotebookUserData^ _userData;
+
+        SimpleDataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
+            IReadOnlyList<Object^>^ orderedArgs, bool returnResult);
+        void InstallPgModule();
+        void InstallMsModule();
+        void InstallMyModule();
+        void InstallErrorAccessorFunctions();
+        void SqliteCall(int result);
+        void Init();
     };
 }

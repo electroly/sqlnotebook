@@ -152,13 +152,12 @@ namespace SqlNotebook {
                         }
                     });
                 } else if (lvi.Group.Name == "Script") {
-                    n.Invoke(() => {
-                        var dt = n.Query($"SELECT param_name FROM sqlnotebook_script_params WHERE script_name = @name",
-                            new Dictionary<string, object> { ["@name"] = notebookItemName });
-                        for (int i = 0; i < dt.Rows.Count; i++) {
-                            details.Add(Tuple.Create(dt.Get(i, "param_name").ToString(), "parameter"));
+                    var paramRec = n.UserData.ScriptParameters.FirstOrDefault(x => x.ScriptName == notebookItemName);
+                    if (paramRec != null) {
+                        foreach (var paramName in paramRec.ParamNames) {
+                            details.Add(Tuple.Create(paramName, "parameter"));
                         }
-                    });
+                    }
                 }
             } catch (Exception) { }
 

@@ -122,124 +122,101 @@ namespace SqlNotebook {
         private IReadOnlyList<NotebookItem> ReadItems() {
             var items = new List<NotebookItem>();
             Notebook.Invoke(() => {
-                Init();
-
                 // tables and views
-                var dt = Notebook.Query(
-                    @"SELECT name, type 
-                    FROM sqlite_master 
-                    WHERE
-                        (type = 'table' OR type = 'view') AND 
-                        name != 'sqlnotebook_items' AND 
-                        name != 'sqlnotebook_script_params' AND
-                        name != 'sqlnotebook_last_error' AND 
-                        name != 'sqlnotebook_console_history' ");
+                var dt = Notebook.Query("SELECT name, type FROM sqlite_master WHERE type = 'table' OR type = 'view' ");
                 for (int i = 0; i < dt.Rows.Count; i++) {
                     var type = (string)dt.Get(i, "type") == "view" ? NotebookItemType.View : NotebookItemType.Table;
                     items.Add(new NotebookItem(type, (string)dt.Get(i, "name")));
                 }
 
-                // consoles, queries, procedures, and notes
-                dt = Notebook.Query("SELECT name, type FROM sqlnotebook_items");
-                for (int i = 0; i < dt.Rows.Count; i++) {
-                    string name = (string)dt.Get(i, "name");
-                    string typeStr = (string)dt.Get(i, "type");
-                    var type =
-                        typeStr == "script" ? NotebookItemType.Script :
-                        typeStr == "console" ? NotebookItemType.Console :
-                        NotebookItemType.Note;
-                    items.Add(new NotebookItem(type, name));
-                }
+                // notes, consoles, and scripts
+                items.AddRange(
+                    from x in Notebook.UserData.Items
+                    select new NotebookItem((NotebookItemType)Enum.Parse(typeof(NotebookItemType), x.Type), x.Name)
+                );
             });
             return items;
         }
 
         public string NewConsole() {
-            return NewItem("console");
+            return NewItem(NotebookItemType.Console.ToString());
         }
 
         public string NewScript() {
-            return NewItem("script");
+            return NewItem(NotebookItemType.Script.ToString());
         }
 
         public string NewNote(string name = null, string data = null) {
-            return NewItem("note", name, data);
+            return NewItem(NotebookItemType.Note.ToString(), name, data);
         }
 
         private string NewItem(string type, string name = null, string data = null) {
-            Notebook.Invoke(() => {
-                Init();
-                if (name == null) {
-                    var dt = Notebook.Query($"SELECT name FROM sqlnotebook_items WHERE name LIKE '{type}%'");
-                    var existingNames = new HashSet<string>(dt.Rows.Select(x => (string)x[0]));
-                    int i;
-                    for (i = 1; existingNames.Contains($"{type}{i}"); i++) { }
-                    name = $"{type}{i}";
-                }
-                Notebook.Execute($"INSERT INTO sqlnotebook_items (name, type, data) VALUES (@name, @type, @data)",
-                    new Dictionary<string, object> { ["@name"] = name, ["@type"] = type, ["@data"] = data ?? ""});
-            });
+            if (name == null) {
+                var existingNames = new HashSet<string>(Notebook.UserData.Items.Select(x => x.Name.ToLower()));
+                int i;
+                for (i = 1; existingNames.Contains($"{type.ToLower()}{i}"); i++) { }
+                name = $"{type}{i}";
+            }
+            var itemRec = new NotebookItemRecord { Name = name, Data = data ?? "", Type = type };
+            Notebook.UserData.Items.Add(itemRec);
             Rescan();
             SetDirty();
             return name;
         }
 
         public void SetItemData(string name, string data) {
-            Notebook.Invoke(() => {
-                Notebook.Execute("UPDATE sqlnotebook_items SET data = @data WHERE name = @name",
-                    new Dictionary<string, object> { ["@name"] = name, ["@data"] = data });
+            var ud = Notebook.UserData;
+            var itemRec = ud.Items.FirstOrDefault(x => x.Name == name);
+            if (itemRec == null) {
+                throw new ArgumentException($"There is no item named \"{name}\".");
+            }
 
-                // if this is a Script, then we also need to update the list of parameters in sqlnotebook_script_params
-                var type = Notebook.QueryValue("SELECT type FROM sqlnotebook_items WHERE name = @name",
-                    new Dictionary<string, object> { ["@name"] = name }) as string;
-                if (type != null && type == "script") {
-                    try {
-                        var parser = new ScriptParser(Notebook);
-                        var ast = parser.Parse(data);
-                        var paramNames =
-                            ast.Traverse()
-                            .OfType<SqlNotebookScript.Ast.DeclareStmt>()
-                            .Where(x => x.IsParameter)
-                            .Select(x => x.VariableName)
-                            .ToList();
-                        Notebook.Execute("DELETE FROM sqlnotebook_script_params WHERE script_name = @name",
-                            new Dictionary<string, object> { ["@name"] = name });
-                        foreach (var paramName in paramNames) {
-                            Notebook.Execute("INSERT INTO sqlnotebook_script_params (script_name, param_name) VALUES (@script, @param)",
-                                new Dictionary<string, object> { ["@script"] = name, ["@param"] = paramName });
-                        }
-                    } catch (Exception) { }
-                }
-            });
+            itemRec.Data = data;
+
+            // if this is a Script, then we also need to update its list of parameters
+            if (itemRec.Type == "Script") {
+                ud.ScriptParameters.RemoveWhere(x => x.ScriptName == name);
+                var paramRec = new ScriptParameterRecord { ScriptName = name };
+                try {
+                    var parser = new ScriptParser(Notebook);
+                    var ast = parser.Parse(data);
+                    var paramNames =
+                        ast.Traverse()
+                        .OfType<SqlNotebookScript.Ast.DeclareStmt>()
+                        .Where(x => x.IsParameter)
+                        .Select(x => x.VariableName);
+                    foreach (var paramName in paramNames) {
+                        paramRec.ParamNames.Add(paramName);
+                    }
+                } catch (Exception) { }
+                ud.ScriptParameters.Add(paramRec);
+            }
         }
 
         public string GetItemData(string name) {
-            return Invoke(() => {
-                var dt = Notebook.Query("SELECT data FROM sqlnotebook_items WHERE name = @name",
-                    new Dictionary<string, object> { ["@name"] = name });
-                if (dt.Rows.Count == 1) {
-                    return (string)dt.Get(0, "data");
-                }
+            var itemRec = Notebook.UserData.Items.FirstOrDefault(x => x.Name == name);
+            if (itemRec == null) {
                 return "";
-            });
+            } else {
+                return itemRec.Data;
+            }
         }
 
         public void SetConsoleHistory(string name, IReadOnlyList<string> history) {
-            Notebook.Invoke(() => {
-                Notebook.Execute("DELETE FROM sqlnotebook_console_history WHERE name = @name", 
-                    new Dictionary<string, object> { ["@name"] = name });
-                for (int i = 0; i < history.Count; i++) {
-                    Notebook.Execute("INSERT INTO sqlnotebook_console_history VALUES (@name, @pos, @cmd)",
-                        new Dictionary<string, object> { ["@name"] = name, ["@pos"] = i, ["@cmd"] = history[i] });
-                }
-            });
+            var ud = Notebook.UserData;
+            ud.ConsoleHistories.RemoveWhere(x => x.Name == name);
+            var historyRec = new ConsoleHistoryRecord { Name = name };
+            historyRec.History.AddRange(history);
+            ud.ConsoleHistories.Add(historyRec);
         }
 
         public List<string> GetConsoleHistory(string name) {
-            return Invoke(() => {
-                return Notebook.Query("SELECT command FROM sqlnotebook_console_history WHERE name = @name ORDER BY pos",
-                    new Dictionary<string, object> { ["@name"] = name });
-            }).Rows.Select(x => x[0].ToString()).ToList();
+            var historyRec = Notebook.UserData.ConsoleHistories.FirstOrDefault(x => x.Name == name);
+            if (historyRec == null) {
+                return new List<string>();
+            } else {
+                return historyRec.History;
+            }
         }
 
         public ScriptOutput ExecuteScript(string code) {
@@ -258,8 +235,7 @@ namespace SqlNotebook {
                     case NotebookItemType.Console:
                     case NotebookItemType.Script:
                     case NotebookItemType.Note:
-                        Notebook.Execute("DELETE FROM sqlnotebook_items WHERE name = @name",
-                            new Dictionary<string, object> { ["@name"] = item.Name });
+                        Notebook.UserData.Items.RemoveWhere(x => x.Name == item.Name);
                         break;
 
                     case NotebookItemType.Table:
@@ -285,19 +261,17 @@ namespace SqlNotebook {
                     case NotebookItemType.Script:
                         if (!isCaseChange) {
                             // is the new name already in use?
-                            var inUse = Notebook.Query("SELECT name FROM sqlnotebook_items")
-                                .Rows.Any(x => ((string)x[0]).ToLower() == lcNewName);
-                            if (inUse) {
+                            if (Notebook.UserData.Items.Any(x => x.Name.ToLower() == lcNewName)) {
                                 throw new Exception($"An item named \"{newName}\" already exists.");
                             }
                         }
 
-                        Notebook.Execute("UPDATE sqlnotebook_items SET name = @new_name WHERE name = @old_name",
-                            new Dictionary<string, object> { ["@new_name"] = newName, ["@old_name"] = item.Name });
+                        var itemRec = Notebook.UserData.Items.Single(x => x.Name == item.Name);
+                        itemRec.Name = newName;
 
                         if (item.Type == NotebookItemType.Script) {
-                            Notebook.Execute("UPDATE sqlnotebook_script_params SET script_name = @new_name WHERE script_name = @old_name",
-                                new Dictionary<string, object> { ["@new_name"] = newName, ["@old_name"] = item.Name });
+                            var scriptParamRec = Notebook.UserData.ScriptParameters.Single(x => x.ScriptName == item.Name);
+                            scriptParamRec.ScriptName = newName;
                         }
                         break;
 
@@ -339,31 +313,6 @@ namespace SqlNotebook {
                 value = func();
             });
             return value;
-        }
-
-        private void Init() {
-            var dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_items'");
-            if (dt.Rows.Count == 0) {
-                Notebook.Execute("CREATE TABLE sqlnotebook_items (name TEXT NOT NULL, type TEXT NOT NULL, " +
-                    "data TEXT, PRIMARY KEY (name))");
-            }
-
-            dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_script_params'");
-            if (dt.Rows.Count == 0) {
-                Notebook.Execute("CREATE TABLE sqlnotebook_script_params (script_name TEXT, param_name TEXT, PRIMARY KEY (script_name, param_name))");
-            }
-
-            dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_last_error'");
-            if (dt.Rows.Count == 0) {
-                Notebook.Execute("CREATE TABLE sqlnotebook_last_error (error_number, error_message, error_state)");
-            }
-
-            dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_console_history'");
-            if (dt.Rows.Count == 0) {
-                Notebook.Execute("CREATE TABLE sqlnotebook_console_history (" +
-                    "name TEXT REFERENCES sqlnotebook_items(name) ON DELETE CASCADE, pos INTEGER NOT NULL, " +
-                    "command TEXT NOT NULL, PRIMARY KEY (name, pos))");
-            }
         }
     }
 }

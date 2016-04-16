@@ -15,6 +15,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -194,6 +195,14 @@ namespace SqlNotebook {
             }
 
             return paddedImageList;
+        }
+
+        public static void RemoveWhere<T>(this List<T> self, Func<T, bool> selector) {
+            for (int i = self.Count - 1; i >= 0; i--) {
+                if (selector(self[i])) {
+                    self.RemoveAt(i);
+                }
+            }
         }
     }
 }

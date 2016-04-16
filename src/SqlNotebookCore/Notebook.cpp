@@ -19,17 +19,35 @@
 using namespace SqlNotebookCore;
 using namespace System::IO;
 using namespace System::IO::Compression;
+using namespace System::Text;
 using namespace msclr;
+using namespace Newtonsoft::Json;
+
+#define SQLITE_ZIP_ENTRY_NAME "sqlite.db"
+#define NOTEBOOK_ZIP_ENTRY_NAME "notebook.json"
 
 Notebook::Notebook(String^ filePath, bool isNew) {
     _workingCopyFilePath = Path::GetTempFileName();
-    if (!isNew) {
+    if (isNew) {
+        _userData = gcnew NotebookUserData();
+    } else {
         try {
             auto_handle<ZipArchive> zip(ZipFile::OpenRead(filePath));
-            auto entry = zip->GetEntry("db");
-            auto_handle<Stream> inStream(entry->Open());
-            FileStream outStream(_workingCopyFilePath, FileMode::Create);
-            inStream->CopyTo(%outStream);
+            // load the sqlite database
+            {
+                auto entry = zip->GetEntry(SQLITE_ZIP_ENTRY_NAME);
+                auto_handle<Stream> inStream(entry->Open());
+                FileStream outStream(_workingCopyFilePath, FileMode::Create);
+                inStream->CopyTo(%outStream);
+            }
+            // load the user items
+            {
+                auto entry = zip->GetEntry(NOTEBOOK_ZIP_ENTRY_NAME);
+                auto_handle<Stream> inStream(entry->Open());
+                StreamReader reader(inStream.get(), Encoding::UTF8);
+                auto json = reader.ReadToEnd();
+                _userData = (NotebookUserData^)JsonConvert::DeserializeObject(json, NotebookUserData::typeid);
+            }
         } catch (Exception^) {
             File::Delete(_workingCopyFilePath);
             throw;
@@ -260,7 +278,7 @@ void g_SqliteCall(sqlite3* sqlite, int result) {
 }
 
 void Notebook::Save() {
-    SqliteCall(sqlite3_close_v2(_sqlite));
+    SqliteCall(sqlite3_close(_sqlite));
     _sqlite = nullptr;
 
     try {
@@ -268,10 +286,21 @@ void Notebook::Save() {
             File::Delete(_originalFilePath);
         }
         auto_handle<ZipArchive> archive(ZipFile::Open(_originalFilePath, ZipArchiveMode::Create));
-        auto entry = archive->CreateEntry("db", CompressionLevel::Fastest);
-        auto_handle<Stream> outStream(entry->Open());
-        FileStream inStream(_workingCopyFilePath, FileMode::Open);
-        inStream.CopyTo(outStream.get());
+        // write the sqlite database
+        {
+            auto entry = archive->CreateEntry(SQLITE_ZIP_ENTRY_NAME, CompressionLevel::Fastest);
+            auto_handle<Stream> outStream(entry->Open());
+            FileStream inStream(_workingCopyFilePath, FileMode::Open);
+            inStream.CopyTo(outStream.get());
+        }
+        // write the notebook items
+        {
+            auto entry = archive->CreateEntry(NOTEBOOK_ZIP_ENTRY_NAME, CompressionLevel::Fastest);
+            auto_handle<Stream> outStream(entry->Open());
+            auto json = JsonConvert::SerializeObject(_userData);
+            StreamWriter writer(outStream.get(), Encoding::UTF8);
+            writer.Write(json);
+        }
     } finally {
         Init();
     }
@@ -354,17 +383,17 @@ void Notebook::Interrupt() {
 
 static void ErrorNumberFunc(sqlite3_context* ctx, int, sqlite3_value**) {
     Notebook^ notebook = *(gcroot<Notebook^>*)sqlite3_user_data(ctx);
-    Notebook::SqliteResult(ctx, notebook->QueryValue("SELECT error_number FROM sqlnotebook_last_error"));
+    Notebook::SqliteResult(ctx, notebook->UserData->LastError->ErrorNumber);
 }
 
 static void ErrorMessageFunc(sqlite3_context* ctx, int, sqlite3_value**) {
     Notebook^ notebook = *(gcroot<Notebook^>*)sqlite3_user_data(ctx);
-    Notebook::SqliteResult(ctx, notebook->QueryValue("SELECT error_message FROM sqlnotebook_last_error"));
+    Notebook::SqliteResult(ctx, notebook->UserData->LastError->ErrorMessage);
 }
 
 static void ErrorStateFunc(sqlite3_context* ctx, int, sqlite3_value**) {
     Notebook^ notebook = *(gcroot<Notebook^>*)sqlite3_user_data(ctx);
-    Notebook::SqliteResult(ctx, notebook->QueryValue("SELECT error_state FROM sqlnotebook_last_error"));
+    Notebook::SqliteResult(ctx, notebook->UserData->LastError->ErrorState);
 }
 
 static void DeleteGcrootNotebook(void* ptr) {
