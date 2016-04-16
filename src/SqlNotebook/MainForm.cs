@@ -597,7 +597,9 @@ namespace SqlNotebook {
                     helpCtl = (HelpDocumentControl)_helpDoc.Content;
                 } else {
                     helpCtl = new HelpDocumentControl(() => _helpServer.PortNumber) { Dock = DockStyle.Fill };
-                    _helpDoc = new UserControlDockContent("Help Viewer", helpCtl);
+                    _helpDoc = new UserControlDockContent("Help Viewer", helpCtl) {
+                        Icon = Resources.HelpIco
+                    };
                     _helpDoc.FormClosed += (sender, e) => _helpDoc = null;
                     _helpDoc.Show(_dockPanel);
                 }
