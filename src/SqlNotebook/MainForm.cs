@@ -70,6 +70,9 @@ namespace SqlNotebook {
                 });
                 f.StartPosition = FormStartPosition.CenterScreen;
                 f.ShowDialog();
+                if (f.ResultException != null) {
+                    throw f.ResultException;
+                }
             }
             _isNew = isNew;
             SetTitle();
