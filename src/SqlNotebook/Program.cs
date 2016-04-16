@@ -51,7 +51,7 @@ namespace SqlNotebook {
             }
 
             if (!File.Exists(filePath)) {
-                MessageBox.Show("File does not exist: " + filePath);
+                MessageBox.Show("File does not exist: " + filePath, "SQL Notebook", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
