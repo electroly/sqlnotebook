@@ -192,6 +192,12 @@
     <Compile Include="ConsoleRichTextBox.cs" />
     <Compile Include="RecentDataSources.cs" />
     <Compile Include="Slot.cs" />
+    <Compile Include="TableDocumentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TableDocumentControl.Designer.cs">
+      <DependentUpon>TableDocumentControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControlDockContent.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -255,6 +261,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="QueryDocumentControl.resx">
       <DependentUpon>QueryDocumentControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TableDocumentControl.resx">
+      <DependentUpon>TableDocumentControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WaitForm.resx">
       <DependentUpon>WaitForm.cs</DependentUpon>
@@ -329,6 +338,7 @@
     <None Include="Resources\SqlNotebookIcon48.png" />
     <None Include="Resources\Help.css" />
     <None Include="Resources\ThirdPartyLicenses.html" />
+    <None Include="Resources\table.ico" />
     <Content Include="SqlNotebookIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

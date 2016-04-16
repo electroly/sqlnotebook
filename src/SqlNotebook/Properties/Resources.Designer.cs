@@ -393,6 +393,16 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon TableIco {
+            get {
+                object obj = ResourceManager.GetObject("TableIco", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap TextExports {
@@ -426,8 +436,8 @@ namespace SqlNotebook.Properties {
         ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
         ///&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
         ///&lt;style&gt;
-        ///* { font-family: Calibri; font-size: 10pt; }
-        ///a { text-decoration: none; }
+        ///* { font-family: Calibri; font-size: 8pt; }
+        ///a, a:visited { text-decoration: none; color: blue; }
         ///a:hover { text-decoration: underline; }
         ///&lt;/style&gt;
         ///Third party licenses:
@@ -436,7 +446,7 @@ namespace SqlNotebook.Properties {
         ///&lt;li&gt;&lt;a href=&quot;#fatcow&quot;&gt;Free FatCow-Farm Fresh Icons&lt;/a&gt;&lt;/li&gt;
         ///&lt;li&gt;&lt;a href=&quot;#dockpanelsuite&quot;&gt;DockPanelSuite&lt;/a&gt;&lt;/li&gt;
         ///&lt;li&gt;&lt;a href=&quot;#texteditor&quot;&gt;ICSharpCode.TextEditor&lt;/a&gt;&lt;/li&gt;
-        ///&lt;li&gt;&lt;a href=&quot;#sharpziplib&quot;&gt;SharpZipLib&lt;/a&gt;&lt;/li&gt; [rest of string was truncated]&quot;;.
+        ///&lt;li&gt;&lt;a href=&quot;#sharpzipli [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ThirdPartyLicensesHtml {
             get {

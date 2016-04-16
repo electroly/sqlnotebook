@@ -215,32 +215,31 @@ namespace SqlNotebook {
                 };
                 f.FormClosing += (sender2, e2) => doc.Save();
                 getName = () => doc.ItemName;
-            } else {
-                bool runImmediately = false;
-                if (item.Type == NotebookItemType.Table || item.Type == NotebookItemType.View) {
-                    var name = _manager.NewScript();
-                    _manager.SetItemData(name, $"SELECT * FROM {item.Name.DoubleQuote()} LIMIT 1000");
-                    item = new NotebookItem(NotebookItemType.Script, name);
-                    runImmediately = true;
-                }
-
-                var doc = new QueryDocumentControl(item.Name, _manager, this, _operationInProgress, runImmediately);
+            } else if (item.Type == NotebookItemType.Script) {
+                var doc = new QueryDocumentControl(item.Name, _manager, this, _operationInProgress);
                 f = new UserControlDockContent(item.Name, doc) {
                     Icon = Resources.ScriptIco
                 };
                 f.FormClosing += (sender2, e2) => doc.Save();
                 getName = () => doc.ItemName;
+            } else if (item.Type == NotebookItemType.Table || item.Type == NotebookItemType.View) {
+                var doc = new TableDocumentControl(_manager, item.Name, this);
+                f = new UserControlDockContent(item.Name, doc) {
+                    Icon = Resources.TableIco
+                };
             }
 
-            f.FormClosed += (sender2, e2) => {
-                // the item may have been renamed since we opened it, so make sure to use getName() for the current
-                // name instead of closing over item.Name.
-                _openItems.Remove(new NotebookItem(item.Type, getName()));
-            };
-            f.Show(_dockPanel);
-            _openItems[item] = f;
-        }
+            if (getName != null) {
+                f.FormClosed += (sender2, e2) => {
+                    // the item may have been renamed since we opened it, so make sure to use getName() for the current
+                    // name instead of closing over item.Name.
+                    _openItems.Remove(new NotebookItem(item.Type, getName()));
+                };
+               _openItems[item] = f;
+            }
 
+            f.Show(_dockPanel);
+        }
 
         protected override void OnFormClosed(FormClosedEventArgs e) {
             base.OnFormClosed(e);

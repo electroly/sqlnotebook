@@ -51,7 +51,7 @@ namespace SqlNotebook {
             _manager.SetItemData(ItemName, DocumentText);
         }
 
-        public QueryDocumentControl(string name, NotebookManager manager, IWin32Window mainForm, Slot<bool> operationInProgress, bool runImmediately = false) {
+        public QueryDocumentControl(string name, NotebookManager manager, IWin32Window mainForm, Slot<bool> operationInProgress) {
             InitializeComponent();
             ItemName = name;
             _manager = manager;
@@ -74,7 +74,7 @@ namespace SqlNotebook {
             };
             _sqlPanel.Controls.Add(_textEditor);
 
-            Load += async (sender, e) => {
+            Load += (sender, e) => {
                 string initialText = _manager.GetItemData(ItemName);
                 if (initialText != null) {
                     _textEditor.Text = initialText;
@@ -83,10 +83,6 @@ namespace SqlNotebook {
                 _textEditor.TextChanged += (sender2, e2) => _manager.SetDirty();
 
                 ShowResult(0);
-
-                if (runImmediately) {
-                    await Execute();
-                }
             };
         }
 
