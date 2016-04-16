@@ -203,17 +203,13 @@ namespace SqlNotebook {
                 f = new UserControlDockContent(item.Name, doc) {
                     Icon = Resources.ApplicationXpTerminalIco
                 };
-                f.FormClosing += (sender2, e2) => {
-                    _manager.SetItemData(doc.ItemName, doc.DocumentText);
-                };
+                f.FormClosing += (sender2, e2) => doc.Save();
             } else if (item.Type == NotebookItemType.Note) {
                 var doc = new NoteDocumentControl(item.Name, _manager);
                 f = new UserControlDockContent(item.Name, doc) {
                     Icon = Resources.NoteIco
                 };
-                f.FormClosing += (sender2, e2) => {
-                    _manager.SetItemData(doc.ItemName, doc.DocumentText);
-                };
+                f.FormClosing += (sender2, e2) => doc.Save();
             } else {
                 bool runImmediately = false;
                 if (item.Type == NotebookItemType.Table || item.Type == NotebookItemType.View) {
@@ -227,9 +223,7 @@ namespace SqlNotebook {
                 f = new UserControlDockContent(item.Name, doc) {
                     Icon = Resources.ScriptIco
                 };
-                f.FormClosing += (sender2, e2) => {
-                    _manager.SetItemData(doc.ItemName, doc.DocumentText);
-                };
+                f.FormClosing += (sender2, e2) => doc.Save();
             }
 
             f.FormClosed += (sender2, e2) => {
@@ -418,8 +412,8 @@ namespace SqlNotebook {
         }
 
         private void SaveOpenItems() {
-            foreach (var x in _openItems) {
-                _manager.SetItemData(x.Key.Name, x.Value.Content.DocumentText);
+            foreach (var x in _openItems.Values) {
+                x.Content.Save();
             }
         }
 

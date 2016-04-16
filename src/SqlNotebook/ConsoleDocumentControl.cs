@@ -48,6 +48,11 @@ namespace SqlNotebook {
 
         public string ItemName { get; set; }
 
+        public void Save() {
+            _manager.SetItemData(ItemName, DocumentText);
+            _manager.SetConsoleHistory(ItemName, _consoleTxt.History);
+        }
+
         public ConsoleDocumentControl(string name, NotebookManager manager, IWin32Window mainForm) {
             InitializeComponent();
             ItemName = name;
@@ -75,6 +80,7 @@ namespace SqlNotebook {
                 string initialRtf = _manager.GetItemData(ItemName);
                 if (initialRtf != null) {
                     _consoleTxt.Rtf = initialRtf;
+                    _consoleTxt.History = _manager.GetConsoleHistory(ItemName);
                 }
                 if (_consoleTxt.Text.EndsWith($"\n{_consoleTxt.PromptText} ")) {
                     var len = _consoleTxt.PromptText.Length + 2;

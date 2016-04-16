@@ -8,5 +8,6 @@ namespace SqlNotebook {
     public interface IDocumentControl {
         string ItemName { get; set; }
         string DocumentText { get; }
+        void Save();
     }
 }

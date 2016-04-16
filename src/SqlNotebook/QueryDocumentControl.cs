@@ -46,6 +46,10 @@ namespace SqlNotebook {
 
         public string ItemName { get; set; }
 
+        public void Save() {
+            _manager.SetItemData(ItemName, DocumentText);
+        }
+
         public QueryDocumentControl(string name, NotebookManager manager, IWin32Window mainForm, bool runImmediately = false) {
             InitializeComponent();
             ItemName = name;

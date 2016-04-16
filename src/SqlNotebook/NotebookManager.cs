@@ -132,7 +132,8 @@ namespace SqlNotebook {
                         (type = 'table' OR type = 'view') AND 
                         name != 'sqlnotebook_items' AND 
                         name != 'sqlnotebook_script_params' AND
-                        name != 'sqlnotebook_last_error' ");
+                        name != 'sqlnotebook_last_error' AND 
+                        name != 'sqlnotebook_console_history' ");
                 for (int i = 0; i < dt.Rows.Count; i++) {
                     var type = (string)dt.Get(i, "type") == "view" ? NotebookItemType.View : NotebookItemType.Table;
                     items.Add(new NotebookItem(type, (string)dt.Get(i, "name")));
@@ -221,6 +222,24 @@ namespace SqlNotebook {
                 }
                 return "";
             });
+        }
+
+        public void SetConsoleHistory(string name, IReadOnlyList<string> history) {
+            Notebook.Invoke(() => {
+                Notebook.Execute("DELETE FROM sqlnotebook_console_history WHERE name = @name", 
+                    new Dictionary<string, object> { ["@name"] = name });
+                for (int i = 0; i < history.Count; i++) {
+                    Notebook.Execute("INSERT INTO sqlnotebook_console_history VALUES (@name, @pos, @cmd)",
+                        new Dictionary<string, object> { ["@name"] = name, ["@pos"] = i, ["@cmd"] = history[i] });
+                }
+            });
+        }
+
+        public List<string> GetConsoleHistory(string name) {
+            return Invoke(() => {
+                return Notebook.Query("SELECT command FROM sqlnotebook_console_history WHERE name = @name ORDER BY pos",
+                    new Dictionary<string, object> { ["@name"] = name });
+            }).Rows.Select(x => x[0].ToString()).ToList();
         }
 
         public ScriptOutput ExecuteScript(string code) {
@@ -323,23 +342,27 @@ namespace SqlNotebook {
         }
 
         private void Init() {
-            // create the sqlnotebook_items table if it does not exist
             var dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_items'");
             if (dt.Rows.Count == 0) {
-                Notebook.Execute(@"CREATE TABLE sqlnotebook_items (name TEXT NOT NULL, type TEXT NOT NULL, " +
+                Notebook.Execute("CREATE TABLE sqlnotebook_items (name TEXT NOT NULL, type TEXT NOT NULL, " +
                     "data TEXT, PRIMARY KEY (name))");
             }
 
-            // create the sqlnotebook_script_params table if it does not exist
             dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_script_params'");
             if (dt.Rows.Count == 0) {
-                Notebook.Execute(@"CREATE TABLE sqlnotebook_script_params (script_name TEXT, param_name TEXT, PRIMARY KEY (script_name, param_name))");
+                Notebook.Execute("CREATE TABLE sqlnotebook_script_params (script_name TEXT, param_name TEXT, PRIMARY KEY (script_name, param_name))");
             }
 
-            // create the sqlnotebook_last_error table if it does not exist
             dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_last_error'");
             if (dt.Rows.Count == 0) {
-                Notebook.Execute(@"CREATE TABLE sqlnotebook_last_error (error_number, error_message, error_state)");
+                Notebook.Execute("CREATE TABLE sqlnotebook_last_error (error_number, error_message, error_state)");
+            }
+
+            dt = Notebook.Query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sqlnotebook_console_history'");
+            if (dt.Rows.Count == 0) {
+                Notebook.Execute("CREATE TABLE sqlnotebook_console_history (" +
+                    "name TEXT REFERENCES sqlnotebook_items(name) ON DELETE CASCADE, pos INTEGER NOT NULL, " +
+                    "command TEXT NOT NULL, PRIMARY KEY (name, pos))");
             }
         }
     }

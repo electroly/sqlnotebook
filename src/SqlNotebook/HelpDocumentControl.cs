@@ -23,6 +23,7 @@ namespace SqlNotebook {
 
         string IDocumentControl.ItemName { get; set; }
         string IDocumentControl.DocumentText { get; } = "";
+        public void Save() { }
 
         public HelpDocumentControl(Func<int> getPortFunc) {
             InitializeComponent();

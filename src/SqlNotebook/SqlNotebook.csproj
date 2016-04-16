@@ -271,7 +271,6 @@
     </Compile>
     <None Include="Resources\GettingStarted.rtf" />
     <None Include="Resources\sqlite-doc.zip" />
-    <None Include="SqlNotebook_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
