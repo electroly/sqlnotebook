@@ -31,7 +31,7 @@ New-Item site/art -Type Directory -ErrorAction SilentlyContinue
 New-Item temp -Type Directory -ErrorAction SilentlyContinue
 
 copy .\sqlnotebook.css .\site\
-copy ..\art\*.* .\site\art\
+copy .\art\*.* .\site\art\
 copy .\error.html .\site\
 copy .\favicon.ico .\site\
 
