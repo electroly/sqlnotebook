@@ -139,6 +139,7 @@ namespace SqlNotebook {
             }
 
             Load += (sender, e) => _manager.Rescan();
+            SetTitle();
         }
 
         private void Manager_StatusUpdate(object sender, StatusUpdateEventArgs e) {
@@ -416,6 +417,7 @@ namespace SqlNotebook {
             _isDirty.Value = false;
 
             _manager.Rescan();
+            SetTitle();
             return true;
         }
 
