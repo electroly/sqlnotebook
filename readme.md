@@ -1,7 +1,7 @@
-<a href="https://raw.githubusercontent.com/electroly/sqlnotebook/master/art/screenshot.png" target="_blank"><img src="https://raw.githubusercontent.com/electroly/sqlnotebook/master/art/screenshot-thumb.png" align="right"></a>
-<img src="https://raw.githubusercontent.com/electroly/sqlnotebook/master/art/icon-title.png">
-### ➔ [**Download & Install**](http://sqlnotebook.com/install/setup.exe)
+<a href="http://sqlnotebook.com/index.html"><img src="http://sqlnotebook.com/art/icon-title.png"></a>    
+➔ [**Home**](http://sqlnotebook.com/index.html) &nbsp;&nbsp; ➔ [**Download & Install**](http://sqlnotebook.com/install/setup.exe) &nbsp;&nbsp; ➔ [**Documentation**](http://sqlnotebook.com/doc.html) &nbsp;&nbsp; ➔ [**GitHub**](https://github.com/electroly/sqlnotebook)
 
+<a href="http://sqlnotebook.com/art/screenshot.png" target="_blank"><img src="http://sqlnotebook.com/art/screenshot-thumb.png" align="right" style="margin-left: 10px; margin-bottom: 10px;"></a>
 SQL Notebook is a Windows desktop application for **ad hoc data exploration and manipulation**.  Fundamentally, it is a frontend for the SQLite database engine.  The notebook file is an SQLite database and the SQL language is used to interact with data.  SQLite is extended to support the following features:
 
 - **Microsoft SQL Server**, **PostgreSQL**, and **MySQL** servers can be linked into the notebook and queried interchangeably with local tables.  Remote data is not physically copied into the notebook file unless requested; instead, the data source is queried on-the-fly.  Any combination of data sources can be used together in the same SQL query.
@@ -31,3 +31,9 @@ SQL Notebook requires 64-bit Windows 7 or higher.  .NET Framework 4.6 and the Vi
 ### Building from Source
 
 Visual Studio 2015 must be installed with support for both C# and C++.  PowerShell 3 or higher is also required.  When building on Windows 7, you must install the latest PowerShell and reboot before building SQL Notebook.  Once the prerequisites are installed, open `src\SqlNotebook.sln` and build the solution.
+
+### License
+
+SQL Notebook is available under the <a href="http://sqlnotebook.com/license.html">MIT license</a>.
+
+Copyright © 2016 Brian Luft
