@@ -25,13 +25,14 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://sqlnotebook.com/install/</InstallUrl>
+    <UpdateUrl>http://sqlnotebook.com/install/</UpdateUrl>
     <SupportUrl>https://github.com/electroly/sqlnotebook</SupportUrl>
     <ProductName>SQL Notebook</ProductName>
     <PublisherName>Brian Luft</PublisherName>
     <WebPage>publish.html</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>0.2.0.0</ApplicationVersion>
+    <ApplicationVersion>0.3.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
