@@ -15,20 +15,25 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using SqlNotebookCore;
 
 namespace SqlNotebook {
-    static class Program
+    public static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        public static void Main()
         {
+            NotebookTempFiles.Init();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -46,7 +51,7 @@ namespace SqlNotebook {
                 filePath = Environment.GetCommandLineArgs()[1];
                 isNew = false;
             } else {
-                filePath = Path.GetTempFileName();
+                filePath = NotebookTempFiles.GetTempFilePath(".sqlnb");
                 isNew = true;
             }
 

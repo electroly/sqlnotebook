@@ -337,4 +337,14 @@ namespace SqlNotebookCore {
         void SqliteCall(int result);
         void Init();
     };
+
+    public ref class NotebookTempFiles sealed abstract {
+        public:
+        static void Init();
+        static String^ GetTempFilePath(String^ extension);
+
+        private:
+        static String^ _path;
+        static System::CodeDom::Compiler::TempFileCollection^ _collection;
+    };
 }
