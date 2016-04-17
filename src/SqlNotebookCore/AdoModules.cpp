@@ -144,7 +144,7 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
             vtab->EstimatedRowsPercentByColumn = gcnew Dictionary<String^, double>(colCount);
             for (int i = 0; i < colCount; i++) {
                 auto name = columnNames[i];
-                auto value = Enumerable::Average(colDicts[i]->Values) / sampleSize;
+                auto value = sampleSize > 0 ? (Enumerable::Average(colDicts[i]->Values) / sampleSize) : 1.0;
                 vtab->EstimatedRowsPercentByColumn->default[name] = value;
 #ifdef _DEBUG
                 System::Diagnostics::Debug::WriteLine("   Column " + name + " estimated rows per unique value = " + value.ToString());
