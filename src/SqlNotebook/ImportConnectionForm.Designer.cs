@@ -180,6 +180,7 @@
             this._windowsAuthChk.TabIndex = 8;
             this._windowsAuthChk.Text = "Use Windows authentication";
             this._windowsAuthChk.UseVisualStyleBackColor = true;
+            this._windowsAuthChk.CheckedChanged += new System.EventHandler(this.WindowsAuthChk_CheckedChanged);
             // 
             // ImportConnectionForm
             // 

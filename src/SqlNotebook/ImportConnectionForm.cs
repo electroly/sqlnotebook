@@ -89,5 +89,9 @@ namespace SqlNotebook {
             DialogResult = DialogResult.OK;
             Close();
         }
+
+        private void WindowsAuthChk_CheckedChanged(object sender, EventArgs e) {
+            _usernameTxt.Enabled = _passwordTxt.Enabled = !_windowsAuthChk.Checked;
+        }
     }
 }
