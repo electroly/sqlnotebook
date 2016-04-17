@@ -65,9 +65,7 @@ namespace SqlNotebook {
             } catch (Exception ex) {
                 MessageBox.Show(ex.Message, "SQL Notebook", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } finally {
-                if (isNew) {
-                    try { File.Delete(filePath); } catch { }
-                }
+                NotebookTempFiles.DeleteFiles();
             }
         }
     }

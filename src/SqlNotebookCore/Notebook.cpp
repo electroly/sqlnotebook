@@ -520,37 +520,37 @@ int SimpleDataTable::GetIndex(String^ column) {
 }
 
 void NotebookTempFiles::Init() {
-    if (!_collection) {
+    if (!_path) {
         _path = Path::Combine(Path::GetTempPath(), "SqlNotebookTemp");
         Directory::CreateDirectory(_path);
-
-        // see if a previous process left some files for us to clean up
-        auto deleteLstPath = Path::Combine(_path, "delete.lst");
-        if (File::Exists(deleteLstPath)) {
-            auto deleteFilePaths = File::ReadAllLines(deleteLstPath);
-            auto couldNotDelete = gcnew List<String^>();
-            for each (auto filePath in deleteFilePaths) {
-                if (filePath->Length > 0) {
-                    try {
-                        File::Delete(filePath);
-                    } catch (Exception^) {
-                        couldNotDelete->Add(filePath);
-                    }
-                }
-            }
-            // try again next time with the couldNotDelete files
-            File::WriteAllLines(deleteLstPath, couldNotDelete);
-        }
-
-        _collection = gcnew System::CodeDom::Compiler::TempFileCollection(_path, false);
+        DeleteFiles();
     }
 }
 
 String^ NotebookTempFiles::GetTempFilePath(String^ extension) {
     Init();
     extension = extension->TrimStart('.');
-    auto filePath = _collection->AddExtension(extension, false);
+    auto filePath = Path::Combine(_path, Guid::NewGuid().ToString() + "." + extension);
     File::WriteAllBytes(filePath, gcnew array<Byte>(0));
     File::AppendAllText(Path::Combine(_path, "delete.lst"), String::Format("{0}\r\n", filePath));
     return filePath;
+}
+
+void NotebookTempFiles::DeleteFiles() {
+    auto deleteLstPath = Path::Combine(_path, "delete.lst");
+    if (File::Exists(deleteLstPath)) {
+        auto deleteFilePaths = File::ReadAllLines(deleteLstPath);
+        auto couldNotDelete = gcnew List<String^>();
+        for each (auto filePath in deleteFilePaths) {
+            if (filePath->Length > 0) {
+                try {
+                    File::Delete(filePath);
+                } catch (Exception^) {
+                    couldNotDelete->Add(filePath);
+                }
+            }
+        }
+        // try again next time with the couldNotDelete files
+        File::WriteAllLines(deleteLstPath, couldNotDelete);
+    }
 }

@@ -342,9 +342,9 @@ namespace SqlNotebookCore {
         public:
         static void Init();
         static String^ GetTempFilePath(String^ extension);
+        static void DeleteFiles();
 
         private:
         static String^ _path;
-        static System::CodeDom::Compiler::TempFileCollection^ _collection;
     };
 }
