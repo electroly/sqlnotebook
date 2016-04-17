@@ -29,6 +29,7 @@ using Excel;
 using Microsoft.VisualBasic.FileIO;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json.Linq;
 using Npgsql;
 using SqlNotebookCore;
 
@@ -46,7 +47,8 @@ namespace SqlNotebook {
 
         private readonly IReadOnlyList<Type> _fileSessionTypes = new[] {
             typeof(CsvImportSession),
-            typeof(ExcelImportSession)
+            typeof(ExcelImportSession),
+            typeof(JsonImportSession)
         };
 
         public Importer(NotebookManager manager, IWin32Window owner) {
@@ -429,6 +431,140 @@ namespace SqlNotebook {
                 }
             }
             return -1;
+        }
+    }
+
+    public sealed class JsonImportSession : IFileImportSession {
+        private string _filePath;
+        private JToken _root;
+        private IReadOnlyDictionary<string, JArray> _arrays;
+
+        public IReadOnlyList<string> SupportedFileExtensions {
+            get {
+                return new[] { ".json" };
+            }
+        }
+
+        public void FromFilePath(string filePath) {
+            _filePath = filePath;
+
+            _root = JToken.Parse(File.ReadAllText(filePath), new JsonLoadSettings {
+                CommentHandling = CommentHandling.Ignore,
+                LineInfoHandling = LineInfoHandling.Ignore
+            });
+            var arrays = new Dictionary<string, JArray>(); // path -> array
+
+            if (_root.Type == JTokenType.Array) {
+                arrays.Add("root", (JArray)_root);
+            } else if (_root.Type == JTokenType.Object) {
+                var stack = new Stack<Tuple<string, JObject>>(); // path, object
+                stack.Push(Tuple.Create("root", (JObject)_root));
+                while (stack.Any()) {
+                    var pair = stack.Pop();
+                    var path = pair.Item1;
+                    var token = pair.Item2;
+                    foreach (var prop in token.Children<JProperty>()) {
+                        var propPath = $"{path}_{prop.Name}";
+                        if (prop.Value.Type == JTokenType.Array) {
+                            var arr = (JArray)prop.Value;
+
+                            if (arr.Count > 0) {
+                                arrays.Add(propPath, arr);
+                            }
+
+                            int n = Math.Min(100, arr.Count);
+                            int digits = n.ToString().Length;
+                            for (int i = 0; i < n; i++) {
+                                if (arr[i].Type == JTokenType.Object) {
+                                    var itemPath = $"{propPath}_{i.ToString().PadLeft(digits, '0')}";
+                                    stack.Push(Tuple.Create(itemPath, (JObject)arr[i]));
+                                }
+                            }
+                        } else if (prop.Value.Type == JTokenType.Object) {
+                            stack.Push(Tuple.Create(propPath, (JObject)prop.Value));
+                        }
+                    }
+                }
+            } else {
+                throw new Exception("No arrays were found in the JSON data.");
+            }
+
+            _arrays = arrays;
+            TableNames = arrays.Select(x => x.Key).OrderBy(x => x).ToList();
+        }
+
+        public bool FromRecent(RecentDataSource recent, IWin32Window owner) {
+            FromFilePath(recent.ConnectionString);
+            return true;
+        }
+
+        public IReadOnlyList<string> TableNames { get; private set; } = new string[0];
+
+        public bool FileHasHeaderRow { get; set; } = false;
+
+        public void AddToRecentlyUsed() {
+            RecentDataSources.Add(new RecentDataSource {
+                ConnectionString = _filePath,
+                DisplayName = Path.GetFileName(_filePath),
+                ImportSessionType = this.GetType()
+            });
+        }
+
+        public void PerformImport(Notebook notebook, IReadOnlyList<string> sourceTableNames, IReadOnlyList<string> targetTableNames) {
+            for (int i = 0; i < sourceTableNames.Count; i++) {
+                var sourceName = sourceTableNames[i];
+                var targetName = targetTableNames[i];
+                var arr = _arrays[sourceName];
+                var rows = arr.Select(ParseRow).ToList();
+
+                var columnNames =
+                    (from row in rows
+                     from col in row.Keys
+                     select col)
+                    .Distinct()
+                    .ToList();
+
+                var quotedCols = columnNames.Select(x => x.DoubleQuote());
+                notebook.Execute($"CREATE TABLE {targetName.DoubleQuote()} ({string.Join(",", quotedCols)})");
+                var insertSql = $"INSERT INTO {targetName.DoubleQuote()} VALUES " +
+                    $"( {string.Join(",", columnNames.Select((x, j) => $"?{j + 1}"))} )";
+                foreach (var row in rows) {
+                    var itemArray = new object[columnNames.Count];
+                    for (int j = 0; j < itemArray.Length; j++) {
+                        object value;
+                        if (row.TryGetValue(columnNames[j], out value)) {
+                            itemArray[j] = value;
+                        }
+                    }
+                    notebook.Execute(insertSql, itemArray);
+                }
+            }
+        }
+
+        private static IReadOnlyDictionary<string, object> ParseRow(JToken root) {
+            var row = new Dictionary<string, object>();
+            var stack = new Stack<Tuple<string, JToken>>();
+            stack.Push(Tuple.Create("", root));
+
+            while (stack.Any()) {
+                var pair = stack.Pop();
+                var prefix = pair.Item1;
+                var token = pair.Item2;
+                if (token.Type == JTokenType.Object) {
+                    var obj = (JObject)token;
+                    foreach (var prop in obj.Properties()) {
+                        stack.Push(Tuple.Create($"{prefix}{prop.Name}_", prop.Value));
+                    }
+                } else {
+                    var col = $"{prefix.TrimEnd('_')}";
+                    if (!col.Any()) {
+                        col = "value";
+                    }
+                    row.Add(col, token.ToString());
+                }
+            }
+
+            return row;
         }
     }
 

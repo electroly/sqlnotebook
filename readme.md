@@ -6,7 +6,7 @@ SQL Notebook is a Windows desktop application for **ad hoc data wrangling**.  At
 
 - External data sources can be linked in and queried interchangeably with local tables.  Remote data is not physically copied into the notebook file unless requested; instead, the data source is queried on-the-fly.  Any combination of data sources can be used together in the same SQL query.  Support for **Microsoft SQL Server**, **PostgreSQL** and **MySQL** databases is built-in.
 
-- **CSV** and **Excel** files can be imported into the notebook as local tables.
+- **CSV**, **Excel**, and **JSON** files can be imported into the notebook as local tables.
 
 - The SQL language is extended to support familiar **structured programming** constructs:
     - Variables (`DECLARE`, `SET`)
