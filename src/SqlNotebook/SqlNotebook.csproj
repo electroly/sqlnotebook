@@ -24,8 +24,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://sqlnotebook.com/install/</InstallUrl>
-    <UpdateUrl>http://sqlnotebook.com/install/</UpdateUrl>
+    <InstallUrl>https://sqlnotebook.com/install/</InstallUrl>
+    <UpdateUrl>https://sqlnotebook.com/install/</UpdateUrl>
     <SupportUrl>https://github.com/electroly/sqlnotebook</SupportUrl>
     <ProductName>SQL Notebook</ProductName>
     <PublisherName>Brian Luft</PublisherName>
