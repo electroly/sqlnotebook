@@ -1,8 +1,12 @@
+html {
+	overflow-y: scroll;
+}
 body {
 	font-family: sans-serif;
 	margin: 0 auto;
 	width: 800px;
 	line-height: 150%;
+	padding-top: 15px;
 }
 a, a:visited {
 	color: #4078c0;
@@ -10,4 +14,8 @@ a, a:visited {
 }
 a:hover {
 	text-decoration: underline;
+}
+article {
+	margin-top: 20px;
+	padding-bottom: 75px;
 }

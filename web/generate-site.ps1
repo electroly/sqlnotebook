@@ -15,15 +15,20 @@ function MdToHtml($markdownPath) {
     return (ReadFile .\temp\md.html)
 }
 
-function FormatPage($title, $content) {
+function FormatPage($title, $content, $metaDesc) {
     $header = (ReadFile .\header.template.html)
-    $tmpl = (ReadFile .\generic.template.html)
-    return $tmpl.Replace("<!--TITLE-->", $title).Replace("<!--CONTENT-->", $content).Replace("<!--HEADER-->", $header)
+    $tmpl = (ReadFile .\page.template.html)
+    return $tmpl.Replace("<!--TITLE-->", $title).Replace("<!--CONTENT-->", $content).Replace("<!--HEADER-->", $header).Replace("<!--METADESC-->", $metaDesc)
 }
 
-function FormatMdPage($title, $mdPath) {
+function FormatMdPage($title, $mdPath, $metaDesc) {
+    if ($title -eq "") {
+        $title = "SQL Notebook"
+    } else {
+        $title = "SQL Notebook - " + $title
+    }
     $html = (MdToHtml $mdPath)
-    return (FormatPage $title $html)
+    return (FormatPage $title $html $metaDesc)
 }
 
 New-Item site -Type Directory -ErrorAction SilentlyContinue
@@ -35,15 +40,11 @@ copy .\art\*.* .\site\art\
 copy .\error.html .\site\
 copy .\favicon.ico .\site\
 
-# index.html
-$readme = (MdToHtml ..\readme.md)
-$indexTmpl = (ReadFile .\index.template.html)
-WriteFile .\site\index.html $indexTmpl.Replace("<!--CONTENT-->", $readme)
-
 # markdown-based pages
-WriteFile .\site\license.html (FormatMdPage "License" ..\license.md)
-WriteFile .\site\doc.html (FormatMdPage "Documentation" .\doc.md)
+WriteFile .\site\index.html (FormatMdPage "" .\index.md "Open source tool for tabular data exploration and manipulation.")
+WriteFile .\site\license.html (FormatMdPage "License" ..\license.md "SQL Notebook is available under the MIT license.")
+WriteFile .\site\doc.html (FormatMdPage "Documentation" .\doc.md "Index of SQL Notebook user documentation.")
 
 # html-based pages
-WriteFile .\site\error-functions.html (FormatPage "Error Functions" (ReadFile ..\doc\error-functions.html))
-WriteFile .\site\extended-syntax.html (FormatPage "Structured Programming in SQL Notebook" (ReadFile ..\doc\extended-syntax.html))
+WriteFile .\site\error-functions.html (FormatPage "Error Functions" (ReadFile ..\doc\error-functions.html) "Documentation of SQL Notebook's error reporting SQL functions.")
+WriteFile .\site\extended-syntax.html (FormatPage "Structured Programming in SQL Notebook" (ReadFile ..\doc\extended-syntax.html) "Documentation of SQL Notebook's structured programing syntax.")
