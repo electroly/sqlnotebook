@@ -39,6 +39,8 @@ copy .\sqlnotebook.css .\site\
 copy .\art\*.* .\site\art\
 copy .\error.html .\site\
 copy .\favicon.ico .\site\
+copy .\robots.txt .\site\
+copy .\sitemap.txt .\site\
 
 # markdown-based pages
 WriteFile .\site\index.html (FormatMdPage "" .\index.md "Open source tool for tabular data exploration and manipulation.")
