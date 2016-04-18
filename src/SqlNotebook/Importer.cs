@@ -489,8 +489,17 @@ namespace SqlNotebook {
                 throw new Exception("No arrays were found in the JSON data.");
             }
 
-            _arrays = arrays;
-            TableNames = arrays.Select(x => x.Key).OrderBy(x => x).ToList();
+            // remove "root_" prefix from all table names
+            _arrays = arrays.ToDictionary(x => RemovePrefix(x.Key, "root_"), x => x.Value);
+            TableNames = _arrays.Select(x => x.Key).OrderBy(x => x).ToList();
+        }
+
+        private static string RemovePrefix(string str, string prefix) {
+            if (str.StartsWith(prefix)) {
+                return str.Substring(prefix.Length);
+            } else {
+                return str;
+            }
         }
 
         public bool FromRecent(RecentDataSource recent, IWin32Window owner) {
