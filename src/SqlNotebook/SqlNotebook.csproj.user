@@ -4,7 +4,7 @@
     <PublishUrlHistory>..\..\publish\|publish\</PublishUrlHistory>
     <InstallUrlHistory>https://sqlnotebook.com/install/|http://sqlnotebook.com/install/</InstallUrlHistory>
     <SupportUrlHistory>https://github.com/electroly/sqlnotebook</SupportUrlHistory>
-    <UpdateUrlHistory>http://sqlnotebook.com/install/</UpdateUrlHistory>
+    <UpdateUrlHistory>https://sqlnotebook.com/install/|http://sqlnotebook.com/install/</UpdateUrlHistory>
     <BootstrapperUrlHistory />
     <ErrorReportUrlHistory />
     <FallbackCulture>en-US</FallbackCulture>
