@@ -295,20 +295,42 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
         ///&lt;title&gt;How to Import a CSV File&lt;/title&gt;
+        ///
         ///&lt;style&gt;
         ///img.diagram { border: 1px solid white; }
         ///a img.diagram:hover { border: 1px solid #4078c0; }
-        ///figure { text-align: center; }
-        ///figcaption { font-size: 8pt; font-style: italic; color: gray; }
+        ///div.figure { text-align: center; }
+        ///div.caption { font-size: 8pt; font-style: italic; color: gray; }
         ///&lt;/style&gt;
         ///
         ///&lt;h1&gt;How to Import a CSV File&lt;/h1&gt;
         ///&lt;p&gt;
-        ///CSV (comma-separated value) is a common tabular data exchange format.  In order to import such a file into SQL Notebook, the file must have a &lt;tt&gt;.CSV [rest of string was truncated]&quot;;.
+        ///CSV (comma-separated value) is a common tabular data exchange format.  In order to import such a file into SQL Notebook, the file must have a &lt; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ImportCsvFileHtml {
             get {
                 return ResourceManager.GetString("ImportCsvFileHtml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+        ///&lt;title&gt;How to Import a JSON File&lt;/title&gt;
+        ///
+        ///&lt;style&gt;
+        ///img.diagram { border: 1px solid white; }
+        ///a img.diagram:hover { border: 1px solid #4078c0; }
+        ///div.figure { text-align: center; }
+        ///div.caption { font-size: 8pt; font-style: italic; color: gray; }
+        ///&lt;/style&gt;
+        ///
+        ///&lt;h1&gt;How to Import a JSON File&lt;/h1&gt;
+        ///&lt;p&gt;
+        ///JSON (JavaScript Object Notation) is a hierarchical data exchange format commonly used in web services.  The hierarchical object structure do [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ImportJsonFileHtml {
+            get {
+                return ResourceManager.GetString("ImportJsonFileHtml", resourceCulture);
             }
         }
         

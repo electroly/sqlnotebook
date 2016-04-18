@@ -51,4 +51,5 @@ WriteFile .\site\download.html (FormatMdPage "Download & Install" .\download.md 
 # html-based pages
 WriteFile .\site\error-functions.html (FormatPage "Error Functions" (ReadFile ..\doc\error-functions.html) "Documentation of SQL Notebook's error reporting SQL functions.")
 WriteFile .\site\extended-syntax.html (FormatPage "Structured Programming in SQL Notebook" (ReadFile ..\doc\extended-syntax.html) "Documentation of SQL Notebook's structured programing syntax.")
-WriteFile .\site\import-csv-file.html (FormatPage "How to Import a CSV File" (ReadFile ..\doc\import-csv-file.html) "Documentation of SQL Notebook's ability to import comma-separated value (CSV) files.")
+WriteFile .\site\import-csv-file.html (FormatPage "How to Import a CSV File" (ReadFile ..\doc\import-csv-file.html) "A tutorial for importing comma-separated value (CSV) files into SQL Notebook.")
+WriteFile .\site\import-json-file.html (FormatPage "How to Import a JSON File" (ReadFile ..\doc\import-json-file.html) "A tutorial for importing JSON (JavaScript Object Notation) files into SQL Notebook.")

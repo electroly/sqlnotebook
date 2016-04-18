@@ -340,6 +340,7 @@
     <None Include="Resources\Help.css" />
     <None Include="Resources\ThirdPartyLicenses.html" />
     <None Include="Resources\table.ico" />
+    <None Include="Resources\import-json-file.html" />
     <Content Include="SqlNotebookIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

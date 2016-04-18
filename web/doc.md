@@ -5,6 +5,7 @@ SQL Notebook ships with an in-app searchable help system that includes all of th
 ### SQL Notebook Help
 - Tutorials
 	- [How to Import a CSV File](import-csv-file.html)
+    - [How to Import a JSON File](import-json-file.html)
 <br><br>
 - Programming Reference
 	- [Structured Programming in SQL Notebook](extended-syntax.html)
