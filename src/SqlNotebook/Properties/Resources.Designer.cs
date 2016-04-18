@@ -293,6 +293,26 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+        ///&lt;title&gt;How to Import a CSV File&lt;/title&gt;
+        ///&lt;style&gt;
+        ///img.diagram { border: 1px solid white; }
+        ///a img.diagram:hover { border: 1px solid #4078c0; }
+        ///figure { text-align: center; }
+        ///figcaption { font-size: 8pt; font-style: italic; color: gray; }
+        ///&lt;/style&gt;
+        ///
+        ///&lt;h1&gt;How to Import a CSV File&lt;/h1&gt;
+        ///&lt;p&gt;
+        ///CSV (comma-separated value) is a common tabular data exchange format.  In order to import such a file into SQL Notebook, the file must have a &lt;tt&gt;.CSV [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ImportCsvFileHtml {
+            get {
+                return ResourceManager.GetString("ImportCsvFileHtml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] LinkGo32Png {

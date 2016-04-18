@@ -18,15 +18,15 @@ function MdToHtml($markdownPath) {
 function FormatPage($title, $content, $metaDesc) {
     $header = (ReadFile .\header.template.html)
     $tmpl = (ReadFile .\page.template.html)
+    if ($title -eq "") {
+        $title = "SQL Notebook"
+    } else {
+        $title = $title + " - SQL Notebook"
+    }
     return $tmpl.Replace("<!--TITLE-->", $title).Replace("<!--CONTENT-->", $content).Replace("<!--HEADER-->", $header).Replace("<!--METADESC-->", $metaDesc)
 }
 
 function FormatMdPage($title, $mdPath, $metaDesc) {
-    if ($title -eq "") {
-        $title = "SQL Notebook"
-    } else {
-        $title = "SQL Notebook - " + $title
-    }
     $html = (MdToHtml $mdPath)
     return (FormatPage $title $html $metaDesc)
 }
@@ -51,3 +51,4 @@ WriteFile .\site\download.html (FormatMdPage "Download & Install" .\download.md 
 # html-based pages
 WriteFile .\site\error-functions.html (FormatPage "Error Functions" (ReadFile ..\doc\error-functions.html) "Documentation of SQL Notebook's error reporting SQL functions.")
 WriteFile .\site\extended-syntax.html (FormatPage "Structured Programming in SQL Notebook" (ReadFile ..\doc\extended-syntax.html) "Documentation of SQL Notebook's structured programing syntax.")
+WriteFile .\site\import-csv-file.html (FormatPage "How to Import a CSV File" (ReadFile ..\doc\import-csv-file.html) "Documentation of SQL Notebook's ability to import comma-separated value (CSV) files.")

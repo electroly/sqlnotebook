@@ -91,7 +91,8 @@ namespace SqlNotebook {
                 // SQL Notebook help files
                 var sqlNbFiles = new[] {
                     new { Path = ".\\extended-syntax.html", Html = Resources.DocExtendedSyntaxHtml },
-                    new { Path = ".\\error-functions.html", Html = Resources.ErrorFunctionsHtml }
+                    new { Path = ".\\error-functions.html", Html = Resources.ErrorFunctionsHtml },
+                    new { Path = ".\\import-csv-file.html", Html = Resources.ImportCsvFileHtml }
                 };
                 foreach (var sqlNbFile in sqlNbFiles) {
                     string text, title;
