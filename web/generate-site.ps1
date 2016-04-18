@@ -44,6 +44,7 @@ copy .\favicon.ico .\site\
 WriteFile .\site\index.html (FormatMdPage "" .\index.md "Open source tool for tabular data exploration and manipulation.")
 WriteFile .\site\license.html (FormatMdPage "License" ..\license.md "SQL Notebook is available under the MIT license.")
 WriteFile .\site\doc.html (FormatMdPage "Documentation" .\doc.md "Index of SQL Notebook user documentation.")
+WriteFile .\site\download.html (FormatMdPage "Download & Install" .\download.md "Download and install SQL Notebook on your Windows-based computer.")
 
 # html-based pages
 WriteFile .\site\error-functions.html (FormatPage "Error Functions" (ReadFile ..\doc\error-functions.html) "Documentation of SQL Notebook's error reporting SQL functions.")
