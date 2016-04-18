@@ -53,7 +53,9 @@ namespace SqlNotebook {
             _targetTableNames = new List<string>(session.TableNames);
             foreach (var tableName in _sourceTableNames) {
                 int index = _listBox.Items.Add(tableName);
-                _listBox.SetItemChecked(index, true);
+
+                // if there's only one table, then check it.  if there are multiple, then uncheck by default.
+                _listBox.SetItemChecked(index, session.TableNames.Count == 1);
             }
 
             EnableDisableButtons();
