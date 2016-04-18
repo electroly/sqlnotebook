@@ -2,9 +2,13 @@
 
 The current version is **0.4** and was released on **April 17, 2016**.
 
-### [Download ClickOnce Installer](https://sqlnotebook.com/install/setup.exe)
+Because SQL Notebook is a new application that Microsoft has not seen before, you may encounter Windows SmartScreen warnings upon downloading and running the software.  SQL Notebook is an open source product that does not contain malware.  All source code and build processes are [available for inspection](https://github.com/electroly/sqlnotebook).
+<br><br>
 
-This is an .EXE installer.  It will install all necessary prerequisites, and SQL Notebook will automatically check for updates.  This is the preferred method.
+### [Download Installer .EXE (preferred)](https://sqlnotebook.com/install/setup.exe)
+
+This is a [ClickOnce](https://en.wikipedia.org/wiki/ClickOnce) installer.  It will install all necessary prerequisites, and SQL Notebook will automatically check for updates.
+<br><br>
 
 ### [Download Portable .ZIP](https://sqlnotebook.com/install/SqlNotebook_0_4_0_0.zip)
 
