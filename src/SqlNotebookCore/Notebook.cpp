@@ -172,23 +172,29 @@ SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, O
                 throw gcnew ArgumentException("namedArgs or orderedArgs must be non-null.");
             }
 
-            auto type = value->GetType();
-            if (type == Int32::typeid) {
-                int intValue = safe_cast<Int32>(value);
-                SqliteCall(sqlite3_bind_int(stmt, i, intValue));
-            } else if (type == Int64::typeid) {
-                int64_t longValue = safe_cast<Int64>(value);
-                SqliteCall(sqlite3_bind_int64(stmt, i, longValue));
-            } else if (type == Double::typeid) {
-                double dblValue = safe_cast<Double>(value);
-                SqliteCall(sqlite3_bind_double(stmt, i, dblValue));
+            if (value == nullptr) {
+                SqliteCall(sqlite3_bind_null(stmt, i));
             } else {
-                auto strValue = Util::WStr(value->ToString());
-                // sqlite will hang onto the string after the call returns so make a copy.  it
-                // will call our callback (we just use "free") to dispose of this copy.
-                auto strCopy = _wcsdup(strValue.c_str());
-                auto lenB = strValue.size() * sizeof(wchar_t);
-                SqliteCall(sqlite3_bind_text16(stmt, i, strCopy, (int)lenB, free));
+                auto type = value->GetType();
+                if (type == DBNull::typeid) {
+                    SqliteCall(sqlite3_bind_null(stmt, i));
+                } else if (type == Int32::typeid) {
+                    int intValue = safe_cast<Int32>(value);
+                    SqliteCall(sqlite3_bind_int(stmt, i, intValue));
+                } else if (type == Int64::typeid) {
+                    int64_t longValue = safe_cast<Int64>(value);
+                    SqliteCall(sqlite3_bind_int64(stmt, i, longValue));
+                } else if (type == Double::typeid) {
+                    double dblValue = safe_cast<Double>(value);
+                    SqliteCall(sqlite3_bind_double(stmt, i, dblValue));
+                } else {
+                    auto strValue = Util::WStr(value->ToString());
+                    // sqlite will hang onto the string after the call returns so make a copy.  it
+                    // will call our callback (we just use "free") to dispose of this copy.
+                    auto strCopy = _wcsdup(strValue.c_str());
+                    auto lenB = strValue.size() * sizeof(wchar_t);
+                    SqliteCall(sqlite3_bind_text16(stmt, i, strCopy, (int)lenB, free));
+                }
             }
         }
 
