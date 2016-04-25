@@ -47,7 +47,6 @@
             this._viewDocMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._reportIssueMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._aboutMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this._newNoteBtn = new System.Windows.Forms.ToolStripButton();
             this._newConsoleBtn = new System.Windows.Forms.ToolStripButton();
             this._newScriptBtn = new System.Windows.Forms.ToolStripButton();
@@ -63,6 +62,7 @@
             this._recentServersMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._recentServersNoneMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._exportMnu = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
@@ -151,7 +151,7 @@
             this._toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripDropDownButton1,
             this.toolStripDropDownButton2,
-            this.toolStripSeparator3,
+            this.toolStripSeparator5,
             this._newNoteBtn,
             this._newConsoleBtn,
             this._newScriptBtn,
@@ -269,13 +269,6 @@
             this._aboutMnu.Size = new System.Drawing.Size(203, 22);
             this._aboutMnu.Text = "About SQL Notebook";
             this._aboutMnu.Click += new System.EventHandler(this.AboutMnu_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.AutoSize = false;
-            this.toolStripSeparator3.Margin = new System.Windows.Forms.Padding(0, 0, 0, 4);
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 23);
             // 
             // _newNoteBtn
             // 
@@ -409,6 +402,11 @@
             this._exportMnu.Text = "&Export...";
             this._exportMnu.Click += new System.EventHandler(this.ExportMnu_Click);
             // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 31);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -447,7 +445,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem _recentFilesMnu;
         private System.Windows.Forms.ToolStripMenuItem _recentFilesNoneMnu;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
         private System.Windows.Forms.ToolStripMenuItem _newMnu;
         private System.Windows.Forms.ToolStripMenuItem _openMnu;
@@ -470,6 +467,7 @@
         private System.Windows.Forms.ToolStripMenuItem _reportIssueMnu;
         private System.Windows.Forms.ToolStripMenuItem _viewDocMnu;
         private System.Windows.Forms.ToolStripStatusLabel _openTransactionLbl;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
     }
 }
 
