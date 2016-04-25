@@ -11,23 +11,24 @@ SQL Notebook is a Windows desktop application for **tabular data exploration and
     - Error handling ([`THROW`](extended-syntax.html#throw), [`TRY`/`CATCH`](extended-syntax.html#try))
     - Stored procedures ([`EXECUTE`](extended-syntax.html#execute))
 
-The user queries and processes the data as needed by entering SQL commands using the two available SQL interfaces:
+SQL Notebook offers two user interfaces for entering SQL queries:
 
 - **Console**: A command prompt at which the user can enter SQL commands interactively and see results inline.  The history of each console is retained in the notebook file for the user's future reference.
 
-- **Script**: A syntax-colored text editor and a result pane, reminiscent of SQL Server Management Studio.  A script can be run directly (by pressing F5), or it can be executed from other scripts/consoles using the [`EXECUTE`](extended-syntax.html#execute) statement.  The script may define input parameters using the [`DECLARE PARAMETER`](extended-syntax.html#declare) statement.
+- **Script**: A syntax-colored text editor and a result pane, reminiscent of SQL Server Management Studio.  The user can run a script directly by pressing F5, or the script can be invoked from consoles and other scripts using [`EXECUTE`](extended-syntax.html#execute).  The script may define input parameters using [`DECLARE PARAMETER`](extended-syntax.html#declare).
 
-Additionally, the user can create **Notes** to document the contents of the notebook.  These notes are saved in the notebook file and can be referred to at any time.  Basic text formatting (fonts, colors, and horizontal alignment) is supported.
+Additionally, the user can create **Notes** to document the contents of the notebook.  These notes are saved in the notebook file and can be referred to at any time.  Fonts, colors, and paragraph alignment are supported.
 
 Tables, views, and scripts can be exported to CSV files for use in other applications.  An in-app searchable help system provides quick access to all SQLite documentation as well as SQL Notebook help files.
+<br><br>
 
 ### Installation Requirements
-
 SQL Notebook requires 64-bit Windows 7 or higher.  .NET Framework 4.6 and the Visual C++ 2015 runtime library are required; the installer will download and install them if necessary.  Click "Download & Install" above to get started.
+<br><br>
 
 ### Building from Source
-
-Visual Studio 2015 must be installed with support for both C# and C++.  PowerShell 3 or higher is also required.  When building on Windows 7, you must install the latest PowerShell and reboot before building SQL Notebook.  Once the prerequisites are installed, open `src\SqlNotebook.sln` and build the solution.
+Visual Studio 2015 must be installed with support for both C# and C++.  PowerShell 3 or higher is also required.  When building on Windows 7, you must install the latest PowerShell and reboot before building SQL Notebook.  Once the prerequisites are installed, clone the GitHub repository, open `src\SqlNotebook.sln` and build the solution.
+<br><br>
 
 ### License
 

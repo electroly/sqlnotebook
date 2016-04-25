@@ -3,7 +3,7 @@
   <PropertyGroup>
     <PublishUrlHistory>..\..\publish\|publish\</PublishUrlHistory>
     <InstallUrlHistory>https://sqlnotebook.com/install/|http://sqlnotebook.com/install/</InstallUrlHistory>
-    <SupportUrlHistory>https://github.com/electroly/sqlnotebook</SupportUrlHistory>
+    <SupportUrlHistory>https://sqlnotebook.com|https://github.com/electroly/sqlnotebook</SupportUrlHistory>
     <UpdateUrlHistory>https://sqlnotebook.com/install/|http://sqlnotebook.com/install/</UpdateUrlHistory>
     <BootstrapperUrlHistory />
     <ErrorReportUrlHistory />

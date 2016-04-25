@@ -8,3 +8,6 @@ packages/
 *.opensdf
 *.sdf
 *.cachefile
+*.pfx
+*.key
+*.crt

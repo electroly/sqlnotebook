@@ -1,6 +1,9 @@
 ﻿# Before running this script, publish the ClickOnce installer in Visual Studio.
 # ..\publish\ will be populated.
 
+# Re-sign setup.exe so it has a timestamp (VS already signed it, but without a timestamp)
+& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 ..\publish\setup.exe
+
 Remove-Item ..\publish-portable -Recurse -ErrorAction SilentlyContinue
 mkdir ..\publish-portable
 
