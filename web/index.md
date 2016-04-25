@@ -23,11 +23,7 @@ Tables, views, and scripts can be exported to CSV files for use in other applica
 <br><br>
 
 ### Installation Requirements
-SQL Notebook requires 64-bit Windows 7 or higher.  .NET Framework 4.6 and the Visual C++ 2015 runtime library are required; the installer will download and install them if necessary.  Click "Download & Install" above to get started.
-<br><br>
-
-### Building from Source
-Visual Studio 2015 must be installed with support for both C# and C++.  PowerShell 3 or higher is also required.  When building on Windows 7, you must install the latest PowerShell and reboot before building SQL Notebook.  Once the prerequisites are installed, clone the GitHub repository, open `src\SqlNotebook.sln` and build the solution.
+SQL Notebook requires a 64-bit system running Windows 7 or higher.  The installer will download .NET Framework 4.6 and the Visual C++ 2015 runtime library if they aren't already installed.  Click [Download & Install](download.html) to get started.
 <br><br>
 
 ### License
