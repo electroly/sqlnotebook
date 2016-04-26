@@ -630,7 +630,20 @@ namespace SqlNotebook {
         public override string ProductName { get; } = "Microsoft SQL Server";
 
         public override string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
-            return $"CREATE VIRTUAL TABLE {notebookTableName.DoubleQuote()} USING mssql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
+            string schema;
+            string table;
+            string combinedQuotedName;
+            if (sourceTableName.Contains(".")) {
+                var parts = sourceTableName.Split(new[] { '.' }, 2);
+                schema = parts[0];
+                table = parts[1];
+                combinedQuotedName = $"{schema.DoubleQuote()}.{table.DoubleQuote()}";
+            } else {
+                schema = "";
+                table = sourceTableName;
+                combinedQuotedName = sourceTableName.DoubleQuote();
+            }
+            return $"CREATE VIRTUAL TABLE {notebookTableName.DoubleQuote()} USING mssql ('{_builder.ConnectionString.Replace("'", "''")}', '{table.Replace("'", "''")}', '{schema.Replace("'", "''")}')";
         }
 
         protected override IDbConnection CreateConnection(SqlConnectionStringBuilder builder) {
@@ -640,10 +653,13 @@ namespace SqlNotebook {
         protected override void ReadTableNames(IDbConnection connection) {
             var tableNames = new List<string>();
             using (var cmd = connection.CreateCommand()) {
-                cmd.CommandText = "SELECT table_name FROM information_schema.tables ORDER BY table_name";
+                cmd.CommandText = "SELECT table_name, table_schema FROM information_schema.tables ORDER BY table_name";
                 using (var reader = cmd.ExecuteReader()) {
                     while (reader.Read()) {
-                        tableNames.Add(reader.GetString(0));
+                        var tableName = reader.GetString(0);
+                        var tableSchema = reader.GetString(1);
+                        var combinedName = tableSchema == "dbo" ? tableName : $"{tableSchema}.{tableName}";
+                        tableNames.Add(combinedName);
                     }
                 }
             }

@@ -36,6 +36,7 @@ private struct AdoTable {
     sqlite3_vtab Super;
     gcroot<String^> ConnectionString;
     gcroot<String^> AdoTableName;
+    gcroot<String^> AdoSchemaName;
     gcroot<List<String^>^> ColumnNames;
     gcroot<Func<String^, IDbConnection^>^> ConnectionCreator;
     int64_t InitialRowCount;
@@ -74,11 +75,15 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
     auto createInfo = (AdoCreateInfo*)pAux;
 
     try {
-        if (argc != 5) {
-            throw gcnew Exception("Syntax: CREATE VIRTUAL TABLE <name> USING pgsql ('<connection string>', 'table name');");
+        if (argc != 5 && argc != 6) {
+            throw gcnew Exception("Syntax: CREATE VIRTUAL TABLE <name> USING <driver> ('<connection string>', 'table name', ['schema name']);");
         }
         auto connStr = Util::Str(argv[3])->Trim(L'\'');
         auto adoTableName = Util::Str(argv[4])->Trim(L'\'');
+        auto adoSchemaName = Util::Str(argc == 6 ? argv[5] : "")->Trim(L'\'');
+        auto adoQuotedCombinedName = adoSchemaName->Length > 0
+            ? String::Format("\"{0}\".\"{1}\"", adoSchemaName->Replace("\"", "\"\""), adoTableName->Replace("\"", "\"\"")) 
+            : String::Format("\"{0}\"", adoTableName->Replace("\"", "\"\""));
         auto_handle<IDbConnection> conn(createInfo->ConnectionCreator->Invoke(connStr));
         conn->Open();
 
@@ -87,7 +92,7 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
         auto columnTypes = gcnew List<Type^>();
         {
             auto_handle<IDbCommand> cmd(conn->CreateCommand());
-            cmd->CommandText = "SELECT * FROM \"" + adoTableName->Replace("\"", "\"\"") + "\" WHERE 1 = 0";
+            cmd->CommandText = "SELECT * FROM " + adoQuotedCombinedName + " WHERE 1 = 0";
             auto_handle<IDataReader> reader(cmd->ExecuteReader());
             for (int i = 0; i < reader->FieldCount; i++) {
                 columnNames->Add(reader->GetName(i));
@@ -99,20 +104,21 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
         auto vtab = new AdoTable;
         vtab->ConnectionString = connStr;
         vtab->AdoTableName = adoTableName;
+        vtab->AdoSchemaName = adoSchemaName;
         vtab->ColumnNames = columnNames;
         vtab->ConnectionCreator = createInfo->ConnectionCreator;
 
         // get the row count
         {
             auto_handle<IDbCommand> cmd(conn->CreateCommand());
-            cmd->CommandText = "SELECT COUNT(*) FROM \"" + adoTableName->Replace("\"", "\"\"") + "\"";
+            cmd->CommandText = "SELECT COUNT(*) FROM " + adoQuotedCombinedName;
             vtab->InitialRowCount = Convert::ToInt64(cmd->ExecuteScalar());
         }
 
         // take a random sample of rows and compute some basic statistics
         {
             auto_handle<IDbCommand> cmd(conn->CreateCommand());
-            cmd->CommandText = createInfo->SelectRandomSampleSql->Replace("{0}", "\"" + adoTableName->Replace("\"", "\"\"") + "\"");
+            cmd->CommandText = createInfo->SelectRandomSampleSql->Replace("{0}", adoQuotedCombinedName);
             auto_handle<IDataReader> reader(cmd->ExecuteReader());
 
             auto colCount = columnNames->Count;
@@ -194,9 +200,11 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
 
     // build a query corresponding to the request
     auto sb = gcnew StringBuilder();
-    sb->Append("SELECT * FROM \"");
-    sb->Append(vtab->AdoTableName);
-    sb->Append("\"");
+    sb->Append("SELECT * FROM ");
+    auto adoQuotedCombinedName = vtab->AdoSchemaName->Length > 0
+        ? String::Format("\"{0}\".\"{1}\"", vtab->AdoSchemaName->Replace("\"", "\"\""), vtab->AdoTableName->Replace("\"", "\"\""))
+        : String::Format("\"{0}\"", vtab->AdoTableName->Replace("\"", "\"\""));
+    sb->Append(adoQuotedCombinedName);
 
     // where clause
     int argvIndex = 1;
