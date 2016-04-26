@@ -360,6 +360,7 @@ String^ Token::ToString() {
 }
 
 String^ Notebook::FindLongestValidStatementPrefix(String^ input) {
+    const int TK_SEMI = 1;
     auto str = Util::CStr(input);
     auto cstr = str.c_str();
     auto parser = SxParserAlloc();
@@ -372,12 +373,15 @@ String^ Notebook::FindLongestValidStatementPrefix(String^ input) {
             break;
         }
         oldPos = pos;
+        if (tokenType == TK_SEMI) {
+            break;
+        }
     }
 
-    SxParserFree(_sqlite, parser, parse);
-
     auto prefix = str.substr(0, oldPos);
-    return Util::Str(prefix.c_str());
+    auto nprefix = Util::Str(prefix.c_str());
+    SxParserFree(_sqlite, parser, parse);
+    return nprefix;
 }
 
 void Notebook::Interrupt() {
