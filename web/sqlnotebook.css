@@ -1,21 +1,36 @@
 html {
-	overflow-y: scroll;
+    overflow-y: scroll;
 }
 body {
-	font-family: sans-serif;
-	margin: 0 auto;
-	width: 800px;
-	line-height: 150%;
-	padding-top: 15px;
+    font-family: sans-serif;
+    margin: 0 auto;
+    width: 800px;
+    line-height: 150%;
+    padding-top: 15px;
 }
 a, a:visited {
-	color: #4078c0;
-	text-decoration: none;
+    color: #4078c0;
+    text-decoration: none;
 }
 a:hover {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 article {
-	margin-top: 20px;
-	padding-bottom: 75px;
+    margin-top: 20px;
+    padding-bottom: 75px;
+}
+nav ul {
+    padding-left: 0px;
+    padding-top: 0px;
+    margin: 0px;
+}
+nav ul li {
+    display: inline-block;
+    padding-right: 15px;
+}
+nav ul li:before {
+    content: "➔ ";
+}
+nav ul li a {
+    font-weight: bold;
 }

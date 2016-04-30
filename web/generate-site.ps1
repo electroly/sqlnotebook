@@ -47,6 +47,10 @@ WriteFile .\site\index.html (FormatMdPage "" .\index.md "Open source tool for ta
 WriteFile .\site\license.html (FormatMdPage "License" ..\license.md "SQL Notebook is available under the MIT license.")
 WriteFile .\site\doc.html (FormatMdPage "Documentation" .\doc.md "Index of SQL Notebook user documentation.")
 WriteFile .\site\download.html (FormatMdPage "Download & Install" .\download.md "Download and install SQL Notebook on your Windows-based computer.")
+WriteFile .\site\video-console.html (FormatMdPage "Example Video: Console" .\video-console.md "Example video of the SQL Notebook console.")
+WriteFile .\site\video-script.html (FormatMdPage "Example Video: Script" .\video-script.md "Example video of the SQL Notebook script editor.")
+WriteFile .\site\video-note.html (FormatMdPage "Example Video: Note" .\video-note.md "Example video of the SQL Notebook note/documentation tool.")
+WriteFile .\site\video-help.html (FormatMdPage "Example Video: Help Viewer" .\video-help.md "Example video of the SQL Notebook integrated help viewer.")
 
 # html-based pages
 WriteFile .\site\error-functions.html (FormatPage "Error Functions" (ReadFile ..\doc\error-functions.html) "Documentation of SQL Notebook's error reporting SQL functions.")
