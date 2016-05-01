@@ -23,25 +23,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ICSharpCode.TextEditor;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SqlNotebookCore;
 using SqlNotebookScript;
 using System.Runtime.InteropServices;
+using ScintillaNET;
 
 namespace SqlNotebook {
     public partial class QueryDocumentControl : UserControl, IDocumentControl {
         private readonly IWin32Window _mainForm;
         private readonly NotebookManager _manager;
         private readonly Notebook _notebook;
-        private readonly TextEditorControlEx _textEditor;
+        private readonly Scintilla _scintilla;
         private readonly List<DataTable> _results = new List<DataTable>();
         private int _selectedResultIndex = 0;
         private readonly Slot<bool> _operationInProgress;
 
         public string DocumentText {
             get {
-                return _textEditor.Text;
+                return _scintilla.Text;
             }
         }
 
@@ -59,35 +59,39 @@ namespace SqlNotebook {
             _mainForm = mainForm;
             _operationInProgress = operationInProgress;
 
-            _textEditor = new TextEditorControlEx {
+            _scintilla = new Scintilla {
                 Dock = DockStyle.Fill,
-                SyntaxHighlighting = "SQL",
+                Lexer = ScintillaNET.Lexer.Sql,
+                LexerLanguage = "sql",
+                FontQuality = ScintillaNET.FontQuality.LcdOptimized,
+                IndentWidth = 4,
+                UseTabs = false,
+                BufferedDraw = true,
+                TabWidth = 4,
+                ScrollWidthTracking = true,
+                ScrollWidth = 1,
                 BorderStyle = BorderStyle.None,
-                ConvertTabsToSpaces = true,
-                EnableFolding = true,
-                Font = new Font("Consolas", 10),
-                IsIconBarVisible = false,
-                ShowLineNumbers = false,
-                ShowHRuler = false,
-                ShowVRuler = false,
-                TabIndent = 4
             };
-            _sqlPanel.Controls.Add(_textEditor);
+            foreach (var style in _scintilla.Styles) {
+                style.Font = "Consolas";
+                style.Size = 10;
+            }
+            _sqlPanel.Controls.Add(_scintilla);
 
             Load += (sender, e) => {
                 string initialText = _manager.GetItemData(ItemName);
                 if (initialText != null) {
-                    _textEditor.Text = initialText;
+                    _scintilla.Text = initialText;
                 }
 
-                _textEditor.TextChanged += (sender2, e2) => _manager.SetDirty();
+                _scintilla.TextChanged += (sender2, e2) => _manager.SetDirty();
 
                 ShowResult(0);
             };
         }
 
         public async Task Execute() {
-            await Execute(_textEditor.Text);
+            await Execute(_scintilla.Text);
         }
 
         private async void ExecuteBtn_Click(object sender, EventArgs e) {

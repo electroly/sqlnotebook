@@ -23,7 +23,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ICSharpCode.TextEditor;
 using SqlNotebookCore;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SqlNotebookScript;
