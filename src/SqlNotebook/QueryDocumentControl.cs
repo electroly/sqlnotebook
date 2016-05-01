@@ -76,6 +76,15 @@ namespace SqlNotebook {
                 style.Font = "Consolas";
                 style.Size = 10;
             }
+            var sqliteKeywords = "abort action add after all alter analyze and as asc attach autoincrement before begin between by cascade case cast check collate column commit conflict constraint create cross current_date current_time current_timestamp database default deferrable deferred delete desc detach distinct drop each else end escape except exclusive exists explain fail for foreign from full glob group having if ignore immediate in index indexed initially inner insert instead intersect into is isnull join key left like limit match natural no not notnull null of offset on or order outer plan pragma primary query raise recursive references regexp reindex release rename replace restrict right rollback row savepoint select set table temp temporary then to transaction trigger union unique update using vacuum values view virtual when where with without";
+            var sqlnbKeywords = "declare parameter while break continue print execute exec return throw try catch";
+            _scintilla.SetKeywords(0, $"{sqliteKeywords} {sqlnbKeywords}");
+            _scintilla.Styles[ScintillaNET.Style.Sql.Character].ForeColor = Color.Red;
+            _scintilla.Styles[ScintillaNET.Style.Sql.String].ForeColor = Color.Red;
+            _scintilla.Styles[ScintillaNET.Style.Sql.Comment].ForeColor = Color.Green;
+            _scintilla.Styles[ScintillaNET.Style.Sql.CommentLine].ForeColor = Color.Green;
+            _scintilla.Styles[ScintillaNET.Style.Sql.Number].ForeColor = Color.Gray;
+            _scintilla.Styles[ScintillaNET.Style.Sql.Word].ForeColor = Color.Blue;
             _sqlPanel.Controls.Add(_scintilla);
 
             Load += (sender, e) => {
