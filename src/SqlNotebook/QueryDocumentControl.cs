@@ -61,8 +61,7 @@ namespace SqlNotebook {
 
             _scintilla = new Scintilla {
                 Dock = DockStyle.Fill,
-                Lexer = ScintillaNET.Lexer.Sql,
-                LexerLanguage = "sql",
+                Lexer = ScintillaNET.Lexer.Container,
                 FontQuality = ScintillaNET.FontQuality.LcdOptimized,
                 IndentWidth = 4,
                 UseTabs = false,
@@ -76,15 +75,110 @@ namespace SqlNotebook {
                 style.Font = "Consolas";
                 style.Size = 10;
             }
-            var sqliteKeywords = "abort action add after all alter analyze and as asc attach autoincrement before begin between by cascade case cast check collate column commit conflict constraint create cross current_date current_time current_timestamp database default deferrable deferred delete desc detach distinct drop each else end escape except exclusive exists explain fail for foreign from full glob group having if ignore immediate in index indexed initially inner insert instead intersect into is isnull join key left like limit match natural no not notnull null of offset on or order outer plan pragma primary query raise recursive references regexp reindex release rename replace restrict right rollback row savepoint select set table temp temporary then to transaction trigger union unique update using vacuum values view virtual when where with without";
-            var sqlnbKeywords = "declare parameter while break continue print execute exec return throw try catch";
-            _scintilla.SetKeywords(0, $"{sqliteKeywords} {sqlnbKeywords}");
-            _scintilla.Styles[ScintillaNET.Style.Sql.Character].ForeColor = Color.Red;
+
+            var operatorTokens = new HashSet<TokenType>(new[] {
+                TokenType.Add, TokenType.Asterisk, TokenType.BitAnd, TokenType.Bitnot, TokenType.BitOr,
+                TokenType.Comma, TokenType.Dot, TokenType.Eq, TokenType.Ge, TokenType.Gt, TokenType.Le, TokenType.Lp,
+                TokenType.LShift, TokenType.Lt, TokenType.Ne, TokenType.Plus, TokenType.Rp, TokenType.RShift,
+                TokenType.Semi, TokenType.Star, TokenType.UMinus, TokenType.UPlus
+            });
+
+            var sqlnbKeywords = new HashSet<string>(new[] {
+                "declare", "parameter", "while", "break", "continue", "print", "execute", "exec", "return", "throw",
+                "try", "catch"
+            });
+
+            var utf8Encoding = new UTF8Encoding(false);
+            
+            _scintilla.StyleNeeded += (sender, e) => {
+                var text = _scintilla.Text;
+                Task.Run(() => {
+                    var tokens = Notebook.Tokenize(text);
+                    ulong i = 0;
+                    var utf8 = utf8Encoding.GetBytes(text);
+                    var list = new List<Tuple<int, int>>(); // length, type; for successive calls to SetStyling()
+
+                    foreach (var token in tokens) {
+                        // treat characters between i and token.Utf8Start as a comment
+                        var numCommentBytes = token.Utf8Start - i;
+                        var strComment = Encoding.UTF8.GetString(utf8, (int)i, (int)numCommentBytes);
+                        list.Add(Tuple.Create(strComment.Length, ScintillaNET.Style.Sql.Comment));
+                        i += numCommentBytes;
+
+                        var strSpace = Encoding.UTF8.GetString(utf8, (int)i, (int)token.Utf8Length);
+                        int type = 0;
+                        if (operatorTokens.Contains(token.Type)) {
+                            type = ScintillaNET.Style.Sql.Operator;
+                        } else {
+                            switch (token.Type) {
+                                case TokenType.Space:
+                                case TokenType.Span:
+                                case TokenType.Illegal:
+                                    type = ScintillaNET.Style.Sql.Default;
+                                    break;
+
+                                case TokenType.String:
+                                case TokenType.UnclosedString:
+                                    type = ScintillaNET.Style.Sql.String;
+                                    break;
+
+                                case TokenType.Id:
+                                    if (sqlnbKeywords.Contains(token.Text.ToLower())) {
+                                        type = ScintillaNET.Style.Sql.Word;
+                                    } else {
+                                        type = ScintillaNET.Style.Sql.Identifier;
+                                    }
+                                    break;
+
+                                case TokenType.Variable:
+                                    type = ScintillaNET.Style.Sql.User1;
+                                    break;
+
+                                case TokenType.Integer:
+                                    type = ScintillaNET.Style.Sql.Number;
+                                    break;
+
+                                default:
+                                    type = ScintillaNET.Style.Sql.Word;
+                                    break;
+                            }
+                        }
+
+                        list.Add(Tuple.Create(strSpace.Length, type));
+                        i += token.Utf8Length;
+                    }
+
+                    // everything from the last token to the end of the string is a comment
+                    var numEndCommentBytes = utf8.Length - (int)i;
+                    if (numEndCommentBytes > 0) {
+                        var strEndComment = Encoding.UTF8.GetString(utf8, (int)i, numEndCommentBytes);
+                        list.Add(Tuple.Create(strEndComment.Length, ScintillaNET.Style.Sql.Comment));
+                    }
+
+                    BeginInvoke(new MethodInvoker(() => {
+                        if (_scintilla.Text != text) {
+                            // the text changed while we were working, so discard these results because
+                            // another tokenization will soon deliver more up-to-date results.
+                            return;
+                        }
+
+                        _scintilla.StartStyling(0);
+                        foreach (var item in list) {
+                            _scintilla.SetStyling(item.Item1, item.Item2);
+                        }
+                    }));
+                });
+            };
+
+            _scintilla.Margins[1].Width = 0;
             _scintilla.Styles[ScintillaNET.Style.Sql.String].ForeColor = Color.Red;
             _scintilla.Styles[ScintillaNET.Style.Sql.Comment].ForeColor = Color.Green;
-            _scintilla.Styles[ScintillaNET.Style.Sql.CommentLine].ForeColor = Color.Green;
             _scintilla.Styles[ScintillaNET.Style.Sql.Number].ForeColor = Color.Gray;
+            _scintilla.Styles[ScintillaNET.Style.Sql.Operator].ForeColor = Color.Gray;
             _scintilla.Styles[ScintillaNET.Style.Sql.Word].ForeColor = Color.Blue;
+            _scintilla.Styles[ScintillaNET.Style.Sql.User1].Italic = true; // variables
+            _scintilla.Styles[ScintillaNET.Style.Sql.Number].ForeColor = Color.Gray;
+
             _sqlPanel.Controls.Add(_scintilla);
 
             Load += (sender, e) => {

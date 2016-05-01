@@ -300,6 +300,7 @@ namespace SqlNotebookCore {
         void Interrupt(); // interrupt any currently running SQLite command
         property NotebookUserData^ UserData { NotebookUserData^ get() { return _userData; } }
         IReadOnlyDictionary<String^, String^>^ GetScripts(); // lowercase script name -> script code
+        static IReadOnlyList<Token^>^ Tokenize(String^ input);
 
         // all of these methods must be run on the sqlite thread
         void Execute(String^ sql);
@@ -313,7 +314,6 @@ namespace SqlNotebookCore {
         Object^ QueryValue(String^ sql, IReadOnlyList<Object^>^ args);
         void Save();
         void SaveAs(String^ filePath);
-        static IReadOnlyList<Token^>^ Tokenize(String^ input);
         String^ FindLongestValidStatementPrefix(String^ input);
         bool IsTransactionActive();
 
@@ -327,6 +327,7 @@ namespace SqlNotebookCore {
         sqlite3* _sqlite;
         Object^ _lock;
         NotebookUserData^ _userData;
+        static Object^ _tokenizeLock = gcnew Object();
 
         SimpleDataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
             IReadOnlyList<Object^>^ orderedArgs, bool returnResult);

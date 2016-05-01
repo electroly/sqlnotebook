@@ -334,25 +334,30 @@ static int GetToken(const char* str, int* oldPos, int* pos, int len) {
 }
 
 IReadOnlyList<Token^>^ Notebook::Tokenize(String^ input) {
-    auto str = Util::CStr(input);
-    auto cstr = str.c_str();
-    auto list = gcnew List<Token^>();
-    int tokenType = 0, oldPos = 0, pos = 0, len = (int)str.length();
-    while ((tokenType = GetToken(cstr, &oldPos, &pos, len)) > 0) {
-        char* utf8Token = (char*)calloc(pos - oldPos + 1, sizeof(char));
-        memcpy(utf8Token, &cstr[oldPos], pos - oldPos);
+    Monitor::Enter(_tokenizeLock);
+    try {
+        auto str = Util::CStr(input);
+        auto cstr = str.c_str();
+        auto list = gcnew List<Token^>();
+        int tokenType = 0, oldPos = 0, pos = 0, len = (int)str.length();
+        while ((tokenType = GetToken(cstr, &oldPos, &pos, len)) > 0) {
+            char* utf8Token = (char*)calloc(pos - oldPos + 1, sizeof(char));
+            memcpy(utf8Token, &cstr[oldPos], pos - oldPos);
 
-        auto token = gcnew Token();
-        token->Type = (TokenType)tokenType;
-        token->Text = Util::Str(utf8Token);
-        token->Utf8Start = oldPos;
-        token->Utf8Length = pos - oldPos;
-        list->Add(token);
+            auto token = gcnew Token();
+            token->Type = (TokenType)tokenType;
+            token->Text = Util::Str(utf8Token);
+            token->Utf8Start = oldPos;
+            token->Utf8Length = pos - oldPos;
+            list->Add(token);
 
-        free(utf8Token);
-        oldPos = pos;
+            free(utf8Token);
+            oldPos = pos;
+        }
+        return list;
+    } finally {
+        Monitor::Exit(_tokenizeLock);
     }
-    return list;
 }
 
 String^ Token::ToString() {
