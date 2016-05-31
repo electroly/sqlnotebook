@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "sqlite3\sqlite3.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmicrohttpd", "libmicrohttpd\libmicrohttpd.vcxproj", "{67448CAF-D2C9-48D9-945C-13389BD4E608}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlNotebookTest", "SqlNotebookTest\SqlNotebookTest.csproj", "{AEF5B9CD-4B2B-41DF-8827-B3414A7ACD5F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,10 @@ Global
 		{67448CAF-D2C9-48D9-945C-13389BD4E608}.Debug|x64.Build.0 = Debug|x64
 		{67448CAF-D2C9-48D9-945C-13389BD4E608}.Release|x64.ActiveCfg = Release|x64
 		{67448CAF-D2C9-48D9-945C-13389BD4E608}.Release|x64.Build.0 = Release|x64
+		{AEF5B9CD-4B2B-41DF-8827-B3414A7ACD5F}.Debug|x64.ActiveCfg = Debug|x64
+		{AEF5B9CD-4B2B-41DF-8827-B3414A7ACD5F}.Debug|x64.Build.0 = Debug|x64
+		{AEF5B9CD-4B2B-41DF-8827-B3414A7ACD5F}.Release|x64.ActiveCfg = Release|x64
+		{AEF5B9CD-4B2B-41DF-8827-B3414A7ACD5F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

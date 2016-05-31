@@ -114,6 +114,8 @@ namespace SqlNotebook {
                                 case TokenType.Space:
                                 case TokenType.Span:
                                 case TokenType.Illegal:
+                                case TokenType.Column:
+                                case TokenType.Table:
                                     type = ScintillaNET.Style.Sql.Default;
                                     break;
 
@@ -135,6 +137,7 @@ namespace SqlNotebook {
                                     break;
 
                                 case TokenType.Integer:
+                                case TokenType.Float:
                                     type = ScintillaNET.Style.Sql.Number;
                                     break;
 

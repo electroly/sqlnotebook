@@ -23,58 +23,13 @@ using SqlNotebookCore;
 
 namespace SqlNotebookScript {
     public sealed class SyntaxException : Exception {
-        public SyntaxException(IEnumerable<string> expecteds, Queue<Token> tokens)
+        public SyntaxException(IEnumerable<string> expecteds, TokenQueue q)
+            : base($"Syntax error at \"{q.GetSnippet()}\".  Expected: {string.Join(", ", expecteds)}") { }
+        public SyntaxException(IEnumerable<string> expecteds, List<Token> tokens)
             : base($"Syntax error at \"{string.Join(" ", tokens.Select(x => x.Text).Take(5)).Trim()}\".  Expected: {string.Join(", ", expecteds)}") { }
-        public SyntaxException(Queue<Token> tokens) : base($"Syntax error at \"{string.Join(" ", tokens.Select(x => x.Text).Take(5)).Trim()}\"") { }
+        public SyntaxException(TokenQueue q) : base($"Syntax error at \"{q.GetSnippet()}\"") { }
+        public SyntaxException(List<Token> tokens) : base($"Syntax error at \"{string.Join(" ", tokens.Select(x => x.Text).Take(5)).Trim()}\"") { }
         public SyntaxException(string message) : base(message) { }
-    }
-
-    internal sealed class TokenQueue {
-        private readonly Queue<Token> _queue;
-
-        public Notebook Notebook { get; }
-
-        public TokenQueue(IEnumerable<Token> input, Notebook notebook) {
-            Notebook = notebook;
-            _queue = new Queue<Token>(input);
-        }
-
-        public Token Take() {
-            if (_queue.Any()) {
-                return _queue.Dequeue();
-            } else {
-                throw new SyntaxException("Unexpected end of input.");
-            }
-        }
-
-        public Token Take(params string[] expectedTexts) {
-            var text = Peek();
-            if (expectedTexts.Any(x => x.ToLower() == text)) {
-                return Take();
-            } else {
-                throw new SyntaxException(expectedTexts, _queue);
-            }
-        }
-
-        public string Peek(int skip = 0) {
-            return _queue.Skip(skip).FirstOrDefault()?.Text.ToLower() ?? "";
-        }
-
-        public Token PeekToken(int skip = 0) {
-            return _queue.Skip(skip).FirstOrDefault();
-        }
-
-        public bool Eof() {
-            return !_queue.Any();
-        }
-
-        public override string ToString() {
-            return string.Join(" ", _queue.Select(x => x.Text));
-        }
-
-        public static implicit operator Queue<Token>(TokenQueue q) {
-            return q._queue;
-        }
     }
 
     public static class ScriptParserExtensions {
@@ -109,7 +64,8 @@ namespace SqlNotebookScript {
         }
 
         private static Ast.Script ParseScript(TokenQueue q) {
-            var script = new Ast.Script();
+            var script = new Ast.Script { SourceToken = q.SourceToken };
+            script.Block = new Ast.Block { SourceToken = q.SourceToken };
             while (!q.Eof()) {
                 script.Block.Statements.Add(ParseStmt(q));
             }
@@ -134,8 +90,8 @@ namespace SqlNotebookScript {
         }
 
         private static Ast.DeclareStmt ParseDeclareStmt(TokenQueue q) {
+            var stmt = new Ast.DeclareStmt { SourceToken = q.SourceToken };
             q.Take("declare");
-            var stmt = new Ast.DeclareStmt();
             if (q.Peek() == "parameter") {
                 q.Take();
                 stmt.IsParameter = true;
@@ -145,8 +101,8 @@ namespace SqlNotebookScript {
         }
 
         private static Ast.Stmt ParseSetStmt(TokenQueue q) {
+            var stmt = new Ast.SetStmt { SourceToken = q.SourceToken };
             q.Take("set");
-            var stmt = new Ast.SetStmt();
             ParseAssignmentStmtCore(q, stmt);
             return stmt;
         }
@@ -161,8 +117,8 @@ namespace SqlNotebookScript {
         }
 
         private static Ast.Stmt ParseWhileStmt(TokenQueue q) {
+            var stmt = new Ast.WhileStmt { SourceToken = q.SourceToken };
             q.Take("while");
-            var stmt = new Ast.WhileStmt();
             stmt.Condition = ParseExpr(q);
             stmt.Block = ParseBlock(q);
             ConsumeSemicolon(q);
@@ -170,28 +126,30 @@ namespace SqlNotebookScript {
         }
 
         private static Ast.Stmt ParseBreakStmt(TokenQueue q) {
+            var stmt = new Ast.BreakStmt { SourceToken = q.SourceToken };
             q.Take("break");
             ConsumeSemicolon(q);
-            return new Ast.BreakStmt();
+            return stmt;
         }
 
         private static Ast.Stmt ParseContinueStmt(TokenQueue q) {
+            var stmt = new Ast.ContinueStmt { SourceToken = q.SourceToken };
             q.Take("continue");
             ConsumeSemicolon(q);
-            return new Ast.ContinueStmt();
+            return stmt;
         }
 
         private static Ast.Stmt ParsePrintStmt(TokenQueue q) {
+            var stmt = new Ast.PrintStmt { SourceToken = q.SourceToken };
             q.Take("print");
-            var stmt = new Ast.PrintStmt();
             stmt.Value = ParseExpr(q);
             ConsumeSemicolon(q);
             return stmt;
         }
 
         private static Ast.Stmt ParseExecuteStmt(TokenQueue q) {
+            var stmt = new Ast.ExecuteStmt { SourceToken = q.SourceToken };
             q.Take("exec", "execute");
-            var stmt = new Ast.ExecuteStmt();
 
             if (q.Peek(1) == "=") {
                 stmt.ReturnVariableName = ParseVariableName(q);
@@ -221,8 +179,8 @@ namespace SqlNotebookScript {
         }
 
         private static Ast.Stmt ParseReturnStmt(TokenQueue q) {
+            var stmt = new Ast.ReturnStmt { SourceToken = q.SourceToken };
             q.Take("return");
-            var stmt = new Ast.ReturnStmt();
             if (PeekExpr(q)) {
                 stmt.Value = ParseExpr(q);
             }
@@ -231,8 +189,8 @@ namespace SqlNotebookScript {
         }
 
         private static Ast.Stmt ParseThrowStmt(TokenQueue q) {
+            var stmt = new Ast.ThrowStmt { SourceToken = q.SourceToken };
             q.Take("throw");
-            var stmt = new Ast.ThrowStmt();
             if (PeekExpr(q)) {
                 stmt.ErrorNumber = ParseExpr(q);
                 q.Take(",");
@@ -245,8 +203,8 @@ namespace SqlNotebookScript {
         }
 
         private static Ast.Stmt ParseIfStmt(TokenQueue q) {
+            var stmt = new Ast.IfStmt { SourceToken = q.SourceToken };
             q.Take("if");
-            var stmt = new Ast.IfStmt();
             stmt.Condition = ParseExpr(q);
             stmt.Block = ParseBlock(q);
             if (q.Peek() == "else") {
@@ -257,11 +215,11 @@ namespace SqlNotebookScript {
         }
 
         private static Ast.Stmt ParseTryCatchStmt(TokenQueue q) {
-            var stmt = new Ast.TryCatchStmt();
+            var stmt = new Ast.TryCatchStmt { SourceToken = q.SourceToken };
 
             q.Take("begin");
             q.Take("try");
-            stmt.TryBlock = new Ast.Block();
+            stmt.TryBlock = new Ast.Block { SourceToken = q.SourceToken };
             while (q.Peek() != "end") {
                 stmt.TryBlock.Statements.Add(ParseStmt(q));
             }
@@ -270,30 +228,13 @@ namespace SqlNotebookScript {
 
             q.Take("begin");
             q.Take("catch");
-            stmt.CatchBlock = new Ast.Block();
+            stmt.CatchBlock = new Ast.Block { SourceToken = q.SourceToken };
             while (q.Peek() != "end") {
                 stmt.CatchBlock.Statements.Add(ParseStmt(q));
             }
             q.Take("end");
             q.Take("catch");
             return stmt;
-        }
-
-        private static Ast.Stmt ParseSqlStmt(TokenQueue q) {
-            var n = q.Notebook;
-            var prefix = TrimOurKeywordsFromEnd(n.FindLongestValidStatementPrefix(q.ToString()));
-
-            if (prefix.Any()) {
-                // consume the corresponding valid tokens from the queue
-                int len = 0;
-                while (len < prefix.Length) {
-                    len += q.Take().Text.Length + 1;
-                }
-
-                return new Ast.SqlStmt { Sql = prefix.Trim() };
-            } else {
-                throw new SyntaxException(q);
-            }
         }
 
         private static string ParseVariableName(TokenQueue q) {
@@ -312,7 +253,7 @@ namespace SqlNotebookScript {
         }
 
         private static Ast.Block ParseBlock(TokenQueue q) {
-            var stmt = new Ast.Block();
+            var stmt = new Ast.Block { SourceToken = q.SourceToken };
             if (q.Peek() == "begin") {
                 q.Take("begin");
                 while (q.Peek() != "end") {
@@ -323,6 +264,34 @@ namespace SqlNotebookScript {
                 stmt.Statements.Add(ParseStmt(q));
             }
             return stmt;
+        }
+
+        private static Ast.Stmt ParseSqlStmt(TokenQueue q) {
+            var n = q.Notebook;
+            var prefix = TrimOurKeywordsFromEnd(n.FindLongestValidStatementPrefix(q.ToString()));
+
+            if (prefix.Any()) {
+                // consume the corresponding valid tokens from the queue
+                int len = 0;
+                while (len < prefix.Length) {
+                    len += q.Take().Text.Length + 1;
+                }
+
+                return new Ast.SqlStmt { Sql = prefix.Trim() };
+            } else {
+                throw new SyntaxException(q);
+            }
+
+            /*var start = q.GetLocation();
+            var tok = q.SourceToken;
+            var result = SqlValidator.ReadStmt(q);
+            if (result.IsValid) {
+                return new Ast.SqlStmt { Sql = q.Substring(start, result.NumValidTokens), SourceToken = tok };
+            } else if (result.InvalidMessage != null) {
+                throw new SyntaxException(result.InvalidMessage);
+            } else {
+                throw new SyntaxException(q);
+            }*/
         }
 
         private static Ast.Expr ParseExpr(TokenQueue q) {
@@ -341,6 +310,17 @@ namespace SqlNotebookScript {
             } else {
                 throw new SyntaxException(q);
             }
+
+            /*var start = q.GetLocation();
+            var tok = q.SourceToken;
+            var result = SqlValidator.ReadExpr(q);
+            if (result.IsValid) {
+                return new Ast.Expr { Sql = q.Substring(start, result.NumValidTokens), SourceToken = tok };
+            } else if (result.InvalidMessage != null) {
+                throw new SyntaxException(result.InvalidMessage);
+            } else {
+                throw new SyntaxException(q);
+            }*/
         }
 
         private static string TrimOurKeywordsFromEnd(string sql) {
@@ -363,6 +343,12 @@ namespace SqlNotebookScript {
             } else {
                 throw new SyntaxException(q);
             }
+
+            /*var start = q.GetLocation();
+            var tok = q.SourceToken;
+            var result = SqlValidator.ReadExpr(q);
+            q.Jump(start);
+            return result.IsValid;*/
         }
 
         private static void ConsumeSemicolon(TokenQueue q) {

@@ -3,9 +3,11 @@
 SQL Notebook is a free Windows desktop application for **exploring and manipulating tabular data**.  It is powered by [SQLite](https://www.sqlite.org/).  Every notebook file is an SQLite database, and the user writes SQL queries to interact with input data.
 
 ### Data Sources
-- **Microsoft SQL Server**, **PostgreSQL**, and **MySQL** servers can be linked into the notebook and queried interchangeably with local tables.  Remote data is not physically copied into the notebook file unless requested; instead, the data source is queried on-the-fly.  Any combination of data sources can be used together in the same SQL query (including cross-database and cross-server queries).
+- **Microsoft SQL Server**, **PostgreSQL**, and **MySQL** tables can be linked into the notebook and queried interchangeably with local tables.  Remote data is not physically copied into the notebook file unless requested; instead, the data source is queried on-the-fly.
 
-- **CSV**, **JSON**, and **Excel** files can be imported into the notebook.
+- **CSV**, **JSON**, and **Excel** files can be imported into the notebook as local SQLite tables.
+
+- Any combination of data sources can be used together in the same SQL query, including cross-file, cross-database, and cross-server queries.
 
 - Tables and scripts can be exported in **CSV** format.
 
