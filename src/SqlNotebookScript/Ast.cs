@@ -71,7 +71,7 @@ namespace SqlNotebookScript.Ast {
 
     public sealed class Script : Node {
         public Block Block { get; set; }
-        protected override Node GetChild() { return Block; }
+        protected override Node GetChild() => Block;
     }
 
     public sealed class Expr : Node {
@@ -82,7 +82,7 @@ namespace SqlNotebookScript.Ast {
 
     public sealed class Block : Node {
         public List<Stmt> Statements = new List<Stmt>();
-        protected override IEnumerable<Node> GetChildren() { return Statements; }
+        protected override IEnumerable<Node> GetChildren() => Statements;
     }
 
     public sealed class SqlStmt : Stmt {
@@ -93,7 +93,7 @@ namespace SqlNotebookScript.Ast {
     public abstract class AssignmentStmt : Stmt {
         public string VariableName { get; set; }
         public Expr InitialValue { get; set; } // may be null
-        protected override Node GetChild() { return InitialValue; }
+        protected override Node GetChild() => InitialValue;
     }
 
     public sealed class DeclareStmt : AssignmentStmt {
@@ -106,13 +106,13 @@ namespace SqlNotebookScript.Ast {
         public Expr Condition { get; set; }
         public Block Block { get; set; }
         public Block ElseBlock { get; set; } // may be null
-        protected override IEnumerable<Node> GetChildren() { return new Node[] { Condition, Block, ElseBlock }; }
+        protected override IEnumerable<Node> GetChildren() => new Node[] { Condition, Block, ElseBlock };
     }
 
     public sealed class WhileStmt : Stmt {
         public Expr Condition { get; set; }
         public Block Block { get; set; }
-        protected override IEnumerable<Node> GetChildren() { return new Node[] { Condition, Block }; }
+        protected override IEnumerable<Node> GetChildren() => new Node[] { Condition, Block };
     }
 
     public sealed class BreakStmt : Stmt {
@@ -149,7 +149,7 @@ namespace SqlNotebookScript.Ast {
         public Expr ErrorNumber { get; set; }
         public Expr Message { get; set; }
         public Expr State { get; set; }
-        protected override IEnumerable<Node> GetChildren() { yield return ErrorNumber; yield return Message; yield return State; }
+        protected override IEnumerable<Node> GetChildren() => new Node[] { ErrorNumber, Message, State };
     }
 
     public sealed class RethrowStmt : Stmt {
@@ -159,74 +159,6 @@ namespace SqlNotebookScript.Ast {
     public sealed class TryCatchStmt : Stmt {
         public Block TryBlock { get; set; }
         public Block CatchBlock { get; set; }
-        protected override IEnumerable<Node> GetChildren() { yield return TryBlock; yield return CatchBlock; }
+        protected override IEnumerable<Node> GetChildren() => new Node[] { TryBlock, CatchBlock };
     }
-
-    //
-    // SQLite stuff
-    //
-
-    // explain-stmt ::= EXPLAIN [QUERY PLAN] <sql-stmt>
-
-    // alter-table-stmt ::= 
-    //      ALTER TABLE [ schema-name "." ] table-name 
-    //      ( RENAME TO new-table-name ) | ( ADD [COLUMN] <column-def> )
-
-    // column-def ::= column-name [<type-name>] [<column-constraint>]*
-
-    // type-name ::=
-    //      name [ 
-    //          "("
-    //              <signed-number>
-    //              [ "," <signed-number> ] 
-    //          ")" 
-    //      ]
-
-    // column-constraint ::= 
-    //      [ CONSTRAINT name ]
-    //      ( PRIMARY KEY [ASC | DESC] <conflict-clause> [AUTOINCREMENT] )
-    //      |   ( NOT NULL <conflict-clause> )
-    //      |   ( UNIQUE <conflict-clause> )
-    //      |   ( CHECK "(" <expr> ")" )
-    //      |   ( DEFAULT ( <signed-number> | <literal-value> | "(" <expr> ")" ) )
-    //      |   ( COLLATE collation-name )
-    //      |   ( <foreign-key-clause> )
-
-    // foreign-key-clause ::= 
-    //      REFERENCES foreign-table 
-    //      [ "(" column-name [ "," column-name ]* ")" ]
-    //      [
-    //          (
-    //              ON ( DELETE | UPDATE )
-    //              ( SET NULL | SET DEFAULT | CASCADE | RESTRICT | NO ACTION )
-    //          ) | (
-    //              MATCH name
-    //          )
-    //      ]
-    //      [ [NOT] DEFERRABLE [ INITIALLY DEFERRED | INITIALLY IMMEDIATE ] ]
-
-    // conflict-clause ::= [ ON CONFLICT ( ROLLBACK | ABORT | FAIL | IGNORE | REPLACE ) ]
-
-    // expr ::= <literal-value>
-    // expr ::= <bind-parameter>
-    // expr ::= [ [ database-name "." ] table-name "." ] column-name
-    // expr ::= unary-operator <expr>
-    // expr ::= <expr> binary-operator <expr>
-    // expr ::= function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* | "*" ] ")"
-    // expr ::= "(" <expr> ")"
-    // expr ::= CAST "(" <expr> AS <type-name> ")"
-    // expr ::= <expr> COLLATE collation-name
-    // expr ::= <expr> [ NOT ] ( LIKE | GLOB | REGEXP | MATCH ) <expr> [ ESCAPE <expr> ]
-    // expr ::= <expr> ( ISNULL | NOTNULL | NOT NULL )
-    // expr ::= <expr> IS [ NOT ] <expr>
-    // expr ::= <expr> [ NOT ] BETWEEN <expr> AND <expr>
-    // expr ::= <expr> [ NOT ] IN
-    //      (
-    //          "(" [ <select-stmt> | <expr> [ , <expr> ]* ] ")" |
-    //          [ database-name "." ] table-name
-    //      )
-    // expr ::= [ [ NOT ] EXISTS ] "(" <select-stmt> ")"
-    // expr ::= CASE [ <expr> ] WHEN <expr> THEN <expr> [ ELSE <expr> ] END
-    // expr ::= <raise-function>
-
 }
