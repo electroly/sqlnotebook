@@ -17,45 +17,36 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Data;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SqlNotebookCore;
-using SqlNotebookScript;
 using ScintillaNET;
+using SqlNotebookCore;
 
 namespace SqlNotebook {
-    public partial class QueryDocumentControl : UserControl, IDocumentControl {
-        private readonly IWin32Window _mainForm;
-        private readonly NotebookManager _manager;
-        private readonly Notebook _notebook;
+    public partial class SqlTextControl : UserControl {
         private readonly Scintilla _scintilla;
-        private readonly List<DataTable> _results = new List<DataTable>();
-        private int _selectedResultIndex = 0;
-        private readonly Slot<bool> _operationInProgress;
 
-        public string DocumentText => _scintilla.Text;
-
-        public string ItemName { get; set; }
-
-        public void Save() {
-            _manager.SetItemData(ItemName, DocumentText);
+        public string SqlText {
+            get {
+                return _scintilla.Text;
+            }
+            set {
+                // scintilla won't let us update the text programmatically if it is set to read-only
+                var oldReadOnly = _scintilla.ReadOnly;
+                _scintilla.ReadOnly = false;
+                _scintilla.Text = value;
+                _scintilla.ReadOnly = oldReadOnly;
+            }
         }
 
-        public QueryDocumentControl(string name, NotebookManager manager, IWin32Window mainForm, Slot<bool> operationInProgress) {
+        public SqlTextControl(bool readOnly) {
             InitializeComponent();
-            ItemName = name;
-            _manager = manager;
-            _notebook = manager.Notebook;
-            _mainForm = mainForm;
-            _operationInProgress = operationInProgress;
 
             _scintilla = new Scintilla {
                 Dock = DockStyle.Fill,
-                Lexer = ScintillaNET.Lexer.Container,
-                FontQuality = ScintillaNET.FontQuality.LcdOptimized,
+                Lexer = Lexer.Container,
+                FontQuality = FontQuality.LcdOptimized,
                 IndentWidth = 4,
                 UseTabs = false,
                 BufferedDraw = true,
@@ -63,6 +54,7 @@ namespace SqlNotebook {
                 ScrollWidthTracking = true,
                 ScrollWidth = 1,
                 BorderStyle = BorderStyle.None,
+                ReadOnly = readOnly
             };
             foreach (var style in _scintilla.Styles) {
                 style.Font = "Consolas";
@@ -78,11 +70,12 @@ namespace SqlNotebook {
 
             var sqlnbKeywords = new HashSet<string>(new[] {
                 "declare", "parameter", "while", "break", "continue", "print", "execute", "exec", "return", "throw",
-                "try", "catch"
+                "try", "catch", "import", "csv", "options", "text", "integer", "real", "date", "datetime", "datetimeoffset",
+                "table", "txt"
             });
 
             var utf8Encoding = new UTF8Encoding(false);
-            
+
             _scintilla.StyleNeeded += (sender, e) => {
                 var text = _scintilla.Text;
                 Task.Run(() => {
@@ -175,112 +168,7 @@ namespace SqlNotebook {
             _scintilla.Styles[ScintillaNET.Style.Sql.User1].Italic = true; // variables
             _scintilla.Styles[ScintillaNET.Style.Sql.Number].ForeColor = Color.Gray;
 
-            _sqlPanel.Controls.Add(_scintilla);
-
-            Load += (sender, e) => {
-                string initialText = _manager.GetItemData(ItemName);
-                if (initialText != null) {
-                    _scintilla.Text = initialText;
-                }
-
-                _scintilla.TextChanged += (sender2, e2) => _manager.SetDirty();
-
-                ShowResult(0);
-            };
-        }
-
-        public async Task Execute() {
-            await Execute(_scintilla.Text);
-        }
-
-        private async void ExecuteBtn_Click(object sender, EventArgs e) {
-            await Execute();
-        }
-
-        private async Task<bool> Execute(string sql) {
-            try {
-                if (_operationInProgress) {
-                    throw new Exception("Another operation is already in progress.");
-                }
-
-                await ExecuteCore(sql);
-                _manager.SetDirty();
-                _manager.Rescan();
-                return true;
-            } catch (Exception ex) {
-                MessageDialog.ShowError(ParentForm, "Script Error", "An error occurred.", ex.Message);
-                return false;
-            }
-        }
-
-        private async Task ExecuteCore(string sql) {
-            ScriptOutput output = null;
-            Exception exception = null;
-            _manager.PushStatus("Running your script. Press ESC to cancel.");
-            await Task.Run(() => {
-                try {
-                    output = _manager.ExecuteScript(sql);
-                } catch (Exception ex) {
-                    exception = ex;
-                }
-            });
-            _manager.PopStatus();
-
-            if (exception != null) {
-                throw exception;
-            } else {
-                var resultSets = new List<DataTable>();
-
-                foreach (var sdt in output.DataTables) {
-                    resultSets.Add(sdt.ToDataTable());
-                }
-
-                if (output.TextOutput.Any()) {
-                    var dt = new DataTable("Output");
-                    dt.Columns.Add("printed_text", typeof(string));
-                    foreach (var line in output.TextOutput) {
-                        var row = dt.NewRow();
-                        row.ItemArray = new object[] { line };
-                        dt.Rows.Add(row);
-                    }
-                    resultSets.Insert(0, dt);
-                }
-
-                _grid.DataSource = null;
-                _results.ForEach(x => x.Dispose());
-                _results.Clear();
-                _results.AddRange(resultSets);
-                ShowResult(0);
-            }
-        }
-
-        private void ShowResult(int index) {
-            _selectedResultIndex = index = Math.Max(0, Math.Min(_results.Count - 1, index));
-            if (_results.Count == 0) {
-                _resultSetLbl.Text = "(no results)";
-                _rowCountLbl.Text = "";
-            } else {
-                var source = index >= 0 && index < _results.Count ? _results[index] : null;
-                _grid.DataSource = source;
-                foreach (DataGridViewColumn col in _grid.Columns) {
-                    col.AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                    var width = col.Width;
-                    col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                    col.Width = Math.Min(250, width);
-                }
-                _resultSetLbl.Text = $"{index + 1} of {_results.Count}";
-                _rowCountLbl.Text = source == null ? "" : $"{source.Rows.Count} row{(source.Rows.Count == 1 ? "" : "s")}";
-            }
-            _prevBtn.Enabled = index > 0;
-            _nextBtn.Enabled = index < _results.Count - 1;
-        }
-
-        private void PrevBtn_Click(object sender, EventArgs e) {
-            ShowResult(_selectedResultIndex - 1);
-        }
-
-        private void NextBtn_Click(object sender, EventArgs e) {
-            ShowResult(_selectedResultIndex + 1);
+            Controls.Add(_scintilla);
         }
     }
 }

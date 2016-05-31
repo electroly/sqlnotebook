@@ -109,17 +109,7 @@ namespace SqlNotebook {
                 _manager.Rescan();
                 return true;
             } catch (Exception ex) {
-                var td = new TaskDialog {
-                    Cancelable = true,
-                    Caption = "Console Error",
-                    Icon = TaskDialogStandardIcon.Error,
-                    InstructionText = "An error occurred.",
-                    StandardButtons = TaskDialogStandardButtons.Ok,
-                    OwnerWindowHandle = ParentForm.Handle,
-                    StartupLocation = TaskDialogStartupLocation.CenterOwner,
-                    Text = ex.Message
-                };
-                td.Show();
+                MessageDialog.ShowError(ParentForm, "Console Error", "An error occurred.", ex.Message);
                 return false;
             } finally {
                 _consoleTxt.ReadOnly = false;

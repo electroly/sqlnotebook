@@ -15,9 +15,8 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 
-namespace SqlNotebook {
+namespace SqlNotebookScript {
     public abstract class Slot {
         public event Action ChangeNoData;
 
@@ -48,7 +47,7 @@ namespace SqlNotebook {
                 lock (_lock) {
                     bool didChange =
                         (value == null && _value != null) ||
-                        !value.Equals(_value);
+                        (value != null && !value.Equals(_value));
                     if (didChange) {
                         var oldValue = _value;
                         _value = value;
@@ -64,6 +63,13 @@ namespace SqlNotebook {
 
         public static implicit operator T(Slot<T> self) {
             return self._value;
+        }
+    }
+
+    // a slot that has no data; it is only used to trigger events
+    public sealed class NotifySlot : Slot {
+        public void Notify() {
+            SendChangeNoDataEvent();
         }
     }
 }

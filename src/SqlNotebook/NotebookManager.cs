@@ -93,12 +93,18 @@ namespace SqlNotebook {
 
         public void Save() {
             NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
-            Notebook.Invoke(() => Notebook.Save());
+            Notebook.Invoke(() => {
+                Notebook.Execute("VACUUM");
+                Notebook.Save();
+            });
         }
 
         public void SaveAs(string filePath) {
             NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
-            Notebook.Invoke(() => Notebook.SaveAs(filePath));
+            Notebook.Invoke(() => {
+                Notebook.Execute("VACUUM");
+                Notebook.SaveAs(filePath);
+            });
         }
 
         public void Rescan(bool notebookItemsOnly = false) {
@@ -235,13 +241,13 @@ namespace SqlNotebook {
             }
         }
 
-        public ScriptOutput ExecuteScript(string code) {
+        public ScriptOutput ExecuteScript(string code, IReadOnlyDictionary<string, object> args = null) {
             NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
             return Invoke(() => {
                 var parser = new ScriptParser(Notebook);
                 var script = parser.Parse(code);
                 var runner = new ScriptRunner(Notebook, Notebook.GetScripts());
-                return runner.Execute(script, new Dictionary<string, object>());
+                return runner.Execute(script, args ?? new Dictionary<string, object>());
             });
         }
 

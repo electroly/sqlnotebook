@@ -297,7 +297,8 @@ namespace SqlNotebookCore {
         !Notebook();
         void Invoke(Action^ action); // run the action on the sqlite thread
         String^ GetFilePath();
-        void Interrupt(); // interrupt any currently running SQLite command
+        void BeginUserCancel();
+        void EndUserCancel();
         property NotebookUserData^ UserData { NotebookUserData^ get() { return _userData; } }
         IReadOnlyDictionary<String^, String^>^ GetScripts(); // lowercase script name -> script code
         static IReadOnlyList<Token^>^ Tokenize(String^ input);
@@ -327,6 +328,7 @@ namespace SqlNotebookCore {
         sqlite3* _sqlite;
         Object^ _lock;
         NotebookUserData^ _userData;
+        bool _cancelling;
         static Object^ _tokenizeLock = gcnew Object();
 
         SimpleDataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,

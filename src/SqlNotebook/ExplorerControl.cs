@@ -20,6 +20,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using SqlNotebookScript;
 
 namespace SqlNotebook {
     public partial class ExplorerControl : UserControl {
@@ -103,16 +104,10 @@ namespace SqlNotebook {
             // can't delete tables or views if an operation is in progress
             bool isTableOrView = type == NotebookItemType.Table || type == NotebookItemType.View;
             if (isTableOrView && _operationInProgress) {
-                var errDlg = new TaskDialog {
-                    Caption = "Delete Item",
-                    InstructionText = $"Cannot delete tables or views while an operation is in progress.",
-                    Text = "Please wait until the current operation finishes, and then try again.",
-                    StartupLocation = TaskDialogStartupLocation.CenterOwner,
-                    OwnerWindowHandle = _mainForm.Handle,
-                    Icon = TaskDialogStandardIcon.Warning,
-                    Cancelable = true
-                };
-                errDlg.Show();
+                MessageDialog.ShowError(_mainForm,
+                    "Delete Item",
+                    "Cannot delete tables or views while an operation is in progress.",
+                    "Please wait until the current operation finishes, and then try again.");
                 return;
             }
 
@@ -141,7 +136,7 @@ namespace SqlNotebook {
 
             new WaitForm("Delete", "Deleting the selected item...", () => {
                 _manager.DeleteItem(item);
-            }).ShowDialog(this);
+            }).ShowDialogAndDispose(this);
 
             _manager.Rescan(notebookItemsOnly: !isTableOrView);
         }
@@ -171,8 +166,8 @@ namespace SqlNotebook {
                             for (int i = 0; i < dt.Rows.Count; i++) {
                                 var name = (string)dt.Get(i, "name");
                                 var info = (string)dt.Get(i, "type");
-                                info += Convert.ToInt32(dt.Get(i, "notnull")) == 1 ? " NOT NULL" : "";
-                                info += Convert.ToInt32(dt.Get(i, "pk")) >= 1 ? " PRIMARY KEY" : "";
+                                info += Convert.ToInt32(dt.Get(i, "notnull")) != 0 ? " NOT NULL" : "";
+                                info += Convert.ToInt32(dt.Get(i, "pk")) != 1 ? " PRIMARY KEY" : "";
                                 details.Add(Tuple.Create(name, info));
                             }
                         });
@@ -218,32 +213,17 @@ namespace SqlNotebook {
             // can't delete tables or views if an operation is in progress
             bool isTableOrView = type == NotebookItemType.Table || type == NotebookItemType.View;
             if (isTableOrView && _operationInProgress) {
-                var errDlg = new TaskDialog {
-                    Caption = "Delete Item",
-                    InstructionText = $"Cannot rename tables or views while an operation is in progress.",
-                    Text = "Please wait until the current operation finishes, and then try again.",
-                    StartupLocation = TaskDialogStartupLocation.CenterOwner,
-                    OwnerWindowHandle = _mainForm.Handle,
-                    Icon = TaskDialogStandardIcon.Warning,
-                    Cancelable = true
-                };
-                errDlg.Show();
+                MessageDialog.ShowError(_mainForm,
+                    "Delete Item",
+                    "Cannot rename tables or views while an operation is in progress.",
+                    "Please wait until the current operation finishes, and then try again.");
                 return;
             }
 
             try {
                 _manager.RenameItem(new NotebookItem(type, lvi.Text), e.Label);
             } catch (Exception ex) {
-                var td = new TaskDialog {
-                    Cancelable = true,
-                    Caption = "Rename Error",
-                    Icon = TaskDialogStandardIcon.Error,
-                    InstructionText = ex.Message,
-                    StandardButtons = TaskDialogStandardButtons.Ok,
-                    OwnerWindowHandle = ParentForm.Handle,
-                    StartupLocation = TaskDialogStartupLocation.CenterOwner
-                };
-                td.Show();
+                MessageDialog.ShowError(ParentForm, "Rename Error", ex.Message);
             }
         }
 

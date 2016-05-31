@@ -67,7 +67,7 @@ namespace SqlNotebookScript {
             if (_peekIndex < _tokens.Count) {
                 return _tokens[_peekIndex++];
             } else {
-                return new Token { Text = "(eof)", Type = TokenType.EndOfFile };
+                return new Token { Text = "", Type = TokenType.EndOfFile };
             }
         }
 
@@ -80,10 +80,20 @@ namespace SqlNotebookScript {
             }
         }
 
+        public bool TakeMaybe(params string[] expectedTexts) {
+            var text = Peek();
+            if (expectedTexts.Any(x => x.ToLower() == text)) {
+                Take();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         public string Peek(int skip = 0) {
             int n = _peekIndex + skip;
             if (n < _tokens.Count) {
-                return _tokens[n].Text;
+                return _tokens[n].Text.ToLower();
             } else {
                 return "";
             }
@@ -94,7 +104,7 @@ namespace SqlNotebookScript {
             if (n < _tokens.Count) {
                 return _tokens[n];
             } else {
-                return null;
+                return new Token { Text = "", Type = TokenType.EndOfFile };
             }
         }
 
@@ -103,7 +113,7 @@ namespace SqlNotebookScript {
         }
 
         public override string ToString() {
-            return string.Join(" ", _tokens.Select(x => x.Text));
+            return string.Join(" ", _tokens.Skip(_peekIndex).Select(x => x.Text));
         }
 
         public static implicit operator List<Token>(TokenQueue q) {

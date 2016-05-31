@@ -99,8 +99,28 @@ void Notebook::Execute(String^ sql) {
     Execute(sql, gcnew List<Object^>());
 }
 
+static IReadOnlyDictionary<String^, Object^>^ ToLowercaseKeys(IReadOnlyDictionary<String^, Object^>^ dict) {
+    bool allLowercase = true;
+    for each (auto key in dict->Keys) {
+        if (key != key->ToLower()) {
+            allLowercase = false;
+            break;
+        }
+    }
+
+    if (allLowercase) {
+        return dict;
+    } else {
+        auto newDict = gcnew Dictionary<String^, Object^>();
+        for each (auto pair in dict) {
+            newDict->Add(pair.Key->ToLower(), pair.Value);
+        }
+        return newDict;
+    }
+}
+
 void Notebook::Execute(String^ sql, IReadOnlyDictionary<String^, Object^>^ args) {
-    QueryCore(sql, args, nullptr, false);
+    QueryCore(sql, ToLowercaseKeys(args), nullptr, false);
 }
 
 void Notebook::Execute(String^ sql, IReadOnlyList<Object^>^ args) {
@@ -112,7 +132,7 @@ SimpleDataTable^ Notebook::Query(String^ sql) {
 }
 
 SimpleDataTable^ Notebook::Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args) {
-    return QueryCore(sql, args, nullptr, true);
+    return QueryCore(sql, ToLowercaseKeys(args), nullptr, true);
 }
 
 SimpleDataTable^ Notebook::Query(String^ sql, IReadOnlyList<Object^>^ args) {
@@ -143,6 +163,11 @@ Object^ Notebook::QueryValue(String^ sql, IReadOnlyList<Object^>^ args) {
 
 SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
         IReadOnlyList<Object^>^ orderedArgs, bool returnResult) {
+    if (_cancelling) {
+        throw gcnew OperationCanceledException();
+    }
+
+    // namedArgs has lowercase keys
     sqlite3_stmt* stmt = nullptr;
     try {
         // prepare the statement
@@ -162,7 +187,7 @@ SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, O
 
             if (namedArgs != nullptr) {
                 auto paramName = Util::Str(sqlite3_bind_parameter_name(stmt, i));
-                if (!namedArgs->TryGetValue(paramName, value)) {
+                if (!namedArgs->TryGetValue(paramName->ToLower(), value)) {
                     auto errMsg = Util::Str("Missing value for SQL parameter \"") + paramName + Util::Str("\".");
                     throw gcnew ArgumentException(errMsg);
                 }
@@ -212,6 +237,10 @@ SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, O
         // read the results
         auto rows = gcnew List<array<Object^>^>();
         while (true) {
+            if (_cancelling) {
+                throw gcnew OperationCanceledException();
+            }
+
             int ret = sqlite3_step(stmt);
             if (ret == SQLITE_DONE) {
                 break;
@@ -389,8 +418,13 @@ String^ Notebook::FindLongestValidStatementPrefix(String^ input) {
     return nprefix;
 }
 
-void Notebook::Interrupt() {
+void Notebook::BeginUserCancel() {
+    _cancelling = true;
     sqlite3_interrupt(_sqlite);
+}
+
+void Notebook::EndUserCancel() {
+    _cancelling = false;
 }
 
 static void ErrorNumberFunc(sqlite3_context* ctx, int, sqlite3_value**) {

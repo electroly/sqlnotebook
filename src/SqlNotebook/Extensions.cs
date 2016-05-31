@@ -16,10 +16,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using SqlNotebookCore;
 
 namespace SqlNotebook {
     public static class Extensions {
@@ -143,10 +145,6 @@ namespace SqlNotebook {
                 _taskbar.SetProgressValue(hwnd, (ulong)(value * 1000), 1000);
         }
 
-        public static string DoubleQuote(this string str) {
-            return $"\"{str.Replace("\"", "\"\"")}\"";
-        }
-
         public static void EnableDoubleBuffer(this ListView self) {
             typeof(ListView).GetMethod("SetStyle", BindingFlags.NonPublic | BindingFlags.Instance)
                 .Invoke(self, new object[] { ControlStyles.OptimizedDoubleBuffer, true });
@@ -203,6 +201,91 @@ namespace SqlNotebook {
                     self.RemoveAt(i);
                 }
             }
+        }
+
+        public static void MakeDivider(this Label self, int leftMargin = 5, int rightMargin = 5) {
+            var y = self.Top + self.Height / 2;
+            var leftLine = new Panel {
+                Left = leftMargin,
+                Top = y,
+                Width = self.Left - 2 - (leftMargin),
+                Height = 1,
+                BackColor = SystemColors.ControlDark,
+                Anchor = AnchorStyles.Left | AnchorStyles.Top
+            };
+            var rightLine = new Panel {
+                Left = self.Right + 2,
+                Top = y,
+                Width = self.Parent.Width - rightMargin - (self.Right + 2),
+                Height = 1,
+                BackColor = SystemColors.ControlDark,
+                Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right
+            };
+            self.Parent.Controls.Add(leftLine);
+            self.Parent.Controls.Add(rightLine);
+        }
+
+        public static DialogResult ShowDialogAndDispose(this Form form, IWin32Window owner) {
+            using (form) {
+                return form.ShowDialog(owner);
+            }
+        }
+
+        // make combo boxes less awkward in data grids
+        public static void ApplyOneClickComboBoxFix(this DataGridView self) {
+            // show the dropdown box on the first cell click
+            self.CellEnter += (sender, e) => {
+                var isCombo =
+                    e.RowIndex != -1 &&
+                    e.ColumnIndex != -1 &&
+                    self.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn;
+                if (isCombo) {
+                    self.BeginEdit(true);
+                    self.BeginInvoke(new MethodInvoker(() => {
+                        ((ComboBox)self.EditingControl).DroppedDown = true;
+                    }));
+                }
+            };
+
+            // commit the selected dropdown value as soon as it is clicked
+            self.CurrentCellDirtyStateChanged += (sender, e) => {
+                var colIndex = self.CurrentCell.ColumnIndex;
+                if (self.Columns[colIndex] is DataGridViewComboBoxColumn && self.IsCurrentCellDirty) {
+                    self.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                }
+            };
+        }
+
+        public static TValue GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> self, TKey key) {
+            TValue value;
+            if (self.TryGetValue(key, out value)) {
+                return value;
+            } else {
+                return default(TValue);
+            }
+        }
+
+        public static void EnableDoubleBuffering(this DataGridView self) {
+            typeof(DataGridView).InvokeMember(
+                name: "DoubleBuffered",
+                invokeAttr: BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty,
+                binder: null,
+                target: self,
+                args: new object[] { true }
+            );
+        }
+
+        public static DataTable ToDataTable(this SimpleDataTable self) {
+            var dt = new DataTable();
+            foreach (var col in self.Columns) {
+                dt.Columns.Add(col);
+            }
+            foreach (var row in self.Rows) {
+                var dtRow = dt.NewRow();
+                dtRow.ItemArray = row;
+                dt.Rows.Add(dtRow);
+            }
+            return dt;
         }
     }
 }

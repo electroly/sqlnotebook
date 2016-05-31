@@ -315,6 +315,28 @@ namespace SqlNotebook.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+        ///&lt;title&gt;IMPORT CSV Statement&lt;/title&gt;
+        ///
+        ///&lt;style&gt;
+        ///img.diagram { border: 1px solid white; }
+        ///a img.diagram:hover { border: 1px solid #4078c0; }
+        ///div.figure { text-align: center; }
+        ///div.caption { font-size: 8pt; font-style: italic; color: gray; }
+        ///ul.args li, ul.opts li, ol.examples li { margin-bottom: 15px; }
+        ///ul.enum { margin-top: 5px; }
+        ///ul.enum li { margin-bottom: 0px; }
+        ///&lt;/style&gt;
+        ///
+        ///&lt;h1&gt;&lt;code&gt;IMPORT&lt;/code&gt; &lt;code&gt;CSV&lt;/code&gt; Statement&lt;/h1&gt;        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ImportCsvStmtHtml {
+            get {
+                return ResourceManager.GetString("ImportCsvStmtHtml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
         ///&lt;title&gt;How to Import a JSON File&lt;/title&gt;
         ///
         ///&lt;style&gt;
@@ -331,6 +353,28 @@ namespace SqlNotebook.Properties {
         internal static string ImportJsonFileHtml {
             get {
                 return ResourceManager.GetString("ImportJsonFileHtml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+        ///&lt;title&gt;IMPORT TXT Statement&lt;/title&gt;
+        ///
+        ///&lt;style&gt;
+        ///img.diagram { border: 1px solid white; }
+        ///a img.diagram:hover { border: 1px solid #4078c0; }
+        ///div.figure { text-align: center; }
+        ///div.caption { font-size: 8pt; font-style: italic; color: gray; }
+        ///ul.args li, ul.opts li, ol.examples li { margin-bottom: 15px; }
+        ///ul.enum { margin-top: 5px; }
+        ///ul.enum li { margin-bottom: 0px; }
+        ///&lt;/style&gt;
+        ///
+        ///&lt;h1&gt;&lt;code&gt;IMPORT&lt;/code&gt; &lt;code&gt;TXT&lt;/code&gt; Statement&lt;/h1&gt;        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ImportTxtStmtHtml {
+            get {
+                return ResourceManager.GetString("ImportTxtStmtHtml", resourceCulture);
             }
         }
         
@@ -371,6 +415,16 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("PageWhite", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon PageWhiteTextIco {
+            get {
+                object obj = ResourceManager.GetObject("PageWhiteTextIco", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -445,6 +499,16 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon TableImportIco {
+            get {
+                object obj = ResourceManager.GetObject("TableImportIco", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap TextExports {
@@ -487,8 +551,8 @@ namespace SqlNotebook.Properties {
         ///&lt;li&gt;&lt;a href=&quot;#sqlite&quot;&gt;SQLite&lt;/a&gt;&lt;/li&gt;
         ///&lt;li&gt;&lt;a href=&quot;#fatcow&quot;&gt;Free FatCow-Farm Fresh Icons&lt;/a&gt;&lt;/li&gt;
         ///&lt;li&gt;&lt;a href=&quot;#dockpanelsuite&quot;&gt;DockPanelSuite&lt;/a&gt;&lt;/li&gt;
-        ///&lt;li&gt;&lt;a href=&quot;#texteditor&quot;&gt;ICSharpCode.TextEditor&lt;/a&gt;&lt;/li&gt;
-        ///&lt;li&gt;&lt;a href=&quot;#sharpzipli [rest of string was truncated]&quot;;.
+        ///&lt;li&gt;&lt;a href=&quot;#sharpziplib&quot;&gt;SharpZipLib&lt;/a&gt;&lt;/li&gt;
+        ///&lt;li&gt;&lt;a href=&quot;#exceldatareader&quot;&gt;Exc [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ThirdPartyLicensesHtml {
             get {

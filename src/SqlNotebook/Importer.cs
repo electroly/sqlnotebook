@@ -32,6 +32,7 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using SqlNotebookCore;
+using SqlNotebookScript;
 
 namespace SqlNotebook {
     public sealed class RecentDataSource {
@@ -168,17 +169,7 @@ namespace SqlNotebook {
             if (exception == null) {
                 _manager.SetDirty();
             } else {
-                var td = new TaskDialog {
-                    Cancelable = true,
-                    Caption = "Import Error",
-                    Icon = TaskDialogStandardIcon.Error,
-                    InstructionText = "The import failed.",
-                    StandardButtons = TaskDialogStandardButtons.Ok,
-                    OwnerWindowHandle = _owner.Handle,
-                    StartupLocation = TaskDialogStartupLocation.CenterOwner,
-                    Text = exception.Message
-                };
-                td.Show();
+                MessageDialog.ShowError(_owner, "Import Error", "The import failed.", exception.Message);
             }
         }
 
@@ -791,17 +782,10 @@ namespace SqlNotebook {
                 if (f.ResultException == null) {
                     successfulConnect = true;
                 } else {
-                    var td = new TaskDialog {
-                        Cancelable = true,
-                        Caption = "Connection Error",
-                        Icon = TaskDialogStandardIcon.Error,
-                        InstructionText = $"The connection to {ProductName} failed.",
-                        StandardButtons = TaskDialogStandardButtons.Ok,
-                        OwnerWindowHandle = owner.Handle,
-                        StartupLocation = TaskDialogStartupLocation.CenterOwner,
-                        Text = f.ResultException.Message
-                    };
-                    td.Show();
+                    MessageDialog.ShowError(owner,
+                        "Connection Error",
+                        $"The connection to {ProductName} failed.",
+                        f.ResultException.Message);
                 }
             }
             return successfulConnect;

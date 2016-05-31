@@ -1,0 +1,80 @@
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>IMPORT TXT Statement</title>
+
+<style>
+img.diagram { border: 1px solid white; }
+a img.diagram:hover { border: 1px solid #4078c0; }
+div.figure { text-align: center; }
+div.caption { font-size: 8pt; font-style: italic; color: gray; }
+ul.args li, ul.opts li, ol.examples li { margin-bottom: 15px; }
+ul.enum { margin-top: 5px; }
+ul.enum li { margin-bottom: 0px; }
+</style>
+
+<h1><code>IMPORT</code> <code>TXT</code> Statement</h1>
+<p>
+Reads a text file (.TXT) from disk into a notebook table.  Each line of text in the file becomes a one-column row in the target table.
+</p>
+
+<h2>Syntax</h2>
+<p>
+<a href="https://sqlnotebook.com/art/doc-import-txt-stmt.png"><img src="https://sqlnotebook.com/art/doc-import-txt-stmt.png" alt="Syntax for the IMPORT TXT statement" class="diagram" onload="this.width *= 0.75;"></a>
+</p>
+
+<h2>Arguments</h2>
+<ul class="args">
+    <li>
+        <b>filename</b> (string expression)<br>
+        The absolute path to the text file to read.
+    </li>
+    <li>
+        <b>table-name</b> (identifier or string expression)<br>
+        The name of the notebook table to read the text file into.  If the table does not exist, it will be created.  If it does exist, by default new rows will be appended, but the <code>TRUNCATE_EXISTING_TABLE</code> option can be used to overwrite the existing table data.
+    </li>
+</ul>
+
+<h2>Options</h2>
+<ul class="opts">
+    <li>
+        <b><code>SKIP_LINES</code></b> (non-negative integer, default: 0)<br>
+        Indicates how many initial lines should be skipped in the input file.
+    </li>
+    <li>
+        <b><code>TAKE_LINES</code></b> (-1 or non-negative integer, default: -1)<br>
+        Indicates the maximum number of text lines to read from the file, not including the lines skipped due to the <code>SKIP_LINES</code> option.  If -1 is specified, then the whole file is read.
+    </li>
+    <li>
+        <b><code>TRUNCATE_EXISTING_TABLE</code></b> (0 or 1, default: 0)<br>
+        If the target table name exists, this option indicates whether the existing data rows should be deleted.
+        <ul class="enum">
+            <li>0 = Keep existing rows and append new rows</li>
+            <li>1 = Delete existing rows</li>
+        </ul>
+    </li>
+    <li>
+        <b><code>TEMPORARY_TABLE</code></b> (0 or 1, default: 0)<br>
+        If the target table name does not exist, and therefore a new table will be created, this option indicates whether the new table will be a temporary table.
+        <ul class="enum">
+            <li>0 = Use <code>CREATE TABLE</code></li>
+            <li>1 = Use <code>CREATE TEMPORARY TABLE</code></li>
+        </ul>
+    </li>
+    <li>
+        <b><code>FILE_ENCODING</code></b> (integer 0-65535, default: 0)<br>
+        Indicates the text encoding to use when reading the text file.  Specify 0 to detect the encoding automatically.  Any nonzero integer is treated as a Windows code page number.
+    </li>
+</ul>
+
+<h2>Examples</h2>
+<ol class="examples">
+    <li>
+        <code>IMPORT TXT 'C:\MyFile.txt' INTO mytable;</code><br>
+        Reads the text in "MyFile.txt" into a notebook table called <code>mytable</code>.  Because no options are specified, the whole file is read.
+    </li>
+    <li>
+        <code>IMPORT TXT 'C:\MyFile.txt' INTO mytable OPTIONS (TAKE_LINES: 10);</code><br>
+        Only the first 10 lines of "MyFile.txt" are read into <code>mytable</code>.
+    </li>
+</ol>
+
+<br>

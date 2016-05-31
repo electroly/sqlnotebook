@@ -338,8 +338,9 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             Rectangle rect = ClientRectangle;
             Color captionColor;
+            var theme = (VS2012LightTheme)DockPane.DockPanel.Theme;
 
-            if (DockPane.IsActivated)
+            if (DockPane.IsActivated || theme.ForceActiveCaptionColor)
                 captionColor = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveCaptionGradient.StartColor;
             else
                 captionColor = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.InactiveCaptionGradient.StartColor;
@@ -367,7 +368,7 @@ namespace WeifenLuo.WinFormsUI.Docking
             rectCaptionText.Height -= TextGapTop + TextGapBottom;
 
             Color colorText;
-            if (DockPane.IsActivated)
+            if (DockPane.IsActivated || theme.ForceActiveCaptionColor)
                 colorText = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveCaptionGradient.TextColor;
             else
                 colorText = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.InactiveCaptionGradient.TextColor;
@@ -381,7 +382,7 @@ namespace WeifenLuo.WinFormsUI.Docking
             rectDotsStrip.Height = ClientRectangle.Height;
 
             Color dotsColor;
-            if (DockPane.IsActivated)
+            if (DockPane.IsActivated || theme.ForceActiveCaptionColor)
                 dotsColor = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveCaptionGradient.EndColor;
             else
                 dotsColor = DockPane.DockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.InactiveCaptionGradient.EndColor;
@@ -432,7 +433,11 @@ namespace WeifenLuo.WinFormsUI.Docking
 
         private bool ShouldShowAutoHideButton
         {
-            get	{	return !DockPane.IsFloat;	}
+            get 
+            {
+                var theme = (VS2012LightTheme)DockPane.DockPanel.Theme;
+                return !DockPane.IsFloat && theme.ShowAutoHideButton;
+            }
         }
 
         private void SetButtons()

@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using HtmlAgilityPack;
 using SqlNotebook.Properties;
 using SqlNotebookCore;
+using SqlNotebookScript;
 
 namespace SqlNotebook {
     public sealed class HelpServer : IDisposable {
@@ -93,7 +94,9 @@ namespace SqlNotebook {
                     new { Path = ".\\extended-syntax.html", Html = Resources.DocExtendedSyntaxHtml },
                     new { Path = ".\\error-functions.html", Html = Resources.ErrorFunctionsHtml },
                     new { Path = ".\\import-csv-file.html", Html = Resources.ImportCsvFileHtml },
-                    new { Path = ".\\import-json-file.html", Html = Resources.ImportJsonFileHtml }
+                    new { Path = ".\\import-json-file.html", Html = Resources.ImportJsonFileHtml },
+                    new { Path = ".\\import-csv-stmt.html", Html = Resources.ImportCsvStmtHtml },
+                    new { Path = ".\\import-txt-stmt.html", Html = Resources.ImportTxtStmtHtml }
                 };
                 foreach (var sqlNbFile in sqlNbFiles) {
                     string text, title;
@@ -130,6 +133,11 @@ namespace SqlNotebook {
             stack.Push(htmlDoc.DocumentNode);
             while (stack.Any()) {
                 var node = stack.Pop();
+                if (node.Name == "style" || node.Name == "script") {
+                    node.InnerHtml = "";
+                    continue;
+                }
+
                 if (node.Name == "li" || node.Name == "p" || node.Name == "td" || node.Name == "br") {
                     node.InnerHtml = " " + node.InnerHtml + " ";
                 }

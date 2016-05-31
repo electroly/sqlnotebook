@@ -65,10 +65,6 @@ namespace SqlNotebookScript.Ast {
         }
     }
 
-    //
-    // SQL Notebook stuff
-    //
-
     public sealed class Script : Node {
         public Block Block { get; set; }
         protected override Node GetChild() => Block;
@@ -161,4 +157,63 @@ namespace SqlNotebookScript.Ast {
         public Block CatchBlock { get; set; }
         protected override IEnumerable<Node> GetChildren() => new Node[] { TryBlock, CatchBlock };
     }
+
+    // import-csv-stmt
+    public sealed class ImportCsvStmt : Stmt {
+        public Expr FilenameExpr { get; set; }
+        public ImportTable ImportTable { get; set; }
+        public OptionsList OptionsList { get; set; }
+        protected override IEnumerable<Node> GetChildren() => new Node[] { FilenameExpr, ImportTable, OptionsList };
+    }
+
+    // options-list
+    public sealed class OptionsList : Node {
+        public Dictionary<string, Expr> Options { get; set; } = new Dictionary<string, Expr>(); // lowercase key
+        protected override IEnumerable<Node> GetChildren() => Options.Values;
+    }
+
+    // import-table
+    public sealed class ImportTable : Node {
+        public IdentifierOrExpr TableName { get; set; }
+        public List<ImportColumn> ImportColumns { get; set; } = new List<ImportColumn>();
+        protected override IEnumerable<Node> GetChildren() => new Node[] { TableName }.Concat(ImportColumns);
+    }
+
+    // import-column
+    public sealed class ImportColumn : Node {
+        public IdentifierOrExpr ColumnName { get; set; }
+        public IdentifierOrExpr AsName { get; set; } // may be null
+        public TypeConversion? TypeConversion { get; set; }
+        protected override IEnumerable<Node> GetChildren() => new[] { ColumnName, AsName };
+    }
+
+    public enum TypeConversion {
+        Text,
+        Integer,
+        Real,
+        Date,
+        DateTime,
+        DateTimeOffset
+    }
+    
+    // table-name, sn-column-name
+    public sealed class IdentifierOrExpr : Node {
+        // mutually exclusive, one will be null
+        public string Identifier { get; set; }
+        public Expr Expr { get; set; }
+        protected override Node GetChild() => Expr;
+    }
+
+    // import-txt-stmt
+    public sealed class ImportTxtStmt : Stmt {
+        public Expr FilenameExpr { get; set; }
+        public IdentifierOrExpr TableName { get; set; }
+        public IdentifierOrExpr LineNumberColumnName { get; set; } // may be null
+        public IdentifierOrExpr TextColumnName { get; set; } // may be null
+        public OptionsList OptionsList { get; set; }
+        protected override IEnumerable<Node> GetChildren() => 
+            new Node[] { FilenameExpr, TableName, LineNumberColumnName, TextColumnName, OptionsList };
+    }
+
+
 }

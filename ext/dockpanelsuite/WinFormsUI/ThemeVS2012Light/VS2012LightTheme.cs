@@ -13,6 +13,10 @@ namespace WeifenLuo.WinFormsUI.Docking
     /// </summary>
     public class VS2012LightTheme : ThemeBase
     {
+        public bool ShowWindowListButton { get; set; } = true;
+        public bool ShowAutoHideButton { get; set; } = true;
+        public bool ForceActiveCaptionColor { get; set; } = false;
+
         public VS2012LightTheme()
         {
             Skin = CreateVisualStudio2012Light();

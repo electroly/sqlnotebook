@@ -18,8 +18,9 @@ using System;
 using System.Data;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SqlNotebookCore;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using SqlNotebookCore;
+using SqlNotebookScript;
 
 namespace SqlNotebook {
     public partial class TableDocumentControl : UserControl, IDocumentControl {
@@ -62,16 +63,7 @@ namespace SqlNotebook {
                     }
                     _grid.DataSource = dt;
                 } else {
-                    var errDlg = new TaskDialog {
-                        Caption = "Preview Table",
-                        InstructionText = $"An error occurred.",
-                        Text = exception.Message,
-                        StartupLocation = TaskDialogStartupLocation.CenterOwner,
-                        OwnerWindowHandle = _mainForm.Handle,
-                        Icon = TaskDialogStandardIcon.Warning,
-                        Cancelable = true
-                    };
-                    errDlg.Show();
+                    MessageDialog.ShowError(_mainForm, "Preview Table", "An error occurred.", exception.Message);
                 }
             };
         }

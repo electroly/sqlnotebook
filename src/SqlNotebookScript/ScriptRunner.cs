@@ -69,11 +69,13 @@ namespace SqlNotebookScript {
         }
     }
 
-    internal sealed class ScriptEnv {
-        // local variables. keys are in lowercase.
+    public sealed class ScriptEnv {
+        // local variables and script parameters. keys are in lowercase.
         public Dictionary<string, object> Vars { get; } = new Dictionary<string, object>();
-        // script parameters.  keys are in lowercase.
-        public Dictionary<string, object> Pars { get; } = new Dictionary<string, object>();
+
+        // the names of script parameters, in lowercase.  this is populated as DECLARE PARAMETER statements are ran,
+        // to ensure that the same parameter is not declared twice.
+        public HashSet<string> ParNames { get; } = new HashSet<string>();
 
         public ScriptOutput Output { get; private set; } = new ScriptOutput();
 
@@ -124,7 +126,9 @@ namespace SqlNotebookScript {
                 [typeof(Ast.ReturnStmt)] = (s, e) => ExecuteReturnStmt((Ast.ReturnStmt)s, e),
                 [typeof(Ast.ThrowStmt)] = (s, e) => ExecuteThrowStmt((Ast.ThrowStmt)s, e),
                 [typeof(Ast.RethrowStmt)] = (s, e) => ExecuteRethrowStmt((Ast.RethrowStmt)s, e),
-                [typeof(Ast.TryCatchStmt)] = (s, e) => ExecuteTryCatchStmt((Ast.TryCatchStmt)s, e)
+                [typeof(Ast.TryCatchStmt)] = (s, e) => ExecuteTryCatchStmt((Ast.TryCatchStmt)s, e),
+                [typeof(Ast.ImportCsvStmt)] = (s, e) => ExecuteImportCsvStmt((Ast.ImportCsvStmt)s, e),
+                [typeof(Ast.ImportTxtStmt)] = (s, e) => ExecuteImportTxtStmt((Ast.ImportTxtStmt)s, e)
             };
         }
 
@@ -141,7 +145,8 @@ namespace SqlNotebookScript {
         public ScriptOutput Execute(Ast.Script script, IReadOnlyDictionary<string, object> args) {
             var env = new ScriptEnv();
             foreach (var arg in args) {
-                env.Pars[arg.Key.ToLower()] = arg.Value;
+                var lowercaseKey = arg.Key.ToLower();
+                env.Vars[lowercaseKey] = arg.Value;
             }
             Execute(script, env);
             return env.Output;
@@ -183,18 +188,24 @@ namespace SqlNotebookScript {
         private void ExecuteDeclareStmt(Ast.DeclareStmt stmt, ScriptEnv env) {
             var name = stmt.VariableName.ToLower();
             var declarationExists = env.Vars.ContainsKey(name);
-            if (declarationExists) {
-                throw new ScriptException($"Duplicate DECLARE for variable \"{stmt.VariableName}\".");
-            } else if (stmt.IsParameter) {
-                object value;
-                if (env.Pars.TryGetValue(name, out value)) {
-                    env.Vars[name] = value;
+            if (stmt.IsParameter) {
+                if (env.ParNames.Contains(name)) {
+                    throw new ScriptException($"Duplicate DECLARE for parameter \"{stmt.VariableName}\".");
+                } else {
+                    env.ParNames.Add(name);
+                }
+
+                if (declarationExists) {
+                    // do nothing; the parameter value was specified by the caller
                 } else if (stmt.InitialValue != null) {
+                    // the caller did not specify a value, but there is an initial value in the DECLARE statement.
                     env.Vars[name] = EvaluateExpr(stmt.InitialValue, env);
                 } else {
                     throw new ScriptException(
                         $"An argument value was not provided for parameter \"{stmt.VariableName}\".");
                 }
+            } else if (declarationExists) {
+                throw new ScriptException($"Duplicate DECLARE for variable \"{stmt.VariableName}\".");
             } else {
                 if (stmt.InitialValue != null) {
                     env.Vars[name] = EvaluateExpr(stmt.InitialValue, env);
@@ -272,7 +283,7 @@ namespace SqlNotebookScript {
             var script = parser.Parse(GetScriptCode(stmt.ScriptName));
             var subEnv = new ScriptEnv();
             foreach (var arg in stmt.Arguments) {
-                subEnv.Pars[arg.Name.ToLower()] = EvaluateExpr(arg.Value, env);
+                subEnv.Vars[arg.Name.ToLower()] = EvaluateExpr(arg.Value, env);
             }
             try {
                 runner.Execute(script, subEnv);
@@ -299,9 +310,16 @@ namespace SqlNotebookScript {
         }
 
         private void ExecuteThrowStmt(Ast.ThrowStmt stmt, ScriptEnv env) {
-            env.ErrorNumber = EvaluateExpr(stmt.ErrorNumber, env);
-            env.ErrorMessage = EvaluateExpr(stmt.Message, env);
-            env.ErrorState = EvaluateExpr(stmt.State, env);
+            var errorNumber = EvaluateExpr(stmt.ErrorNumber, env);
+            var errorMessage = EvaluateExpr(stmt.Message, env); ;
+            var errorState = EvaluateExpr(stmt.State, env);
+            Throw(env, errorNumber, errorMessage, errorState);
+        }
+
+        private void Throw(ScriptEnv env, object errorNumber, object errorMessage, object errorState) {
+            env.ErrorNumber = errorNumber;
+            env.ErrorMessage = errorMessage;
+            env.ErrorState = errorState;
             env.DidThrow = true;
 
             // make the error number, message, and state available via the error_number(), error_message(), and 
@@ -323,7 +341,23 @@ namespace SqlNotebookScript {
             }
         }
 
-        private T EvaluateExpr<T>(Ast.Expr expr, ScriptEnv env) {
+        private void ExecuteImportCsvStmt(Ast.ImportCsvStmt stmt, ScriptEnv env) {
+            try {
+                CsvImporter.Import(_notebook, env, this, stmt);
+            } catch (Exception ex) {
+                Throw(env, -1, ex.Message, -1);
+            }
+        }
+
+        private void ExecuteImportTxtStmt(Ast.ImportTxtStmt stmt, ScriptEnv env) {
+            try {
+                TxtImporter.Import(_notebook, env, this, stmt);
+            } catch (Exception ex) {
+                Throw(env, -1, ex.Message, -1);
+            }
+        }
+
+        public T EvaluateExpr<T>(Ast.Expr expr, ScriptEnv env) {
             var value = EvaluateExpr(expr, env);
             if (typeof(T).IsAssignableFrom(value.GetType())) {
                 return (T)value;
@@ -334,13 +368,21 @@ namespace SqlNotebookScript {
             }
         }
 
-        private object EvaluateExpr(Ast.Expr expr, ScriptEnv env) {
+        public object EvaluateExpr(Ast.Expr expr, ScriptEnv env) {
             var dt = _notebook.Query($"SELECT ({expr.Sql})", env.Vars);
             if (dt.Columns.Count == 1 && dt.Rows.Count == 1) {
                 return dt.Rows[0][0];
             } else {
                 throw new ScriptException(
                     $"Evaluation of expression \"{expr.Sql}\" did not produce a value.");
+            }
+        }
+
+        public string EvaluateIdentifierOrExpr(Ast.IdentifierOrExpr idOrExpr, ScriptEnv env) {
+            if (idOrExpr.Expr != null) {
+                return EvaluateExpr<string>(idOrExpr.Expr, env);
+            } else {
+                return idOrExpr.Identifier;
             }
         }
     }

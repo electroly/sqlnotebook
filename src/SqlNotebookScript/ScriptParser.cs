@@ -67,13 +67,17 @@ namespace SqlNotebookScript {
             var script = new Ast.Script { SourceToken = q.SourceToken };
             script.Block = new Ast.Block { SourceToken = q.SourceToken };
             while (!q.Eof()) {
-                script.Block.Statements.Add(ParseStmt(q));
+                var stmt = ParseStmt(q);
+                if (stmt != null) {
+                    script.Block.Statements.Add(stmt);
+                }
             }
             return script;
         }
 
-        private static Ast.Stmt ParseStmt(TokenQueue q) {
+        private static Ast.Stmt ParseStmt(TokenQueue q) { // or null
             switch (q.Peek(0)) {
+                case ";": q.Take(";"); return null;
                 case "declare": return ParseDeclareStmt(q);
                 case "while": return ParseWhileStmt(q);
                 case "break": return ParseBreakStmt(q);
@@ -85,6 +89,7 @@ namespace SqlNotebookScript {
                 case "set": return ParseSetStmt(q);
                 case "if": return ParseIfStmt(q);
                 case "begin": return q.Peek(1) == "try" ? ParseTryCatchStmt(q) : ParseSqlStmt(q);
+                case "import": return ParseImportStmt(q);
                 default: return ParseSqlStmt(q);
             }
         }
@@ -221,7 +226,10 @@ namespace SqlNotebookScript {
             q.Take("try");
             stmt.TryBlock = new Ast.Block { SourceToken = q.SourceToken };
             while (q.Peek() != "end") {
-                stmt.TryBlock.Statements.Add(ParseStmt(q));
+                var tryStmt = ParseStmt(q);
+                if (tryStmt != null) {
+                    stmt.TryBlock.Statements.Add(tryStmt);
+                }
             }
             q.Take("end");
             q.Take("try");
@@ -230,16 +238,141 @@ namespace SqlNotebookScript {
             q.Take("catch");
             stmt.CatchBlock = new Ast.Block { SourceToken = q.SourceToken };
             while (q.Peek() != "end") {
-                stmt.CatchBlock.Statements.Add(ParseStmt(q));
+                var catchStmt = ParseStmt(q);
+                if (catchStmt != null) {
+                    stmt.CatchBlock.Statements.Add(catchStmt);
+                }
             }
             q.Take("end");
             q.Take("catch");
             return stmt;
         }
 
+        private static Ast.Stmt ParseImportStmt(TokenQueue q) {
+            switch (q.Peek(1)) {
+                case "csv": return Check(q, ParseImportCsvStmt(q));
+                case "txt": case "text": return Check(q, ParseImportTxtStmt(q));
+                default: throw new SyntaxException($"Unknown import type: \"{q.Peek(1)}\"");
+            }
+        }
+
+        private static Ast.ImportCsvStmt ParseImportCsvStmt(TokenQueue q) { // or null
+            var stmt = new Ast.ImportCsvStmt { SourceToken = q.SourceToken };
+            var start = q.GetLocation();
+            if (!q.TakeMaybe("import")) { q.Jump(start); return null; }
+            if (!q.TakeMaybe("csv")) { q.Jump(start); return null; }
+            stmt.FilenameExpr = ParseExpr(q);
+            q.Take("into");
+            stmt.ImportTable = Check(q, ParseImportTable(q));
+            if (q.TakeMaybe("options")) {
+                stmt.OptionsList = Check(q, ParseOptionsList(q));
+            }
+            ConsumeSemicolon(q);
+            return stmt;
+        }
+        
+        private static Ast.ImportTable ParseImportTable(TokenQueue q) {
+            var n = new Ast.ImportTable { SourceToken = q.SourceToken };
+            n.TableName = Check(q, ParseIdentifierOrExpr(q));
+            if (q.Peek() == "(") {
+                q.Take("(");
+                do {
+                    n.ImportColumns.Add(Check(q, ParseImportColumn(q)));
+                } while (q.TakeMaybe(","));
+                q.Take(")");
+            }
+            return n;
+        }
+
+        private static Ast.ImportColumn ParseImportColumn(TokenQueue q) {
+            var n = new Ast.ImportColumn { SourceToken = q.SourceToken };
+            Check(q, n.ColumnName = ParseIdentifierOrExpr(q));
+            if (q.Peek() == "as") {
+                q.Take("as");
+                n.AsName = Check(q, ParseIdentifierOrExpr(q));
+            }
+            switch (q.Peek()) {
+                case "text": q.Take(); n.TypeConversion = Ast.TypeConversion.Text; break;
+                case "integer": q.Take(); n.TypeConversion = Ast.TypeConversion.Integer; break;
+                case "real": q.Take(); n.TypeConversion = Ast.TypeConversion.Real; break;
+                case "date": q.Take(); n.TypeConversion = Ast.TypeConversion.Date; break;
+                case "datetime": q.Take(); n.TypeConversion = Ast.TypeConversion.DateTime; break;
+                case "datetimeoffset": q.Take(); n.TypeConversion = Ast.TypeConversion.DateTimeOffset; break;
+            }
+            return n;
+        }
+
+        private static Ast.OptionsList ParseOptionsList(TokenQueue q) { // or null
+            var n = new Ast.OptionsList { SourceToken = q.SourceToken };
+            if (!q.TakeMaybe("(")) {
+                return null;
+            }
+            do {
+                var key = Check(q, ParseIdentifier(q)).ToLower();
+                q.Take(":");
+                var value = ParseExpr(q);
+                n.Options[key] = value;
+            } while (q.TakeMaybe(","));
+            q.Take(")");
+            return n;
+        }
+
+        private static Ast.IdentifierOrExpr ParseIdentifierOrExpr(TokenQueue q) { // or null
+            var token = q.PeekToken();
+            if (token.Type == TokenType.Id) {
+                q.Take();
+                return new Ast.IdentifierOrExpr { SourceToken = token, Identifier = token.GetUnescapedText() };
+            } else if (PeekExpr(q)) {
+                return new Ast.IdentifierOrExpr { SourceToken = token, Expr = ParseExpr(q) };
+            } else {
+                return null;
+            }
+        }
+
+        private static string ParseIdentifier(TokenQueue q) { // or null
+            var token = q.PeekToken();
+            if (token.Type == TokenType.Id) {
+                return q.Take().GetUnescapedText();
+            } else {
+                return null;
+            }
+        }
+
+        private static Ast.ImportTxtStmt ParseImportTxtStmt(TokenQueue q) { // or null
+            var stmt = new Ast.ImportTxtStmt { SourceToken = q.SourceToken };
+            var start = q.GetLocation();
+            if (!q.TakeMaybe("import")) { q.Jump(start); return null; }
+            if (!q.TakeMaybe("txt", "text")) { q.Jump(start); return null; }
+            stmt.FilenameExpr = ParseExpr(q);
+            q.Take("into");
+            stmt.TableName = Check(q, ParseIdentifierOrExpr(q));
+            if (q.Peek() == "(") {
+                q.Take("(");
+                stmt.LineNumberColumnName = Check(q, ParseIdentifierOrExpr(q));
+                q.Take(",");
+                stmt.TextColumnName = Check(q, ParseIdentifierOrExpr(q));
+                q.Take(")");
+            }
+            if (q.TakeMaybe("options")) {
+                stmt.OptionsList = Check(q, ParseOptionsList(q));
+            }
+            ConsumeSemicolon(q);
+            return stmt;
+        }
+
+        // ----
+
+        private static T Check<T>(TokenQueue q, T shouldBeNonNull) {
+            if (shouldBeNonNull == null) {
+                throw new SyntaxException(q);
+            } else {
+                return shouldBeNonNull;
+            }
+        }
+
         private static string ParseVariableName(TokenQueue q) {
             var t = q.PeekToken();
-            if (t != null && t.Type == TokenType.Variable && IsVariableName(t.GetUnescapedText())) {
+            if (t.Type == TokenType.Variable && IsVariableName(t.GetUnescapedText())) {
                 q.Take();
                 return t.GetUnescapedText();
             } else {
@@ -257,17 +390,23 @@ namespace SqlNotebookScript {
             if (q.Peek() == "begin") {
                 q.Take("begin");
                 while (q.Peek() != "end") {
-                    stmt.Statements.Add(ParseStmt(q));
+                    var blockStmt = ParseStmt(q);
+                    if (blockStmt != null) {
+                        stmt.Statements.Add(blockStmt);
+                    }
                 }
                 q.Take("end");
             } else {
-                stmt.Statements.Add(ParseStmt(q));
+                var blockStmt = ParseStmt(q);
+                if (blockStmt != null) {
+                    stmt.Statements.Add(blockStmt);
+                }
             }
             return stmt;
         }
 
         private static Ast.Stmt ParseSqlStmt(TokenQueue q) {
-            var n = q.Notebook;
+            /*var n = q.Notebook;
             var prefix = TrimOurKeywordsFromEnd(n.FindLongestValidStatementPrefix(q.ToString()));
 
             if (prefix.Any()) {
@@ -280,9 +419,9 @@ namespace SqlNotebookScript {
                 return new Ast.SqlStmt { Sql = prefix.Trim() };
             } else {
                 throw new SyntaxException(q);
-            }
+            }*/
 
-            /*var start = q.GetLocation();
+            var start = q.GetLocation();
             var tok = q.SourceToken;
             var result = SqlValidator.ReadStmt(q);
             if (result.IsValid) {
@@ -291,11 +430,11 @@ namespace SqlNotebookScript {
                 throw new SyntaxException(result.InvalidMessage);
             } else {
                 throw new SyntaxException(q);
-            }*/
+            }
         }
 
         private static Ast.Expr ParseExpr(TokenQueue q) {
-            var n = q.Notebook;
+            /*var n = q.Notebook;
             var selectStr = "SELECT ( ";
             var prefix = TrimOurKeywordsFromEnd(n.FindLongestValidStatementPrefix(selectStr + q.ToString()));
 
@@ -309,9 +448,9 @@ namespace SqlNotebookScript {
                 return new Ast.Expr { Sql = prefix.Substring(selectStr.Length).Trim() };
             } else {
                 throw new SyntaxException(q);
-            }
+            }*/
 
-            /*var start = q.GetLocation();
+            var start = q.GetLocation();
             var tok = q.SourceToken;
             var result = SqlValidator.ReadExpr(q);
             if (result.IsValid) {
@@ -320,10 +459,10 @@ namespace SqlNotebookScript {
                 throw new SyntaxException(result.InvalidMessage);
             } else {
                 throw new SyntaxException(q);
-            }*/
+            }
         }
 
-        private static string TrimOurKeywordsFromEnd(string sql) {
+        /*private static string TrimOurKeywordsFromEnd(string sql) {
             var lcSql = sql.ToLower().Trim();
             foreach (var x in new[] { "declare", "set", "if", "while", "break", "continue", "print", "exec", "execute", "return", "throw" }) {
                 if (lcSql.EndsWith($" {x}")) {
@@ -331,10 +470,10 @@ namespace SqlNotebookScript {
                 }
             }
             return sql;
-        }
+        }*/
 
         private static bool PeekExpr(TokenQueue q) {
-            var n = q.Notebook;
+            /*var n = q.Notebook;
             var selectStr = "SELECT ( ";
             var prefix = n.FindLongestValidStatementPrefix(selectStr + q.ToString());
 
@@ -342,13 +481,13 @@ namespace SqlNotebookScript {
                 return true;
             } else {
                 throw new SyntaxException(q);
-            }
+            }*/
 
-            /*var start = q.GetLocation();
+            var start = q.GetLocation();
             var tok = q.SourceToken;
             var result = SqlValidator.ReadExpr(q);
             q.Jump(start);
-            return result.IsValid;*/
+            return result.IsValid;
         }
 
         private static void ConsumeSemicolon(TokenQueue q) {
@@ -356,6 +495,5 @@ namespace SqlNotebookScript {
                 q.Take();
             }
         }
-
     }
 }

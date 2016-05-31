@@ -154,6 +154,7 @@
     <Compile Include="CueToolStripTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="DatabaseSchema.cs" />
     <Compile Include="ExportForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -169,25 +170,63 @@
     </Compile>
     <Compile Include="HelpServer.cs" />
     <Compile Include="IDocumentControl.cs" />
+    <Compile Include="ImportColumnsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImportColumnsControl.Designer.cs">
+      <DependentUpon>ImportColumnsControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ImportConnectionForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ImportConnectionForm.Designer.cs">
       <DependentUpon>ImportConnectionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImportCsvForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImportCsvForm.Designer.cs">
+      <DependentUpon>ImportCsvForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImportCsvOptionsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImportCsvOptionsControl.Designer.cs">
+      <DependentUpon>ImportCsvOptionsControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Importer.cs" />
+    <Compile Include="ImportPreviewControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImportPreviewControl.Designer.cs">
+      <DependentUpon>ImportPreviewControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ImportPreviewForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ImportPreviewForm.Designer.cs">
       <DependentUpon>ImportPreviewForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImportProcess.cs" />
     <Compile Include="ImportRenameTableForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ImportRenameTableForm.Designer.cs">
       <DependentUpon>ImportRenameTableForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImportTextFilePreviewControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImportTextFilePreviewControl.Designer.cs">
+      <DependentUpon>ImportTextFilePreviewControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoadingContainerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LoadingContainerControl.Designer.cs">
+      <DependentUpon>LoadingContainerControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MessageDialog.cs" />
     <Compile Include="NotebookManager.cs" />
     <Compile Include="NoteDocumentControl.cs">
       <SubType>UserControl</SubType>
@@ -203,7 +242,13 @@
     </Compile>
     <Compile Include="ConsoleRichTextBox.cs" />
     <Compile Include="RecentDataSources.cs" />
-    <Compile Include="Slot.cs" />
+    <Compile Include="Bind.cs" />
+    <Compile Include="SqlTextControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SqlTextControl.Designer.cs">
+      <DependentUpon>SqlTextControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="TableDocumentControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -248,14 +293,32 @@
     <EmbeddedResource Include="HelpDocumentControl.resx">
       <DependentUpon>HelpDocumentControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ImportColumnsControl.resx">
+      <DependentUpon>ImportColumnsControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ImportConnectionForm.resx">
       <DependentUpon>ImportConnectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportCsvForm.resx">
+      <DependentUpon>ImportCsvForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportCsvOptionsControl.resx">
+      <DependentUpon>ImportCsvOptionsControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportPreviewControl.resx">
+      <DependentUpon>ImportPreviewControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ImportPreviewForm.resx">
       <DependentUpon>ImportPreviewForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ImportRenameTableForm.resx">
       <DependentUpon>ImportRenameTableForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportTextFilePreviewControl.resx">
+      <DependentUpon>ImportTextFilePreviewControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoadingContainerControl.resx">
+      <DependentUpon>LoadingContainerControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -273,6 +336,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="QueryDocumentControl.resx">
       <DependentUpon>QueryDocumentControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SqlTextControl.resx">
+      <DependentUpon>SqlTextControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TableDocumentControl.resx">
       <DependentUpon>TableDocumentControl.cs</DependentUpon>
@@ -350,8 +416,6 @@
     <None Include="Resources\SqlNotebookIcon48.png" />
     <None Include="Resources\Help.css" />
     <None Include="Resources\ThirdPartyLicenses.html" />
-    <None Include="Resources\table.ico" />
-    <None Include="Resources\import-json-file.html" />
     <Content Include="SqlNotebookIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -360,7 +424,7 @@
 </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>"C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 SqlNotebook.exe
+    <PostBuildEvent>echo "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 SqlNotebook.exe
 
 </PostBuildEvent>
   </PropertyGroup>

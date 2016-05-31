@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SqlNotebook.Properties;
 using SqlNotebookCore;
+using SqlNotebookScript;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SqlNotebook {
@@ -70,10 +71,12 @@ namespace SqlNotebook {
                 var f = new WaitForm("SQL Notebook", $"Opening notebook \"{Path.GetFileNameWithoutExtension(filePath)}\"", () => {
                     _notebook = new Notebook(filePath, isNew);
                 });
-                f.StartPosition = FormStartPosition.CenterScreen;
-                f.ShowDialog();
-                if (f.ResultException != null) {
-                    throw f.ResultException;
+                using (f) {
+                    f.StartPosition = FormStartPosition.CenterScreen;
+                    f.ShowDialog();
+                    if (f.ResultException != null) {
+                        throw f.ResultException;
+                    }
                 }
             }
             _isNew = isNew;
@@ -109,10 +112,16 @@ namespace SqlNotebook {
                     _statusProgressbar.Style = ProgressBarStyle.Continuous;
                     _statusProgressbar.Style = ProgressBarStyle.Marquee;
                     _statusProgressbar.Visible = true;
+
+                    _cancelLnk.IsLink = true;
+                    _cancelLnk.Text = "Cancel";
+                    _cancelLnk.Visible = true;
                 } else if (oldValue && !newValue) {
+                    _notebook.EndUserCancel();
                     this.EndTaskbarProgress();
                     _statusProgressbar.Visible = false;
                     _statusLbl.Visible = false;
+                    _cancelLnk.Visible = false;
                 }
             };
 
@@ -255,10 +264,38 @@ namespace SqlNotebook {
         }
 
         private async void ImportFileMnu_Click(object sender, EventArgs e) {
-            try {
-                await _importer.DoFileImport();
-            } catch (Exception ex) {
-                ErrorBox("Import Error", ex.Message);
+            var openFrm = new OpenFileDialog {
+                AutoUpgradeEnabled = true,
+                CheckFileExists = true,
+                CheckPathExists = true,
+                DereferenceLinks = true,
+                Filter = string.Join("|",
+                    "All data files|*.csv;*.txt;*.xls;*.xlsx;*.json",
+                    "Comma-separated values|*.csv;*.txt",
+                    "Excel workbooks|*.xls;*.xlsx",
+                    "JSON files|*.json"),
+                SupportMultiDottedExtensions = true,
+                Title = "Import from File"
+            };
+            string filePath;
+            using (openFrm) {
+                if (openFrm.ShowDialog(this) == DialogResult.OK) {
+                    filePath = openFrm.FileName;
+                } else {
+                    return;
+                }
+            }
+
+            var extension = Path.GetExtension(filePath).ToLower();
+            switch (extension) {
+                case ".csv":
+                case ".txt":
+                    await CsvImportProcess.Start(this, filePath, _manager);
+                    break;
+
+                default:
+                    MessageDialog.ShowError(this, "Import Error", $"The file type \"{extension}\" is not supported.");
+                    break;
             }
         }
 
@@ -287,18 +324,7 @@ namespace SqlNotebook {
         }
 
         private void ErrorBox(string title, string message, string details = null) {
-            var d = new TaskDialog {
-                Caption = title,
-                InstructionText = message,
-                Text = details,
-                OwnerWindowHandle = Handle,
-                StartupLocation = TaskDialogStartupLocation.CenterOwner,
-                Icon = TaskDialogStandardIcon.Error,
-                StandardButtons = TaskDialogStandardButtons.Ok
-            };
-            using (d) {
-                d.Show();
-            }
+            MessageDialog.ShowError(this, title, message, details);
         }
 
         private void NewConsoleBtn_Click(object sender, EventArgs e) {
@@ -327,9 +353,7 @@ namespace SqlNotebook {
 
         public static bool IgnoreF5 = false;
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-            if (keyData == Keys.Escape) {
-                _notebook.Interrupt();
-            } else if (keyData == Keys.F5) {
+            if (keyData == Keys.F5) {
                 if (IgnoreF5) {
                     return true;
                 }
@@ -399,7 +423,7 @@ namespace SqlNotebook {
                     if (f.ShowDialog(this) == DialogResult.OK) {
                         new WaitForm("Save", "Saving your notebook...", () => {
                             _manager.SaveAs(f.FileName);
-                        }).ShowDialog(this);
+                        }).ShowDialogAndDispose(this);
                         _isNew = false;
                     } else {
                         return false;
@@ -408,7 +432,7 @@ namespace SqlNotebook {
             } else {
                 new WaitForm("Save", "Saving your notebook...", () => {
                     _manager.Save();
-                }).ShowDialog(this);
+                }).ShowDialogAndDispose(this);
             }
 
             // set this after doing the isNew stuff above so that if you click Save and then cancel the Save As dialog,
@@ -628,6 +652,12 @@ namespace SqlNotebook {
 
         private async void ViewDocMnu_Click(object sender, EventArgs e) {
             await OpenHelp($"/index.html");
+        }
+
+        private void CancelLnk_Click(object sender, EventArgs e) {
+            _notebook.BeginUserCancel();
+            _cancelLnk.IsLink = false;
+            _cancelLnk.Text = "Canceling...";
         }
     }
 }

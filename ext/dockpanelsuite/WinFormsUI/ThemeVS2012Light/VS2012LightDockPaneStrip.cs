@@ -135,7 +135,6 @@ namespace WeifenLuo.WinFormsUI.Docking
         private bool m_documentTabsOverflow = false;
         private static string m_toolTipSelect;
         private static string m_toolTipClose;
-        private bool m_closeButtonVisible = false;
         private Rectangle _activeClose;
         private int _selectMenuMargin = 5;
         private bool m_suspendDrag = false;
@@ -228,7 +227,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                     m_buttonClose = new InertButton(ImageButtonClose, ImageButtonClose);
                     m_toolTip.SetToolTip(m_buttonClose, ToolTipClose);
                     m_buttonClose.Click += new EventHandler(Close_Click);
-                    Controls.Add(m_buttonClose);
+                    //Controls.Add(m_buttonClose);
                 }
 
                 return m_buttonClose;
@@ -266,7 +265,9 @@ namespace WeifenLuo.WinFormsUI.Docking
                     m_buttonWindowList = new InertButton(ImageButtonWindowList, ImageButtonWindowListOverflow);
                     m_toolTip.SetToolTip(m_buttonWindowList, ToolTipSelect);
                     m_buttonWindowList.Click += new EventHandler(WindowList_Click);
-                    Controls.Add(m_buttonWindowList);
+                    var theme = (VS2012LightTheme)this.DockPane.DockPanel.Theme;
+                    if (theme.ShowWindowListButton)
+                        Controls.Add(m_buttonWindowList);
                 }
 
                 return m_buttonWindowList;
@@ -952,8 +953,10 @@ namespace WeifenLuo.WinFormsUI.Docking
                 width = sizeText.Width + DocumentIconWidth + DocumentIconGapLeft + DocumentIconGapRight + DocumentTextGapRight;
             else
                 width = sizeText.Width + DocumentIconGapLeft + DocumentTextGapRight;
-            
-            width += TAB_CLOSE_BUTTON_WIDTH;
+
+            if (content.DockHandler.CloseButtonVisible)
+                width += TAB_CLOSE_BUTTON_WIDTH;
+
             return width;
         }
 
@@ -1157,6 +1160,8 @@ namespace WeifenLuo.WinFormsUI.Docking
             if (tab.TabWidth == 0)
                 return;
 
+            var closeButtonVisible = tab.Content.DockHandler.CloseButtonVisible;
+
             var rectCloseButton = GetCloseButtonRect(rect);
             Rectangle rectIcon = new Rectangle(
                 rect.X + DocumentIconGapLeft,
@@ -1167,11 +1172,14 @@ namespace WeifenLuo.WinFormsUI.Docking
             {
                 rectText.X += rectIcon.Width + DocumentIconGapRight;
                 rectText.Y = rect.Y;
-                rectText.Width = rect.Width - rectIcon.Width - DocumentIconGapLeft - DocumentIconGapRight - DocumentTextGapRight - rectCloseButton.Width;
+                rectText.Width = rect.Width - rectIcon.Width - DocumentIconGapLeft - DocumentIconGapRight - DocumentTextGapRight;
                 rectText.Height = rect.Height;
             }
             else
-                rectText.Width = rect.Width - DocumentIconGapLeft - DocumentTextGapRight - rectCloseButton.Width;
+                rectText.Width = rect.Width - DocumentIconGapLeft - DocumentTextGapRight;
+
+            if (closeButtonVisible)
+                rectText.Width -= rectCloseButton.Width;
 
             Rectangle rectTab = DrawHelper.RtlTransform(this, rect);
             Rectangle rectBack = DrawHelper.RtlTransform(this, rect);
@@ -1196,13 +1204,15 @@ namespace WeifenLuo.WinFormsUI.Docking
                 {
                     g.FillRectangle(new SolidBrush(activeColor), rect);
                     TextRenderer.DrawText(g, tab.Content.DockHandler.TabText, TextFont, rectText, activeText, DocumentTextFormat);
-                    g.DrawImage(rectCloseButton == ActiveClose ? Resources.ActiveTabHover_Close : Resources.ActiveTab_Close, rectCloseButton);
+                    if (closeButtonVisible)
+                        g.DrawImage(rectCloseButton == ActiveClose ? Resources.ActiveTabHover_Close : Resources.ActiveTab_Close, rectCloseButton);
                 }
                 else
                 {
                     g.FillRectangle(new SolidBrush(lostFocusColor), rect);
                     TextRenderer.DrawText(g, tab.Content.DockHandler.TabText, TextFont, rectText, lostFocusText, DocumentTextFormat);
-                    g.DrawImage(rectCloseButton == ActiveClose ? Resources.LostFocusTabHover_Close : Resources.LostFocusTab_Close, rectCloseButton);
+                    if (closeButtonVisible)
+                        g.DrawImage(rectCloseButton == ActiveClose ? Resources.LostFocusTabHover_Close : Resources.LostFocusTab_Close, rectCloseButton);
                 }
             }
             else
@@ -1211,7 +1221,8 @@ namespace WeifenLuo.WinFormsUI.Docking
                 {
                     g.FillRectangle(new SolidBrush(mouseHoverColor), rect);
                     TextRenderer.DrawText(g, tab.Content.DockHandler.TabText, TextFont, rectText, activeText, DocumentTextFormat);
-                    g.DrawImage(rectCloseButton == ActiveClose ? Resources.InactiveTabHover_Close : Resources.ActiveTabHover_Close, rectCloseButton);
+                    if (closeButtonVisible)
+                        g.DrawImage(rectCloseButton == ActiveClose ? Resources.InactiveTabHover_Close : Resources.ActiveTabHover_Close, rectCloseButton);
                 }
                 else
                 {
@@ -1328,8 +1339,6 @@ namespace WeifenLuo.WinFormsUI.Docking
             else
             {
                 ButtonClose.Enabled = false;
-                m_closeButtonVisible = false;
-                ButtonClose.Visible = m_closeButtonVisible;
                 ButtonClose.RefreshChanges();
                 ButtonWindowList.RefreshChanges();
             }
@@ -1366,11 +1375,6 @@ namespace WeifenLuo.WinFormsUI.Docking
             int y = rectTabStrip.Y + DocumentButtonGapTop;
             Point point = new Point(x, y);
             ButtonClose.Bounds = DrawHelper.RtlTransform(this, new Rectangle(point, buttonSize));
-
-            // If the close button is not visible draw the window list button overtop.
-            // Otherwise it is drawn to the left of the close button.
-            if (m_closeButtonVisible)
-                point.Offset(-(DocumentButtonGapBetween + buttonWidth), 0);
 
             ButtonWindowList.Bounds = DrawHelper.RtlTransform(this, new Rectangle(point, buttonSize));
         }
