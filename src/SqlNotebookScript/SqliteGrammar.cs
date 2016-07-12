@@ -686,8 +686,19 @@ namespace SqlNotebookScript {
                 Or(
                     // <literal-value>
                     Prod(1, SubProd("literal-value")),
-                    // <bind-parameter>
-                    Prod(1, Id("variable name", allowVar: true)),
+                    // expr ::= function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* | "*" ] ")"
+                    Prod(2,
+                        Id("function name"),
+                        Tok(TokenType.Lp),
+                        Opt(Or(
+                            Prod(1, Tok(TokenType.Star)),
+                            Prod(2,
+                                Opt(Tok(TokenType.Distinct)),
+                                Lst(TokenType.Comma, 1, SubProd("expr"))
+                            )
+                        )),
+                        Tok(TokenType.Rp)
+                    ),
                     // [ [ database-name "." ] table-name "." ] column-name
                     Prod(2,
                         Opt(
@@ -696,19 +707,8 @@ namespace SqlNotebookScript {
                         ),
                         Id("column name")
                     ),
-                    // expr ::= function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* | "*" ] ")"
-                    Prod(2,
-                        Id("function name"),
-                        Tok(TokenType.Lp),
-                        Opt(Or(
-                            Prod(1, Tok(TokenType.Asterisk)),
-                            Prod(2,
-                                Opt(Tok(TokenType.Distinct)),
-                                Lst(TokenType.Comma, 1, SubProd("expr"))
-                            )
-                        )),
-                        Tok(TokenType.Rp)
-                    ),
+                    // <bind-parameter>
+                    Prod(1, Id("variable name", allowVar: true)),
                     // expr ::= "(" <expr> ")"
                     Prod(1,
                         Tok(TokenType.Lp),
