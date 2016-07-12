@@ -114,9 +114,9 @@ namespace SqlNotebookScript {
             return num;
         }
 
-        public static string GetInsertSql(string tableName, int numValues) {
-            return $"INSERT INTO {tableName.DoubleQuote()} VALUES " +
-                $"({string.Join(", ", Enumerable.Range(1, numValues).Select(x => $"?{x}"))})";
+        public static string GetInsertSql(string tableName, int numValues, int numRows = 1) {
+            var row = $"({string.Join(", ", Enumerable.Range(1, numValues).Select(x => $"?"))})";
+            return $"INSERT INTO {tableName.DoubleQuote()} VALUES " + string.Join(", ", Enumerable.Range(0, numRows).Select(x => row));
         }
 
         public static void VerifyColumnsExist(string[] colNames, string tableName, Notebook notebook) {

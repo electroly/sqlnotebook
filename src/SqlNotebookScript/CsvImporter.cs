@@ -95,16 +95,18 @@ namespace SqlNotebookScript {
 
         private void Import() {
             var filePath = GetFilePath();
-            using (var unbufferedParser = NewParser(filePath)) {
-                var parser = new TextFieldParserBuffer(unbufferedParser);
+            using (var stream = File.OpenRead(filePath))
+            using (var bufferedStream = new BufferedStream(stream))
+            using (var parser = NewParser(bufferedStream)) {
+                var parserBuffer = new TextFieldParserBuffer(parser);
 
                 // skip the specified number of initial file lines
-                for (int i = 0; i < _skipLines && !parser.EndOfData; i++) {
-                    parser.SkipLine();
+                for (int i = 0; i < _skipLines && !parserBuffer.EndOfData; i++) {
+                    parserBuffer.SkipLine();
                 }
 
                 // consume the header row if present.  invent generic column names if not.
-                var srcColNames = ReadColumnNames(parser);
+                var srcColNames = ReadColumnNames(parserBuffer);
 
                 // if the user specified a column list, then check to make sure all of the specified column names exist
                 // in the list we just read.  indices in dstColNodes/dstColNames match up with srcColNames, and some
@@ -123,22 +125,26 @@ namespace SqlNotebookScript {
                 Util.VerifyColumnsExist(dstColNames, dstTableName, _notebook);
 
                 // read the data rows and insert into the target table.
-                InsertData(parser, dstColNames, dstColNodes, dstTableName);
+                InsertData(parserBuffer, dstColNames, dstColNodes, dstTableName);
             }
         }
 
         private void InsertData(TextFieldParserBuffer parser, string[] dstColNames, Ast.ImportColumn[] dstColNodes, 
         string dstTableName) {
-            var insertSql = Util.GetInsertSql(dstTableName, dstColNames.Length);
-            var args = new object[dstColNames.Length];
+            var batchRowLimit = 10;
+            var insertSqlSingle = Util.GetInsertSql(dstTableName, dstColNames.Length, numRows: 1);
+            var insertSqlBatch = Util.GetInsertSql(dstTableName, dstColNames.Length, numRows: batchRowLimit);
+            var batchArgs = new object[batchRowLimit * dstColNames.Length];
+            int batchRowsSoFar = 0;
             for (int i = 0; (!_takeLines.HasValue || i < _takeLines.Value) && !parser.EndOfData; i++) {
                 var cells = parser.ReadFields();
+                var batchArgOffset = batchRowsSoFar * dstColNames.Length;
 
                 // 'cells' contains the raw string values from the CSV line, and may not be the same length as 'args'.
                 // 'args' is where we need to write the converted values. it contains the previous line's data so if
                 // this line is missing some columns, we need to null out the values from last time.
                 bool skipRow = false;
-                for (int j = 0; !skipRow && j < Math.Min(cells.Length, args.Length); j++) {
+                for (int j = 0; !skipRow && j < Math.Min(cells.Length, dstColNames.Length); j++) {
                     var text = cells[j];
                     var typeConversion = dstColNodes[j].TypeConversion ?? Ast.TypeConversion.Text;
 
@@ -199,7 +205,7 @@ namespace SqlNotebookScript {
                     }
 
                     if (!error || _ifConversionFails == IfConversionFails.ImportAsText) {
-                        args[j] = converted;
+                        batchArgs[batchArgOffset + j] = converted;
                     } else if (_ifConversionFails == IfConversionFails.SkipRow) {
                         skipRow = true;
                     } else if (_ifConversionFails == IfConversionFails.Abort) {
@@ -209,14 +215,26 @@ namespace SqlNotebookScript {
                     }
                 }
 
-                if (!skipRow) {
-                    // null out remaining columns that are not present in this row
-                    for (int j = cells.Length; j < args.Length; j++) {
-                        args[j] = null;
-                    }
-
-                    _notebook.Execute(insertSql, args);
+                if (skipRow) {
+                    // clear out this row, throwing out what we just did
+                    Array.Clear(batchArgs, batchArgOffset, dstColNames.Length);
+                } else {
+                    // this row is good to go, so include it in the batch
+                    batchRowsSoFar++;
                 }
+
+                if (batchRowsSoFar == batchRowLimit) {
+                    _notebook.Execute(insertSqlBatch, batchArgs);
+                    Array.Clear(batchArgs, 0, batchArgs.Length);
+                    batchRowsSoFar = 0;
+                }
+            }
+
+            // if the number of rows isn't a multiple of the batch size, then we have some left over
+            var singleArgs = new object[dstColNames.Length];
+            for (int i = 0; i < batchRowsSoFar; i++) {
+                Array.Copy(batchArgs, i * dstColNames.Length, singleArgs, 0, dstColNames.Length);
+                _notebook.Execute(insertSqlSingle, singleArgs);
             }
         }
 
@@ -345,10 +363,10 @@ namespace SqlNotebookScript {
             }
         }
 
-        private TextFieldParser NewParser(string filePath) {
+        private TextFieldParser NewParser(Stream stream) {
             var x = _fileEncoding == null
-                ? new TextFieldParser(filePath)
-                : new TextFieldParser(filePath, _fileEncoding, false);
+                ? new TextFieldParser(stream)
+                : new TextFieldParser(stream, _fileEncoding, false);
             x.HasFieldsEnclosedInQuotes = true;
             x.SetDelimiters(",");
             return x;

@@ -342,7 +342,7 @@ namespace SqlNotebook {
                     var dt = await Task.Run(() => {
                         var tableName = Guid.NewGuid().ToString();
                         try {
-                            _manager.ExecuteScript(GetImportSql(1000, tableName));
+                            _manager.ExecuteScript(GetImportSql(100, tableName));
                             return _manager.ExecuteScript($"SELECT * FROM {tableName.DoubleQuote()}").DataTables[0];
                         } finally {
                             _manager.ExecuteScript($"DROP TABLE IF EXISTS {tableName.DoubleQuote()}");
