@@ -305,7 +305,7 @@ namespace SqlNotebook {
             var tableName = temporaryTableName ?? _optionsControl.TargetTableName.Value;
 
             return
-                (transaction ? "BEGIN;\r\n" : "") +
+                (transaction ? "BEGIN;\r\n\r\n" : "") +
                 (drop ? $"DROP TABLE IF EXISTS {_optionsControl.TargetTableName.Value.DoubleQuote()};\r\n\r\n" : "") +
                 $"IMPORT CSV\r\n" +
                 $"    {_filePath.SingleQuote()}\r\n" +
@@ -321,7 +321,7 @@ namespace SqlNotebook {
                 $"    FILE_ENCODING: {_optionsControl.FileEncoding.Value},\r\n" +
                 $"    IF_CONVERSION_FAILS: {(int)_optionsControl.IfConversionFails.Value}\r\n" +
                 $");\r\n" +
-                (transaction ? "COMMIT;\r\n" : "");
+                (transaction ? "\r\nCOMMIT;\r\n" : "");
         }
 
         private async Task UpdateScriptAndOutputPreview() {

@@ -15,6 +15,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SqlNotebookScript;
@@ -44,7 +45,7 @@ namespace SqlNotebook {
                 importSql = f.GeneratedImportSql;
             }
 
-            manager.PushStatus("Importing...");
+            manager.PushStatus($"Importing \"{Path.GetFileName(filePath)}\"...");
             try {
                 await Task.Run(() => manager.ExecuteScript(importSql));
                 manager.Rescan();
@@ -55,6 +56,7 @@ namespace SqlNotebook {
                 return false;
             }
 
+            manager.SetDirty();
             manager.PopStatus();
             return true;
         }
