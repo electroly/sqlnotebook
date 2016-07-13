@@ -129,5 +129,14 @@ namespace SqlNotebookScript {
                 }
             }
         }
+
+        public static string GetErrorMessage(this Exception self) {
+            var uncaught = self as UncaughtErrorScriptException;
+            if (uncaught != null) {
+                return uncaught.ErrorMessage.ToString();
+            } else {
+                return self.Message;
+            }
+        }
     }
 }

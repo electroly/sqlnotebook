@@ -294,7 +294,7 @@ namespace SqlNotebook {
             }
         }
 
-        private string GetImportSql(int takeRows = -1, string temporaryTableName = null) {
+        private string GetImportSql(int takeRows = -1, string temporaryTableName = null, bool transaction = true) {
             var columnList =
                 from col in _columnsControl.ImportColumns
                 let renamed = col.SourceName != col.TargetName && col.TargetName != null
@@ -305,6 +305,7 @@ namespace SqlNotebook {
             var tableName = temporaryTableName ?? _optionsControl.TargetTableName.Value;
 
             return
+                (transaction ? "BEGIN;\r\n" : "") +
                 (drop ? $"DROP TABLE IF EXISTS {_optionsControl.TargetTableName.Value.DoubleQuote()};\r\n\r\n" : "") +
                 $"IMPORT CSV\r\n" +
                 $"    {_filePath.SingleQuote()}\r\n" +
@@ -312,14 +313,15 @@ namespace SqlNotebook {
                 string.Join(",\r\n", columnList) + "\r\n" +
                 $")\r\n" +
                 $"OPTIONS (\r\n" +
-                $"    SKIP_LINES: {_optionsControl.SkipLines.Value},\r\n" + 
+                $"    SKIP_LINES: {_optionsControl.SkipLines.Value},\r\n" +
                 (takeRows >= 0 ? $"TAKE_LINES: {takeRows}," : "") +
                 (temporaryTableName != null ? "TEMPORARY_TABLE: 1," : "") +
                 $"    HEADER_ROW: {(_optionsControl.HasColumnHeaders.Value ? 1 : 0)},\r\n" +
                 $"    TRUNCATE_EXISTING_TABLE: {(truncate ? 1 : 0)},\r\n" +
                 $"    FILE_ENCODING: {_optionsControl.FileEncoding.Value},\r\n" +
                 $"    IF_CONVERSION_FAILS: {(int)_optionsControl.IfConversionFails.Value}\r\n" +
-                $");\r\n";
+                $");\r\n" +
+                (transaction ? "COMMIT;\r\n" : "");
         }
 
         private async Task UpdateScriptAndOutputPreview() {
@@ -342,7 +344,7 @@ namespace SqlNotebook {
                     var dt = await Task.Run(() => {
                         var tableName = Guid.NewGuid().ToString();
                         try {
-                            _manager.ExecuteScript(GetImportSql(100, tableName));
+                            _manager.ExecuteScript(GetImportSql(100, tableName, false));
                             return _manager.ExecuteScript($"SELECT * FROM {tableName.DoubleQuote()}").DataTables[0];
                         } finally {
                             _manager.ExecuteScript($"DROP TABLE IF EXISTS {tableName.DoubleQuote()}");

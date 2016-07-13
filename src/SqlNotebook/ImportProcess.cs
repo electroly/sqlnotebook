@@ -48,16 +48,14 @@ namespace SqlNotebook {
             try {
                 await Task.Run(() => manager.ExecuteScript(importSql));
                 manager.Rescan();
-            } catch (UncaughtErrorScriptException ex) {
-                MessageDialog.ShowError(owner, "Import Error", "The import failed.", ex.ErrorMessage.ToString());
-                return false;
             } catch (Exception ex) {
-                MessageDialog.ShowError(owner, "Import Error", "The import failed.", ex.Message);
-                return false;
-            } finally {
                 manager.PopStatus();
+                await Task.Run(() => manager.ExecuteScript("ROLLBACK"));
+                MessageDialog.ShowError(owner, "Import Error", "The import failed.", ex.GetErrorMessage());
+                return false;
             }
 
+            manager.PopStatus();
             return true;
         }
     }
