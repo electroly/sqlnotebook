@@ -55,9 +55,9 @@ namespace SqlNotebookScript {
             }
         }
 
-        public static Result ReadStmt(TokenQueue q) {
+        public static Result ReadStmt(TokenQueue q, string rootProdName = "sql-stmt") {
             var startingLocation = q.GetLocation();
-            var matchResult = Matcher.Match("sql-stmt", q);
+            var matchResult = Matcher.Match(rootProdName, q);
             var numTokens = q.GetLocation() - startingLocation;
             if (matchResult.IsMatch) {
                 return new Result(numTokens);

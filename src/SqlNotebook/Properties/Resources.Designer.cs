@@ -195,6 +195,28 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+        ///&lt;title&gt;EXPORT TXT Statement&lt;/title&gt;
+        ///
+        ///&lt;style&gt;
+        ///img.diagram { border: 1px solid white; }
+        ///a img.diagram:hover { border: 1px solid #4078c0; }
+        ///div.figure { text-align: center; }
+        ///div.caption { font-size: 8pt; font-style: italic; color: gray; }
+        ///ul.args li, ul.opts li, ol.examples li { margin-bottom: 15px; }
+        ///ul.enum { margin-top: 5px; }
+        ///ul.enum li { margin-bottom: 0px; }
+        ///&lt;/style&gt;
+        ///
+        ///&lt;h1&gt;&lt;code&gt;EXPORT&lt;/code&gt; &lt;code&gt;TXT&lt;/code&gt; Statement&lt;/h1&gt;        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ExportTxtStmtHtml {
+            get {
+                return ResourceManager.GetString("ExportTxtStmtHtml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Folder {

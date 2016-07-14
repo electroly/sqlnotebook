@@ -52,6 +52,7 @@
     <Compile Include="SqliteGrammar.cs" />
     <Compile Include="SqlValidator.cs" />
     <Compile Include="TokenQueue.cs" />
+    <Compile Include="TxtExporter.cs" />
     <Compile Include="TxtImporter.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>

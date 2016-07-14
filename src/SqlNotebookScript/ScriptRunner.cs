@@ -128,7 +128,8 @@ namespace SqlNotebookScript {
                 [typeof(Ast.RethrowStmt)] = (s, e) => ExecuteRethrowStmt((Ast.RethrowStmt)s, e),
                 [typeof(Ast.TryCatchStmt)] = (s, e) => ExecuteTryCatchStmt((Ast.TryCatchStmt)s, e),
                 [typeof(Ast.ImportCsvStmt)] = (s, e) => ExecuteImportCsvStmt((Ast.ImportCsvStmt)s, e),
-                [typeof(Ast.ImportTxtStmt)] = (s, e) => ExecuteImportTxtStmt((Ast.ImportTxtStmt)s, e)
+                [typeof(Ast.ImportTxtStmt)] = (s, e) => ExecuteImportTxtStmt((Ast.ImportTxtStmt)s, e),
+                [typeof(Ast.ExportTxtStmt)] = (s, e) => ExecuteExportTxtStmt((Ast.ExportTxtStmt)s, e)
             };
         }
 
@@ -352,6 +353,14 @@ namespace SqlNotebookScript {
         private void ExecuteImportTxtStmt(Ast.ImportTxtStmt stmt, ScriptEnv env) {
             try {
                 TxtImporter.Import(_notebook, env, this, stmt);
+            } catch (Exception ex) {
+                Throw(env, -1, ex.Message, -1);
+            }
+        }
+
+        private void ExecuteExportTxtStmt(Ast.ExportTxtStmt stmt, ScriptEnv env) {
+            try {
+                TxtExporter.Export(_notebook, env, this, stmt);
             } catch (Exception ex) {
                 Throw(env, -1, ex.Message, -1);
             }

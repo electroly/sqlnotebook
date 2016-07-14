@@ -96,7 +96,8 @@ namespace SqlNotebook {
                     new { Path = ".\\import-csv-file.html", Html = Resources.ImportCsvFileHtml },
                     new { Path = ".\\import-json-file.html", Html = Resources.ImportJsonFileHtml },
                     new { Path = ".\\import-csv-stmt.html", Html = Resources.ImportCsvStmtHtml },
-                    new { Path = ".\\import-txt-stmt.html", Html = Resources.ImportTxtStmtHtml }
+                    new { Path = ".\\import-txt-stmt.html", Html = Resources.ImportTxtStmtHtml },
+                    new { Path = ".\\export-txt-stmt.html", Html = Resources.ExportTxtStmtHtml }
                 };
                 foreach (var sqlNbFile in sqlNbFiles) {
                     string text, title;

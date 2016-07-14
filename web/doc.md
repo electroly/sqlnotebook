@@ -10,6 +10,10 @@ SQL Notebook ships with an in-app searchable help system that includes all of th
 - Programming Reference
 	- [Structured Programming in SQL Notebook](extended-syntax.html)
 	- [Error Functions](error-functions.html)
+    - [`IMPORT CSV` Statement](import-csv-stmt.html)
+    - [`IMPORT TXT` Statement](import-txt-stmt.html)
+    - [`EXPORT TXT` Statement](import-txt-stmt.html)
+
 <br><br>
 
 ### SQLite Documentation

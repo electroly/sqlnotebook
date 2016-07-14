@@ -90,6 +90,7 @@ namespace SqlNotebookScript {
                 case "if": return ParseIfStmt(q);
                 case "begin": return q.Peek(1) == "try" ? ParseTryCatchStmt(q) : ParseSqlStmt(q);
                 case "import": return ParseImportStmt(q);
+                case "export": return ParseExportStmt(q);
                 default: return ParseSqlStmt(q);
             }
         }
@@ -256,6 +257,13 @@ namespace SqlNotebookScript {
             }
         }
 
+        private static Ast.Stmt ParseExportStmt(TokenQueue q) {
+            switch (q.Peek(1)) {
+                case "txt": case "text": return Check(q, ParseExportTxtStmt(q));
+                default: throw new SyntaxException($"Unknown export type: \"{q.Peek(1)}\"");
+            }
+        }
+
         private static Ast.ImportCsvStmt ParseImportCsvStmt(TokenQueue q) { // or null
             var stmt = new Ast.ImportCsvStmt { SourceToken = q.SourceToken };
             var start = q.GetLocation();
@@ -360,6 +368,23 @@ namespace SqlNotebookScript {
             return stmt;
         }
 
+        private static Ast.ExportTxtStmt ParseExportTxtStmt(TokenQueue q) { // or null
+            var stmt = new Ast.ExportTxtStmt { SourceToken = q.SourceToken };
+            var start = q.GetLocation();
+            if (!q.TakeMaybe("export")) { q.Jump(start); return null; }
+            if (!q.TakeMaybe("txt", "text")) { q.Jump(start); return null; }
+            stmt.FilenameExpr = ParseExpr(q);
+            q.Take("from");
+            q.Take("(");
+            stmt.SelectStmt = ParseSqlStmt(q, "select-stmt");
+            q.Take(")");
+            if (q.TakeMaybe("options")) {
+                stmt.OptionsList = Check(q, ParseOptionsList(q));
+            }
+            ConsumeSemicolon(q);
+            return stmt;
+        }
+
         // ----
 
         private static T Check<T>(TokenQueue q, T shouldBeNonNull) {
@@ -405,25 +430,10 @@ namespace SqlNotebookScript {
             return stmt;
         }
 
-        private static Ast.Stmt ParseSqlStmt(TokenQueue q) {
-            /*var n = q.Notebook;
-            var prefix = TrimOurKeywordsFromEnd(n.FindLongestValidStatementPrefix(q.ToString()));
-
-            if (prefix.Any()) {
-                // consume the corresponding valid tokens from the queue
-                int len = 0;
-                while (len < prefix.Length) {
-                    len += q.Take().Text.Length + 1;
-                }
-
-                return new Ast.SqlStmt { Sql = prefix.Trim() };
-            } else {
-                throw new SyntaxException(q);
-            }*/
-
+        private static Ast.SqlStmt ParseSqlStmt(TokenQueue q, string rootProdName = "sql-stmt") {
             var start = q.GetLocation();
             var tok = q.SourceToken;
-            var result = SqlValidator.ReadStmt(q);
+            var result = SqlValidator.ReadStmt(q, rootProdName);
             if (result.IsValid) {
                 return new Ast.SqlStmt { Sql = q.Substring(start, result.NumValidTokens), SourceToken = tok };
             } else if (result.InvalidMessage != null) {
@@ -434,22 +444,6 @@ namespace SqlNotebookScript {
         }
 
         private static Ast.Expr ParseExpr(TokenQueue q) {
-            /*var n = q.Notebook;
-            var selectStr = "SELECT ( ";
-            var prefix = TrimOurKeywordsFromEnd(n.FindLongestValidStatementPrefix(selectStr + q.ToString()));
-
-            if (prefix.Length > selectStr.Length) {
-                // consume the corresponding valid tokens from the queue
-                int len = selectStr.Length;
-                while (len < prefix.Length) {
-                    len += q.Take().Text.Length + 1;
-                }
-
-                return new Ast.Expr { Sql = prefix.Substring(selectStr.Length).Trim() };
-            } else {
-                throw new SyntaxException(q);
-            }*/
-
             var start = q.GetLocation();
             var tok = q.SourceToken;
             var result = SqlValidator.ReadExpr(q);
@@ -462,27 +456,7 @@ namespace SqlNotebookScript {
             }
         }
 
-        /*private static string TrimOurKeywordsFromEnd(string sql) {
-            var lcSql = sql.ToLower().Trim();
-            foreach (var x in new[] { "declare", "set", "if", "while", "break", "continue", "print", "exec", "execute", "return", "throw" }) {
-                if (lcSql.EndsWith($" {x}")) {
-                    return sql.Substring(0, lcSql.Length - x.Length - 1);
-                }
-            }
-            return sql;
-        }*/
-
         private static bool PeekExpr(TokenQueue q) {
-            /*var n = q.Notebook;
-            var selectStr = "SELECT ( ";
-            var prefix = n.FindLongestValidStatementPrefix(selectStr + q.ToString());
-
-            if (prefix.Length > selectStr.Length) {
-                return true;
-            } else {
-                throw new SyntaxException(q);
-            }*/
-
             var start = q.GetLocation();
             var tok = q.SourceToken;
             var result = SqlValidator.ReadExpr(q);
