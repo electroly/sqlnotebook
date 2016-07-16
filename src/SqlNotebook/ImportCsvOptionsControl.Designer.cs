@@ -86,6 +86,8 @@
             // 
             // _tableCmb
             // 
+            this._tableCmb.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this._tableCmb.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this._tableCmb.FormattingEnabled = true;
             this._tableCmb.Location = new System.Drawing.Point(146, 154);
             this._tableCmb.Name = "_tableCmb";

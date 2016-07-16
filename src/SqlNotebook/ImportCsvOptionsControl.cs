@@ -48,10 +48,14 @@ namespace SqlNotebook {
         public Slot<ImportTableExistsOption> IfTableExists { get; } = new Slot<ImportTableExistsOption>();
         public Slot<ImportConversionFailOption> IfConversionFails { get; } = new Slot<ImportConversionFailOption>();
 
-        public ImportCsvOptionsControl() {
+        public ImportCsvOptionsControl(DatabaseSchema schema) {
             InitializeComponent();
             _fileInputTitle.MakeDivider();
             _tableOutputTitle.MakeDivider();
+
+            foreach (var tableName in schema.Tables.Keys) {
+                _tableCmb.Items.Add(tableName);
+            }
 
             // rename some misleadingly named system encodings
             var customEncodingNames = new Dictionary<int, string> {

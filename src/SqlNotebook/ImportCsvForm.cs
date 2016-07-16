@@ -76,7 +76,7 @@ namespace SqlNotebook {
             };
             _dockPanelContainer.Controls.Add(_dockPanel);
 
-            _optionsControl = new ImportCsvOptionsControl { Dock = DockStyle.Fill };
+            _optionsControl = new ImportCsvOptionsControl(schema) { Dock = DockStyle.Fill };
             {
                 var dc = new UserControlDockContent("Import Options", _optionsControl, DockAreas.DockTop);
                 dc.CloseButtonVisible = false;
