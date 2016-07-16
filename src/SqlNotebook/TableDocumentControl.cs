@@ -38,7 +38,7 @@ namespace SqlNotebook {
                 Exception exception = null;
                 SimpleDataTable sdt = null;
                 
-                manager.PushStatus("Reading table data. Press ESC to cancel.");
+                manager.PushStatus("Reading table data...");
                 await Task.Run(() => {
                     try {
                         var n = _manager.Notebook;

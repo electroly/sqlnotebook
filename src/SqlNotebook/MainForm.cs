@@ -571,7 +571,7 @@ namespace SqlNotebook {
                 filePath = GetTemporaryExportFilePath();
             }
 
-            _manager.PushStatus("Running the selected script. Press ESC to cancel.");
+            _manager.PushStatus("Running the selected script...");
             try {
                 string sql;
                 if (item.Type == NotebookItemType.Script) {

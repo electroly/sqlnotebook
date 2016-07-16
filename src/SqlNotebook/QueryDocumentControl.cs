@@ -216,7 +216,7 @@ namespace SqlNotebook {
         private async Task ExecuteCore(string sql) {
             ScriptOutput output = null;
             Exception exception = null;
-            _manager.PushStatus("Running your script. Press ESC to cancel.");
+            _manager.PushStatus("Running your script...");
             await Task.Run(() => {
                 try {
                     output = _manager.ExecuteScript(sql);

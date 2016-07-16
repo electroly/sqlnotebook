@@ -154,7 +154,7 @@ namespace SqlNotebook {
                 });
             };
 
-            _manager.PushStatus("Importing the selected tables. Press ESC to cancel.");
+            _manager.PushStatus("Importing the selected tables...");
             Exception exception = null;
             await Task.Run(() => {
                 try {

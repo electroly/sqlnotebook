@@ -125,7 +125,7 @@ namespace SqlNotebook {
 
             ScriptOutput output = null;
             Exception exception = null;
-            _manager.PushStatus("Running your console command. Press ESC to cancel.");
+            _manager.PushStatus("Running your console command...");
             await Task.Run(() => {
                 try {
                     output = _manager.ExecuteScript(sql);
