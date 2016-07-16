@@ -185,8 +185,8 @@ namespace SqlNotebook {
             foreach (var detail in details) {
                 var detailLvi = new ListViewItem(_detailsLst.Groups[0]);
                 detailLvi.Text = detail.Item1;
-                detailLvi.SubItems.Add(detail.Item2);
-                if (detail.Item2.Contains("PRIMARY KEY")) {
+                detailLvi.SubItems.Add(detail.Item2.Replace(" PRIMARY KEY", ""));
+                if (detail.Item2.Contains(" PRIMARY KEY")) {
                     detailLvi.ImageIndex = 6;
                 }
                 _detailsLst.Items.Add(detailLvi);

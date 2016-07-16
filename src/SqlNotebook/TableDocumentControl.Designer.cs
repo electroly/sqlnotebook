@@ -27,9 +27,9 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this._scriptBtn = new System.Windows.Forms.ToolStripButton();
-            this._grid = new System.Windows.Forms.DataGridView();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this._grid = new System.Windows.Forms.DataGridView();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._grid)).BeginInit();
             this.SuspendLayout();
@@ -59,6 +59,17 @@
             this._scriptBtn.Text = "Convert to script";
             this._scriptBtn.Click += new System.EventHandler(this.ScriptBtn_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 29);
+            // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(129, 26);
+            this.toolStripLabel1.Text = "Showing top 1000 rows";
+            // 
             // _grid
             // 
             this._grid.AllowUserToAddRows = false;
@@ -70,6 +81,7 @@
             this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._grid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this._grid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(229)))), ((int)(((byte)(229)))));
             this._grid.Location = new System.Drawing.Point(0, 29);
             this._grid.Name = "_grid";
             this._grid.ReadOnly = true;
@@ -85,17 +97,6 @@
             this._grid.ShowRowErrors = false;
             this._grid.Size = new System.Drawing.Size(745, 610);
             this._grid.TabIndex = 4;
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 29);
-            // 
-            // toolStripLabel1
-            // 
-            this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(129, 26);
-            this.toolStripLabel1.Text = "Showing top 1000 rows";
             // 
             // TableDocumentControl
             // 
