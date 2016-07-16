@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using SqlNotebookScript;
 
@@ -27,6 +28,13 @@ namespace SqlNotebook {
             }
         }
 
+        public static void BindAny(IReadOnlyList<Slot<bool>> slots, Action<bool> handler) {
+            Action wrapper = () => handler(slots.Any(x => x.Value));
+            foreach (var slot in slots) {
+                slot.ChangeNoData += wrapper;
+            }
+        }
+        
         public static void BindValue(this NumericUpDown self, Slot<int> slot) {
             slot.Value = (int)self.Value;
             slot.Change += (old, val) => {

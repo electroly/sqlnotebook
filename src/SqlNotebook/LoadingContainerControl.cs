@@ -15,6 +15,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Windows.Forms;
+using SqlNotebookScript;
 
 namespace SqlNotebook {
     public partial class LoadingContainerControl : UserControl {
@@ -23,6 +24,10 @@ namespace SqlNotebook {
         private string _errorMessage = null;
 
         public string ErrorMessage => _errorMessage;
+
+        public Slot<bool> IsLoading { get; } = new Slot<bool>();
+        public Slot<bool> IsError { get; } = new Slot<bool>();
+        public Slot<bool> IsOverlayVisible { get; } = new Slot<bool>();
 
         public Control ContainedControl {
             get {
@@ -57,9 +62,16 @@ namespace SqlNotebook {
         }
 
         private void ShowHideLoadingLbl() {
-            _loadingLbl.Text = _errorMessage ?? "Please wait...";
-            _loadingLbl.Visible = _errorMessage != null || _loadCount > 0;
-            _loadingLbl.BringToFront();
+            bool loading = _loadCount > 0;
+            bool error = _errorMessage != null;
+
+            _loadingLbl.Text = error ? _errorMessage : "Please wait...";
+            _loadingLbl.Visible = error || loading;
+            _loadingLbl.BringToFront(); // harmless if the label is invisible
+
+            IsLoading.Value = loading;
+            IsError.Value = error;
+            IsOverlayVisible.Value = error || loading;
         }
 
         public LoadingContainerControl() {

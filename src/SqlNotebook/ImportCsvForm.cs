@@ -148,6 +148,9 @@ namespace SqlNotebook {
             Bind.OnChange(new Slot[] { o.IfConversionFails, _columnsControl.Change, _optionsError, _columnsError,
                 _inputPreviewError },
                 async (sender, e) => await UpdateScriptAndOutputPreview());
+            Bind.BindAny(new[] { _columnsLoadControl.IsOverlayVisible, _inputPreviewLoadControl.IsOverlayVisible,
+                _outputPreviewLoadControl.IsOverlayVisible, _sqlLoadControl.IsOverlayVisible },
+                x => _okBtn.Enabled = !x);
 
             Text = $"Import {Path.GetFileName(_filePath)}";
             o.TargetTableName.Value = Path.GetFileNameWithoutExtension(_filePath);
