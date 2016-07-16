@@ -75,9 +75,9 @@ Notebook::!Notebook() {
 }
 
 void Notebook::Init() {
-    auto filePathWstr = Util::WStr(_workingCopyFilePath);
+    auto filePathCstr = Util::CStr(_workingCopyFilePath);
     sqlite3* sqlite;
-    SqliteCall(sqlite3_open16(filePathWstr.c_str(), &sqlite));
+    SqliteCall(sqlite3_open(filePathCstr.c_str(), &sqlite));
     _sqlite = sqlite;
 
     InstallPgModule();
@@ -120,11 +120,11 @@ static IReadOnlyDictionary<String^, Object^>^ ToLowercaseKeys(IReadOnlyDictionar
 }
 
 void Notebook::Execute(String^ sql, IReadOnlyDictionary<String^, Object^>^ args) {
-    QueryCore(sql, ToLowercaseKeys(args), nullptr, false);
+    QueryCore(sql, ToLowercaseKeys(args), nullptr, false, _sqlite, gcnew Func<bool>(this, &Notebook::GetCancelling));
 }
 
 void Notebook::Execute(String^ sql, IReadOnlyList<Object^>^ args) {
-    QueryCore(sql, nullptr, args, false);
+    QueryCore(sql, nullptr, args, false, _sqlite, gcnew Func<bool>(this, &Notebook::GetCancelling));
 }
 
 SimpleDataTable^ Notebook::Query(String^ sql) {
@@ -132,11 +132,34 @@ SimpleDataTable^ Notebook::Query(String^ sql) {
 }
 
 SimpleDataTable^ Notebook::Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args) {
-    return QueryCore(sql, ToLowercaseKeys(args), nullptr, true);
+    return QueryCore(sql, ToLowercaseKeys(args), nullptr, true, _sqlite,
+        gcnew Func<bool>(this, &Notebook::GetCancelling));
 }
 
 SimpleDataTable^ Notebook::Query(String^ sql, IReadOnlyList<Object^>^ args) {
-    return QueryCore(sql, nullptr, args, true);
+    return QueryCore(sql, nullptr, args, true, _sqlite, gcnew Func<bool>(this, &Notebook::GetCancelling));
+}
+
+// opens a new connection if another query is in progress.  the SQL command must be pure SQLite and must contain 
+// a read-only query.
+SimpleDataTable^ Notebook::SpecialReadOnlyQuery(String^ sql, IReadOnlyDictionary<String^, Object^>^ args) {
+    if (Monitor::TryEnter(_lock)) {
+        try {
+            return Query(sql, args);
+        } finally {
+            Monitor::Exit(_lock);
+        }
+    } else {
+        // another operation is in progress, so open a new connection for this query.
+        auto filePathCstr = Util::CStr(_workingCopyFilePath);
+        sqlite3* tempSqlite;
+        SqliteCall(sqlite3_open_v2(filePathCstr.c_str(), &tempSqlite, SQLITE_OPEN_READONLY, nullptr));
+        try {
+            return QueryCore(sql, args, nullptr, true, tempSqlite, nullptr);
+        } finally {
+            sqlite3_close_v2(tempSqlite);
+        }
+    }
 }
 
 Object^ Notebook::QueryValue(String^ sql) {
@@ -162,8 +185,8 @@ Object^ Notebook::QueryValue(String^ sql, IReadOnlyList<Object^>^ args) {
 }
 
 SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
-        IReadOnlyList<Object^>^ orderedArgs, bool returnResult) {
-    if (_cancelling) {
+IReadOnlyList<Object^>^ orderedArgs, bool returnResult, sqlite3* db, Func<bool>^ cancelling) {
+    if (cancelling != nullptr && cancelling()) {
         throw gcnew OperationCanceledException();
     }
 
@@ -174,13 +197,13 @@ SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, O
         auto sqlWstr = Util::WStr(sql);
         auto sqlWstrLenB = sqlWstr.size() * sizeof(wchar_t);
         const void* unusedTail = nullptr;
-        SqliteCall(sqlite3_prepare16_v2(_sqlite, sqlWstr.c_str(), (int)sqlWstrLenB, &stmt, &unusedTail));
+        g_SqliteCall(db, sqlite3_prepare16_v2(db, sqlWstr.c_str(), (int)sqlWstrLenB, &stmt, &unusedTail));
         if (!stmt) {
             throw gcnew Exception("Invalid statement.");
         }
 
         // bind the arguments
-        SqliteCall(sqlite3_clear_bindings(stmt));
+        g_SqliteCall(db, sqlite3_clear_bindings(stmt));
         int paramCount = sqlite3_bind_parameter_count(stmt);
         for (int i = 1; i <= paramCount; i++) {
             Object^ value;
@@ -198,27 +221,27 @@ SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, O
             }
 
             if (value == nullptr) {
-                SqliteCall(sqlite3_bind_null(stmt, i));
+                g_SqliteCall(db, sqlite3_bind_null(stmt, i));
             } else {
                 auto type = value->GetType();
                 if (type == DBNull::typeid) {
-                    SqliteCall(sqlite3_bind_null(stmt, i));
+                    g_SqliteCall(db, sqlite3_bind_null(stmt, i));
                 } else if (type == Int32::typeid) {
                     int intValue = safe_cast<Int32>(value);
-                    SqliteCall(sqlite3_bind_int(stmt, i, intValue));
+                    g_SqliteCall(db, sqlite3_bind_int(stmt, i, intValue));
                 } else if (type == Int64::typeid) {
                     int64_t longValue = safe_cast<Int64>(value);
-                    SqliteCall(sqlite3_bind_int64(stmt, i, longValue));
+                    g_SqliteCall(db, sqlite3_bind_int64(stmt, i, longValue));
                 } else if (type == Double::typeid) {
                     double dblValue = safe_cast<Double>(value);
-                    SqliteCall(sqlite3_bind_double(stmt, i, dblValue));
+                    g_SqliteCall(db, sqlite3_bind_double(stmt, i, dblValue));
                 } else {
                     auto strValue = Util::WStr(value->ToString());
                     // sqlite will hang onto the string after the call returns so make a copy.  it
                     // will call our callback (we just use "free") to dispose of this copy.
                     auto strCopy = _wcsdup(strValue.c_str());
                     auto lenB = strValue.size() * sizeof(wchar_t);
-                    SqliteCall(sqlite3_bind_text16(stmt, i, strCopy, (int)lenB, free));
+                    g_SqliteCall(db, sqlite3_bind_text16(stmt, i, strCopy, (int)lenB, free));
                 }
             }
         }
@@ -237,7 +260,7 @@ SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, O
         // read the results
         auto rows = gcnew List<array<Object^>^>();
         while (true) {
-            if (_cancelling) {
+            if (cancelling != nullptr && cancelling()) {
                 throw gcnew OperationCanceledException();
             }
 
@@ -281,7 +304,7 @@ SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, O
             } else if (ret == SQLITE_INTERRUPT) {
                 throw gcnew UserCancelException(L"SQL query canceled by the user.");
             } else if (ret == SQLITE_ERROR) {
-                SqliteCall(SQLITE_ERROR);
+                g_SqliteCall(db, SQLITE_ERROR);
             } else {
                 throw gcnew InvalidOperationException(String::Format(L"Unrecognized result ({0}) from sqlite3_step().", ret));
             }
@@ -544,6 +567,10 @@ IReadOnlyDictionary<String^, String^>^ Notebook::GetScripts() {
 
 bool Notebook::IsTransactionActive() {
     return sqlite3_get_autocommit(_sqlite) == 0;
+}
+
+bool Notebook::GetCancelling() {
+    return _cancelling;
 }
 
 SimpleDataTable::SimpleDataTable(IReadOnlyList<String^>^ columns, IReadOnlyList<array<Object^>^>^ rows) {

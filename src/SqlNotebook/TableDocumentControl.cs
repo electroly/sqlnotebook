@@ -15,6 +15,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -34,6 +35,8 @@ namespace SqlNotebook {
             _tableName = tableName;
             _mainForm = mainForm;
 
+            _grid.EnableDoubleBuffering();
+
             Load += async (sender, e) => {
                 Exception exception = null;
                 SimpleDataTable sdt = null;
@@ -42,9 +45,9 @@ namespace SqlNotebook {
                 await Task.Run(() => {
                     try {
                         var n = _manager.Notebook;
-                        n.Invoke(() => {
-                            sdt = n.Query($"SELECT * FROM {_tableName.DoubleQuote()} LIMIT 1000");
-                        });
+                        sdt = n.SpecialReadOnlyQuery(
+                            $"SELECT * FROM {_tableName.DoubleQuote()} LIMIT 1000",
+                            new Dictionary<string, object>());
                     } catch (Exception ex) {
                         exception = ex;
                     }

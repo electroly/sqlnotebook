@@ -302,6 +302,7 @@ namespace SqlNotebookCore {
         property NotebookUserData^ UserData { NotebookUserData^ get() { return _userData; } }
         IReadOnlyDictionary<String^, String^>^ GetScripts(); // lowercase script name -> script code
         static IReadOnlyList<Token^>^ Tokenize(String^ input);
+        SimpleDataTable^ SpecialReadOnlyQuery(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
 
         // all of these methods must be run on the sqlite thread
         void Execute(String^ sql);
@@ -331,14 +332,15 @@ namespace SqlNotebookCore {
         bool _cancelling;
         static Object^ _tokenizeLock = gcnew Object();
 
-        SimpleDataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
-            IReadOnlyList<Object^>^ orderedArgs, bool returnResult);
+        static SimpleDataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
+            IReadOnlyList<Object^>^ orderedArgs, bool returnResult, sqlite3* db, Func<bool>^ cancelling);
         void InstallPgModule();
         void InstallMsModule();
         void InstallMyModule();
         void InstallErrorAccessorFunctions();
         void SqliteCall(int result);
         void Init();
+        bool GetCancelling();
     };
 
     public ref class NotebookTempFiles sealed abstract {

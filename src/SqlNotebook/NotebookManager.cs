@@ -141,14 +141,14 @@ namespace SqlNotebook {
             var items = new List<NotebookItem>();
 
             if (!notebookItemsOnly) {
-                Notebook.Invoke(() => {
-                    // tables and views
-                    var dt = Notebook.Query("SELECT name, type FROM sqlite_master WHERE type = 'table' OR type = 'view' ");
-                    for (int i = 0; i < dt.Rows.Count; i++) {
-                        var type = (string)dt.Get(i, "type") == "view" ? NotebookItemType.View : NotebookItemType.Table;
-                        items.Add(new NotebookItem(type, (string)dt.Get(i, "name")));
-                    }
-                });
+                // tables and views
+                var dt = Notebook.SpecialReadOnlyQuery(
+                    "SELECT name, type FROM sqlite_master WHERE type = 'table' OR type = 'view' ",
+                    new Dictionary<string, object>());
+                for (int i = 0; i < dt.Rows.Count; i++) {
+                    var type = (string)dt.Get(i, "type") == "view" ? NotebookItemType.View : NotebookItemType.Table;
+                    items.Add(new NotebookItem(type, (string)dt.Get(i, "name")));
+                }
             }
 
             // notes, consoles, and scripts
@@ -252,23 +252,21 @@ namespace SqlNotebook {
         }
 
         public void DeleteItem(NotebookItem item) {
-            Notebook.Invoke(() => {
-                switch (item.Type) {
-                    case NotebookItemType.Console:
-                    case NotebookItemType.Script:
-                    case NotebookItemType.Note:
-                        Notebook.UserData.Items.RemoveWhere(x => x.Name == item.Name);
-                        break;
+            switch (item.Type) {
+                case NotebookItemType.Console:
+                case NotebookItemType.Script:
+                case NotebookItemType.Note:
+                    Notebook.UserData.Items.RemoveWhere(x => x.Name == item.Name);
+                    break;
 
-                    case NotebookItemType.Table:
-                        Notebook.Execute($"DROP TABLE {item.Name.DoubleQuote()}");
-                        break;
+                case NotebookItemType.Table:
+                    Notebook.Invoke(() => Notebook.Execute($"DROP TABLE {item.Name.DoubleQuote()}"));
+                    break;
 
-                    case NotebookItemType.View:
-                        Notebook.Execute($"DROP VIEW {item.Name.DoubleQuote()}");
-                        break;
-                }
-            });
+                case NotebookItemType.View:
+                    Notebook.Invoke(() => Notebook.Execute($"DROP VIEW {item.Name.DoubleQuote()}"));
+                    break;
+            }
             SetDirty();
         }
 

@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -160,17 +159,14 @@ namespace SqlNotebook {
 
             try {
                 if (lvi.Group.Name == "Table" || lvi.Group.Name == "View") {
-                    if (!_operationInProgress) {
-                        n.Invoke(() => {
-                            var dt = n.Query($"PRAGMA table_info ({lvi.Text.DoubleQuote()})");
-                            for (int i = 0; i < dt.Rows.Count; i++) {
-                                var name = (string)dt.Get(i, "name");
-                                var info = (string)dt.Get(i, "type");
-                                info += Convert.ToInt32(dt.Get(i, "notnull")) != 0 ? " NOT NULL" : "";
-                                info += Convert.ToInt32(dt.Get(i, "pk")) != 1 ? " PRIMARY KEY" : "";
-                                details.Add(Tuple.Create(name, info));
-                            }
-                        });
+                    var dt = n.SpecialReadOnlyQuery($"PRAGMA table_info ({lvi.Text.DoubleQuote()})", 
+                        new Dictionary<string, object>());
+                    for (int i = 0; i < dt.Rows.Count; i++) {
+                        var name = (string)dt.Get(i, "name");
+                        var info = (string)dt.Get(i, "type");
+                        info += Convert.ToInt32(dt.Get(i, "notnull")) != 0 ? " NOT NULL" : "";
+                        info += Convert.ToInt32(dt.Get(i, "pk")) != 1 ? " PRIMARY KEY" : "";
+                        details.Add(Tuple.Create(name, info));
                     }
                 } else if (lvi.Group.Name == "Script") {
                     var paramRec = n.UserData.ScriptParameters.FirstOrDefault(x => x.ScriptName == notebookItemName);
