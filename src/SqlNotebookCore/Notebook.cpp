@@ -76,7 +76,7 @@ Notebook::!Notebook() {
 
 void Notebook::Init() {
     auto filePathCstr = Util::CStr(_workingCopyFilePath);
-    sqlite3* sqlite;
+    sqlite3* sqlite = nullptr;
     SqliteCall(sqlite3_open(filePathCstr.c_str(), &sqlite));
     _sqlite = sqlite;
 
@@ -152,8 +152,8 @@ SimpleDataTable^ Notebook::SpecialReadOnlyQuery(String^ sql, IReadOnlyDictionary
     } else {
         // another operation is in progress, so open a new connection for this query.
         auto filePathCstr = Util::CStr(_workingCopyFilePath);
-        sqlite3* tempSqlite;
-        SqliteCall(sqlite3_open_v2(filePathCstr.c_str(), &tempSqlite, SQLITE_OPEN_READONLY, nullptr));
+        sqlite3* tempSqlite = nullptr;
+        g_SqliteCall(tempSqlite, sqlite3_open_v2(filePathCstr.c_str(), &tempSqlite, SQLITE_OPEN_READONLY, nullptr));
         try {
             return QueryCore(sql, args, nullptr, true, tempSqlite, nullptr);
         } finally {
@@ -327,8 +327,12 @@ void Notebook::SqliteCall(int result) {
 void g_SqliteCall(sqlite3* sqlite, int result) {
     // handle the errcode by throwing if non-SQLITE_OK
     if (result != SQLITE_OK) {
-        auto msg = Util::Str((const wchar_t*)sqlite3_errmsg16(sqlite));
-        throw gcnew SqliteException(msg);
+        if (sqlite == nullptr) {
+            throw gcnew SqliteException(String::Format("SQLite error {0}", result));
+        } else {
+            auto msg = Util::Str((const wchar_t*)sqlite3_errmsg16(sqlite));
+            throw gcnew SqliteException(msg);
+        }
     }
 }
 
