@@ -52,6 +52,8 @@ namespace SqlNotebook {
             _mainForm = mainForm;
             _operationInProgress = operationInProgress;
 
+            _grid.EnableDoubleBuffering();
+
             _scintilla = new Scintilla {
                 Dock = DockStyle.Fill,
                 Lexer = ScintillaNET.Lexer.Container,
