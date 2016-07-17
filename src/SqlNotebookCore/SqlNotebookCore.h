@@ -337,10 +337,12 @@ namespace SqlNotebookCore {
         void InstallPgModule();
         void InstallMsModule();
         void InstallMyModule();
-        void InstallErrorAccessorFunctions();
+        void InstallCustomFunctions();
         void SqliteCall(int result);
         void Init();
         bool GetCancelling();
+        void RegisterCustomFunction(const char* functionName, int numArgs,
+            void(*func)(sqlite3_context*, int, sqlite3_value **));
     };
 
     public ref class NotebookTempFiles sealed abstract {

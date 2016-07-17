@@ -208,12 +208,6 @@
   <data name="LinkGo32Png" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\link_go32.png.binary;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="DocExtendedSyntaxHtml" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\doc\extended-syntax.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="ErrorFunctionsHtml" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\doc\error-functions.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="HelpIco" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\help.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -223,25 +217,10 @@
   <data name="TableIco" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\table.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ImportCsvFileHtml" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\doc\import-csv-file.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="ImportJsonFileHtml" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\doc\import-json-file.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="PageWhiteTextIco" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\page_white_text.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="TableImportIco" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\table_import.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ImportCsvStmtHtml" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\doc\import-csv-stmt.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="ImportTxtStmtHtml" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\doc\import-txt-stmt.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="ExportTxtStmtHtml" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\doc\export-txt-stmt.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

@@ -161,62 +161,6 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
-        ///&lt;title&gt;Structured Programming in SQL Notebook&lt;/title&gt;
-        ///
-        ///&lt;h1&gt;Structured Programming in SQL Notebook&lt;/h1&gt;
-        ///&lt;p&gt;
-        ///    SQL Notebook provides a basic set of structured programming constructs that can be used from scripts and consoles.  They are roughly modeled on T-SQL&apos;s control flow syntax.  Semicolons are not required, but may be optionally included at the end of statements.  The use of semicolons may help resolve parsing ambiguities.
-        ///&lt;/p&gt;
-        /// [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string DocExtendedSyntaxHtml {
-            get {
-                return ResourceManager.GetString("DocExtendedSyntaxHtml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
-        ///&lt;title&gt;Error Functions&lt;/title&gt;
-        ///
-        ///&lt;h1&gt;Error Functions&lt;/h1&gt;
-        ///&lt;p&gt;
-        ///	SQL Notebook provides structured error handling using &lt;a href=&quot;extended-syntax.html#try&quot;&gt;TRY/CATCH&lt;/a&gt; statements.  Inside the &lt;tt&gt;CATCH&lt;/tt&gt; block, the following functions may be used to retrieve the error information provided by the &lt;tt&gt;THROW&lt;/tt&gt; statement.
-        ///&lt;/p&gt;
-        ///&lt;ul&gt;
-        ///    &lt;li&gt;&lt;a href=&quot;#error_number&quot;&gt;ERROR_NUMBER() Function&lt;/a&gt;&lt;/li&gt;
-        ///    &lt;li&gt;&lt;a href=&quot;#error_message&quot;&gt;ERRO [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string ErrorFunctionsHtml {
-            get {
-                return ResourceManager.GetString("ErrorFunctionsHtml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
-        ///&lt;title&gt;EXPORT TXT Statement&lt;/title&gt;
-        ///
-        ///&lt;style&gt;
-        ///img.diagram { border: 1px solid white; }
-        ///a img.diagram:hover { border: 1px solid #4078c0; }
-        ///div.figure { text-align: center; }
-        ///div.caption { font-size: 8pt; font-style: italic; color: gray; }
-        ///ul.args li, ul.opts li, ol.examples li { margin-bottom: 15px; }
-        ///ul.enum { margin-top: 5px; }
-        ///ul.enum li { margin-bottom: 0px; }
-        ///&lt;/style&gt;
-        ///
-        ///&lt;h1&gt;&lt;code&gt;EXPORT&lt;/code&gt; &lt;code&gt;TXT&lt;/code&gt; Statement&lt;/h1&gt;        /// [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string ExportTxtStmtHtml {
-            get {
-                return ResourceManager.GetString("ExportTxtStmtHtml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Folder {
@@ -311,92 +255,6 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("Hourglass", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
-        ///&lt;title&gt;How to Import a CSV File&lt;/title&gt;
-        ///
-        ///&lt;style&gt;
-        ///img.diagram { border: 1px solid white; }
-        ///a img.diagram:hover { border: 1px solid #4078c0; }
-        ///div.figure { text-align: center; }
-        ///div.caption { font-size: 8pt; font-style: italic; color: gray; }
-        ///&lt;/style&gt;
-        ///
-        ///&lt;h1&gt;How to Import a CSV File&lt;/h1&gt;
-        ///&lt;p&gt;
-        ///CSV (comma-separated value) is a common tabular data exchange format.  In order to import such a file into SQL Notebook, the file must have a &lt; [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string ImportCsvFileHtml {
-            get {
-                return ResourceManager.GetString("ImportCsvFileHtml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
-        ///&lt;title&gt;IMPORT CSV Statement&lt;/title&gt;
-        ///
-        ///&lt;style&gt;
-        ///img.diagram { border: 1px solid white; }
-        ///a img.diagram:hover { border: 1px solid #4078c0; }
-        ///div.figure { text-align: center; }
-        ///div.caption { font-size: 8pt; font-style: italic; color: gray; }
-        ///ul.args li, ul.opts li, ol.examples li { margin-bottom: 15px; }
-        ///ul.enum { margin-top: 5px; }
-        ///ul.enum li { margin-bottom: 0px; }
-        ///&lt;/style&gt;
-        ///
-        ///&lt;h1&gt;&lt;code&gt;IMPORT&lt;/code&gt; &lt;code&gt;CSV&lt;/code&gt; Statement&lt;/h1&gt;        /// [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string ImportCsvStmtHtml {
-            get {
-                return ResourceManager.GetString("ImportCsvStmtHtml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
-        ///&lt;title&gt;How to Import a JSON File&lt;/title&gt;
-        ///
-        ///&lt;style&gt;
-        ///img.diagram { border: 1px solid white; }
-        ///a img.diagram:hover { border: 1px solid #4078c0; }
-        ///div.figure { text-align: center; }
-        ///div.caption { font-size: 8pt; font-style: italic; color: gray; }
-        ///&lt;/style&gt;
-        ///
-        ///&lt;h1&gt;How to Import a JSON File&lt;/h1&gt;
-        ///&lt;p&gt;
-        ///JSON (JavaScript Object Notation) is a hierarchical data exchange format commonly used in web services.  The hierarchical object structure do [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string ImportJsonFileHtml {
-            get {
-                return ResourceManager.GetString("ImportJsonFileHtml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
-        ///&lt;title&gt;IMPORT TXT Statement&lt;/title&gt;
-        ///
-        ///&lt;style&gt;
-        ///img.diagram { border: 1px solid white; }
-        ///a img.diagram:hover { border: 1px solid #4078c0; }
-        ///div.figure { text-align: center; }
-        ///div.caption { font-size: 8pt; font-style: italic; color: gray; }
-        ///ul.args li, ul.opts li, ol.examples li { margin-bottom: 15px; }
-        ///ul.enum { margin-top: 5px; }
-        ///ul.enum li { margin-bottom: 0px; }
-        ///&lt;/style&gt;
-        ///
-        ///&lt;h1&gt;&lt;code&gt;IMPORT&lt;/code&gt; &lt;code&gt;TXT&lt;/code&gt; Statement&lt;/h1&gt;        /// [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string ImportTxtStmtHtml {
-            get {
-                return ResourceManager.GetString("ImportTxtStmtHtml", resourceCulture);
             }
         }
         

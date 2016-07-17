@@ -56,16 +56,18 @@ namespace SqlNotebook {
         }
 
         private void InitNewNotebook(string filePath) {
-            string sqliteDocAmalgamation = ReadSqliteDocAmalgamationFromResources();
+            var sqliteDocAmalgamation = ReadSqliteDocAmalgamationFromResources();
 
-            var fileSeparator = $"{Environment.NewLine}--[file separator]--{Environment.NewLine}";
-            var files =
-                (from file in sqliteDocAmalgamation.Split(new[] { fileSeparator }, StringSplitOptions.None)
+            var sqliteFileSeparator = $"{Environment.NewLine}--[file separator]--{Environment.NewLine}";
+            var sqliteFiles =
+                (from file in sqliteDocAmalgamation.SqliteDoc.Split(new[] { sqliteFileSeparator }, StringSplitOptions.None)
                  let fileParts = file.Split(new[] { '\n' }, 2)
                  select new { RelativeFilePath = fileParts[0].Trim(), Content = fileParts[1] })
                 .ToList();
 
             _notebook.Invoke(() => {
+                _notebook.Execute("BEGIN");
+
                 _notebook.Execute(
                     @"CREATE TABLE docs (
                             id INTEGER PRIMARY KEY,
@@ -76,8 +78,8 @@ namespace SqlNotebook {
                         )");
                 _notebook.Execute("CREATE VIRTUAL TABLE docs_fts USING fts5 (id, title, text)");
                 int i = 0;
-                for (; i < files.Count; i++) {
-                    var file = files[i];
+                for (; i < sqliteFiles.Count; i++) {
+                    var file = sqliteFiles[i];
                     string text, title;
                     ParseHtml(file.Content, out text, out title);
 
@@ -90,21 +92,15 @@ namespace SqlNotebook {
                 }
 
                 // SQL Notebook help files
-                var sqlNbFiles = new[] {
-                    new { Path = ".\\extended-syntax.html", Html = Resources.DocExtendedSyntaxHtml },
-                    new { Path = ".\\error-functions.html", Html = Resources.ErrorFunctionsHtml },
-                    new { Path = ".\\import-csv-file.html", Html = Resources.ImportCsvFileHtml },
-                    new { Path = ".\\import-json-file.html", Html = Resources.ImportJsonFileHtml },
-                    new { Path = ".\\import-csv-stmt.html", Html = Resources.ImportCsvStmtHtml },
-                    new { Path = ".\\import-txt-stmt.html", Html = Resources.ImportTxtStmtHtml },
-                    new { Path = ".\\export-txt-stmt.html", Html = Resources.ExportTxtStmtHtml }
-                };
-                foreach (var sqlNbFile in sqlNbFiles) {
+                foreach (var pair in sqliteDocAmalgamation.SqlNotebookDoc) {
+                    var filename = pair.Key;
+                    var content = pair.Value;
+
                     string text, title;
-                    ParseHtml(sqlNbFile.Html, out text, out title);
+                    ParseHtml(content, out text, out title);
 
                     _notebook.Execute("INSERT INTO docs VALUES (@id, @path, @book, @title, @html)", new Dictionary<string, object> {
-                        ["@id"] = i, ["@path"] = sqlNbFile.Path, ["@book"] = "SQL Notebook Help", ["@title"] = title, ["@html"] = sqlNbFile.Html
+                        ["@id"] = i, ["@path"] = $".\\{filename}", ["@book"] = "SQL Notebook Help", ["@title"] = title, ["@html"] = content
                     });
                     _notebook.Execute("INSERT INTO docs_fts VALUES (@id, @title, @text)", new Dictionary<string, object> {
                         ["@id"] = i, ["@title"] = title, ["@text"] = text
@@ -112,18 +108,38 @@ namespace SqlNotebook {
                     i++;
                 }
 
+                _notebook.Execute("COMMIT");
                 _notebook.Execute("ANALYZE");
                 _notebook.Save();
             });
         }
 
-        private static string ReadSqliteDocAmalgamationFromResources() {
+        private sealed class DocAmalgamation {
+            public string SqliteDoc { get; set; }
+            public Dictionary<string, string> SqlNotebookDoc { get; set; } = new Dictionary<string, string>();
+        }
+
+        private static DocAmalgamation ReadSqliteDocAmalgamationFromResources() {
+            var doc = new DocAmalgamation();
+
             using (var zipStream = new MemoryStream(Resources.SqliteDocZip))
-            using (var archive = new ZipArchive(zipStream))
-            using (var txtStream = archive.Entries[0].Open())
-            using (var reader = new StreamReader(txtStream, Encoding.UTF8)) {
-                return reader.ReadToEnd();
+            using (var archive = new ZipArchive(zipStream)) {
+                foreach (var entry in archive.Entries) {
+                    string content;
+                    using (var txtStream = entry.Open())
+                    using (var reader = new StreamReader(txtStream, Encoding.UTF8)) {
+                        content = reader.ReadToEnd();
+                    }
+
+                    if (entry.Name == "sqlite-doc.txt") {
+                        doc.SqliteDoc = content;
+                    } else {
+                        doc.SqlNotebookDoc[entry.Name] = content;
+                    }
+                }
             }
+
+            return doc;
         }
 
         private static void ParseHtml(string html, out string text, out string title) {
@@ -196,8 +212,6 @@ namespace SqlNotebook {
                     bytes = Resources.PageWhiteTextPng;
                 } else if (rawUrl == "/link.png") {
                     bytes = Resources.LinkGo32Png;
-                } else if (rawUrl == "/extended-syntax.html") {
-                    bytes = Encoding.UTF8.GetBytes(header + Resources.DocExtendedSyntaxHtml);
                 } else if (rawUrl.StartsWith("/search?q=")) {
                     var keyword = rawUrl.Substring("/search?q=".Length);
                     bytes = Encoding.UTF8.GetBytes(header + BuildSearchHtml(keyword));

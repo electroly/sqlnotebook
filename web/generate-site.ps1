@@ -54,11 +54,10 @@ WriteFile .\site\video-help.html (FormatMdPage "Example Video: Help Viewer" .\vi
 
 # html-based pages
 WriteFile .\site\error-functions.html (FormatPage "Error Functions" (ReadFile ..\doc\error-functions.html) "Documentation of SQL Notebook's error reporting SQL functions.")
+WriteFile .\site\export-txt-stmt.html (FormatPage "EXPORT TXT Statement" (ReadFile ..\doc\export-txt-stmt.html) "The EXPORT TXT statement allows a query to be written as plain text to a file on disk.")
 WriteFile .\site\extended-syntax.html (FormatPage "Structured Programming in SQL Notebook" (ReadFile ..\doc\extended-syntax.html) "Documentation of SQL Notebook's structured programing syntax.")
 WriteFile .\site\import-csv-file.html (FormatPage "How to Import a CSV File" (ReadFile ..\doc\import-csv-file.html) "A tutorial for importing comma-separated value (CSV) files into SQL Notebook.")
-WriteFile .\site\import-json-file.html (FormatPage "How to Import a JSON File" (ReadFile ..\doc\import-json-file.html) "A tutorial for importing JSON (JavaScript Object Notation) files into SQL Notebook.")
-
-
 WriteFile .\site\import-csv-stmt.html (FormatPage "IMPORT CSV Statement" (ReadFile ..\doc\import-csv-stmt.html) "The IMPORT CSV statement allows comma-separated data to be imported into notebook tables.")
+WriteFile .\site\import-json-file.html (FormatPage "How to Import a JSON File" (ReadFile ..\doc\import-json-file.html) "A tutorial for importing JSON (JavaScript Object Notation) files into SQL Notebook.")
 WriteFile .\site\import-txt-stmt.html (FormatPage "IMPORT TXT Statement" (ReadFile ..\doc\import-txt-stmt.html) "The IMPORT TXT statement allows plain text files to be read line-by-line into a notebook table.")
-WriteFile .\site\export-txt-stmt.html (FormatPage "EXPORT TXT Statement" (ReadFile ..\doc\export-txt-stmt.html) "The EXPORT TXT statement allows a query to be written as plain text to a file on disk.")
+WriteFile .\site\read-file-func.html (FormatPage "READ_FILE Function" (ReadFile ..\doc\read-file-func.html) "The READ_FILE function reads a plain text file into a string.")

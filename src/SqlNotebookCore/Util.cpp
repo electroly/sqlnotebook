@@ -19,6 +19,7 @@
 using namespace System::Runtime::InteropServices;
 using namespace SqlNotebookCore;
 
+// .NET string -> UTF-16 C++ string
 std::wstring Util::WStr(String^ mstr) {
     auto utf16 = Marshal::StringToHGlobalUni(mstr);
     std::wstring wstr((const wchar_t*)utf16.ToPointer());
@@ -26,6 +27,7 @@ std::wstring Util::WStr(String^ mstr) {
     return wstr;
 }
 
+// .NET string -> UTF-8 C++ string
 std::string Util::CStr(String^ mstr) {
     auto utf16 = Marshal::StringToHGlobalUni(mstr);
     auto utf16Str = (const wchar_t*)utf16.ToPointer();
@@ -47,10 +49,12 @@ std::string Util::CStr(String^ mstr) {
     return cstr;
 }
 
+// UTF-16 C string -> .NET string
 String^ Util::Str(const wchar_t* utf16Str) {
     return Marshal::PtrToStringUni(IntPtr((void*)utf16Str));
 }
 
+// UTF-8 C string -> .NET string
 String^ Util::Str(const char* utf8Str) {
     int nDataLen = (int)strlen(utf8Str) + 1;
     int bufferSizeChars = MultiByteToWideChar(CP_UTF8, 0, utf8Str, nDataLen, nullptr, 0);
