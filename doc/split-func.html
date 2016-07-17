@@ -1,0 +1,52 @@
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>SPLIT Function</title>
+
+<style>
+img.diagram { border: 1px solid white; }
+a img.diagram:hover { border: 1px solid #4078c0; }
+div.figure { text-align: center; }
+div.caption { font-size: 8pt; font-style: italic; color: gray; }
+ul.args li, ul.opts li, ol.examples li { margin-bottom: 15px; }
+ul.enum { margin-top: 5px; }
+ul.enum li { margin-bottom: 0px; }
+</style>
+
+<h1><code>SPLIT</code> Function</h1>
+<p>
+Splits a string by a caller-specified separator and returns one of the substrings.
+</p>
+
+<h2>Syntax</h2>
+<blockquote>
+<code>SPLIT(<i>text</i>, <i>separator</i>, <i>which-substring</i>)</code>
+</blockquote>
+
+<h2>Arguments</h2>
+<ul class="args">
+    <li>
+        <b>text</b> (string expression)<br>
+        The string to split up.
+    </li>
+    <li>
+        <b>separator</b> (string expression)<br>
+        The string that separates each substring in <i>text</i>.
+    </li>
+    <li>
+        <b>which-substring</b> (integer expression, 0-∞)<br>
+        The index of the substring to return.  A <i>which-substring</i> value of 0 will return the first substring, 1 will return the second substring, and so on.  If no such substring exist in the original string, then <code>NULL</code> is returned.
+    </li>
+</ul>
+
+<h2>Examples</h2>
+<ol class="examples">
+    <li>
+        <code>DECLARE @data = SPLIT('AAA|BBB|CCC', '|', 1);</code><br>
+        Assigns "BBB" to the variable <code>@data</code>.
+    </li>
+    <li>
+        <code>DECLARE @data = SPLIT('AAA|BBB|CCC', '|', 5);</code><br>
+        Assigns <code>NULL</code> to the variable <code>@data</code>.
+    </li>
+</ol>
+
+<br>

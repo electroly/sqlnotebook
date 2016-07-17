@@ -37,7 +37,7 @@ Reads the contents of a text file and returns it as a single string representing
 <ol class="examples">
     <li>
         <code>DECLARE @data = READ_FILE('C:\MyFile.txt');</code><br>
-        Reads the contents of "MyFile.txt" into a text variable called <code>data</code>.  Because the <i>file-encoding</i> parameter is not specified, the UTF-8 encoding is used to read the file.
+        Reads the contents of "MyFile.txt" into a text variable called <code>@data</code>.  Because the <i>file-encoding</i> parameter is not specified, the UTF-8 encoding is used to read the file.
     </li>
     <li>
         <code>SELECT READ_FILE('C:\ShiftJIS.txt', 932) AS data;</code><br>

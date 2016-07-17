@@ -14,6 +14,7 @@ SQL Notebook ships with an in-app searchable help system that includes all of th
     - [`IMPORT TXT` Statement](import-txt-stmt.html)
     - [`EXPORT TXT` Statement](export-txt-stmt.html)
     - [`READ_FILE` Function](read-file-func.html)
+    - [`SPLIT` Function](split-func.html)
 
 <br><br>
 
