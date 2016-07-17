@@ -9,5 +9,6 @@
     <ClCompile Include="Notebook.cpp" />
     <ClCompile Include="AdoModules.cpp" />
     <ClCompile Include="HttpServer.cpp" />
+    <ClCompile Include="CustomFunctions.cpp" />
   </ItemGroup>
 </Project>
