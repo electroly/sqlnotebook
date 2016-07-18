@@ -61,7 +61,7 @@ static int GenericCreate(sqlite3* db, void* pAux, int argc, const char* const* a
         GenericTable* vtab = new GenericTable;
         vtab->Module = module;
         *ppVTab = &vtab->Super;
-        auto sql = module->GetCreateTableSql();
+        auto sql = module->CreateTableSql;
         auto sqlCstr = Util::CStr(sql);
         g_SqliteCall(db, sqlite3_declare_vtab(db, sqlCstr.c_str()));
         return SQLITE_OK;
@@ -88,7 +88,7 @@ static int GenericBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
             continue;
         } else if (!info->aConstraint[i].usable) {
             continue;
-        } else if (colIndex > table->Module->GetHiddenColumnCount()) {
+        } else if (colIndex > table->Module->HiddenColumnCount) {
             continue;
         } else if (op != SQLITE_INDEX_CONSTRAINT_EQ) {
             continue;
@@ -168,13 +168,13 @@ static int GenericFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxS
             }
         }
 
-        auto hiddenCount = cursor->Table->Module->GetHiddenColumnCount();
+        auto hiddenCount = cursor->Table->Module->HiddenColumnCount;
         auto hiddenValues = gcnew array<Object^>(hiddenCount);
         for (int i = 0; i < argc; i++) {
             hiddenValues[filter[i]] = GetArg(argv[i]);
         }
 
-        cursor->Enumerator = cursor->Table->Module->GetCursor(hiddenValues)->GetEnumerator();
+        cursor->Enumerator = cursor->Table->Module->Execute(hiddenValues)->GetEnumerator();
         cursor->Eof = false;
         return GenericNext(pCur);
     } catch (Exception^ ex) {
@@ -244,6 +244,6 @@ void Notebook::InstallGenericModule(GenericSqliteModule^ impl) {
     staticModule->xRowid = GenericRowid;
     staticModule->xRename = GenericRename;
     auto gcrootModule = new gcroot<GenericSqliteModule^>(impl);
-    auto nameCstr = Util::CStr(impl->GetName());
+    auto nameCstr = Util::CStr(impl->Name);
     SqliteCall(sqlite3_create_module_v2(_sqlite, nameCstr.c_str(), staticModule, gcrootModule, DeleteGcrootModule));
 }

@@ -19,14 +19,14 @@ using System.Collections.Generic;
 
 namespace SqlNotebookCoreModules {
     public sealed class RangeModule : GenericSqliteModule {
-        public override string GetName() => "range";
+        public override string Name => "range";
 
-        public override string GetCreateTableSql() =>
+        public override string CreateTableSql =>
             "CREATE TABLE range (_start HIDDEN, _count HIDDEN, _step HIDDEN, number PRIMARY KEY)";
 
-        public override int GetHiddenColumnCount() => 3;
+        public override int HiddenColumnCount => 3;
 
-        public override IEnumerable<object[]> GetCursor(object[] hiddenValues) {
+        public override IEnumerable<object[]> Execute(object[] hiddenValues) {
             var startObj = hiddenValues[0];
             var countObj = hiddenValues[1];
             var stepObj = hiddenValues[2] ?? 1L;

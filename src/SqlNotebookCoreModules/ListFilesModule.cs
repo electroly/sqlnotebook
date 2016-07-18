@@ -21,15 +21,15 @@ using System.Linq;
 
 namespace SqlNotebookCoreModules {
     public sealed class ListFilesModule : GenericSqliteModule {
-        public override string GetName() => "list_files";
+        public override string Name => "list_files";
 
-        public override string GetCreateTableSql() =>
+        public override string CreateTableSql =>
             @"CREATE TABLE list_files (_root_path HIDDEN, _recursive HIDDEN,
             file_path PRIMARY KEY, folder, filename, extension, modified_date)";
 
-        public override int GetHiddenColumnCount() => 2;
+        public override int HiddenColumnCount => 2;
 
-        public override IEnumerable<object[]> GetCursor(object[] hiddenValues) {
+        public override IEnumerable<object[]> Execute(object[] hiddenValues) {
             var rootPathObj = hiddenValues[0];
             var recursiveObj = hiddenValues[1] ?? 0L;
             if (rootPathObj == null) {
@@ -43,10 +43,7 @@ namespace SqlNotebookCoreModules {
             }
             var rootPath = (string)rootPathObj;
             var recursive = (Int64)recursiveObj != 0;
-            return GetCursorCore(rootPath, recursive);
-        }
 
-        private static IEnumerable<object[]> GetCursorCore(string rootPath, bool recursive) {
             var folderQueue = new Queue<string>();
             var fileQueue = new Queue<string>();
 

@@ -18,9 +18,9 @@ using System.Collections.Generic;
 
 namespace SqlNotebookCoreModules {
     public abstract class GenericSqliteModule {
-        public abstract string GetName();
-        public abstract string GetCreateTableSql();
-        public abstract int GetHiddenColumnCount();
-        public abstract IEnumerable<object[]> GetCursor(object[] hiddenValues);
+        public abstract string Name { get; }
+        public abstract string CreateTableSql { get; }
+        public abstract int HiddenColumnCount { get; }
+        public abstract IEnumerable<object[]> Execute(object[] hiddenValues);
     }
 }

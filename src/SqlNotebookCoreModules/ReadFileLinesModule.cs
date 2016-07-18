@@ -22,14 +22,14 @@ using System.Text;
 
 namespace SqlNotebookCoreModules {
     public sealed class ReadFileLinesModule : GenericSqliteModule {
-        public override string GetName() => "read_file_lines";
+        public override string Name => "read_file_lines";
 
-        public override int GetHiddenColumnCount() => 2;
+        public override int HiddenColumnCount => 2;
 
-        public override string GetCreateTableSql() =>
+        public override string CreateTableSql =>
             "CREATE TABLE read_file_lines (_file_path HIDDEN, _encoding HIDDEN, number PRIMARY KEY, line)";
 
-        public override IEnumerable<object[]> GetCursor(object[] hiddenValues) {
+        public override IEnumerable<object[]> Execute(object[] hiddenValues) {
             var filePathObj = hiddenValues[0];
             var encodingObj = hiddenValues[1] ?? 0L;
 
