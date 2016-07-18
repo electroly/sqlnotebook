@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DownloadFunction.cs" />
+    <Compile Include="GenericSqliteFunction.cs" />
     <Compile Include="GenericSqliteModule.cs" />
     <Compile Include="ListFilesModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

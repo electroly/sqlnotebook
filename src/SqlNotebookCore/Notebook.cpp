@@ -80,21 +80,25 @@ Notebook::!Notebook() {
     _sqliteModules->Clear();
 }
 
-static List<GenericSqliteModule^>^ FindGenericSqliteModules() {
-    auto list = gcnew List<GenericSqliteModule^>();
+static Tuple<List<GenericSqliteModule^>^, List<GenericSqliteFunction^>^>^ FindGenericSqliteModules() {
+    auto modules = gcnew List<GenericSqliteModule^>();
+    auto functions = gcnew List<GenericSqliteFunction^>();
     auto assembly = GenericSqliteModule::typeid->Assembly;
     auto types = assembly->GetExportedTypes();
     for each (auto type in types) {
         auto baseType = type->BaseType;
         while (baseType != nullptr) {
             if (baseType == GenericSqliteModule::typeid) {
-                list->Add((GenericSqliteModule^)Activator::CreateInstance(type));
+                modules->Add((GenericSqliteModule^)Activator::CreateInstance(type));
+                break;
+            } else if (baseType == GenericSqliteFunction::typeid) {
+                functions->Add((GenericSqliteFunction^)Activator::CreateInstance(type));
                 break;
             }
             baseType = baseType->BaseType;
         }
     }
-    return list;
+    return Tuple::Create(modules, functions);
 }
 
 void Notebook::Init() {
@@ -106,8 +110,12 @@ void Notebook::Init() {
     InstallPgModule();
     InstallMsModule();
     InstallMyModule();
-    for each (auto genericModule in FindGenericSqliteModules()) {
+    auto genericModulesAndFunctions = FindGenericSqliteModules();
+    for each (auto genericModule in genericModulesAndFunctions->Item1) {
         InstallGenericModule(genericModule);
+    }
+    for each (auto genericFunction in genericModulesAndFunctions->Item2) {
+        RegisterGenericFunction(genericFunction);
     }
     InstallCustomFunctions();
 }

@@ -29,6 +29,12 @@ private ref class CustomFunctionContext {
     void (*Function)(sqlite3_context*, int, sqlite3_value**);
 };
 
+private ref class GenericFunctionContext {
+    public:
+    Notebook^ Notebook;
+    GenericSqliteFunction^ Function;
+};
+
 static Notebook^ GetNotebook(sqlite3_context* ctx) {
     return (*(gcroot<CustomFunctionContext^>*)sqlite3_user_data(ctx))->Notebook;
 }
@@ -295,6 +301,10 @@ static void DeleteGcrootCustomFunctionContext(void* ptr) {
     delete (gcroot<CustomFunctionContext^>*)ptr;
 }
 
+static void DeleteGcrootGenericFunctionContext(void* ptr) {
+    delete (gcroot<GenericFunctionContext^>*)ptr;
+}
+
 static void ExecuteCustomFunction(sqlite3_context* ctx, int argc, sqlite3_value** argv) {
     try {
         auto context = *(gcroot<CustomFunctionContext^>*)sqlite3_user_data(ctx);
@@ -320,6 +330,39 @@ void(*func)(sqlite3_context*, int, sqlite3_value**), bool deterministic) {
         /* xStep */ nullptr,
         /* xFinal */ nullptr,
         /* xDestroy */ DeleteGcrootCustomFunctionContext
+    ));
+}
+
+static void ExecuteGenericFunction(sqlite3_context* ctx, int argc, sqlite3_value** argv) {
+    try {
+        GenericFunctionContext^ context = *(gcroot<GenericFunctionContext^>*)sqlite3_user_data(ctx);
+        auto args = gcnew List<Object^>();
+        for (int i = 0; i < argc; i++) {
+            args->Add(GetArg(argv[i]));
+        }
+        auto result = (context->Function)->Execute(args);
+        Notebook::SqliteResult(ctx, result);
+    } catch (Exception^ ex) {
+        SqliteResultError(ctx, ex->Message);
+    }
+}
+
+void Notebook::RegisterGenericFunction(GenericSqliteFunction^ function) {
+    auto context = gcnew GenericFunctionContext();
+    context->Notebook = this;
+    context->Function = function;
+    auto nameCstr = Util::CStr(function->Name);
+
+    SqliteCall(sqlite3_create_function_v2(
+        /* db */ _sqlite,
+        /* zFunctionName */ nameCstr.c_str(),
+        /* nArg */ function->ParamCount,
+        /* eTextRep */ SQLITE_UTF16 | (function->IsDeterministic ? SQLITE_DETERMINISTIC : 0),
+        /* pApp */ new gcroot<GenericFunctionContext^>(context),
+        /* xFunc */ ExecuteGenericFunction,
+        /* xStep */ nullptr,
+        /* xFinal */ nullptr,
+        /* xDestroy */ DeleteGcrootGenericFunctionContext
     ));
 }
 
