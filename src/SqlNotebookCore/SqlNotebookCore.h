@@ -19,6 +19,7 @@
 #include <vector>
 #include <msclr/gcroot.h>
 #include "../sqlite3/sqlite3-ex.h"
+using namespace SqlNotebookCoreModules;
 using namespace System;
 using namespace System::Data;
 using namespace System::Collections::Generic;
@@ -27,7 +28,6 @@ using namespace System::Threading::Tasks;
 using namespace System::Runtime::InteropServices;
 using namespace System::Collections::Concurrent;
 using namespace msclr;
-using namespace SqlNotebookCoreModules;
 
 void g_SqliteCall(sqlite3* sqlite, int result); // handle the errcode by throwing if non-SQLITE_OK
 
@@ -329,6 +329,7 @@ namespace SqlNotebookCore {
         NotebookUserData^ _userData;
         bool _cancelling;
         static Object^ _tokenizeLock = gcnew Object();
+        List<IntPtr>^ _sqliteModules = gcnew List<IntPtr>();
 
         static SimpleDataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
             IReadOnlyList<Object^>^ orderedArgs, bool returnResult, sqlite3* db, Func<bool>^ cancelling);
@@ -336,7 +337,7 @@ namespace SqlNotebookCore {
         void InstallMsModule();
         void InstallMyModule();
         void InstallCustomFunctions();
-        void InstallGenericModule(const char* name, sqlite3_module* staticModule, GenericSqliteModule^ impl);
+        void InstallGenericModule(GenericSqliteModule^ impl);
         void SqliteCall(int result);
         void Init();
         bool GetCancelling();

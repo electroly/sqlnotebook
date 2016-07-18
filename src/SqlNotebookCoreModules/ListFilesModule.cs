@@ -21,6 +21,8 @@ using System.Linq;
 
 namespace SqlNotebookCoreModules {
     public sealed class ListFilesModule : GenericSqliteModule {
+        public override string GetName() => "list_files";
+
         public override string GetCreateTableSql() =>
             @"CREATE TABLE list_files (_root_path HIDDEN, _recursive HIDDEN,
             file_path, folder, filename, extension, modified_date)";

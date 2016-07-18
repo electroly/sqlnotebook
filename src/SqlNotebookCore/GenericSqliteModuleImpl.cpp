@@ -191,7 +191,8 @@ static int GenericEof(sqlite3_vtab_cursor* pCur) {
 static int GenericColumn(sqlite3_vtab_cursor* pCur, sqlite3_context* ctx, int n) {
     auto cursor = (GenericCursor*)pCur;
     try {
-        Notebook::SqliteResult(ctx, cursor->Enumerator->Current[n]);
+        auto row = cursor->Enumerator->Current;
+        Notebook::SqliteResult(ctx, row[n]);
         return SQLITE_OK;
     } catch (Exception^ ex) {
         cursor->Table->SetError(ex->Message);
@@ -224,7 +225,10 @@ static void DeleteGcrootModule(void* ptr) {
     delete (gcroot<GenericSqliteModule^>*)ptr;
 }
 
-void Notebook::InstallGenericModule(const char* name, sqlite3_module* staticModule, GenericSqliteModule^ impl) {
+void Notebook::InstallGenericModule(GenericSqliteModule^ impl) {
+    auto staticModule = new sqlite3_module;
+    _sqliteModules->Add(IntPtr(staticModule));
+
     staticModule->iVersion = 1;
     staticModule->xCreate = nullptr;
     staticModule->xConnect = GenericCreate;
@@ -240,5 +244,6 @@ void Notebook::InstallGenericModule(const char* name, sqlite3_module* staticModu
     staticModule->xRowid = GenericRowid;
     staticModule->xRename = GenericRename;
     auto gcrootModule = new gcroot<GenericSqliteModule^>(impl);
-    SqliteCall(sqlite3_create_module_v2(_sqlite, name, staticModule, gcrootModule, DeleteGcrootModule));
+    auto nameCstr = Util::CStr(impl->GetName());
+    SqliteCall(sqlite3_create_module_v2(_sqlite, nameCstr.c_str(), staticModule, gcrootModule, DeleteGcrootModule));
 }

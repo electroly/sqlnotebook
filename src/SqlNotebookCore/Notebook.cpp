@@ -20,6 +20,7 @@ using namespace SqlNotebookCore;
 using namespace System::IO;
 using namespace System::IO::Compression;
 using namespace System::Text;
+using namespace System::Runtime::InteropServices;
 using namespace msclr;
 using namespace Newtonsoft::Json;
 
@@ -72,9 +73,13 @@ Notebook::!Notebook() {
         sqlite3_close_v2(_sqlite);
         _sqlite = nullptr;
     }
+    for each (IntPtr ptr in _sqliteModules) {
+        auto mod = (sqlite3_module*)(void*)ptr;
+        delete mod;
+    }
+    _sqliteModules->Clear();
 }
 
-static sqlite3_module s_listFilesModule;
 void Notebook::Init() {
     auto filePathCstr = Util::CStr(_workingCopyFilePath);
     sqlite3* sqlite = nullptr;
@@ -84,7 +89,8 @@ void Notebook::Init() {
     InstallPgModule();
     InstallMsModule();
     InstallMyModule();
-    InstallGenericModule("list_files", &s_listFilesModule, gcnew ListFilesModule());
+    InstallGenericModule(gcnew ListFilesModule());
+    InstallGenericModule(gcnew RangeModule());
     InstallCustomFunctions();
 }
 
