@@ -86,6 +86,9 @@ static Tuple<List<GenericSqliteModule^>^, List<GenericSqliteFunction^>^>^ FindGe
     auto assembly = GenericSqliteModule::typeid->Assembly;
     auto types = assembly->GetExportedTypes();
     for each (auto type in types) {
+        if (type->IsAbstract) {
+            continue;
+        }
         auto baseType = type->BaseType;
         while (baseType != nullptr) {
             if (baseType == GenericSqliteModule::typeid) {

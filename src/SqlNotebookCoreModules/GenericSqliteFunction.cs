@@ -14,6 +14,7 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 
 namespace SqlNotebookCoreModules {
@@ -22,5 +23,21 @@ namespace SqlNotebookCoreModules {
         public abstract int ParamCount { get; }
         public abstract bool IsDeterministic { get; }
         public abstract object Execute(IReadOnlyList<object> args);
+
+        protected string GetStrArg(object arg, string name) {
+            if (arg is string) {
+                return (string)arg;
+            } else {
+                throw new Exception($"{Name.ToUpper()}: The argument \"{name}\" must be a TEXT value.");
+            }
+        }
+
+        protected double GetDblArg(object arg, string name) {
+            if (arg is double || arg is Int64) {
+                return Convert.ToDouble(arg);
+            } else {
+                throw new Exception($"{Name.ToUpper()}: The argument \"{name}\" must be a FLOAT value.");
+            }
+        }
     }
 }
