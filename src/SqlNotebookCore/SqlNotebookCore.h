@@ -27,6 +27,7 @@ using namespace System::Threading::Tasks;
 using namespace System::Runtime::InteropServices;
 using namespace System::Collections::Concurrent;
 using namespace msclr;
+using namespace SqlNotebookCoreModules;
 
 void g_SqliteCall(sqlite3* sqlite, int result); // handle the errcode by throwing if non-SQLITE_OK
 
@@ -319,15 +320,6 @@ namespace SqlNotebookCore {
         String^ FindLongestValidStatementPrefix(String^ input);
         bool IsTransactionActive();
 
-        internal:
-        static void SqliteResult(sqlite3_context* ctx, Object^ value);
-        static array<Byte>^ ConvertToSqlArray(IReadOnlyList<Object^>^ objects);
-        static int GetArrayCount(array<Byte>^ arrayBlob);
-        static Object^ GetArrayElement(array<Byte>^ arrayBlob, int elementIndex);
-        static array<Object^>^ GetArrayElements(array<Byte>^ arrayBlob);
-        static array<Byte>^ SliceArrayElements(array<Byte>^ originalArrayBlob, int index, int removeElements,
-            IReadOnlyList<Object^>^ insertElements);
-
         private:
         bool _isDisposed;
         String^ _originalFilePath;
@@ -344,11 +336,21 @@ namespace SqlNotebookCore {
         void InstallMsModule();
         void InstallMyModule();
         void InstallCustomFunctions();
+        void InstallGenericModule(const char* name, sqlite3_module* staticModule, GenericSqliteModule^ impl);
         void SqliteCall(int result);
         void Init();
         bool GetCancelling();
         void RegisterCustomFunction(const char* functionName, int numArgs,
             void(*func)(sqlite3_context*, int, sqlite3_value **), bool deterministic);
+
+        internal:
+        static void SqliteResult(sqlite3_context* ctx, Object^ value);
+        static array<Byte>^ ConvertToSqlArray(IReadOnlyList<Object^>^ objects);
+        static int GetArrayCount(array<Byte>^ arrayBlob);
+        static Object^ GetArrayElement(array<Byte>^ arrayBlob, int elementIndex);
+        static array<Object^>^ GetArrayElements(array<Byte>^ arrayBlob);
+        static array<Byte>^ SliceArrayElements(array<Byte>^ originalArrayBlob, int index, int removeElements,
+            IReadOnlyList<Object^>^ insertElements);
     };
 
     public ref class NotebookTempFiles sealed abstract {

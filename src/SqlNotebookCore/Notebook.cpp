@@ -74,6 +74,7 @@ Notebook::!Notebook() {
     }
 }
 
+static sqlite3_module s_listFilesModule;
 void Notebook::Init() {
     auto filePathCstr = Util::CStr(_workingCopyFilePath);
     sqlite3* sqlite = nullptr;
@@ -83,6 +84,7 @@ void Notebook::Init() {
     InstallPgModule();
     InstallMsModule();
     InstallMyModule();
+    InstallGenericModule("list_files", &s_listFilesModule, gcnew ListFilesModule());
     InstallCustomFunctions();
 }
 
@@ -736,9 +738,9 @@ void Notebook::SqliteResult(sqlite3_context* ctx, Object^ value) {
     } else if (type == NpgsqlTypes::NpgsqlDateTime::typeid) {
         ResultText16(ctx, ((DateTime)(NpgsqlTypes::NpgsqlDateTime)value).ToString("yyyy-MM-dd"));
     } else if (type == DateTime::typeid) {
-        ResultText16(ctx, ((DateTime)value).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+        ResultText16(ctx, ((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss.fff zzz"));
     } else if (type == DateTimeOffset::typeid) {
-        ResultText16(ctx, ((DateTimeOffset)value).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+        ResultText16(ctx, ((DateTimeOffset)value).ToString("yyyy-MM-dd HH:mm:ss.fff zzz"));
     } else if (type == array<Byte>::typeid) {
         ResultBlob(ctx, (array<Byte>^)value);
     } else {

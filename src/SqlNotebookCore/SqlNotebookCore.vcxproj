@@ -114,6 +114,7 @@
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="CustomFunctions.cpp" />
+    <ClCompile Include="GenericSqliteModuleImpl.cpp" />
     <ClCompile Include="HttpServer.cpp" />
     <ClCompile Include="Notebook.cpp" />
     <ClCompile Include="AdoModules.cpp" />
@@ -125,6 +126,9 @@
     </ProjectReference>
     <ProjectReference Include="..\sqlite3\sqlite3.vcxproj">
       <Project>{34743fad-099d-4db8-b8a6-c863fec91c77}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\SqlNotebookCoreModules\SqlNotebookCoreModules.csproj">
+      <Project>{2255c461-80d4-419c-aa57-60af7d2c6305}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

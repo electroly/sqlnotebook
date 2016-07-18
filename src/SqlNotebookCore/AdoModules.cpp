@@ -101,7 +101,7 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
         }
 
         // create sqlite structure
-        auto vtab = new AdoTable;
+        vtab = new AdoTable;
         vtab->ConnectionString = connStr;
         vtab->AdoTableName = adoTableName;
         vtab->AdoSchemaName = adoSchemaName;
@@ -419,7 +419,7 @@ static int AdoColumn(sqlite3_vtab_cursor* pCur, sqlite3_context* ctx, int n) {
             auto reader = (NpgsqlDataReader^)(IDataReader^)cursor->Reader;
             ResultText16(ctx, ((DateTime)reader->GetDate(n)).ToString("yyyy-MM-dd"));
         } else if (type == NpgsqlTypes::NpgsqlDateTime::typeid || type == DateTime::typeid) {
-            ResultText16(ctx, ((DateTime)cursor->Reader->GetDateTime(n)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+            ResultText16(ctx, ((DateTime)cursor->Reader->GetDateTime(n)).ToString("yyyy-MM-dd HH:mm:ss.fff zzz"));
         } else {
             ResultText16(ctx, cursor->Reader->GetValue(n)->ToString());
         }

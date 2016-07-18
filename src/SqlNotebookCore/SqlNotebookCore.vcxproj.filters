@@ -10,5 +10,6 @@
     <ClCompile Include="AdoModules.cpp" />
     <ClCompile Include="HttpServer.cpp" />
     <ClCompile Include="CustomFunctions.cpp" />
+    <ClCompile Include="GenericSqliteModuleImpl.cpp" />
   </ItemGroup>
 </Project>
