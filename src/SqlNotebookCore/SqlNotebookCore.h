@@ -321,6 +321,12 @@ namespace SqlNotebookCore {
 
         internal:
         static void SqliteResult(sqlite3_context* ctx, Object^ value);
+        static array<Byte>^ ConvertToSqlArray(IReadOnlyList<Object^>^ objects);
+        static int GetArrayCount(array<Byte>^ arrayBlob);
+        static Object^ GetArrayElement(array<Byte>^ arrayBlob, int elementIndex);
+        static array<Object^>^ GetArrayElements(array<Byte>^ arrayBlob);
+        static array<Byte>^ SliceArrayElements(array<Byte>^ originalArrayBlob, int index, int removeElements,
+            IReadOnlyList<Object^>^ insertElements);
 
         private:
         bool _isDisposed;
@@ -342,7 +348,7 @@ namespace SqlNotebookCore {
         void Init();
         bool GetCancelling();
         void RegisterCustomFunction(const char* functionName, int numArgs,
-            void(*func)(sqlite3_context*, int, sqlite3_value **));
+            void(*func)(sqlite3_context*, int, sqlite3_value **), bool deterministic);
     };
 
     public ref class NotebookTempFiles sealed abstract {

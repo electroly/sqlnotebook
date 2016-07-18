@@ -1,3 +1,5 @@
+$ErrorActionPreference = "Stop"
+
 # must have pandoc installed.
 function ReadFile($filePath) {
     $utf8 = New-Object System.Text.UTF8Encoding($False)
@@ -31,6 +33,29 @@ function FormatMdPage($title, $mdPath, $metaDesc) {
     return (FormatPage $title $html $metaDesc)
 }
 
+function WriteDocFiles() {
+    $docFilenames = ls ..\doc | select -expand Name
+    $docPath = (Resolve-Path ..\doc)
+    $sitePath = (Resolve-Path .\site)
+    foreach ($docFilename in $docFilenames) {
+        $docFilePath = [System.IO.Path]::Combine($docPath, $docFilename)
+        $html = (ReadFile $docFilePath)
+
+        # parse out the title
+        $startIndex = $html.IndexOf("<title>") + 7
+        $endIndex = $html.IndexOf("</title>")
+        $title = $html.Substring($startIndex, $endIndex - $startIndex)
+
+        # remove meta and title tags from article body
+        $startIndex = $html.IndexOf("<meta")
+        $endIndex = $html.IndexOf("</title>") + 8
+        $html = $html.Remove($startIndex, $endIndex - $startIndex)
+
+        $siteFilePath = [System.IO.Path]::Combine($sitePath, $docFilename)
+        WriteFile $siteFilePath (FormatPage $title $html "SQL Notebook online documentation.")
+    }
+}
+
 New-Item site -Type Directory -ErrorAction SilentlyContinue
 New-Item site/art -Type Directory -ErrorAction SilentlyContinue
 New-Item temp -Type Directory -ErrorAction SilentlyContinue
@@ -53,11 +78,4 @@ WriteFile .\site\video-note.html (FormatMdPage "Example Video: Note" .\video-not
 WriteFile .\site\video-help.html (FormatMdPage "Example Video: Help Viewer" .\video-help.md "Example video of the SQL Notebook integrated help viewer.")
 
 # html-based pages
-WriteFile .\site\error-functions.html (FormatPage "Error Functions" (ReadFile ..\doc\error-functions.html) "Documentation of SQL Notebook's error reporting SQL functions.")
-WriteFile .\site\export-txt-stmt.html (FormatPage "EXPORT TXT Statement" (ReadFile ..\doc\export-txt-stmt.html) "The EXPORT TXT statement allows a query to be written as plain text to a file on disk.")
-WriteFile .\site\extended-syntax.html (FormatPage "Structured Programming in SQL Notebook" (ReadFile ..\doc\extended-syntax.html) "Documentation of SQL Notebook's structured programing syntax.")
-WriteFile .\site\import-csv-file.html (FormatPage "How to Import a CSV File" (ReadFile ..\doc\import-csv-file.html) "A tutorial for importing comma-separated value (CSV) files into SQL Notebook.")
-WriteFile .\site\import-csv-stmt.html (FormatPage "IMPORT CSV Statement" (ReadFile ..\doc\import-csv-stmt.html) "The IMPORT CSV statement allows comma-separated data to be imported into notebook tables.")
-WriteFile .\site\import-json-file.html (FormatPage "How to Import a JSON File" (ReadFile ..\doc\import-json-file.html) "A tutorial for importing JSON (JavaScript Object Notation) files into SQL Notebook.")
-WriteFile .\site\import-txt-stmt.html (FormatPage "IMPORT TXT Statement" (ReadFile ..\doc\import-txt-stmt.html) "The IMPORT TXT statement allows plain text files to be read line-by-line into a notebook table.")
-WriteFile .\site\read-file-func.html (FormatPage "READ_FILE Function" (ReadFile ..\doc\read-file-func.html) "The READ_FILE function reads a plain text file into a string.")
+WriteDocFiles

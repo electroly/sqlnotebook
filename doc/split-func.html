@@ -13,12 +13,12 @@ ul.enum li { margin-bottom: 0px; }
 
 <h1><code>SPLIT</code> Function</h1>
 <p>
-Splits a string by a caller-specified separator and returns one of the substrings.
+Splits a string by a caller-specified separator and either returns the substrings as an array, or returns one specific substring.
 </p>
 
 <h2>Syntax</h2>
 <blockquote>
-<code>SPLIT(<i>text</i>, <i>separator</i>, <i>which-substring</i>)</code>
+<code>SPLIT(<i>text</i>, <i>separator</i>, [<i>which-substring</i>])</code>
 </blockquote>
 
 <h2>Arguments</h2>
@@ -32,10 +32,15 @@ Splits a string by a caller-specified separator and returns one of the substring
         The string that separates each substring in <i>text</i>.
     </li>
     <li>
-        <b>which-substring</b> (integer expression, 0-∞)<br>
+        <b>which-substring</b> (optional, integer expression, 0-∞)<br>
         The index of the substring to return.  A <i>which-substring</i> value of 0 will return the first substring, 1 will return the second substring, and so on.  If no such substring exist in the original string, then <code>NULL</code> is returned.
     </li>
 </ul>
+
+<h2>Return Value</h2>
+<blockquote>
+If <i>which-substring</i> is provided, then the specified substring is returned.  If it is not provided, then all substrings are returned in an array.
+</blockquote>
 
 <h2>Examples</h2>
 <ol class="examples">
@@ -46,6 +51,10 @@ Splits a string by a caller-specified separator and returns one of the substring
     <li>
         <code>DECLARE @data = SPLIT('AAA|BBB|CCC', '|', 5);</code><br>
         Assigns <code>NULL</code> to the variable <code>@data</code>.
+    </li>
+    <li>
+        <code>DECLARE @data = ARRAY_COUNT(SPLIT('AAA|BBB|CCC', '|'));</code><br>
+        Assigns 3 to the variable <code>@data</code>.
     </li>
 </ol>
 

@@ -235,6 +235,11 @@ IReadOnlyList<Object^>^ orderedArgs, bool returnResult, sqlite3* db, Func<bool>^
                 } else if (type == Double::typeid) {
                     double dblValue = safe_cast<Double>(value);
                     g_SqliteCall(db, sqlite3_bind_double(stmt, i, dblValue));
+                } else if (type == array<Byte>::typeid) {
+                    auto arr = (array<Byte>^)value;
+                    auto copy = (Byte*)malloc(arr->Length);
+                    Marshal::Copy(arr, 0, IntPtr(copy), arr->Length);
+                    g_SqliteCall(db, sqlite3_bind_blob64(stmt, i, copy, arr->Length, free));
                 } else {
                     auto strValue = Util::WStr(value->ToString());
                     // sqlite will hang onto the string after the call returns so make a copy.  it
@@ -281,9 +286,14 @@ IReadOnlyList<Object^>^ orderedArgs, bool returnResult, sqlite3* db, Func<bool>^
                             case SQLITE_TEXT:
                                 rowData[i] = Util::Str((const wchar_t*)sqlite3_column_text16(stmt, i));
                                 break;
-                            case SQLITE_BLOB:
-                                rowData[i] = Util::Str("BLOB"); // not supported
+                            case SQLITE_BLOB: {
+                                auto cb = sqlite3_column_bytes(stmt, i);
+                                auto sourceBuffer = (Byte*)sqlite3_column_blob(stmt, i);
+                                auto copy = gcnew array<Byte>(cb);
+                                Marshal::Copy(IntPtr(sourceBuffer), copy, 0, cb);
+                                rowData[i] = copy;
                                 break;
+                            }
                             case SQLITE_NULL:
                                 rowData[i] = DBNull::Value;
                                 break;
@@ -454,11 +464,243 @@ void Notebook::EndUserCancel() {
     _cancelling = false;
 }
 
+// the blob format for arrays is:
+// - 32-bit integer: number of elements
+// - for each element:
+//    - 32-bit integer: length of the element record to follow (excluding this size integer itself)
+//    - 1 byte: SQLITE_INTEGER/FLOAT/BLOB/NULL/TEXT
+//    - for null: nothing
+//    - for integer: the 64-bit integer value
+//    - for float: the 64-bit floating point value
+//    - for text: a 32-bit integer byte count of the UTF-8 text to follow, then the UTF-8 text
+//    - for blob: a 32-bit integer byte count of the blob to follow, then the blob data
+
+// write the element records (but not the initial count)
+static void ConvertToSqlArrayCore(IReadOnlyList<Object^>^ objects, BinaryWriter^ writer) {
+    const int cbByte = sizeof(Byte);
+    const int cbInt32 = sizeof(Int32);
+    const int cbInt64 = sizeof(Int64);
+    const int cbDouble = sizeof(Double);
+
+    for (int i = 0; i < objects->Count; i++) {
+        auto o = objects[i];
+        auto t = o->GetType();
+        if (t == Int64::typeid) {
+            writer->Write((Int32)(cbByte + cbInt64));
+            writer->Write((Byte)SQLITE_INTEGER);
+            writer->Write((Int64)o);
+        } else if (t == Double::typeid) {
+            writer->Write((Int32)(cbByte + cbDouble));
+            writer->Write((Byte)SQLITE_FLOAT);
+            writer->Write((Double)o);
+        } else if (t == String::typeid) {
+            auto utf8 = Encoding::UTF8->GetBytes((String^)o);
+            writer->Write((Int32)(cbByte + cbInt32 + utf8->Length));
+            writer->Write((Byte)SQLITE_TEXT);
+            writer->Write((Int32)(utf8->Length));
+            writer->Write(utf8);
+        } else if (t == array<Byte>::typeid) {
+            auto bytes = (array<Byte>^)o;
+            writer->Write((Int32)(cbByte + cbInt32 + bytes->Length));
+            writer->Write((Byte)SQLITE_BLOB);
+            writer->Write((Int32)(bytes->Length));
+            writer->Write(bytes);
+        } else if (t == DBNull::typeid) {
+            writer->Write((Int32)(cbByte));
+            writer->Write((Byte)SQLITE_NULL);
+        } else {
+            throw gcnew ArgumentException(String::Format(
+                "Unrecognized object type \"{0}\" found at index {1} when building SQL array.", t->Name, i));
+        }
+    }
+}
+
+array<Byte>^ Notebook::ConvertToSqlArray(IReadOnlyList<Object^>^ objects) {
+    MemoryStream memoryStream;
+    BinaryWriter writer{ %memoryStream };
+    writer.Write((Int32)objects->Count);
+    ConvertToSqlArrayCore(objects, %writer);
+    return memoryStream.ToArray();
+}
+
+static Int32 ReadInt32(array<Byte>^ blob, int offset) {
+    if (offset + sizeof(Int32) > blob->Length) {
+        throw gcnew Exception("Unexpected end of blob data.");
+    } else {
+        Int32 value;
+        Marshal::Copy(blob, offset, IntPtr(&value), sizeof(Int32));
+        return value;
+    }
+}
+
+static Int64 ReadInt64(array<Byte>^ blob, int offset) {
+    if (offset + sizeof(Int64) > blob->Length) {
+        throw gcnew Exception("Unexpected end of blob data.");
+    } else {
+        Int64 value;
+        Marshal::Copy(blob, offset, IntPtr(&value), sizeof(Int64));
+        return value;
+    }
+}
+
+static double ReadDouble(array<Byte>^ blob, int offset) {
+    if (offset + sizeof(Double) > blob->Length) {
+        throw gcnew Exception("Unexpected end of blob data.");
+    } else {
+        Double value;
+        Marshal::Copy(blob, 0, IntPtr(&value), sizeof(Double));
+        return value;
+    }
+}
+
+static Byte ReadByte(array<Byte>^ blob, int offset) {
+    if (offset + sizeof(Byte) > blob->Length) {
+        throw gcnew Exception("Unexpected end of blob data.");
+    } else {
+        return blob[offset];
+    }
+}
+
+int Notebook::GetArrayCount(array<Byte>^ arrayBlob) {
+    if (arrayBlob->Length < sizeof(Int32)) {
+        throw gcnew Exception("This blob is not an array.");
+    } else {
+        return ReadInt32(arrayBlob, 0);
+    }
+}
+
+static Object^ ReadArrayElement(array<Byte>^ arrayBlob, int& position) {
+    auto elementLength = ReadInt32(arrayBlob, position);
+    position += sizeof(Int32);
+    auto dataType = ReadByte(arrayBlob, position);
+    position += sizeof(Byte);
+    switch (dataType) {
+        case SQLITE_INTEGER: {
+            auto value = ReadInt64(arrayBlob, position);
+            position += sizeof(Int64);
+            return value;
+        }
+
+        case SQLITE_FLOAT: {
+            auto value = ReadDouble(arrayBlob, position);
+            position += sizeof(Double);
+            return value;
+        }
+
+        case SQLITE_TEXT: {
+            auto cbText = ReadInt32(arrayBlob, position);
+            position += sizeof(Int32);
+            Byte* utf8 = new Byte[cbText + 1];
+            utf8[cbText] = 0;
+            Marshal::Copy(arrayBlob, position, IntPtr(utf8), cbText);
+            position += cbText;
+            auto str = Util::Str((const char*)utf8);
+            delete utf8;
+            return str;
+        }
+
+        case SQLITE_BLOB: {
+            auto cbBlob = ReadInt32(arrayBlob, position);
+            position += sizeof(Int32);
+            auto blob = gcnew array<Byte>(cbBlob);
+            Array::Copy(arrayBlob, position, blob, 0, (int)cbBlob);
+            position += cbBlob;
+            return blob;
+        }
+
+        case SQLITE_NULL:
+            return DBNull::Value;
+
+        default:
+            throw gcnew Exception(String::Format("Unrecognized data type in array blob: {0}", dataType));
+    }
+}
+
+Object^ Notebook::GetArrayElement(array<Byte>^ arrayBlob, int elementIndex) {
+    auto count = GetArrayCount(arrayBlob);
+    if (elementIndex < 0 || elementIndex >= count) {
+        throw gcnew Exception(String::Format(
+            "The index {0} is out of bounds for the array, which has {1} elements.", elementIndex, count));
+    }
+
+    int position = sizeof(Int32);
+    for (int i = 0; i < elementIndex; i++) {
+        // skip this element
+        auto skipElementLength = ReadInt32(arrayBlob, position);
+        position += sizeof(Int32) + skipElementLength;
+    }
+
+    return ReadArrayElement(arrayBlob, position);
+}
+
+array<Object^>^ Notebook::GetArrayElements(array<Byte>^ arrayBlob) {
+    auto count = GetArrayCount(arrayBlob);
+    auto output = gcnew array<Object^>(count);
+    int position = sizeof(Int32);
+    for (int i = 0; i < count; i++) {
+        output[i] = ReadArrayElement(arrayBlob, position);
+    }
+    return output;
+}
+
+array<Byte>^ Notebook::SliceArrayElements(array<Byte>^ originalArrayBlob, int index, int removeElements,
+IReadOnlyList<Object^>^ insertElements) {
+    auto oldCount = GetArrayCount(originalArrayBlob);
+    if (index < 0 || index > oldCount) {
+        throw gcnew Exception(String::Format(
+            "Array index {0} is out of range. The array has {1} elements.",
+            index, oldCount));
+    }
+    if (index + removeElements > oldCount) {
+        throw gcnew Exception(String::Format(
+            "Array index {0} - removed elements {1} must not exceed the length of the array.",
+            index, removeElements));
+    }
+
+    auto newCount = oldCount - removeElements + insertElements->Count;
+    MemoryStream memoryStream;
+    BinaryWriter writer { %memoryStream };
+    writer.Write((Int32)newCount);
+
+    // copy the elements up to the edit point as-is
+    auto position = sizeof(Int32);
+    for (int i = 0; i < index; i++) {
+        auto skipLength = ReadInt32(originalArrayBlob, position);
+        writer.Write(originalArrayBlob, position, sizeof(Int32) + skipLength);
+        position += sizeof(Int32) + skipLength;
+    }
+
+    // skip the removed elements
+    for (int i = index; i < index + removeElements; i++) {
+        auto skipLength = ReadInt32(originalArrayBlob, position);
+        position += sizeof(Int32) + skipLength;
+    }
+
+    // insert the new elements
+    ConvertToSqlArrayCore(insertElements, %writer);
+
+    // copy the rest of the elements as-is
+    for (int i = index + removeElements; i < oldCount; i++) {
+        auto skipLength = ReadInt32(originalArrayBlob, position);
+        writer.Write(originalArrayBlob, position, sizeof(Int32) + skipLength);
+        position += sizeof(Int32) + skipLength;
+    }
+
+    return memoryStream.ToArray();
+}
+
 static void ResultText16(sqlite3_context* ctx, String^ str) {
     auto wstr = Util::WStr(str);
     auto wstrCopy = _wcsdup(wstr.c_str());
     auto lenB = wstr.size() * sizeof(wchar_t);
     sqlite3_result_text16(ctx, wstrCopy, (int)lenB, free);
+}
+
+static void ResultBlob(sqlite3_context* ctx, array<Byte>^ bytes) {
+    auto cb = bytes->Length;
+    auto buffer = (Byte*)malloc(cb);
+    Marshal::Copy(bytes, 0, IntPtr(buffer), cb);
+    sqlite3_result_blob64(ctx, buffer, cb, free);
 }
 
 void Notebook::SqliteResult(sqlite3_context* ctx, Object^ value) {
@@ -497,6 +739,8 @@ void Notebook::SqliteResult(sqlite3_context* ctx, Object^ value) {
         ResultText16(ctx, ((DateTime)value).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
     } else if (type == DateTimeOffset::typeid) {
         ResultText16(ctx, ((DateTimeOffset)value).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+    } else if (type == array<Byte>::typeid) {
+        ResultBlob(ctx, (array<Byte>^)value);
     } else {
         ResultText16(ctx, value->ToString());
     }
