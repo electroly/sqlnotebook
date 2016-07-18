@@ -179,7 +179,7 @@ static void Split3(sqlite3_context* ctx, int argc, sqlite3_value** argv) {
     separators[0] = separator;
     auto splitted = text->Split(separators, StringSplitOptions::None);
     if (whichSubstring < splitted->Length) {
-        Notebook::SqliteResult(ctx, splitted[whichSubstring]);
+        Notebook::SqliteResult(ctx, splitted[(int)whichSubstring]);
     } else {
         Notebook::SqliteResult(ctx, DBNull::Value);
     }

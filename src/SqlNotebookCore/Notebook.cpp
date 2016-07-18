@@ -671,7 +671,7 @@ IReadOnlyList<Object^>^ insertElements) {
     writer.Write((Int32)newCount);
 
     // copy the elements up to the edit point as-is
-    auto position = sizeof(Int32);
+    int position = sizeof(Int32);
     for (int i = 0; i < index; i++) {
         auto skipLength = ReadInt32(originalArrayBlob, position);
         writer.Write(originalArrayBlob, position, sizeof(Int32) + skipLength);
