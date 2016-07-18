@@ -80,6 +80,23 @@ Notebook::!Notebook() {
     _sqliteModules->Clear();
 }
 
+static List<GenericSqliteModule^>^ FindGenericSqliteModules() {
+    auto list = gcnew List<GenericSqliteModule^>();
+    auto assembly = GenericSqliteModule::typeid->Assembly;
+    auto types = assembly->GetExportedTypes();
+    for each (auto type in types) {
+        auto baseType = type->BaseType;
+        while (baseType != nullptr) {
+            if (baseType == GenericSqliteModule::typeid) {
+                list->Add((GenericSqliteModule^)Activator::CreateInstance(type));
+                break;
+            }
+            baseType = baseType->BaseType;
+        }
+    }
+    return list;
+}
+
 void Notebook::Init() {
     auto filePathCstr = Util::CStr(_workingCopyFilePath);
     sqlite3* sqlite = nullptr;
@@ -89,8 +106,9 @@ void Notebook::Init() {
     InstallPgModule();
     InstallMsModule();
     InstallMyModule();
-    InstallGenericModule(gcnew ListFilesModule());
-    InstallGenericModule(gcnew RangeModule());
+    for each (auto genericModule in FindGenericSqliteModules()) {
+        InstallGenericModule(genericModule);
+    }
     InstallCustomFunctions();
 }
 
@@ -677,7 +695,7 @@ IReadOnlyList<Object^>^ insertElements) {
         writer.Write(originalArrayBlob, position, sizeof(Int32) + skipLength);
         position += sizeof(Int32) + skipLength;
     }
-
+    
     // skip the removed elements
     for (int i = index; i < index + removeElements; i++) {
         auto skipLength = ReadInt32(originalArrayBlob, position);

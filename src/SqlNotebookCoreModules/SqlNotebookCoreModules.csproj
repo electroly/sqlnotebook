@@ -45,6 +45,7 @@
     <Compile Include="ListFilesModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RangeModule.cs" />
+    <Compile Include="ReadFileLinesModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

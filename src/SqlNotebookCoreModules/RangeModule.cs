@@ -22,7 +22,7 @@ namespace SqlNotebookCoreModules {
         public override string GetName() => "range";
 
         public override string GetCreateTableSql() =>
-            "CREATE TABLE range (_start HIDDEN, _count HIDDEN, _step HIDDEN, number)";
+            "CREATE TABLE range (_start HIDDEN, _count HIDDEN, _step HIDDEN, number PRIMARY KEY)";
 
         public override int GetHiddenColumnCount() => 3;
 

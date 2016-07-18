@@ -122,7 +122,7 @@ static void ErrorState(sqlite3_context* ctx, int, sqlite3_value**) {
     Notebook::SqliteResult(ctx, notebook->UserData->LastError->ErrorState);
 }
 
-static void ReadFile(sqlite3_context* ctx, int argc, sqlite3_value** argv) {
+static void ReadFileText(sqlite3_context* ctx, int argc, sqlite3_value** argv) {
     if (argc < 1 || argc > 2) {
         throw gcnew Exception("READ_FILE: Between 1 and 2 arguments are required.");
     }
@@ -327,7 +327,7 @@ void Notebook::InstallCustomFunctions() {
     RegisterCustomFunction("error_number", 0, ErrorNumber, false);
     RegisterCustomFunction("error_message", 0, ErrorMessage, false);
     RegisterCustomFunction("error_state", 0, ErrorState, false);
-    RegisterCustomFunction("read_file", -1, ReadFile, false);
+    RegisterCustomFunction("read_file_text", -1, ReadFileText, false);
     RegisterCustomFunction("split", 2, Split2, true);
     RegisterCustomFunction("split", 3, Split3, true);
     RegisterCustomFunction("array", -1, ArrayN, true);

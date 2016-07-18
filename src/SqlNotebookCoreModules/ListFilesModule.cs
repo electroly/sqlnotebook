@@ -25,7 +25,7 @@ namespace SqlNotebookCoreModules {
 
         public override string GetCreateTableSql() =>
             @"CREATE TABLE list_files (_root_path HIDDEN, _recursive HIDDEN,
-            file_path, folder, filename, extension, modified_date)";
+            file_path PRIMARY KEY, folder, filename, extension, modified_date)";
 
         public override int GetHiddenColumnCount() => 2;
 
