@@ -46,6 +46,7 @@
     <Compile Include="GenericSqliteFunction.cs" />
     <Compile Include="GenericSqliteModule.cs" />
     <Compile Include="ListFilesModule.cs" />
+    <Compile Include="SystemFunctions.cs" />
     <Compile Include="MathFunctions.cs" />
     <Compile Include="ModUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
