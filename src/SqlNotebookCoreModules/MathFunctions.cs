@@ -22,7 +22,7 @@ namespace SqlNotebookCoreModules {
         public override int ParamCount => 1;
         public override bool IsDeterministic => true;
         public override object Execute(IReadOnlyList<object> args) {
-            var x = GetDblArg(args[0], "x");
+            var x = ModUtil.GetFloatArg(args[0], "x", Name);
             return Execute(x);
         }
         public abstract double Execute(double x);
@@ -32,8 +32,8 @@ namespace SqlNotebookCoreModules {
         public override int ParamCount => 2;
         public override bool IsDeterministic => true;
         public override object Execute(IReadOnlyList<object> args) {
-            var x = GetDblArg(args[0], "x");
-            var y = GetDblArg(args[1], "y");
+            var x = ModUtil.GetFloatArg(args[0], "x", Name);
+            var y = ModUtil.GetFloatArg(args[1], "y", Name);
             return Execute(x, y);
         }
         public abstract double Execute(double x, double y);

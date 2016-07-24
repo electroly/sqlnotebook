@@ -46,6 +46,15 @@ namespace SqlNotebookCoreModules {
             }
         }
 
+        public static double GetFloatArg(object arg, string paramName, string functionName) {
+            if (arg is int || arg is long || arg is float || arg is double) {
+                return Convert.ToDouble(arg);
+            } else {
+                throw new Exception($"{functionName.ToUpper()}: The \"{paramName}\" argument must be an INTEGER " +
+                    $"or FLOAT value, but type {GetTypeName(arg.GetType())} was provided.");
+            }
+        }
+
         public static string GetStrArg(object arg, string paramName, string functionName) {
             if (arg is string) {
                 return (string)arg;

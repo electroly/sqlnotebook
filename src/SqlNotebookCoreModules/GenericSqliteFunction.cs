@@ -23,21 +23,5 @@ namespace SqlNotebookCoreModules {
         public abstract int ParamCount { get; }
         public abstract bool IsDeterministic { get; }
         public abstract object Execute(IReadOnlyList<object> args);
-
-        protected string GetStrArg(object arg, string name) {
-            if (arg is string) {
-                return (string)arg;
-            } else {
-                throw new Exception($"{Name.ToUpper()}: The argument \"{name}\" must be a TEXT value.");
-            }
-        }
-
-        protected double GetDblArg(object arg, string name) {
-            if (arg is double || arg is Int64) {
-                return Convert.ToDouble(arg);
-            } else {
-                throw new Exception($"{Name.ToUpper()}: The argument \"{name}\" must be a FLOAT value.");
-            }
-        }
     }
 }
