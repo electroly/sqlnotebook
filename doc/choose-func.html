@@ -1,0 +1,47 @@
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>CHOOSE Function</title>
+
+<h1><code>CHOOSE</code> Function</h1>
+<p>
+Returns one of the arguments, as specified by numeric index in the first argument.
+</p>
+
+<h2>Syntax</h2>
+<blockquote>
+<code>CHOOSE(<i>index</i>, <i>value1</i>, <i>value2</i>, [<i>value3</i>], ...)</code>
+</blockquote>
+
+<h2>Arguments</h2>
+<ul class="args">
+    <li>
+        <b>index</b> (integer expression)<br>
+        A 1-based index into the list of values to follow.
+    </li>
+    <li>
+        <b>value1</b>, <b>value2</b>, ... (expression)<br>
+        The values to choose from.
+    </li>
+</ul>
+
+<h2>Return Value</h2>
+<blockquote>
+If <i>index</i> is between 1 and the number of <i>value</i> arguments, then the corresponding <i>value</i> argument is returned.  If the <i>index</i> is out of bounds, <code>NULL</code> is returned.
+</blockquote>
+
+<h2>Examples</h2>
+<ul class="examples">
+    <li>
+        <code>PRINT CHOOSE(1, 'A', 'B');</code><br>
+        Prints "A".
+    </li>
+    <li>
+        <code>PRINT CHOOSE(3, 111, 222, 333);</code><br>
+        Prints 333.
+    </li>
+    <li>
+        <code>DECLARE @x = CHOOSE(5, 111, 222, 333);</code><br>
+        Assigns <code>NULL</code> to <code>@x</code>.
+    </li>
+</ul>
+
+<br>

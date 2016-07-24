@@ -1,0 +1,32 @@
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>ERROR_NUMBER Function</title>
+
+<h1><code>ERROR_NUMBER</code> Function</h1>
+<p>
+Returns the error number set by the last <code>THROW</code> statement.
+</p>
+
+<h2>Syntax</h2>
+<blockquote>
+<code>ERROR_NUMBER()</code>
+</blockquote>
+
+<h2>Return Value</h2>
+<p>
+The last error number.  This value may be of any type (not just numeric).
+</p>
+
+<h2>Examples</h2>
+ <ul class="examples">
+    <li>
+<pre>BEGIN TRY  
+    THROW 123, 'Message', 0;
+END TRY  
+BEGIN CATCH  
+    PRINT ERROR_NUMBER();
+END CATCH;</pre>
+        Prints 123.
+    </li>
+</ul>
+
+<br>

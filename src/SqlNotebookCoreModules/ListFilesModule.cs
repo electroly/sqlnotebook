@@ -60,11 +60,16 @@ namespace SqlNotebookCoreModules {
                     yield return GetRow(fileQueue.Dequeue(), rootPath, recursive);
                 } else if (folderQueue.Any()) {
                     var folder = folderQueue.Dequeue();
-                    foreach (var filePath in Directory.GetFiles(folder)) {
-                        fileQueue.Enqueue(filePath);
-                    }
-                    foreach (var subfolder in Directory.GetDirectories(folder)) {
-                        folderQueue.Enqueue(subfolder);
+                    try {
+                        foreach (var filePath in Directory.GetFiles(folder)) {
+                            fileQueue.Enqueue(filePath);
+                        }
+                        foreach (var subfolder in Directory.GetDirectories(folder)) {
+                            folderQueue.Enqueue(subfolder);
+                        }
+                    } catch {
+                        // might get ourselves into trouble with permissions, folders being while we search, etc.
+                        // just skip folders when that happens.
                     }
                 }
             }

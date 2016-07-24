@@ -1,0 +1,35 @@
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>DOWNLOAD Function</title>
+
+<h1><code>DOWNLOAD</code> Function</h1>
+<p>
+Downloads a file from an HTTP/HTTPS site and returns its contents as a string.
+</p>
+
+<h2>Syntax</h2>
+<blockquote>
+<code>DOWNLOAD(<i>url</i>)</code>
+</blockquote>
+
+<h2>Arguments</h2>
+<ul class="args">
+    <li>
+        <b>url</b> (text expression)<br>
+        The URL of the file to download.
+    </li>
+</ul>
+
+<h2>Return Value</h2>
+<blockquote>
+A string containing the contents of the file.
+</blockquote>
+
+<h2>Examples</h2>
+<ul class="examples">
+    <li>
+        <code>PRINT DOWNLOAD('http://google.com/robots.txt')</code><br>
+        Prints many lines of text starting with "User-agent: *".
+    </li>
+</ul>
+
+<br>

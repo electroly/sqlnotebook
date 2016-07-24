@@ -148,6 +148,8 @@ namespace SqlNotebookCoreModules {
                     return dtf.GetMonthName(cal.GetMonth(date.DateTime));
                 case DatePart.DayOfWeek:
                     return dtf.GetDayName(cal.GetDayOfWeek(date.DateTime));
+                case DatePart.TzOffset:
+                    return $"{date.Offset.Hours:+00;-00}:{Math.Abs(date.Offset.Minutes):00}";
                 default:
                     return DateUtil.GetDatePart(date, datePart).ToString();
             }
@@ -267,15 +269,9 @@ namespace SqlNotebookCoreModules {
         public override string Name => "isdate";
         public override int ParamCount => 1;
         public override object Execute(IReadOnlyList<object> args) {
-            var arg = args[0];
-            if (arg is DateTime || arg is DateTimeOffset) {
-                return 1;
-            } else if (arg is string) {
-                DateTimeOffset dto;
-                return DateTimeOffset.TryParse((string)arg, out dto) ? 1 : 0;
-            } else {
-                return 0;
-            }
+            var arg = args[0].ToString();
+            DateTimeOffset dto;
+            return DateTimeOffset.TryParse(arg, out dto) ? 1 : 0;
         }
     }
 
@@ -314,7 +310,7 @@ namespace SqlNotebookCoreModules {
             var newDate = new DateTimeOffset(date.DateTime, offset);
             return DateUtil.FormatDateTimeOffset(newDate);
         }
-        private Regex _tzOffsetRegex = new Regex(@"^([+-]?)([0-9][0-9]?):([0-9][0-9]?)$");
+        private Regex _tzOffsetRegex = new Regex(@"^([+-])([0-9][0-9]?):([0-9][0-9]?)$");
     }
 
     public sealed class YearFunction : GenericSqliteFunction {

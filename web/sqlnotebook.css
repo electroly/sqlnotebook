@@ -40,3 +40,40 @@ hr {
     color: black;
     background-color: black;
 }
+img.diagram {
+    border: 1px solid white;
+}
+a img.diagram:hover {
+    border: 1px solid #4078c0;
+}
+div.figure {
+    text-align: center;
+}
+div.caption {
+    font-size: 8pt;
+    font-style: italic;
+    color: gray;
+}
+ul.args li, ul.opts li, .examples li {
+    margin-bottom: 15px;
+}
+ul.enum {
+    margin-top: 5px;
+}
+ul.enum li {
+    margin-bottom: 0px;
+}
+th {
+    font-weight: normal;
+    text-align: left;
+    background: #f6f6f6;
+}
+th, td {
+    border: 1px solid #eee;
+    padding: 3px 10px 3px 10px;
+}
+table {
+    border-collapse: collapse;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

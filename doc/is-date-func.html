@@ -1,0 +1,48 @@
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>ISDATE Function</title>
+
+<h1><code>ISDATE</code> Function</h1>
+<p>
+Determines whether the specified value is a text string that can be parsed into a date/time with or without a time zone offset.
+</p>
+
+<h2>Syntax</h2>
+<blockquote>
+<code>ISDATE(<i>value</i>)</code>
+</blockquote>
+
+<h2>Arguments</h2>
+<ul class="args">
+    <li>
+        <b>value</b> (expression)<br>
+        The value to inspect.
+    </li>
+</ul>
+
+<h2>Return Value</h2>
+<blockquote>
+Returns 1 if <i>value</i> is a valid date/time string, and returns 0 if not.
+</blockquote>
+
+<h2>Examples</h2>
+<ul class="examples">
+    <li>
+        <code>PRINT ISDATE('2016-03-07');</code><br>
+        Prints 1.
+    </li>
+    <li>
+        <code>PRINT ISDATE(1234);</code><br>
+        Prints 0.
+    </li>
+    <li>
+        <code>PRINT ISDATE('foo');</code><br>
+        Prints 0.
+    </li>
+    <li>
+        <code>PRINT ISDATE('2016-01-23 22:06:53.742 -04:00');</code><br>
+        Prints 1.
+    </li>
+</ul>
+
+<br>
+

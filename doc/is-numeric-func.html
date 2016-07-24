@@ -1,0 +1,43 @@
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>ISNUMERIC Function</title>
+
+<h1><code>ISNUMERIC</code> Function</h1>
+<p>
+Determines whether a given value is or can be converted to a numeric data type.
+</p>
+
+<h2>Syntax</h2>
+<blockquote>
+<code>ISNUMERIC(<i>value</i>)</code>
+</blockquote>
+
+<h2>Arguments</h2>
+<ul class="args">
+    <li>
+        <b>value</b> (expression)<br>
+        The value to inspect.
+    </li>
+</ul>
+
+<h2>Return Value</h2>
+<blockquote>
+If the value can be converted to a numeric data type, then 1 is returned.  If not, then 0 is returned.
+</blockquote>
+
+<h2>Examples</h2>
+<ul class="examples">
+    <li>
+        <code>PRINT ISNUMERIC('A');</code><br>
+        Prints 0.
+    </li>
+    <li>
+        <code>PRINT ISNUMERIC('123');</code><br>
+        Prints 1.
+    </li>
+    <li>
+        <code>PRINT ISNUMERIC(3.14);</code><br>
+        Prints 1.
+    </li>    
+</ul>
+
+<br>

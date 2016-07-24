@@ -77,7 +77,7 @@ namespace SqlNotebookCoreModules {
                 case "week": case "wk": case "ww": return DatePart.Week;
                 case "weekday": case "dw": return DatePart.DayOfWeek;
                 case "hour": case "hh": return DatePart.Hour;
-                case "minute": case "n": return DatePart.Minute;
+                case "minute": case "mi": case "n": return DatePart.Minute;
                 case "second": case "ss": case "s": return DatePart.Second;
                 case "millisecond": case "ms": return DatePart.Millisecond;
                 case "tzoffset": case "tz": return DatePart.TzOffset;

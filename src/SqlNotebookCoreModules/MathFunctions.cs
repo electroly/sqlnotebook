@@ -29,7 +29,7 @@ namespace SqlNotebookCoreModules {
     }
 
     public abstract class DyadicMathFunction : GenericSqliteFunction {
-        public override int ParamCount => 1;
+        public override int ParamCount => 2;
         public override bool IsDeterministic => true;
         public override object Execute(IReadOnlyList<object> args) {
             var x = GetDblArg(args[0], "x");
