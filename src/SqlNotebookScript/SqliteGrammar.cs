@@ -700,12 +700,10 @@ namespace SqlNotebookScript {
                         Tok(TokenType.Rp)
                     ),
                     // [ [ database-name "." ] table-name "." ] column-name
-                    Prod(2,
-                        Opt(
-                            Opt(Id("database name"), Tok(TokenType.Dot)),
-                            Id("table name"), Tok(TokenType.Dot)
-                        ),
-                        Id("column name")
+                    Prod(1,
+                        Id("database, table, or column name"),
+                        Opt(Tok(TokenType.Dot), Id("table or column name")),
+                        Opt(Tok(TokenType.Dot), Id("column name"))
                     ),
                     // <bind-parameter>
                     Prod(1, Id("variable name", allowVar: true)),
