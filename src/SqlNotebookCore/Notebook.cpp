@@ -467,31 +467,6 @@ IReadOnlyList<Token^>^ Notebook::StaticTokenize(String^ input) {
     }
 }
 
-String^ Notebook::FindLongestValidStatementPrefix(String^ input) {
-    const int TK_SEMI = 1;
-    auto str = Util::CStr(input);
-    auto cstr = str.c_str();
-    auto parser = SxParserAlloc();
-    auto parse = SxParseAlloc(_sqlite, cstr);
-
-    int tokenType = 0, oldPos = 0, pos = 0, len = (int)str.length();
-    while ((tokenType = GetToken(cstr, &oldPos, &pos, len)) > 0) {
-        SxAdvanceParse(parser, tokenType, &cstr[oldPos], pos - oldPos, parse);
-        if (SxGetParseErrorCount(parse) > 0) {
-            break;
-        }
-        oldPos = pos;
-        if (tokenType == TK_SEMI) {
-            break;
-        }
-    }
-
-    auto prefix = str.substr(0, oldPos);
-    auto nprefix = Util::Str(prefix.c_str());
-    SxParserFree(_sqlite, parser, parse);
-    return nprefix;
-}
-
 void Notebook::BeginUserCancel() {
     _cancelling = true;
     sqlite3_interrupt(_sqlite);

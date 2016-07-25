@@ -100,7 +100,6 @@ namespace SqlNotebookCore {
         virtual Object^ QueryValue(String^ sql, IReadOnlyList<Object^>^ args);
         void Save();
         void SaveAs(String^ filePath);
-        String^ FindLongestValidStatementPrefix(String^ input);
         bool IsTransactionActive();
 
         private:
