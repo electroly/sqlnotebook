@@ -23,7 +23,9 @@ namespace SqlNotebookCoreModules {
 
     public static class ModUtil {
         public static long GetIntArg(object arg, string paramName, string functionName) {
-            if (arg is int || arg is long) {
+            if (arg == null || arg is DBNull) {
+                throw new Exception($"{functionName.ToUpper()}: The \"{paramName}\" argument is required.");
+            } else if (arg is int || arg is long) {
                 return Convert.ToInt64(arg);
             } else {
                 throw new Exception($"{functionName.ToUpper()}: The \"{paramName}\" argument must be an INTEGER " +
@@ -32,7 +34,9 @@ namespace SqlNotebookCoreModules {
         }
 
         public static int GetInt32Arg(object arg, string paramName, string functionName) {
-            if (arg is int || arg is long) {
+            if (arg == null || arg is DBNull) {
+                throw new Exception($"{functionName.ToUpper()}: The \"{paramName}\" argument is required.");
+            } else if (arg is int || arg is long) {
                 var value64 = Convert.ToInt64(arg);
                 if (value64 < int.MinValue || value64 > int.MaxValue) {
                     throw new Exception($"{functionName.ToUpper()}: The \"{paramName}\" argument must be between " +
@@ -47,7 +51,9 @@ namespace SqlNotebookCoreModules {
         }
 
         public static double GetFloatArg(object arg, string paramName, string functionName) {
-            if (arg is int || arg is long || arg is float || arg is double) {
+            if (arg == null || arg is DBNull) {
+                throw new Exception($"{functionName.ToUpper()}: The \"{paramName}\" argument is required.");
+            } else if (arg is int || arg is long || arg is float || arg is double) {
                 return Convert.ToDouble(arg);
             } else {
                 throw new Exception($"{functionName.ToUpper()}: The \"{paramName}\" argument must be an INTEGER " +
@@ -56,10 +62,23 @@ namespace SqlNotebookCoreModules {
         }
 
         public static string GetStrArg(object arg, string paramName, string functionName) {
-            if (arg is string) {
+            if (arg == null || arg is DBNull) {
+                throw new Exception($"{functionName.ToUpper()}: The \"{paramName}\" argument is required.");
+            } else if (arg is string) {
                 return (string)arg;
             } else {
                 throw new Exception($"{functionName.ToUpper()}: The \"{paramName}\" argument must be a TEXT value, " +
+                    $"but type {GetTypeName(arg.GetType())} was provided.");
+            }
+        }
+
+        public static byte[] GetBlobArg(object arg, string paramName, string functionName) {
+            if (arg == null || arg is DBNull) {
+                throw new Exception($"{functionName.ToUpper()}: The \"{paramName}\" argument is required.");
+            } else if (arg is byte[]) {
+                return (byte[])arg;
+            } else {
+                throw new Exception($"{functionName.ToUpper()}: The \"{paramName}\" argument must be a BLOB value, " +
                     $"but type {GetTypeName(arg.GetType())} was provided.");
             }
         }

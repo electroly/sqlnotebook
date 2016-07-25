@@ -253,6 +253,7 @@ namespace SqlNotebookScript {
             switch (q.Peek(1)) {
                 case "csv": return Check(q, ParseImportCsvStmt(q));
                 case "txt": case "text": return Check(q, ParseImportTxtStmt(q));
+                case "xls": case "xlsx": return Check(q, ParseImportXlsStmt(q));
                 default: throw new SyntaxException($"Unknown import type: \"{q.Peek(1)}\"");
             }
         }
@@ -278,7 +279,25 @@ namespace SqlNotebookScript {
             ConsumeSemicolon(q);
             return stmt;
         }
-        
+
+        private static Ast.ImportXlsStmt ParseImportXlsStmt(TokenQueue q) { // or null
+            var stmt = new Ast.ImportXlsStmt { SourceToken = q.SourceToken };
+            var start = q.GetLocation();
+            if (!q.TakeMaybe("import")) { q.Jump(start); return null; }
+            if (!q.TakeMaybe("xls", "xlsx")) { q.Jump(start); return null; }
+            stmt.FilenameExpr = ParseExpr(q);
+            if (q.TakeMaybe("worksheet")) {
+                stmt.WhichSheetExpr = ParseExpr(q);
+            }
+            q.Take("into");
+            stmt.ImportTable = Check(q, ParseImportTable(q));
+            if (q.TakeMaybe("options")) {
+                stmt.OptionsList = Check(q, ParseOptionsList(q));
+            }
+            ConsumeSemicolon(q);
+            return stmt;
+        }
+
         private static Ast.ImportTable ParseImportTable(TokenQueue q) {
             var n = new Ast.ImportTable { SourceToken = q.SourceToken };
             n.TableName = Check(q, ParseIdentifierOrExpr(q));

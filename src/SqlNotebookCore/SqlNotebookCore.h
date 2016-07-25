@@ -347,12 +347,6 @@ namespace SqlNotebookCore {
 
         internal:
         static void SqliteResult(sqlite3_context* ctx, Object^ value);
-        static array<Byte>^ ConvertToSqlArray(IReadOnlyList<Object^>^ objects);
-        static int GetArrayCount(array<Byte>^ arrayBlob);
-        static Object^ GetArrayElement(array<Byte>^ arrayBlob, int elementIndex);
-        static array<Object^>^ GetArrayElements(array<Byte>^ arrayBlob);
-        static array<Byte>^ SliceArrayElements(array<Byte>^ originalArrayBlob, int index, int removeElements,
-            IReadOnlyList<Object^>^ insertElements);
     };
 
     public ref class NotebookTempFiles sealed abstract {

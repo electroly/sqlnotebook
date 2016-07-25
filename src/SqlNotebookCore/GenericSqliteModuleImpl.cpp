@@ -226,24 +226,25 @@ static void DeleteGcrootModule(void* ptr) {
 }
 
 void Notebook::InstallGenericModule(GenericSqliteModule^ impl) {
-    auto staticModule = new sqlite3_module;
-    _sqliteModules->Add(IntPtr(staticModule));
+    auto module = new sqlite3_module;
+    memset(module, 0, sizeof(sqlite3_module));
+    _sqliteModules->Add(IntPtr(module));
 
-    staticModule->iVersion = 1;
-    staticModule->xCreate = nullptr;
-    staticModule->xConnect = GenericCreate;
-    staticModule->xBestIndex = GenericBestIndex;
-    staticModule->xDisconnect = GenericDestroy;
-    staticModule->xDestroy = GenericDestroy;
-    staticModule->xOpen = GenericOpen;
-    staticModule->xClose = GenericClose;
-    staticModule->xFilter = GenericFilter;
-    staticModule->xNext = GenericNext;
-    staticModule->xEof = GenericEof;
-    staticModule->xColumn = GenericColumn;
-    staticModule->xRowid = GenericRowid;
-    staticModule->xRename = GenericRename;
+    module->iVersion = 1;
+    module->xCreate = nullptr;
+    module->xConnect = GenericCreate;
+    module->xBestIndex = GenericBestIndex;
+    module->xDisconnect = GenericDestroy;
+    module->xDestroy = GenericDestroy;
+    module->xOpen = GenericOpen;
+    module->xClose = GenericClose;
+    module->xFilter = GenericFilter;
+    module->xNext = GenericNext;
+    module->xEof = GenericEof;
+    module->xColumn = GenericColumn;
+    module->xRowid = GenericRowid;
+    module->xRename = GenericRename;
     auto gcrootModule = new gcroot<GenericSqliteModule^>(impl);
     auto nameCstr = Util::CStr(impl->Name);
-    SqliteCall(sqlite3_create_module_v2(_sqlite, nameCstr.c_str(), staticModule, gcrootModule, DeleteGcrootModule));
+    SqliteCall(sqlite3_create_module_v2(_sqlite, nameCstr.c_str(), module, gcrootModule, DeleteGcrootModule));
 }

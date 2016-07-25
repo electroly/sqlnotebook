@@ -448,6 +448,7 @@ static int AdoRename(sqlite3_vtab* pVtab, const char* zNew) {
 }
 
 static void AdoPopulateModule(sqlite3_module* module) {
+    memset(module, 0, sizeof(sqlite3_module));
     module->iVersion = 1;
     module->xCreate = AdoCreate;
     module->xConnect = AdoCreate;

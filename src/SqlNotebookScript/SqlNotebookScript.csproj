@@ -55,6 +55,7 @@
     <Compile Include="TxtExporter.cs" />
     <Compile Include="TxtImporter.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="XlsImporter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SqlNotebookCore\SqlNotebookCore.vcxproj">

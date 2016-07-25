@@ -16,6 +16,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace SqlNotebookCoreModules {
     public sealed class ChooseFunction : GenericSqliteFunction {
@@ -68,4 +70,73 @@ namespace SqlNotebookCoreModules {
         public override int ParamCount => 0;
         public override object Execute(IReadOnlyList<object> args) => Environment.UserName;
     }
+
+    public sealed class ReadFileText1Function : GenericSqliteFunction {
+        public override bool IsDeterministic => false;
+        public override string Name => "read_file_text";
+        public override int ParamCount => 1;
+        public override object Execute(IReadOnlyList<object> args) {
+            var filePath = ModUtil.GetStrArg(args[0], "file-path", Name);
+            try {
+                return File.ReadAllText(filePath);
+            } catch (Exception ex) {
+                throw new Exception($"{Name.ToUpper()}: {ex.Message}");
+            }
+        }
+    }
+
+    public sealed class ReadFileText2Function : GenericSqliteFunction {
+        public override bool IsDeterministic => false;
+        public override string Name => "read_file_text";
+        public override int ParamCount => 2;
+        public override object Execute(IReadOnlyList<object> args) {
+            var filePath = ModUtil.GetStrArg(args[0], "file-path", Name);
+            var encodingNum = ModUtil.GetInt32Arg(args[0], "file-encoding", Name);
+            
+            try {
+                if (encodingNum < 0 || encodingNum > 65535) {
+                    throw new Exception($"The \"file-encoding\" argument must be between 0 and 65535.");
+                }
+                var encoding = Encoding.GetEncoding(encodingNum);
+                return File.ReadAllText(filePath, encoding);
+            } catch (Exception ex) {
+                throw new Exception($"{Name.ToUpper()}: {ex.Message}");
+            }
+        }
+    }
+
+    public sealed class Split2Function : GenericSqliteFunction {
+        public override bool IsDeterministic => false;
+        public override string Name => "split";
+        public override int ParamCount => 2;
+        public override object Execute(IReadOnlyList<object> args) {
+            var text = ModUtil.GetStrArg(args[0], "text", Name);
+            var separator = ModUtil.GetStrArg(args[1], "separator", Name);
+            if (separator.Length == 0) {
+                throw new Exception($"{Name.ToUpper()}: The argument \"separator\" must not be an empty string.");
+            }
+            var splitted = text.Split(new[] { separator }, StringSplitOptions.None);
+            return ArrayUtil.ConvertToSqlArray(splitted);
+        }
+    }
+
+    public sealed class Split3Function : GenericSqliteFunction {
+        public override bool IsDeterministic => false;
+        public override string Name => "split";
+        public override int ParamCount => 3;
+        public override object Execute(IReadOnlyList<object> args) {
+            var text = ModUtil.GetStrArg(args[0], "text", Name);
+            var separator = ModUtil.GetStrArg(args[1], "separator", Name);
+            var whichSubstring = ModUtil.GetInt32Arg(args[2], "which-substring", Name);
+            if (separator.Length == 0) {
+                throw new Exception($"{Name.ToUpper()}: The argument \"separator\" must not be an empty string.");
+            }
+            if (whichSubstring < 0) {
+                throw new Exception($"{Name.ToUpper()}: The argument \"which-substring\" must not be negative.");
+            }
+            var splitted = text.Split(new[] { separator }, StringSplitOptions.None);
+            return whichSubstring < splitted.Length ? ArrayUtil.ConvertToSqlArray(splitted) : null;
+        }
+    }
+
 }

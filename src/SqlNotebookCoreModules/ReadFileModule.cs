@@ -21,8 +21,8 @@ using System.Linq;
 using System.Text;
 
 namespace SqlNotebookCoreModules {
-    public sealed class ReadFileLinesModule : GenericSqliteModule {
-        public override string Name => "read_file_lines";
+    public sealed class ReadFileModule : GenericSqliteModule {
+        public override string Name => "read_file";
 
         public override int HiddenColumnCount => 2;
 
@@ -34,20 +34,20 @@ namespace SqlNotebookCoreModules {
             var encodingObj = hiddenValues[1] ?? 0L;
 
             if (filePathObj == null) {
-                throw new Exception("READ_FILE_LINES: The \"file-path\" argument is required.");
+                throw new Exception($"{Name.ToUpper()}: The \"file-path\" argument is required.");
             }
             if (!(filePathObj is string)) {
-                throw new Exception("READ_FILE_LINES: The \"file-path\" argument must be a string.");
+                throw new Exception($"{Name.ToUpper()}: The \"file-path\" argument must be a string.");
             }
             if (!(encodingObj is Int64)) {
-                throw new Exception("READ_FILE_LINES: The \"encoding\" argument must be an integer.");
+                throw new Exception($"{Name.ToUpper()}: The \"encoding\" argument must be an integer.");
             }
 
             var filePath = (string)filePathObj;
             var encoding = (Int64)encodingObj;
 
             if (encoding < 0 && encoding > 65535) {
-                throw new Exception("READ_FILE_LINES: The \"encoding\" argument must be between 0 and 65535.");
+                throw new Exception($"{Name.ToUpper()}: The \"encoding\" argument must be between 0 and 65535.");
             }
 
             string[] lines;
