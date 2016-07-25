@@ -20,8 +20,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace SqlNotebookCoreModules {
-    public sealed class ReadFileModule : GenericSqliteModule {
+namespace SqlNotebookCoreModules.TableFunctions {
+    public sealed class ReadFileFunction : CustomTableFunction {
         public override string Name => "read_file";
 
         public override int HiddenColumnCount => 2;

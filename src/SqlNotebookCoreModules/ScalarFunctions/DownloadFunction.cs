@@ -14,14 +14,22 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
+using System.Net;
 
-namespace SqlNotebookCoreModules {
-    public abstract class GenericSqliteFunction {
-        public abstract string Name { get; }
-        public abstract int ParamCount { get; }
-        public abstract bool IsDeterministic { get; }
-        public abstract object Execute(IReadOnlyList<object> args);
+namespace SqlNotebookCoreModules.ScalarFunctions {
+    public sealed class DownloadFunction : CustomScalarFunction {
+        public override string Name => "download";
+
+        public override int ParamCount => 1;
+
+        public override bool IsDeterministic => false;
+
+        public override object Execute(IReadOnlyList<object> args) {
+            var url = args[0].ToString();
+            using (var client = new WebClient()) {
+                return client.DownloadString(url);
+            }
+        }
     }
 }

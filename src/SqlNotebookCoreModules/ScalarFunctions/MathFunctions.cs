@@ -16,24 +16,25 @@
 
 using System;
 using System.Collections.Generic;
+using SqlNotebookCoreModules.Utils;
 
-namespace SqlNotebookCoreModules {
-    public abstract class MonadicMathFunction : GenericSqliteFunction {
+namespace SqlNotebookCoreModules.ScalarFunctions {
+    public abstract class MonadicMathFunction : CustomScalarFunction {
         public override int ParamCount => 1;
         public override bool IsDeterministic => true;
         public override object Execute(IReadOnlyList<object> args) {
-            var x = ModUtil.GetFloatArg(args[0], "x", Name);
+            var x = ArgUtil.GetFloatArg(args[0], "x", Name);
             return Execute(x);
         }
         public abstract double Execute(double x);
     }
 
-    public abstract class DyadicMathFunction : GenericSqliteFunction {
+    public abstract class DyadicMathFunction : CustomScalarFunction {
         public override int ParamCount => 2;
         public override bool IsDeterministic => true;
         public override object Execute(IReadOnlyList<object> args) {
-            var x = ModUtil.GetFloatArg(args[0], "x", Name);
-            var y = ModUtil.GetFloatArg(args[1], "y", Name);
+            var x = ArgUtil.GetFloatArg(args[0], "x", Name);
+            var y = ArgUtil.GetFloatArg(args[1], "y", Name);
             return Execute(x, y);
         }
         public abstract double Execute(double x, double y);

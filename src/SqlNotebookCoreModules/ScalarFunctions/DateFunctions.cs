@@ -19,16 +19,17 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SqlNotebookCoreModules.Utils;
 
-namespace SqlNotebookCoreModules {
-    public sealed class DateAddFunction : GenericSqliteFunction {
+namespace SqlNotebookCoreModules.ScalarFunctions {
+    public sealed class DateAddFunction : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "dateadd";
         public override int ParamCount => 3;
         public override object Execute(IReadOnlyList<object> args) {
-            var datePart = ModUtil.GetDatePartArg(args[0], "date-part", Name);
-            var number = ModUtil.GetInt32Arg(args[1], "number", Name);
-            var date = ModUtil.GetDateArg(args[2], "date", Name);
+            var datePart = ArgUtil.GetDatePartArg(args[0], "date-part", Name);
+            var number = ArgUtil.GetInt32Arg(args[1], "number", Name);
+            var date = ArgUtil.GetDateArg(args[2], "date", Name);
             var newDate = date;
 
             switch (datePart) {
@@ -51,14 +52,14 @@ namespace SqlNotebookCoreModules {
         }
     }
 
-    public sealed class DateDiffFunction : GenericSqliteFunction {
+    public sealed class DateDiffFunction : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "datediff";
         public override int ParamCount => 3;
         public override object Execute(IReadOnlyList<object> args) {
-            var datePart = ModUtil.GetDatePartArg(args[0], "date-part", Name);
-            var startDate = ModUtil.GetDateArg(args[1], "start-date", Name);
-            var endDate = ModUtil.GetDateArg(args[2], "end-date", Name);
+            var datePart = ArgUtil.GetDatePartArg(args[0], "date-part", Name);
+            var startDate = ArgUtil.GetDateArg(args[1], "start-date", Name);
+            var endDate = ArgUtil.GetDateArg(args[2], "end-date", Name);
 
             // datediff() counts the number of calendar/clock boundaries crossed, which is different than
             // the amount of time between the two dates.  for instance, if startDate is one second before
@@ -117,7 +118,7 @@ namespace SqlNotebookCoreModules {
         }
     }
 
-    public sealed class DateFromPartsFunction : GenericSqliteFunction {
+    public sealed class DateFromPartsFunction : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "datefromparts";
         public override int ParamCount => 3;
@@ -125,21 +126,21 @@ namespace SqlNotebookCoreModules {
             if (args[0] is DBNull || args[1] is DBNull || args[2] is DBNull) {
                 return DBNull.Value;
             }
-            var year = ModUtil.GetInt32Arg(args[0], "year", Name);
-            var month = ModUtil.GetInt32Arg(args[1], "month", Name);
-            var day = ModUtil.GetInt32Arg(args[2], "day", Name);
+            var year = ArgUtil.GetInt32Arg(args[0], "year", Name);
+            var month = ArgUtil.GetInt32Arg(args[1], "month", Name);
+            var day = ArgUtil.GetInt32Arg(args[2], "day", Name);
             var date = new DateTime(year, month, day);
             return DateUtil.FormatDate(date);
         }
     }
 
-    public sealed class DateNameFunction : GenericSqliteFunction {
+    public sealed class DateNameFunction : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "datename";
         public override int ParamCount => 2;
         public override object Execute(IReadOnlyList<object> args) {
-            var datePart = ModUtil.GetDatePartArg(args[0], "date-part", Name);
-            var date = ModUtil.GetDateArg(args[1], "date", Name);
+            var datePart = ArgUtil.GetDatePartArg(args[0], "date-part", Name);
+            var date = ArgUtil.GetDateArg(args[1], "date", Name);
             var cal = CultureInfo.CurrentCulture.Calendar;
             var dtf = CultureInfo.CurrentCulture.DateTimeFormat;
 
@@ -156,20 +157,20 @@ namespace SqlNotebookCoreModules {
         }
     }
 
-    public sealed class DatePartFunction : GenericSqliteFunction {
+    public sealed class DatePartFunction : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "datepart";
         public override int ParamCount => 2;
         public override object Execute(IReadOnlyList<object> args) {
-            var datePart = ModUtil.GetDatePartArg(args[0], "date-part", Name);
-            var date = ModUtil.GetDateArg(args[1], "date", Name);
+            var datePart = ArgUtil.GetDatePartArg(args[0], "date-part", Name);
+            var date = ArgUtil.GetDateArg(args[1], "date", Name);
             var cal = CultureInfo.CurrentCulture.Calendar;
             var dtf = CultureInfo.CurrentCulture.DateTimeFormat;
             return DateUtil.GetDatePart(date, datePart);
         }
     }
 
-    public sealed class DateTimeFromPartsFunction : GenericSqliteFunction {
+    public sealed class DateTimeFromPartsFunction : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "datetimefromparts";
         public override int ParamCount => 7;
@@ -177,19 +178,19 @@ namespace SqlNotebookCoreModules {
             if (args.Take(ParamCount).OfType<DBNull>().Any()) {
                 return DBNull.Value;
             }
-            var year = ModUtil.GetInt32Arg(args[0], "year", Name);
-            var month = ModUtil.GetInt32Arg(args[1], "month", Name);
-            var day = ModUtil.GetInt32Arg(args[2], "day", Name);
-            var hour = ModUtil.GetInt32Arg(args[3], "hour", Name);
-            var minute = ModUtil.GetInt32Arg(args[4], "minute", Name);
-            var second = ModUtil.GetInt32Arg(args[5], "second", Name);
-            var msec = ModUtil.GetInt32Arg(args[6], "millisecond", Name);
+            var year = ArgUtil.GetInt32Arg(args[0], "year", Name);
+            var month = ArgUtil.GetInt32Arg(args[1], "month", Name);
+            var day = ArgUtil.GetInt32Arg(args[2], "day", Name);
+            var hour = ArgUtil.GetInt32Arg(args[3], "hour", Name);
+            var minute = ArgUtil.GetInt32Arg(args[4], "minute", Name);
+            var second = ArgUtil.GetInt32Arg(args[5], "second", Name);
+            var msec = ArgUtil.GetInt32Arg(args[6], "millisecond", Name);
             var date = new DateTime(year, month, day, hour, minute, second, msec);
             return DateUtil.FormatDateTime(date);
         }
     }
 
-    public sealed class DateTimeOffsetFromPartsFunction : GenericSqliteFunction {
+    public sealed class DateTimeOffsetFromPartsFunction : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "datetimeoffsetfromparts";
         public override int ParamCount => 9;
@@ -197,50 +198,50 @@ namespace SqlNotebookCoreModules {
             if (args.Take(ParamCount).OfType<DBNull>().Any()) {
                 return DBNull.Value;
             }
-            var year = ModUtil.GetInt32Arg(args[0], "year", Name);
-            var month = ModUtil.GetInt32Arg(args[1], "month", Name);
-            var day = ModUtil.GetInt32Arg(args[2], "day", Name);
-            var hour = ModUtil.GetInt32Arg(args[3], "hour", Name);
-            var minute = ModUtil.GetInt32Arg(args[4], "minute", Name);
-            var second = ModUtil.GetInt32Arg(args[5], "second", Name);
-            var msec = ModUtil.GetInt32Arg(args[6], "millisecond", Name);
-            var hourOffset = ModUtil.GetInt32Arg(args[7], "hour-offset", Name);
-            var minuteOffset = ModUtil.GetInt32Arg(args[8], "minute-offset", Name);
+            var year = ArgUtil.GetInt32Arg(args[0], "year", Name);
+            var month = ArgUtil.GetInt32Arg(args[1], "month", Name);
+            var day = ArgUtil.GetInt32Arg(args[2], "day", Name);
+            var hour = ArgUtil.GetInt32Arg(args[3], "hour", Name);
+            var minute = ArgUtil.GetInt32Arg(args[4], "minute", Name);
+            var second = ArgUtil.GetInt32Arg(args[5], "second", Name);
+            var msec = ArgUtil.GetInt32Arg(args[6], "millisecond", Name);
+            var hourOffset = ArgUtil.GetInt32Arg(args[7], "hour-offset", Name);
+            var minuteOffset = ArgUtil.GetInt32Arg(args[8], "minute-offset", Name);
             var offset = new TimeSpan(hourOffset, minuteOffset, 0);
             var date = new DateTimeOffset(year, month, day, hour, minute, second, msec, offset);
             return DateUtil.FormatDateTimeOffset(date);
         }
     }
 
-    public sealed class DayFunction : GenericSqliteFunction {
+    public sealed class DayFunction : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "day";
         public override int ParamCount => 1;
         public override object Execute(IReadOnlyList<object> args) {
-            var date = ModUtil.GetDateArg(args[0], "date", Name);
+            var date = ArgUtil.GetDateArg(args[0], "date", Name);
             return DateUtil.GetDatePart(date, DatePart.Day);
         }
     }
 
-    public sealed class EoMonth1Function : GenericSqliteFunction {
+    public sealed class EoMonth1Function : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "eomonth";
         public override int ParamCount => 1;
         public override object Execute(IReadOnlyList<object> args) {
-            var date = ModUtil.GetDateArg(args[0], "start-date", Name);
+            var date = ArgUtil.GetDateArg(args[0], "start-date", Name);
             var lastDayOfMonth = new DateTime(date.Year, date.Month,
                 DateTime.DaysInMonth(date.Year, date.Month));
             return DateUtil.FormatDate(lastDayOfMonth);
         }
     }
 
-    public sealed class EoMonth2Function : GenericSqliteFunction {
+    public sealed class EoMonth2Function : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "eomonth";
         public override int ParamCount => 2;
         public override object Execute(IReadOnlyList<object> args) {
-            var date = ModUtil.GetDateArg(args[0], "start-date", Name);
-            var monthsToAdd = ModUtil.GetInt32Arg(args[1], "months-to-add", Name);
+            var date = ArgUtil.GetDateArg(args[0], "start-date", Name);
+            var monthsToAdd = ArgUtil.GetInt32Arg(args[1], "months-to-add", Name);
             date = date.AddMonths(monthsToAdd);
             var lastDayOfMonth = new DateTime(date.Year, date.Month,
                 DateTime.DaysInMonth(date.Year, date.Month));
@@ -248,7 +249,7 @@ namespace SqlNotebookCoreModules {
         }
     }
 
-    public sealed class GetDateFunction : GenericSqliteFunction {
+    public sealed class GetDateFunction : CustomScalarFunction {
         public override bool IsDeterministic => false;
         public override string Name => "getdate";
         public override int ParamCount => 0;
@@ -256,7 +257,7 @@ namespace SqlNotebookCoreModules {
             => DateUtil.FormatDateTimeOffset(DateTimeOffset.Now);
     }
 
-    public sealed class GetUtcDateFunction : GenericSqliteFunction {
+    public sealed class GetUtcDateFunction : CustomScalarFunction {
         public override bool IsDeterministic => false;
         public override string Name => "getutcdate";
         public override int ParamCount => 0;
@@ -264,7 +265,7 @@ namespace SqlNotebookCoreModules {
             => DateUtil.FormatDateTimeOffset(DateTimeOffset.UtcNow);
     }
 
-    public sealed class IsDateFunction : GenericSqliteFunction {
+    public sealed class IsDateFunction : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "isdate";
         public override int ParamCount => 1;
@@ -275,28 +276,28 @@ namespace SqlNotebookCoreModules {
         }
     }
 
-    public sealed class MonthFunction : GenericSqliteFunction {
+    public sealed class MonthFunction : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "month";
         public override int ParamCount => 1;
         public override object Execute(IReadOnlyList<object> args) {
-            var date = ModUtil.GetDateArg(args[0], "date", Name);
+            var date = ArgUtil.GetDateArg(args[0], "date", Name);
             return DateUtil.GetDatePart(date, DatePart.Month);
         }
     }
 
-    public sealed class SwitchOffsetFunction : GenericSqliteFunction {
+    public sealed class SwitchOffsetFunction : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "switchoffset";
         public override int ParamCount => 2;
         public override object Execute(IReadOnlyList<object> args) {
-            var date = ModUtil.GetDateArg(args[0], "date", Name);
+            var date = ArgUtil.GetDateArg(args[0], "date", Name);
             TimeSpan offset;
             if (args[1] is int || args[1] is long) {
-                var minutes = ModUtil.GetInt32Arg(args[1], "time-zone", Name);
+                var minutes = ArgUtil.GetInt32Arg(args[1], "time-zone", Name);
                 offset = new TimeSpan(0, minutes, 0);
             } else {
-                var offsetStr = ModUtil.GetStrArg(args[1], "time-zone", Name);
+                var offsetStr = ArgUtil.GetStrArg(args[1], "time-zone", Name);
                 var m = _tzOffsetRegex.Match(offsetStr);
                 if (m.Success) {
                     var sign = m.Groups[1].Value == "+" ? 1 : -1;
@@ -313,12 +314,12 @@ namespace SqlNotebookCoreModules {
         private Regex _tzOffsetRegex = new Regex(@"^([+-])([0-9][0-9]?):([0-9][0-9]?)$");
     }
 
-    public sealed class YearFunction : GenericSqliteFunction {
+    public sealed class YearFunction : CustomScalarFunction {
         public override bool IsDeterministic => true;
         public override string Name => "year";
         public override int ParamCount => 1;
         public override object Execute(IReadOnlyList<object> args) {
-            var date = ModUtil.GetDateArg(args[0], "date", Name);
+            var date = ArgUtil.GetDateArg(args[0], "date", Name);
             return DateUtil.GetDatePart(date, DatePart.Year);
         }
     }

@@ -337,13 +337,13 @@ namespace SqlNotebookCore {
         void InstallMsModule();
         void InstallMyModule();
         void InstallCustomFunctions();
-        void InstallGenericModule(GenericSqliteModule^ impl);
+        void InstallGenericModule(CustomTableFunction^ impl);
         void SqliteCall(int result);
         void Init();
         bool GetCancelling();
         void RegisterCustomFunction(const char* functionName, int numArgs,
             void(*func)(sqlite3_context*, int, sqlite3_value **), bool deterministic);
-        void RegisterGenericFunction(GenericSqliteFunction^ function);
+        void RegisterGenericFunction(CustomScalarFunction^ function);
 
         internal:
         static void SqliteResult(sqlite3_context* ctx, Object^ value);

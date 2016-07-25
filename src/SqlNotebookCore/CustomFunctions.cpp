@@ -32,7 +32,7 @@ private ref class CustomFunctionContext {
 private ref class GenericFunctionContext {
     public:
     Notebook^ Notebook;
-    GenericSqliteFunction^ Function;
+    CustomScalarFunction^ Function;
 };
 
 static Notebook^ GetNotebook(sqlite3_context* ctx) {
@@ -180,7 +180,7 @@ static void ExecuteGenericFunction(sqlite3_context* ctx, int argc, sqlite3_value
     }
 }
 
-void Notebook::RegisterGenericFunction(GenericSqliteFunction^ function) {
+void Notebook::RegisterGenericFunction(CustomScalarFunction^ function) {
     auto context = gcnew GenericFunctionContext();
     context->Notebook = this;
     context->Function = function;

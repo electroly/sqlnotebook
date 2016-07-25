@@ -22,7 +22,7 @@ using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
-namespace SqlNotebookCoreModules {
+namespace SqlNotebookCoreModules.Utils {
     public static class XlsUtil {
         public static IReadOnlyList<string> ReadWorksheetNames(string filePath) {
             if (!File.Exists(filePath)) {

@@ -27,7 +27,7 @@ using namespace System::Text;
 
 private struct GenericTable {
     sqlite3_vtab Super;
-    gcroot<GenericSqliteModule^> Module;
+    gcroot<CustomTableFunction^> Module;
 
     GenericTable() {
         memset(&Super, 0, sizeof(Super));
@@ -57,7 +57,7 @@ private struct GenericCursor {
 
 static int GenericCreate(sqlite3* db, void* pAux, int argc, const char* const* argv, sqlite3_vtab** ppVTab, char** pzErr) {
     try {
-        auto module = *(gcroot<GenericSqliteModule^>*)pAux;
+        auto module = *(gcroot<CustomTableFunction^>*)pAux;
         GenericTable* vtab = new GenericTable;
         vtab->Module = module;
         *ppVTab = &vtab->Super;
@@ -222,10 +222,10 @@ static int GenericRename(sqlite3_vtab* pVtab, const char* zNew) {
 }
 
 static void DeleteGcrootModule(void* ptr) {
-    delete (gcroot<GenericSqliteModule^>*)ptr;
+    delete (gcroot<CustomTableFunction^>*)ptr;
 }
 
-void Notebook::InstallGenericModule(GenericSqliteModule^ impl) {
+void Notebook::InstallGenericModule(CustomTableFunction^ impl) {
     auto module = new sqlite3_module;
     memset(module, 0, sizeof(sqlite3_module));
     _sqliteModules->Add(IntPtr(module));
@@ -244,7 +244,7 @@ void Notebook::InstallGenericModule(GenericSqliteModule^ impl) {
     module->xColumn = GenericColumn;
     module->xRowid = GenericRowid;
     module->xRename = GenericRename;
-    auto gcrootModule = new gcroot<GenericSqliteModule^>(impl);
+    auto gcrootModule = new gcroot<CustomTableFunction^>(impl);
     auto nameCstr = Util::CStr(impl->Name);
     SqliteCall(sqlite3_create_module_v2(_sqlite, nameCstr.c_str(), module, gcrootModule, DeleteGcrootModule));
 }

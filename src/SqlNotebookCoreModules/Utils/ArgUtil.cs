@@ -16,12 +16,12 @@
 
 using System;
 
-namespace SqlNotebookCoreModules {
+namespace SqlNotebookCoreModules.Utils {
     public enum DatePart {
         Year, Quarter, Month, DayOfYear, Day, Week, DayOfWeek, Hour, Minute, Second, Millisecond, TzOffset
     }
 
-    public static class ModUtil {
+    public static class ArgUtil {
         public static long GetIntArg(object arg, string paramName, string functionName) {
             if (arg == null || arg is DBNull) {
                 throw new Exception($"{functionName.ToUpper()}: The \"{paramName}\" argument is required.");

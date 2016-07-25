@@ -15,21 +15,12 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Collections.Generic;
-using System.Net;
 
 namespace SqlNotebookCoreModules {
-    public sealed class DownloadFunction : GenericSqliteFunction {
-        public override string Name => "download";
-
-        public override int ParamCount => 1;
-
-        public override bool IsDeterministic => false;
-
-        public override object Execute(IReadOnlyList<object> args) {
-            var url = args[0].ToString();
-            using (var client = new WebClient()) {
-                return client.DownloadString(url);
-            }
-        }
+    public abstract class CustomTableFunction {
+        public abstract string Name { get; }
+        public abstract string CreateTableSql { get; }
+        public abstract int HiddenColumnCount { get; }
+        public abstract IEnumerable<object[]> Execute(object[] hiddenValues);
     }
 }

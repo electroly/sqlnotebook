@@ -19,8 +19,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SqlNotebookCoreModules {
-    public sealed class ListFilesModule : GenericSqliteModule {
+namespace SqlNotebookCoreModules.TableFunctions {
+    public sealed class ListFilesFunction : CustomTableFunction {
         public override string Name => "list_files";
 
         public override string CreateTableSql =>

@@ -14,13 +14,14 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 
 namespace SqlNotebookCoreModules {
-    public abstract class GenericSqliteModule {
+    public abstract class CustomScalarFunction {
         public abstract string Name { get; }
-        public abstract string CreateTableSql { get; }
-        public abstract int HiddenColumnCount { get; }
-        public abstract IEnumerable<object[]> Execute(object[] hiddenValues);
+        public abstract int ParamCount { get; }
+        public abstract bool IsDeterministic { get; }
+        public abstract object Execute(IReadOnlyList<object> args);
     }
 }

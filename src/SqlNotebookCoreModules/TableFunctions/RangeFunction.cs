@@ -17,8 +17,8 @@
 using System;
 using System.Collections.Generic;
 
-namespace SqlNotebookCoreModules {
-    public sealed class RangeModule : GenericSqliteModule {
+namespace SqlNotebookCoreModules.TableFunctions {
+    public sealed class RangeFunction : CustomTableFunction {
         public override string Name => "range";
 
         public override string CreateTableSql =>

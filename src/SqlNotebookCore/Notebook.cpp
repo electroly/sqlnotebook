@@ -80,10 +80,10 @@ Notebook::!Notebook() {
     _sqliteModules->Clear();
 }
 
-static Tuple<List<GenericSqliteModule^>^, List<GenericSqliteFunction^>^>^ FindGenericSqliteModules() {
-    auto modules = gcnew List<GenericSqliteModule^>();
-    auto functions = gcnew List<GenericSqliteFunction^>();
-    auto assembly = GenericSqliteModule::typeid->Assembly;
+static Tuple<List<CustomTableFunction^>^, List<CustomScalarFunction^>^>^ FindCustomTableFunctions() {
+    auto modules = gcnew List<CustomTableFunction^>();
+    auto functions = gcnew List<CustomScalarFunction^>();
+    auto assembly = CustomTableFunction::typeid->Assembly;
     auto types = assembly->GetExportedTypes();
     for each (auto type in types) {
         if (type->IsAbstract) {
@@ -91,11 +91,11 @@ static Tuple<List<GenericSqliteModule^>^, List<GenericSqliteFunction^>^>^ FindGe
         }
         auto baseType = type->BaseType;
         while (baseType != nullptr) {
-            if (baseType == GenericSqliteModule::typeid) {
-                modules->Add((GenericSqliteModule^)Activator::CreateInstance(type));
+            if (baseType == CustomTableFunction::typeid) {
+                modules->Add((CustomTableFunction^)Activator::CreateInstance(type));
                 break;
-            } else if (baseType == GenericSqliteFunction::typeid) {
-                functions->Add((GenericSqliteFunction^)Activator::CreateInstance(type));
+            } else if (baseType == CustomScalarFunction::typeid) {
+                functions->Add((CustomScalarFunction^)Activator::CreateInstance(type));
                 break;
             }
             baseType = baseType->BaseType;
@@ -113,7 +113,7 @@ void Notebook::Init() {
     InstallPgModule();
     InstallMsModule();
     InstallMyModule();
-    auto genericModulesAndFunctions = FindGenericSqliteModules();
+    auto genericModulesAndFunctions = FindCustomTableFunctions();
     for each (auto genericModule in genericModulesAndFunctions->Item1) {
         InstallGenericModule(genericModule);
     }

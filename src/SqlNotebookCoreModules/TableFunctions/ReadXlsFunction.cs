@@ -16,28 +16,31 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using SqlNotebookCoreModules.Utils;
 
-namespace SqlNotebookCoreModules {
-    public sealed class ListXlsWorksheetsModule : GenericSqliteModule {
-        public override string Name => "list_xls_worksheets";
+namespace SqlNotebookCoreModules.TableFunctions {
+    public sealed class ReadXlsFunction : CustomTableFunction {
+        public override string Name => "read_xls";
 
         public override string CreateTableSql =>
-            @"CREATE TABLE list_xls_worksheets (_file_path HIDDEN, number INTEGER, name)";
+            @"CREATE TABLE read_xls (_file_path HIDDEN, _worksheet_index HIDDEN,
+            row_number INTEGER PRIMARY KEY, row_array BLOB, num_columns INTEGER)";
 
-        public override int HiddenColumnCount => 1;
+        public override int HiddenColumnCount => 2;
 
         public override IEnumerable<object[]> Execute(object[] hiddenValues) {
-            var filePath = ModUtil.GetStrArg(hiddenValues[0], "file-path", Name);
-            if (!File.Exists(filePath)) {
-                throw new Exception($"{Name.ToUpper()}: File not found.");
-            }
+            var filePath = ArgUtil.GetStrArg(hiddenValues[0], "file-path", Name);
+            var worksheetIndex = ArgUtil.GetInt32Arg(hiddenValues[1], "worksheet-index", Name);
 
             try {
-                return XlsUtil.ReadWorksheetNames(filePath).Select((name, i) => new object[] {
-                    filePath, i, name
-                }).ToList();
+                return XlsUtil.ReadWorksheet(filePath, worksheetIndex).Select((x, i) => new object[] {
+                    filePath,
+                    worksheetIndex,
+                    i + 1,
+                    ArrayUtil.ConvertToSqlArray(x ?? new object[0]),
+                    x?.Length ?? 0
+                });
             } catch (Exception ex) {
                 throw new Exception($"{Name.ToUpper()}: {ex.Message}");
             }

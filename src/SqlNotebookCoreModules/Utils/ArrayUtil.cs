@@ -17,11 +17,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace SqlNotebookCoreModules {
+namespace SqlNotebookCoreModules.Utils {
     public static class ArrayUtil {
         // the blob format for arrays is:
         // - 32-bit integer: number of elements
