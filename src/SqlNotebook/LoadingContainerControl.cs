@@ -15,7 +15,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Windows.Forms;
-using SqlNotebookCoreModules.Script;
+using SqlNotebookScript.Interpreter;
 
 namespace SqlNotebook {
     public partial class LoadingContainerControl : UserControl {

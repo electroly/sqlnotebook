@@ -22,7 +22,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SqlNotebookCore;
-using SqlNotebookCoreModules;
+using SqlNotebookScript;
 
 namespace SqlNotebook {
     public static class Extensions {

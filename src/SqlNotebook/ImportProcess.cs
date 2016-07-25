@@ -18,7 +18,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SqlNotebookCoreModules.Script;
+using SqlNotebookScript.Interpreter;
 
 namespace SqlNotebook {
     public static class CsvImportProcess {

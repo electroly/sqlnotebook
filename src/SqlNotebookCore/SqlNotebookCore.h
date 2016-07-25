@@ -19,7 +19,7 @@
 #include <vector>
 #include <msclr/gcroot.h>
 #include "../sqlite3/sqlite3-ex.h"
-using namespace SqlNotebookCoreModules;
+using namespace SqlNotebookScript;
 using namespace System;
 using namespace System::Data;
 using namespace System::Collections::Generic;

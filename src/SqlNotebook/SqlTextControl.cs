@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ScintillaNET;
 using SqlNotebookCore;
-using SqlNotebookCoreModules;
+using SqlNotebookScript;
 
 namespace SqlNotebook {
     public partial class SqlTextControl : UserControl {

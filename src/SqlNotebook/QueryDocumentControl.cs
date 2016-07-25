@@ -23,9 +23,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SqlNotebookCore;
-using SqlNotebookCoreModules.Script;
+using SqlNotebookScript.Interpreter;
 using ScintillaNET;
-using SqlNotebookCoreModules;
+using SqlNotebookScript;
 
 namespace SqlNotebook {
     public partial class QueryDocumentControl : UserControl, IDocumentControl {

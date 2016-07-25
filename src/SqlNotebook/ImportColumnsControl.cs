@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using SqlNotebookCoreModules.Script;
+using SqlNotebookScript.Interpreter;
 
 namespace SqlNotebook {
     public partial class ImportColumnsControl : UserControl {

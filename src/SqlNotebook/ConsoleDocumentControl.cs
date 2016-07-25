@@ -25,9 +25,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SqlNotebookCore;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using SqlNotebookCoreModules.Script;
+using SqlNotebookScript.Interpreter;
 using System.Runtime.InteropServices;
-using SqlNotebookCoreModules;
+using SqlNotebookScript;
 
 namespace SqlNotebook {
     public partial class ConsoleDocumentControl : UserControl, IDocumentControl {

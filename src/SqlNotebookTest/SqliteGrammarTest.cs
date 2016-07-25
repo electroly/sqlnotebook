@@ -20,7 +20,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SqlNotebookCore;
-using SqlNotebookCoreModules.Script;
+using SqlNotebookScript.Interpreter;
 
 namespace SqlNotebookTest {
     [TestClass]

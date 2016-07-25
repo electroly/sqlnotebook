@@ -17,7 +17,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmicrohttpd", "libmicroht
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlNotebookTest", "SqlNotebookTest\SqlNotebookTest.csproj", "{AEF5B9CD-4B2B-41DF-8827-B3414A7ACD5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlNotebookCoreModules", "SqlNotebookCoreModules\SqlNotebookCoreModules.csproj", "{2255C461-80D4-419C-AA57-60AF7D2C6305}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlNotebookScript", "SqlNotebookScript\SqlNotebookScript.csproj", "{2255C461-80D4-419C-AA57-60AF7D2C6305}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

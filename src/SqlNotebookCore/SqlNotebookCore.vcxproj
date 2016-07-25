@@ -127,7 +127,7 @@
     <ProjectReference Include="..\sqlite3\sqlite3.vcxproj">
       <Project>{34743fad-099d-4db8-b8a6-c863fec91c77}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\SqlNotebookCoreModules\SqlNotebookCoreModules.csproj">
+    <ProjectReference Include="..\SqlNotebookScript\SqlNotebookScript.csproj">
       <Project>{2255c461-80d4-419c-aa57-60af7d2c6305}</Project>
     </ProjectReference>
   </ItemGroup>

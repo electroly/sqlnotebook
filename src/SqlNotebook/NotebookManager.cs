@@ -21,9 +21,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SqlNotebookCore;
-using SqlNotebookCoreModules;
-using SqlNotebookCoreModules.Script;
-using SqlNotebookCoreModules.Script.Ast;
+using SqlNotebookScript;
+using SqlNotebookScript.Interpreter;
+using SqlNotebookScript.Interpreter.Ast;
 
 namespace SqlNotebook {
     public enum NotebookItemType {

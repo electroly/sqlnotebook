@@ -83,13 +83,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SqlNotebookCoreModules\SqlNotebookCoreModules.csproj">
-      <Project>{2255c461-80d4-419c-aa57-60af7d2c6305}</Project>
-      <Name>SqlNotebookCoreModules</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SqlNotebookCore\SqlNotebookCore.vcxproj">
       <Project>{4991e0f9-fd29-4d6a-b489-f355a808ca8a}</Project>
       <Name>SqlNotebookCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SqlNotebookScript\SqlNotebookScript.csproj">
+      <Project>{2255c461-80d4-419c-aa57-60af7d2c6305}</Project>
+      <Name>SqlNotebookScript</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

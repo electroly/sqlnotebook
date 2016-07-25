@@ -18,7 +18,7 @@
 #include "gcroot.h"
 #include "SqlNotebookCore.h"
 using namespace SqlNotebookCore;
-using namespace SqlNotebookCoreModules;
+using namespace SqlNotebookScript;
 using namespace System::Data;
 using namespace System::Data::SqlClient;
 using namespace System::IO;
