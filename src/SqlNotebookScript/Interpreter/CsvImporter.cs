@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualBasic.FileIO;
 using SqlNotebookScript;
+using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.Interpreter {
     public sealed class CsvImporter {
@@ -122,7 +123,7 @@ namespace SqlNotebookScript.Interpreter {
                 CreateOrTruncateTable(srcColNames, dstColNodes, dstColNames, dstTableName);
 
                 // ensure that the target table has all of the requested column names.
-                Util.VerifyColumnsExist(dstColNames, dstTableName, _notebook);
+                SqlUtil.VerifyColumnsExist(dstColNames, dstTableName, _notebook);
 
                 // read the data rows and insert into the target table.
                 InsertData(parserBuffer, dstColNames, dstColNodes, dstTableName);
@@ -132,8 +133,8 @@ namespace SqlNotebookScript.Interpreter {
         private void InsertData(TextFieldParserBuffer parser, string[] dstColNames, Ast.ImportColumn[] dstColNodes, 
         string dstTableName) {
             var batchRowLimit = 10;
-            var insertSqlSingle = Util.GetInsertSql(dstTableName, dstColNames.Length, numRows: 1);
-            var insertSqlBatch = Util.GetInsertSql(dstTableName, dstColNames.Length, numRows: batchRowLimit);
+            var insertSqlSingle = SqlUtil.GetInsertSql(dstTableName, dstColNames.Length, numRows: 1);
+            var insertSqlBatch = SqlUtil.GetInsertSql(dstTableName, dstColNames.Length, numRows: batchRowLimit);
             var batchArgs = new object[batchRowLimit * dstColNames.Length];
             int batchRowsSoFar = 0;
             for (int i = 0; (!_takeLines.HasValue || i < _takeLines.Value) && !parser.EndOfData; i++) {
@@ -244,7 +245,7 @@ namespace SqlNotebookScript.Interpreter {
             var columnDefs = new List<string>();
             if (dstColNodes.All(x => x == null)) {
                 // the user did not specify a column list, so all columns will be included
-                columnDefs.AddRange(srcColNames.Select(Util.DoubleQuote));
+                columnDefs.AddRange(srcColNames.Select(SqlUtil.DoubleQuote));
             } else {
                 // the user specified which columns to include
                 for (int i = 0; i < dstColNodes.Length; i++) {
@@ -292,7 +293,7 @@ namespace SqlNotebookScript.Interpreter {
                 } else {
                     // the user specified a column name that does not exist in the CSV file
                     throw new Exception($"The column \"{name}\" does not exist in the CSV file. " +
-                        $"The columns that were found are: {string.Join(", ", srcColNames.Select(Util.DoubleQuote))}");
+                        $"The columns that were found are: {string.Join(", ", srcColNames.Select(SqlUtil.DoubleQuote))}");
                 }
                 
                 // apply the user's rename if specified

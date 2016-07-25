@@ -16,7 +16,7 @@
 
 using System;
 
-namespace SqlNotebookScript.Interpreter {
+namespace SqlNotebookScript.Utils {
     public abstract class Slot {
         public event Action ChangeNoData;
 

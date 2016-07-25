@@ -26,6 +26,7 @@ using SqlNotebookCore;
 using SqlNotebookScript.Interpreter;
 using ScintillaNET;
 using SqlNotebookScript;
+using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {
     public partial class QueryDocumentControl : UserControl, IDocumentControl {

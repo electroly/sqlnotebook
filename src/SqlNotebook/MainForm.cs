@@ -26,6 +26,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using SqlNotebook.Properties;
 using SqlNotebookCore;
 using SqlNotebookScript.Interpreter;
+using SqlNotebookScript.Utils;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SqlNotebook {

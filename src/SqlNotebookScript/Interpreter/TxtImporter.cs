@@ -17,7 +17,7 @@
 using System;
 using System.IO;
 using System.Text;
-using SqlNotebookScript;
+using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.Interpreter {
     public sealed class TxtImporter {
@@ -94,7 +94,7 @@ namespace SqlNotebookScript.Interpreter {
                 CreateOrTruncateTable();
 
                 if (_textColumnName != null) {
-                    Util.VerifyColumnsExist(new[] { _lineNumberColumnName, _textColumnName }, _tableName, _notebook);
+                    SqlUtil.VerifyColumnsExist(new[] { _lineNumberColumnName, _textColumnName }, _tableName, _notebook);
                 }
 
                 var insertSql = GetInsertSql();

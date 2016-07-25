@@ -26,7 +26,7 @@ using System.Windows.Forms;
 using HtmlAgilityPack;
 using SqlNotebook.Properties;
 using SqlNotebookCore;
-using SqlNotebookScript.Interpreter;
+using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {
     public sealed class HelpServer : IDisposable {

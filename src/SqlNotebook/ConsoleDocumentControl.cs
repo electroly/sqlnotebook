@@ -15,19 +15,16 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SqlNotebookCore;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using SqlNotebookScript.Interpreter;
-using System.Runtime.InteropServices;
 using SqlNotebookScript;
+using SqlNotebookScript.Interpreter;
+using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {
     public partial class ConsoleDocumentControl : UserControl, IDocumentControl {

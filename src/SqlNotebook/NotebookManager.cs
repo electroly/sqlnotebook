@@ -24,6 +24,7 @@ using SqlNotebookCore;
 using SqlNotebookScript;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Interpreter.Ast;
+using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {
     public enum NotebookItemType {

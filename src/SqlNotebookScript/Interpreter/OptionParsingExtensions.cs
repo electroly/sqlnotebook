@@ -18,29 +18,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using SqlNotebookScript;
 
 namespace SqlNotebookScript.Interpreter {
-    public static class Util {
-        public static string DoubleQuote(this string str) {
-            return $"\"{str.Replace("\"", "\"\"")}\"";
-        }
-
-        public static string SingleQuote(this string str) {
-            return $"'{str.Replace("'", "''")}'";
-        }
-
-        public static int? IndexOf(this IReadOnlyList<string> haystack, string needle) {
-            var n = haystack.Count;
-            for (int i = 0; i < n; i++) {
-                if (haystack[i] == needle) {
-                    return i;
-                }
-            }
-            return null;
-        }
-
+    public static class OptionParsingExtensions {
         public static IEnumerable<string> GetOptionKeys(this Ast.OptionsList optionsList) {
             if (optionsList != null) {
                 return optionsList.Options.Keys.Select(x => x.ToUpper());
@@ -114,29 +94,5 @@ namespace SqlNotebookScript.Interpreter {
             return num;
         }
 
-        public static string GetInsertSql(string tableName, int numValues, int numRows = 1) {
-            var row = $"({string.Join(", ", Enumerable.Range(1, numValues).Select(x => $"?"))})";
-            return $"INSERT INTO {tableName.DoubleQuote()} VALUES " + string.Join(", ", Enumerable.Range(0, numRows).Select(x => row));
-        }
-
-        public static void VerifyColumnsExist(string[] colNames, string tableName, INotebook notebook) {
-            var tableInfo = notebook.Query($"PRAGMA TABLE_INFO ({tableName.DoubleQuote()})");
-            var nameColIndex = tableInfo.GetIndex("name");
-            var actualColNames = tableInfo.Rows.Select(x => x[nameColIndex].ToString().ToLower()).ToList();
-            foreach (var name in colNames.Where(x => x != null)) {
-                if (!actualColNames.Contains(name.ToLower())) {
-                    throw new Exception($"The table \"{tableName}\" does not contain the column \"{name}\".");
-                }
-            }
-        }
-
-        public static string GetErrorMessage(this Exception self) {
-            var uncaught = self as UncaughtErrorScriptException;
-            if (uncaught != null) {
-                return uncaught.ErrorMessage.ToString();
-            } else {
-                return self.Message;
-            }
-        }
     }
 }

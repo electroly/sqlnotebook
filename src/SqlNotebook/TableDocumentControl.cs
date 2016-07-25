@@ -20,7 +20,7 @@ using System.Data;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SqlNotebookScript;
-using SqlNotebookScript.Interpreter;
+using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {
     public partial class TableDocumentControl : UserControl, IDocumentControl {
