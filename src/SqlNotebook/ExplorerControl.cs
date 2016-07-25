@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using SqlNotebookScript;
+using SqlNotebookCoreModules.Script;
 
 namespace SqlNotebook {
     public partial class ExplorerControl : UserControl {

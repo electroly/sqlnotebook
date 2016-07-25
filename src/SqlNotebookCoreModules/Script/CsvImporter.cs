@@ -20,11 +20,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualBasic.FileIO;
-using SqlNotebookCore;
+using SqlNotebookCoreModules;
 
-namespace SqlNotebookScript {
+namespace SqlNotebookCoreModules.Script {
     public sealed class CsvImporter {
-        private readonly Notebook _notebook;
+        private readonly INotebook _notebook;
         private readonly ScriptEnv _env;
         private readonly ScriptRunner _runner;
         private readonly Ast.ImportCsvStmt _stmt;
@@ -45,12 +45,12 @@ namespace SqlNotebookScript {
         }
 
         // must be run from the SQLite thread
-        public static void Import(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportCsvStmt stmt) {
+        public static void Import(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportCsvStmt stmt) {
             var importer = new CsvImporter(notebook, env, runner, stmt);
             importer.Import();
         }
 
-        private CsvImporter(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportCsvStmt stmt) {
+        private CsvImporter(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportCsvStmt stmt) {
             _notebook = notebook;
             _env = env;
             _runner = runner;

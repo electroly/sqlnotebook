@@ -19,9 +19,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SqlNotebookCore;
 
-namespace SqlNotebookScript {
+namespace SqlNotebookCoreModules.Script {
 
     public static class SqlValidator {
         public struct Result {

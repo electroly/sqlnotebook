@@ -21,7 +21,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SqlNotebookCore;
-using SqlNotebookScript;
+using SqlNotebookCoreModules;
+using SqlNotebookCoreModules.Script;
+using SqlNotebookCoreModules.Script.Ast;
 
 namespace SqlNotebook {
     public enum NotebookItemType {
@@ -204,7 +206,7 @@ namespace SqlNotebook {
                     var ast = parser.Parse(data);
                     var paramNames =
                         ast.Traverse()
-                        .OfType<SqlNotebookScript.Ast.DeclareStmt>()
+                        .OfType<DeclareStmt>()
                         .Where(x => x.IsParameter)
                         .Select(x => x.VariableName);
                     foreach (var paramName in paramNames) {

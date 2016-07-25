@@ -23,8 +23,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SqlNotebookCore;
-using SqlNotebookScript;
+using SqlNotebookCoreModules.Script;
 using ScintillaNET;
+using SqlNotebookCoreModules;
 
 namespace SqlNotebook {
     public partial class QueryDocumentControl : UserControl, IDocumentControl {
@@ -88,7 +89,7 @@ namespace SqlNotebook {
             _scintilla.StyleNeeded += (sender, e) => {
                 var text = _scintilla.Text;
                 Task.Run(() => {
-                    var tokens = Notebook.Tokenize(text);
+                    var tokens = _notebook.Tokenize(text);
                     ulong i = 0;
                     var utf8 = utf8Encoding.GetBytes(text);
                     var list = new List<Tuple<int, int>>(); // length, type; for successive calls to SetStyling()

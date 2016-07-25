@@ -19,9 +19,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
-using SqlNotebookCore;
+using SqlNotebookCoreModules;
 
-namespace SqlNotebookScript {
+namespace SqlNotebookCoreModules.Script {
     public sealed class SyntaxException : Exception {
         public SyntaxException(IEnumerable<string> expecteds, TokenQueue q)
             : base($"Syntax error at \"{q.GetSnippet()}\".  Expected: {string.Join(", ", expecteds)}") { }
@@ -52,14 +52,14 @@ namespace SqlNotebookScript {
     }
 
     public sealed class ScriptParser {
-        private readonly Notebook _notebook;
+        private readonly INotebook _notebook;
 
-        public ScriptParser(Notebook notebook) {
+        public ScriptParser(INotebook notebook) {
             _notebook = notebook;
         }
 
         public Ast.Script Parse(string input) {
-            var tokens = new TokenQueue(Notebook.Tokenize(input), _notebook);
+            var tokens = new TokenQueue(_notebook.Tokenize(input), _notebook);
             return ParseScript(tokens);
         }
 

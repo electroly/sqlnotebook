@@ -19,9 +19,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using SqlNotebookCore;
-using SqlNotebookScript;
+using SqlNotebookCoreModules;
+using SqlNotebookCoreModules.Script;
 
 namespace SqlNotebook {
     public partial class TableDocumentControl : UserControl, IDocumentControl {

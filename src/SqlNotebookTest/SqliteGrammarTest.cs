@@ -20,7 +20,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SqlNotebookCore;
-using SqlNotebookScript;
+using SqlNotebookCoreModules.Script;
 
 namespace SqlNotebookTest {
     [TestClass]
@@ -71,7 +71,7 @@ namespace SqlNotebookTest {
                         }
 
                         // then try with our parser to see if we match SQLite
-                        var tokens = Notebook.Tokenize(stmt.Cmd);
+                        var tokens = notebook.Tokenize(stmt.Cmd);
                         var q = new TokenQueue(tokens, notebook);
                         var result = SqlValidator.ReadStmt(q);
                         var success = result.InvalidMessage == null && result.IsValid &&

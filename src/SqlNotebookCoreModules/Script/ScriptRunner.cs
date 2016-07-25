@@ -19,9 +19,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using SqlNotebookCore;
+using SqlNotebookCoreModules;
 
-namespace SqlNotebookScript {
+namespace SqlNotebookCoreModules.Script {
     public sealed class ScriptOutput {
         public List<SimpleDataTable> DataTables { get; } = new List<SimpleDataTable>();
         public List<string> TextOutput { get; } = new List<string>();
@@ -106,11 +106,11 @@ namespace SqlNotebookScript {
     }
 
     public sealed class ScriptRunner {
-        private readonly Notebook _notebook;
+        private readonly INotebook _notebook;
         private readonly IReadOnlyDictionary<Type, Action<Ast.Stmt, ScriptEnv>> _stmtRunners;
         private readonly IReadOnlyDictionary<string, string> _scripts; // lowercase script name -> script code
 
-        public ScriptRunner(Notebook notebook, IReadOnlyDictionary<string, string> scripts) {
+        public ScriptRunner(INotebook notebook, IReadOnlyDictionary<string, string> scripts) {
             _notebook = notebook;
             _scripts = scripts;
             _stmtRunners = new Dictionary<Type, Action<Ast.Stmt, ScriptEnv>> {

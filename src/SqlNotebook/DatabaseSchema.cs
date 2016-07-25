@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SqlNotebookCore;
-using SqlNotebookScript;
+using SqlNotebookCoreModules.Script;
 
 namespace SqlNotebook {
     // store a snapshot of the database schema for quick reference

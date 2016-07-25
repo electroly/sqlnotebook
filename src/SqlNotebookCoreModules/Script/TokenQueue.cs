@@ -19,17 +19,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SqlNotebookCore;
+using SqlNotebookCoreModules;
 
-namespace SqlNotebookScript {
+namespace SqlNotebookCoreModules.Script {
     public sealed class TokenQueue {
         private readonly List<Token> _tokens;
         private int _peekIndex;
         private readonly int _eofLocation;
 
-        public Notebook Notebook { get; }
+        public INotebook Notebook { get; }
 
-        public TokenQueue(IEnumerable<Token> input, Notebook notebook) {
+        public TokenQueue(IEnumerable<Token> input, INotebook notebook) {
             Notebook = notebook;
             _tokens = input.ToList();
             if (_tokens.Any()) {

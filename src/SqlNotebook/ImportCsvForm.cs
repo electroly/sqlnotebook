@@ -22,7 +22,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
-using SqlNotebookScript;
+using SqlNotebookCoreModules.Script;
 using System.IO;
 
 namespace SqlNotebook {

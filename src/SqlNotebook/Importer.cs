@@ -32,7 +32,7 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using SqlNotebookCore;
-using SqlNotebookScript;
+using SqlNotebookCoreModules.Script;
 
 namespace SqlNotebook {
     public sealed class RecentDataSource {

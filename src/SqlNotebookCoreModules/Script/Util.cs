@@ -19,9 +19,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SqlNotebookCore;
+using SqlNotebookCoreModules;
 
-namespace SqlNotebookScript {
+namespace SqlNotebookCoreModules.Script {
     public static class Util {
         public static string DoubleQuote(this string str) {
             return $"\"{str.Replace("\"", "\"\"")}\"";
@@ -119,7 +119,7 @@ namespace SqlNotebookScript {
             return $"INSERT INTO {tableName.DoubleQuote()} VALUES " + string.Join(", ", Enumerable.Range(0, numRows).Select(x => row));
         }
 
-        public static void VerifyColumnsExist(string[] colNames, string tableName, Notebook notebook) {
+        public static void VerifyColumnsExist(string[] colNames, string tableName, INotebook notebook) {
             var tableInfo = notebook.Query($"PRAGMA TABLE_INFO ({tableName.DoubleQuote()})");
             var nameColIndex = tableInfo.GetIndex("name");
             var actualColNames = tableInfo.Rows.Select(x => x[nameColIndex].ToString().ToLower()).ToList();

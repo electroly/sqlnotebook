@@ -20,11 +20,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualBasic.FileIO;
-using SqlNotebookCore;
+using SqlNotebookCoreModules;
 
-namespace SqlNotebookScript {
+namespace SqlNotebookCoreModules.Script {
     public sealed class XlsImporter {
-        private readonly Notebook _notebook;
+        private readonly INotebook _notebook;
         private readonly ScriptEnv _env;
         private readonly ScriptRunner _runner;
         private readonly Ast.ImportXlsStmt _stmt;
@@ -49,12 +49,12 @@ namespace SqlNotebookScript {
         }
 
         // must be run from the SQLite thread
-        public static void Import(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt) {
+        public static void Import(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt) {
             var importer = new XlsImporter(notebook, env, runner, stmt);
             importer.Import();
         }
 
-        private XlsImporter(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt) {
+        private XlsImporter(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt) {
             _notebook = notebook;
             _env = env;
             _runner = runner;

@@ -16,9 +16,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using SqlNotebookCore;
+using SqlNotebookCoreModules;
 
-namespace SqlNotebookScript {
+namespace SqlNotebookCoreModules.Script {
     public static class SqliteGrammar {
         private static readonly Dictionary<string, SpecProd> _dict = new Dictionary<string, SpecProd>();
         public static IReadOnlyDictionary<string, SpecProd> Prods { get; } = _dict;

@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsUI", "..\ext\dockpa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThemeVS2012Light", "..\ext\dockpanelsuite\WinFormsUI\ThemeVS2012Light.csproj", "{4ED4FDB5-9FD0-49E6-876D-1635F727C755}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlNotebookScript", "SqlNotebookScript\SqlNotebookScript.csproj", "{2D3F5F66-E26B-4514-81AB-F0FBD5ECE6E8}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "sqlite3\sqlite3.vcxproj", "{34743FAD-099D-4DB8-B8A6-C863FEC91C77}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmicrohttpd", "libmicrohttpd\libmicrohttpd.vcxproj", "{67448CAF-D2C9-48D9-945C-13389BD4E608}"
@@ -43,10 +41,6 @@ Global
 		{4ED4FDB5-9FD0-49E6-876D-1635F727C755}.Debug|x64.Build.0 = Debug|x64
 		{4ED4FDB5-9FD0-49E6-876D-1635F727C755}.Release|x64.ActiveCfg = Release|x64
 		{4ED4FDB5-9FD0-49E6-876D-1635F727C755}.Release|x64.Build.0 = Release|x64
-		{2D3F5F66-E26B-4514-81AB-F0FBD5ECE6E8}.Debug|x64.ActiveCfg = Debug|x64
-		{2D3F5F66-E26B-4514-81AB-F0FBD5ECE6E8}.Debug|x64.Build.0 = Debug|x64
-		{2D3F5F66-E26B-4514-81AB-F0FBD5ECE6E8}.Release|x64.ActiveCfg = Release|x64
-		{2D3F5F66-E26B-4514-81AB-F0FBD5ECE6E8}.Release|x64.Build.0 = Release|x64
 		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Debug|x64.ActiveCfg = Debug|x64
 		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Debug|x64.Build.0 = Debug|x64
 		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Release|x64.ActiveCfg = Release|x64

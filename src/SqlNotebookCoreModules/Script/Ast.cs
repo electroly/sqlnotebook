@@ -16,9 +16,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using SqlNotebookCore;
+using SqlNotebookCoreModules;
 
-namespace SqlNotebookScript.Ast {
+namespace SqlNotebookCoreModules.Script.Ast {
     public abstract class Node {
         public Token SourceToken { get; set; }
 

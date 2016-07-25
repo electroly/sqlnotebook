@@ -437,6 +437,10 @@ static int GetToken(const char* str, int* oldPos, int* pos, int len) {
 }
 
 IReadOnlyList<Token^>^ Notebook::Tokenize(String^ input) {
+    return Notebook::StaticTokenize(input);
+}
+
+IReadOnlyList<Token^>^ Notebook::StaticTokenize(String^ input) {
     Monitor::Enter(_tokenizeLock);
     try {
         auto str = Util::CStr(input);
@@ -461,10 +465,6 @@ IReadOnlyList<Token^>^ Notebook::Tokenize(String^ input) {
     } finally {
         Monitor::Exit(_tokenizeLock);
     }
-}
-
-String^ Token::ToString() {
-    return String::Format("{0}: \"{1}\"", Type, Text);
 }
 
 String^ Notebook::FindLongestValidStatementPrefix(String^ input) {
@@ -574,28 +574,6 @@ bool Notebook::IsTransactionActive() {
 
 bool Notebook::GetCancelling() {
     return _cancelling;
-}
-
-SimpleDataTable::SimpleDataTable(IReadOnlyList<String^>^ columns, IReadOnlyList<array<Object^>^>^ rows) {
-    Columns = columns;
-    Rows = rows;
-    
-    auto dict = gcnew Dictionary<String^, int>();
-    int i = 0;
-    for each (auto columnName in columns) {
-        dict[columnName] = i++;
-    }
-    _columnIndices = dict;
-}
-
-Object^ SimpleDataTable::Get(int rowNumber, String^ column) {
-    auto row = Rows[rowNumber];
-    auto colIndex = _columnIndices[column];
-    return row[colIndex];
-}
-
-int SimpleDataTable::GetIndex(String^ column) {
-    return _columnIndices[column];
 }
 
 void NotebookTempFiles::Init() {

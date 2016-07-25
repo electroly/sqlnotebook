@@ -20,7 +20,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using SqlNotebookScript;
+using SqlNotebookCoreModules.Script;
 
 namespace SqlNotebook {
     public partial class ImportCsvOptionsControl : UserControl {

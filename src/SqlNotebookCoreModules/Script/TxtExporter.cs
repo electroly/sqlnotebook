@@ -17,11 +17,11 @@
 using System;
 using System.IO;
 using System.Text;
-using SqlNotebookCore;
+using SqlNotebookCoreModules;
 
-namespace SqlNotebookScript {
+namespace SqlNotebookCoreModules.Script {
     public sealed class TxtExporter {
-        private readonly Notebook _notebook;
+        private readonly INotebook _notebook;
         private readonly ScriptEnv _env;
         private readonly ScriptRunner _runner;
         private readonly Ast.ExportTxtStmt _stmt;
@@ -34,12 +34,12 @@ namespace SqlNotebookScript {
         private readonly Encoding _fileEncoding;
 
         // must be run from the SQLite thread
-        public static void Export(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ExportTxtStmt stmt) {
+        public static void Export(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ExportTxtStmt stmt) {
             var exporter = new TxtExporter(notebook, env, runner, stmt);
             exporter.Export();
         }
 
-        private TxtExporter(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ExportTxtStmt stmt) {
+        private TxtExporter(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ExportTxtStmt stmt) {
             _notebook = notebook;
             _env = env;
             _runner = runner;

@@ -21,9 +21,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SqlNotebookCore;
+using SqlNotebookCoreModules;
 
-namespace SqlNotebookScript {
+namespace SqlNotebookCoreModules.Script {
     // possible results:
     // IsMatch=true, ErrorMessage=null
     // IsMatch=false, ErrorMessage=null

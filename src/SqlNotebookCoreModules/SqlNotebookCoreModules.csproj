@@ -35,6 +35,7 @@
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="NPOI, Version=2.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <HintPath>..\packages\NPOI.2.2.1\lib\net40\NPOI.dll</HintPath>
       <Private>True</Private>
@@ -61,7 +62,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="INotebook.cs" />
     <Compile Include="ScalarFunctions\ArrayFunctions.cs" />
+    <Compile Include="Script\Ast.cs" />
+    <Compile Include="Script\CsvImporter.cs" />
+    <Compile Include="Script\Matcher.cs" />
+    <Compile Include="Script\ScriptParser.cs" />
+    <Compile Include="Script\ScriptRunner.cs" />
+    <Compile Include="Script\Slot.cs" />
+    <Compile Include="Script\SqliteGrammar.cs" />
+    <Compile Include="Script\SqlValidator.cs" />
+    <Compile Include="Script\TokenQueue.cs" />
+    <Compile Include="Script\TxtExporter.cs" />
+    <Compile Include="Script\TxtImporter.cs" />
+    <Compile Include="Script\Util.cs" />
+    <Compile Include="Script\XlsImporter.cs" />
+    <Compile Include="SimpleDataTable.cs" />
     <Compile Include="Utils\ArrayUtil.cs" />
     <Compile Include="ScalarFunctions\DateFunctions.cs" />
     <Compile Include="ScalarFunctions\DownloadFunction.cs" />
