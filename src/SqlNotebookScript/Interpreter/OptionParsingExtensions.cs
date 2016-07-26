@@ -51,7 +51,7 @@ namespace SqlNotebookScript.Interpreter {
 
         public static Encoding GetOptionEncoding(this Ast.OptionsList optionsList, string name, ScriptRunner runner,
         ScriptEnv env) {
-            var encodingNum = optionsList.GetOption<long>(name, runner, env, 0);
+            var encodingNum = optionsList.GetOptionInt(name, runner, env, 0);
             if (encodingNum == 0) {
                 return null;
             } else if (encodingNum < 0 || encodingNum > 65535) {
@@ -59,7 +59,7 @@ namespace SqlNotebookScript.Interpreter {
             } else {
                 Encoding encoding = null;
                 try {
-                    encoding = Encoding.GetEncoding((int)encodingNum);
+                    encoding = Encoding.GetEncoding(encodingNum);
                 } catch (ArgumentOutOfRangeException) {
                     // invalid codepage
                 } catch (ArgumentException) {
@@ -94,5 +94,14 @@ namespace SqlNotebookScript.Interpreter {
             return num;
         }
 
+        public static int GetOptionInt(this Ast.OptionsList optionsList, string name, ScriptRunner runner,
+        ScriptEnv env, int defaultValue, int? minValue = null, int? maxValue = null) {
+            var longValue = GetOptionLong(optionsList, name, runner, env, defaultValue, minValue, maxValue);
+            if (longValue < int.MinValue || longValue > int.MaxValue) {
+                throw new Exception($"{name} must be a 32-bit integer.");
+            } else {
+                return (int)longValue;
+            }
+        }
     }
 }

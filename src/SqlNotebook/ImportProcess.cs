@@ -51,7 +51,6 @@ namespace SqlNotebook {
                 manager.Rescan();
             } catch (Exception ex) {
                 manager.PopStatus();
-                await Task.Run(() => manager.ExecuteScript("ROLLBACK"));
                 MessageDialog.ShowError(owner, "Import Error", "The import failed.", ex.GetErrorMessage());
                 return false;
             }

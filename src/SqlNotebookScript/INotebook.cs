@@ -29,6 +29,7 @@ namespace SqlNotebookScript {
         object QueryValue(string sql, IReadOnlyDictionary<string, object> args);
         IReadOnlyList<Token> Tokenize(string input);
         NotebookUserData UserData { get; }
+        bool IsTransactionActive();
     }
 
     public sealed class NotebookItemRecord {

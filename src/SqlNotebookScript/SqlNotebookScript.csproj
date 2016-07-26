@@ -70,6 +70,7 @@
     <Compile Include="Interpreter\Matcher.cs" />
     <Compile Include="Interpreter\ScriptParser.cs" />
     <Compile Include="Interpreter\ScriptRunner.cs" />
+    <Compile Include="Utils\DateTimeUtil.cs" />
     <Compile Include="Utils\Slot.cs" />
     <Compile Include="Interpreter\SqliteGrammar.cs" />
     <Compile Include="Interpreter\SqlValidator.cs" />

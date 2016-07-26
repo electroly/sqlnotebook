@@ -100,7 +100,7 @@ namespace SqlNotebookCore {
         virtual Object^ QueryValue(String^ sql, IReadOnlyList<Object^>^ args);
         void Save();
         void SaveAs(String^ filePath);
-        bool IsTransactionActive();
+        virtual bool IsTransactionActive();
 
         private:
         bool _isDisposed;

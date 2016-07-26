@@ -42,7 +42,7 @@ namespace SqlNotebookScript.Interpreter {
         // must be run from the SQLite thread
         public static void Import(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportTxtStmt stmt) {
             var importer = new TxtImporter(notebook, env, runner, stmt);
-            importer.Import();
+            SqlUtil.WithTransaction(notebook, importer.Import);
         }
 
         private TxtImporter(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportTxtStmt stmt) {
