@@ -48,7 +48,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
-    <LangVersion>6</LangVersion>
+    <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\..\Release\</OutputPath>
@@ -59,6 +59,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>A5AFC4D045E7C07EF0B3A3F3EDEBE97B371E7E3B</ManifestCertificateThumbprint>
@@ -127,6 +128,7 @@
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -135,6 +137,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="unvell.ReoGrid, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\unvell.ReoGrid.dll.2.0.1.0\lib\20\unvell.ReoGrid.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AboutForm.cs">
@@ -154,6 +159,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DatabaseSchema.cs" />
+    <Compile Include="DescriptionEnumConverter.cs" />
+    <Compile Include="DockPanelUtil.cs" />
     <Compile Include="ExportForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -213,11 +220,30 @@
     <Compile Include="ImportRenameTableForm.Designer.cs">
       <DependentUpon>ImportRenameTableForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Options.cs" />
     <Compile Include="ImportTextFilePreviewControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ImportTextFilePreviewControl.Designer.cs">
       <DependentUpon>ImportTextFilePreviewControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImportXlsBookForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImportXlsBookForm.Designer.cs">
+      <DependentUpon>ImportXlsBookForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImportXlsSheetControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImportXlsSheetControl.Designer.cs">
+      <DependentUpon>ImportXlsSheetControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImportXlsSheetsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImportXlsSheetsControl.Designer.cs">
+      <DependentUpon>ImportXlsSheetsControl.cs</DependentUpon>
     </Compile>
     <Compile Include="LoadingContainerControl.cs">
       <SubType>UserControl</SubType>
@@ -259,6 +285,7 @@
     </Compile>
     <Compile Include="RecentDataSources.cs" />
     <Compile Include="Bind.cs" />
+    <Compile Include="ReoGridUtil.cs" />
     <Compile Include="SendToTableForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -338,6 +365,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ImportTextFilePreviewControl.resx">
       <DependentUpon>ImportTextFilePreviewControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportXlsBookForm.resx">
+      <DependentUpon>ImportXlsBookForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportXlsSheetControl.resx">
+      <DependentUpon>ImportXlsSheetControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportXlsSheetsControl.resx">
+      <DependentUpon>ImportXlsSheetsControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoadingContainerControl.resx">
       <DependentUpon>LoadingContainerControl.cs</DependentUpon>

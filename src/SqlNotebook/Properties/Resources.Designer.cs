@@ -497,6 +497,16 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon TableSheetIco {
+            get {
+                object obj = ResourceManager.GetObject("TableSheetIco", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap TextExports {
@@ -528,16 +538,17 @@ namespace SqlNotebook.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///&lt;html&gt;
+        ///&lt;html&gt;&lt;head&gt;
         ///&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
         ///&lt;style&gt;
         ///* { font-family: &quot;Segoe UI&quot;; font-size: 9pt; line-height: 130%; cursor: default; }
         ///a, a:visited { text-decoration: none; color: blue; cursor: pointer; }
         ///a:hover { text-decoration: underline; }
         ///&lt;/style&gt;
+        ///&lt;/head&gt;&lt;body&gt;
         ///SQL Notebook&lt;br&gt;
         ///Copyright © 2016 Brian Luft&lt;br&gt;&lt;br&gt;
-        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &amp;quot;Software [rest of string was truncated]&quot;;.
+        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation file [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ThirdPartyLicensesHtml {
             get {

@@ -37,11 +37,9 @@ namespace SqlNotebook {
             InitializeComponent();
 
             // hide the "This file has a header row" checkbox for non-CSV sources
-            if (!(session is CsvImportSession)) {
-                _csvHeaderChk.Visible = false;
-                _tablesGrp.Height += (_tablesGrp.Top - _csvHeaderChk.Top);
-                _tablesGrp.Top = _csvHeaderChk.Top;
-            }
+            _csvHeaderChk.Visible = false;
+            _tablesGrp.Height += (_tablesGrp.Top - _csvHeaderChk.Top);
+            _tablesGrp.Top = _csvHeaderChk.Top;
 
             // always copy instead of link for file sources
             if (session is IFileImportSession) {

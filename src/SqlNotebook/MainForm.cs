@@ -95,7 +95,8 @@ namespace SqlNotebook {
                 },
                 DocumentStyle = DocumentStyle.DockingWindow,
                 DefaultFloatWindowSize = new Size(700, 700),
-                ShowDocumentIcon = true
+                ShowDocumentIcon = true,
+                DockLeftPortion = 250
             };
             _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
 
@@ -337,11 +338,7 @@ namespace SqlNotebook {
                 CheckFileExists = true,
                 CheckPathExists = true,
                 DereferenceLinks = true,
-                Filter = string.Join("|",
-                    "All data files|*.csv;*.txt;*.xls;*.xlsx;*.json",
-                    "Comma-separated values|*.csv;*.txt",
-                    "Excel workbooks|*.xls;*.xlsx",
-                    "JSON files|*.json"),
+                Filter = ImportProcess.Filter,
                 SupportMultiDottedExtensions = true,
                 Title = "Import from File"
             };
@@ -354,16 +351,10 @@ namespace SqlNotebook {
                 }
             }
 
-            var extension = Path.GetExtension(filePath).ToLower();
-            switch (extension) {
-                case ".csv":
-                case ".txt":
-                    await CsvImportProcess.Start(this, filePath, _manager);
-                    break;
-
-                default:
-                    MessageForm.ShowError(this, "Import Error", $"The file type \"{extension}\" is not supported.");
-                    break;
+            try {
+                await ImportProcess.Start(this, filePath, _manager);
+            } catch (Exception ex) {
+                MessageForm.ShowError(this, "Import Error", ex.Message);
             }
         }
 

@@ -51,6 +51,10 @@ namespace SqlNotebook {
                 _manager.CommitOpenEditors();
                 _manager.Rescan(notebookItemsOnly: true);
             };
+
+            Load += (sender, e) => {
+                _splitContainer.SplitterDistance = _splitContainer.Height - 300;
+            };
         }
 
         private void HandleNotebookChange(NotebookChangeEventArgs e) {

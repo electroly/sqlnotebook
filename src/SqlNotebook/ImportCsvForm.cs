@@ -79,16 +79,18 @@ namespace SqlNotebook {
 
             _optionsControl = new ImportCsvOptionsControl(schema) { Dock = DockStyle.Fill };
             {
-                var dc = new UserControlDockContent("Import Options", _optionsControl, DockAreas.DockTop);
-                dc.CloseButtonVisible = false;
+                var dc = new UserControlDockContent("Import Options", _optionsControl, DockAreas.DockTop) {
+                    CloseButtonVisible = false
+                };
                 dc.Show(_dockPanel, DockState.DockTop);
             }
 
             _columnsControl = new ImportColumnsControl { Dock = DockStyle.Fill };
             _columnsLoadControl = new LoadingContainerControl { ContainedControl = _columnsControl };
             {
-                var dc = new UserControlDockContent("Columns", _columnsLoadControl, DockAreas.Float | DockAreas.DockTop);
-                dc.CloseButtonVisible = false;
+                var dc = new UserControlDockContent("Columns", _columnsLoadControl, DockAreas.Float | DockAreas.DockTop) {
+                    CloseButtonVisible = false
+                };
                 dc.Show(_dockPanel, new Rectangle(-50000, -50000, 100, 100)); // hide brief flash of this floating window
                 dc.DockHandler.FloatPane.DockTo(_dockPanel.DockWindows[DockState.DockTop]);
                 dc.DockAreas = DockAreas.DockTop;
@@ -98,11 +100,12 @@ namespace SqlNotebook {
             _inputPreviewControl = new ImportTextFilePreviewControl { Dock = DockStyle.Fill };
             _inputPreviewLoadControl = new LoadingContainerControl { ContainedControl = _inputPreviewControl };
             {
-                var dc = new UserControlDockContent("Original File", _inputPreviewLoadControl);
-                dc.CloseButton = false;
-                dc.CloseButtonVisible = false;
-                dc.ControlBox = false;
-                dc.Icon = Properties.Resources.PageWhiteTextIco;
+                var dc = new UserControlDockContent("Original File", _inputPreviewLoadControl) {
+                    CloseButton = false,
+                    CloseButtonVisible = false,
+                    ControlBox = false,
+                    Icon = Properties.Resources.PageWhiteTextIco
+                };
                 dc.Show(_dockPanel);
                 inputPreviewDc = dc;
             }
@@ -110,22 +113,24 @@ namespace SqlNotebook {
             _sqlControl = new SqlTextControl(readOnly: true) { Dock = DockStyle.Fill };
             _sqlLoadControl = new LoadingContainerControl { ContainedControl = _sqlControl };
             {
-                var dc = new UserControlDockContent("Import Script", _sqlLoadControl);
-                dc.CloseButton = false;
-                dc.CloseButtonVisible = false;
-                dc.ControlBox = false;
-                dc.Icon = Properties.Resources.ScriptIco;
+                var dc = new UserControlDockContent("Import Script", _sqlLoadControl) {
+                    CloseButton = false,
+                    CloseButtonVisible = false,
+                    ControlBox = false,
+                    Icon = Properties.Resources.ScriptIco
+                };
                 dc.Show(_dockPanel);
             }
 
             _outputPreviewControl = new ImportPreviewControl { Dock = DockStyle.Fill };
             _outputPreviewLoadControl = new LoadingContainerControl { ContainedControl = _outputPreviewControl };
             {
-                var dc = new UserControlDockContent("Preview", _outputPreviewLoadControl);
-                dc.CloseButton = false;
-                dc.CloseButtonVisible = false;
-                dc.ControlBox = false;
-                dc.Icon = Properties.Resources.TableImportIco;
+                var dc = new UserControlDockContent("Preview", _outputPreviewLoadControl) {
+                    CloseButton = false,
+                    CloseButtonVisible = false,
+                    ControlBox = false,
+                    Icon = Properties.Resources.TableImportIco
+                };
                 dc.Show(_dockPanel);
             }
 

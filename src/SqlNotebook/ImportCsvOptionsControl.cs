@@ -90,16 +90,4 @@ namespace SqlNotebook {
         }
     }
 
-    public enum ImportTableExistsOption {
-        AppendNewRows,
-        DeleteExistingRows,
-        DropTable
-    }
-
-    public enum ImportConversionFailOption {
-        ImportAsText = 1,
-        SkipRow = 2,
-        Abort = 3
-    }
-
 }

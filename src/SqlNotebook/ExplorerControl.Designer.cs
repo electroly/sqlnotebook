@@ -162,6 +162,7 @@
             // _splitContainer
             // 
             this._splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._splitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this._splitContainer.Location = new System.Drawing.Point(0, 0);
             this._splitContainer.Name = "_splitContainer";
             this._splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
