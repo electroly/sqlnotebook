@@ -16,7 +16,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using SqlNotebookScript;
 
 namespace SqlNotebookScript.Interpreter {
     public static class SqliteGrammar {
@@ -30,7 +29,7 @@ namespace SqlNotebookScript.Interpreter {
             //      <detach-stmt> | <drop-index-stmt> | <drop-table-stmt> | <drop-trigger-stmt> | <drop-view-stmt> | 
             //      <insert-stmt> | <pragma-stmt> | <reindex-stmt> | <release-stmt> | <rollback-stmt> | 
             //      <savepoint-stmt> | <select-stmt> | <update-stmt> | <update-stmt-limited> | <vacuum-stmt> )
-            _dict["sql-stmt"] = Prod(2,
+            TopProd("sql-stmt", 2,
                 Opt(1, Tok(TokenType.Explain), Opt(1, Tok(TokenType.Query), Tok(TokenType.Plan))),
                 Or(
                     SubProd("select-stmt"),
@@ -64,16 +63,16 @@ namespace SqlNotebookScript.Interpreter {
             // alter-table-stmt ::= 
             //      ALTER TABLE [ database-name "." ] table-name 
             //      ( RENAME TO new-table-name ) | ( ADD [COLUMN] <column-def> )
-            _dict["alter-table-stmt"] = Prod(1,
+            TopProd("alter-table-stmt", 1,
                 Tok(TokenType.Alter), Tok(TokenType.Table),
                 Opt(Id("database name"), Tok(TokenType.Dot)),
                 Id("table name"),
                 Or(
-                    Prod(1,
+                    Prod(".rename", 1,
                         Tok(TokenType.Rename), Tok(TokenType.To),
                         Id("new table name")
                     ),
-                    Prod(1,
+                    Prod(".add", 1,
                         Tok(TokenType.Add),
                         Opt(Tok(TokenType.ColumnKw)),
                         SubProd("column-def")
@@ -82,7 +81,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // analyze-stmt ::= ANALYZE [ database-table-index-name [ "." table-or-index-name ] ]
-            _dict["analyze-stmt"] = Prod(1,
+            TopProd("analyze-stmt", 1,
                 Tok(TokenType.Analyze),
                 Opt(
                     Id("database, table, or index name"),
@@ -91,7 +90,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // attach-stmt ::= ATTACH [ DATABASE ] <expr> AS database-name
-            _dict["attach-stmt"] = Prod(1,
+            TopProd("attach-stmt", 1,
                 Tok(TokenType.Attach),
                 Opt(Tok(TokenType.Database)),
                 SubProd("expr"),
@@ -100,20 +99,20 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // begin-stmt ::= BEGIN [ DEFERRED | IMMEDIATE | EXCLUSIVE ] [ TRANSACTION ]
-            _dict["begin-stmt"] = Prod(1,
+            TopProd("begin-stmt", 1,
                 Tok(TokenType.Begin),
                 Opt(Or(Tok(TokenType.Deferred), Tok(TokenType.Immediate), Tok(TokenType.Exclusive))),
                 Opt(Tok(TokenType.Transaction))
             );
 
             // commit-stmt ::= ( COMMIT | END ) [ TRANSACTION ]
-            _dict["commit-stmt"] = Prod(1,
+            TopProd("commit-stmt", 1,
                 Or(Tok(TokenType.Commit), Tok(TokenType.End)),
                 Opt(Tok(TokenType.Transaction))
             );
 
             // rollback-stmt ::= ROLLBACK [ TRANSACTION ] [ TO [ SAVEPOINT ] savepoint-name ]
-            _dict["rollback-stmt"] = Prod(1,
+            TopProd("rollback-stmt", 1,
                 Tok(TokenType.Rollback),
                 Opt(Tok(TokenType.Transaction)),
                 Opt(1,
@@ -124,13 +123,13 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // savepoint-stmt ::= SAVEPOINT savepoint-name
-            _dict["savepoint-stmt"] = Prod(1,
+            TopProd("savepoint-stmt", 1,
                 Tok(TokenType.Savepoint),
                 Id("savepoint name")
             );
 
             // release-stmt ::= RELEASE [ SAVEPOINT ] savepoint-name
-            _dict["release-stmt"] = Prod(1,
+            TopProd("release-stmt", 1,
                 Tok(TokenType.Release),
                 Opt(Tok(TokenType.Savepoint)),
                 Id("savepoint name")
@@ -139,7 +138,7 @@ namespace SqlNotebookScript.Interpreter {
             // create-index-stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ]
             //      [ database-name "." ] index-name ON table-name "(" <indexed-column> [ "," <indexed-column> ]* ")"
             //      [ WHERE <expr> ]
-            _dict["create-index-stmt"] = Prod(3,
+            Prod("create-index-stmt", 3,
                 Tok(TokenType.Create),
                 Opt(Tok(TokenType.Unique)),
                 Tok(TokenType.Index),
@@ -149,13 +148,13 @@ namespace SqlNotebookScript.Interpreter {
                 Tok(TokenType.On),
                 Id("table name"),
                 Tok(TokenType.Lp),
-                Lst(TokenType.Comma, 1, SubProd("indexed-column")),
+                Lst(".column", TokenType.Comma, 1, SubProd("indexed-column")),
                 Tok(TokenType.Rp),
                 Opt(1, Tok(TokenType.Where), SubProd("expr"))
             );
 
             // indexed-column ::= ( column-name | expr ) [ COLLATE collation-name ] [ ASC | DESC ]
-            _dict["indexed-column"] = Prod(1,
+            TopProd("indexed-column", 1,
                 Or(SubProd("expr"), Id("column name")),
                 Opt(1, Tok(TokenType.Collate), Id("collation name")),
                 Opt(Or(Tok(TokenType.Asc), Tok(TokenType.Desc)))
@@ -164,10 +163,10 @@ namespace SqlNotebookScript.Interpreter {
             // create-table-stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ]
             //      [database-name "."] table-name
             //      (
-            //          "(" <column-def> [ "," <column-def> ]* [ "," <table-constraint> ]* ")" [WITHOUT ROWID] | 
-            //          AS <select-stmt> 
+            //          "(" <column-def> [ "," <column-def> ]* [ "," <table-constraint> ]* ")" [WITHOUT ROWID] 
+            //        | AS <select-stmt> 
             //      )
-            _dict["create-table-stmt"] = Prod(3,
+            TopProd("create-table-stmt", 3,
                 Tok(TokenType.Create),
                 Opt(Or(Tok(TokenType.Temp), Tok("temporary"))),
                 Tok(TokenType.Table),
@@ -175,15 +174,15 @@ namespace SqlNotebookScript.Interpreter {
                 Opt(Id("database name"), Tok(TokenType.Dot)),
                 Id("table name"),
                 Or(
-                    Prod(1,
+                    Prod(".column-defs", 1,
                         Tok(TokenType.Lp),
-                        Lst(TokenType.Comma, 1, Or(SubProd("table-constraint"), SubProd("column-def"))),
+                        Lst(".def", TokenType.Comma, 1, Or(SubProd("table-constraint"), SubProd("column-def"))),
                         // this definition allows column definitions to appear after table constraints, which is illegal.
                         // it would be nice to improve here.
                         Tok(TokenType.Rp),
                         Opt(1, Tok(TokenType.Without), Tok("rowid"))
                     ),
-                    Prod(1,
+                    Prod(".as", 1,
                         Tok(TokenType.As),
                         SubProd("select-stmt")
                     )
@@ -191,16 +190,16 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // column-def ::= column-name [ <type-name> ] [ <column-constraint> ]*
-            _dict["column-def"] = Prod(1,
+            TopProd("column-def", 1,
                 Id("column name"),
                 Opt(SubProd("type-name")),
-                Lst(null, 0, SubProd("column-constraint"))
+                Lst(".constraint", null, 0, SubProd("column-constraint"))
             );
 
             // type-name ::= name+ [ "(" <signed-number> ")" | "(" <signed-number> "," <signed-number> ")" ]
             // implemented as: name+ [ "(" <signed-number> [ "," <signed-number> ] ")" ]
-            _dict["type-name"] = Prod(1,
-                Lst(null, 1, Or(
+            TopProd("type-name", 1,
+                Lst(".part", null, 1, Or(
                     Id("data type"),
                     Toks(
                         // these tokens are okay to enter as part of the data type.  the list was created by testing
@@ -241,34 +240,36 @@ namespace SqlNotebookScript.Interpreter {
             //      |   ( DEFAULT ( <signed-number> | <literal-value> | "(" <expr> ")" ) )
             //      |   ( COLLATE collation-name )
             //      |   ( <foreign-key-clause> )
-            _dict["column-constraint"] = Prod(2,
+            TopProd("column-constraint", 2,
                 Opt(1, Tok(TokenType.Constraint), Id("constraint name")),
                 Or(
-                    Prod(1,
+                    Prod(".primary-key", 1,
                         Tok(TokenType.Primary), Tok(TokenType.Key),
                         Opt(Or(Tok(TokenType.Asc), Tok(TokenType.Desc))),
                         SubProd("conflict-clause"),
                         Opt(Tok(TokenType.Autoincr))
                     ),
-                    Prod(1, Tok(TokenType.Not), Tok(TokenType.Null), SubProd("conflict-clause")),
-                    Prod(1, Tok(TokenType.Null), SubProd("conflict-clause")),
-                    Prod(1, Tok(TokenType.Unique), SubProd("conflict-clause")),
-                    Prod(1, Tok(TokenType.Check), Tok(TokenType.Lp), SubProd("expr"), Tok(TokenType.Rp)),
-                    Prod(1,
+                    Prod(".not-null", 1, 
+                        Tok(TokenType.Not), Tok(TokenType.Null), SubProd("conflict -clause")),
+                    Prod(".null", 1, Tok(TokenType.Null), SubProd("conflict -clause")),
+                    Prod(".unique", 1, Tok(TokenType.Unique), SubProd("conflict -clause")),
+                    Prod(".check", 1,
+                        Tok(TokenType.Check), Tok(TokenType.Lp), SubProd("expr"), Tok(TokenType.Rp)),
+                    Prod(".default", 1,
                         Tok(TokenType.Default),
                         Or(
-                            Prod(1, SubProd("signed-number")),
-                            Prod(1, SubProd("literal-value")),
-                            Prod(1, Tok(TokenType.Lp), SubProd("expr"), Tok(TokenType.Rp))
+                            Prod(".number", 1, SubProd("signed-number")),
+                            Prod(".literal", 1, SubProd("literal-value")),
+                            Prod(".expr", 1, Tok(TokenType.Lp), SubProd("expr"), Tok(TokenType.Rp))
                         )
                     ),
-                    Prod(1, Tok(TokenType.Collate), Id("collation name")),
-                    Prod(1, SubProd("foreign-key-clause"))
+                    Prod("column-constraint/collate", 1, Tok(TokenType.Collate), Id("collation name")),
+                    Prod("column-constraint/foreign-key", 1, SubProd("foreign -key-clause"))
                 )
             );
 
             // signed-number ::= [ + | - ] numeric-literal
-            _dict["signed-number"] = Prod(2,
+            TopProd("signed-number", 2,
                 Opt(Or(Tok("+"), Tok("-"))),
                 Or(
                     Tok(TokenType.Integer),
@@ -280,30 +281,30 @@ namespace SqlNotebookScript.Interpreter {
             //      ( ( PRIMARY KEY | UNIQUE ) "(" <indexed-column> [ , <indexed-column> ]* ")" 
             //      <conflict-clause> | CHECK "(" <expr> ")" | FOREIGN KEY "(" column-name [ , column-name ]* ")" 
             //      <foreign-key-clause> )
-            _dict["table-constraint"] = Prod(2,
+            TopProd("table-constraint", 2,
                 Opt(1, Tok(TokenType.Constraint), Id("constraint name")),
                 Or(
-                    Prod(1,
+                    Prod(".key-or-unique", 1,
                         Or(
-                            Prod(1, Tok(TokenType.Primary), Tok(TokenType.Key)),
-                            Prod(1, Tok(TokenType.Unique))
+                            Prod(".primary-key", 1, Tok(TokenType.Primary), Tok(TokenType.Key)),
+                            Prod(".unique", 1, Tok(TokenType.Unique))
                         ),
                         Tok(TokenType.Lp),
-                        Lst(TokenType.Comma, 1, SubProd("indexed-column")),
+                        Lst(".column", TokenType.Comma, 1, SubProd("indexed-column")),
                         Tok(TokenType.Rp),
                         SubProd("conflict-clause")
                     ),
-                    Prod(1,
+                    Prod(".check", 1,
                         Tok(TokenType.Check),
                         Tok(TokenType.Lp),
                         SubProd("expr"),
                         Tok(TokenType.Rp)
                     ),
-                    Prod(1,
+                    Prod(".foreign-key", 1,
                         Tok(TokenType.Foreign),
                         Tok(TokenType.Key),
                         Tok(TokenType.Lp),
-                        Lst(TokenType.Comma, 1, Id("column name")),
+                        Lst(".column", TokenType.Comma, 1, Id("column name")),
                         Tok(TokenType.Rp),
                         SubProd("foreign-key-clause")
                     )
@@ -322,25 +323,25 @@ namespace SqlNotebookScript.Interpreter {
             //          )
             //      ]*
             //      [ [NOT] DEFERRABLE [ INITIALLY DEFERRED | INITIALLY IMMEDIATE ] ]
-            _dict["foreign-key-clause"] = Prod(1,
+            TopProd("foreign-key-clause", 1,
                 Tok(TokenType.References), Id("foreign table name"),
                 Opt(
                     Tok(TokenType.Lp),
-                    Lst(TokenType.Comma, 1, Id("column name")),
+                    Lst(".column", TokenType.Comma, 1, Id("column name")),
                     Tok(TokenType.Rp)
                 ),
-                Lst(null, 0, Or(
-                    Prod(1,
+                Lst(".on-clause", null, 0, Or(
+                    Prod(".on", 1,
                         Tok(TokenType.On),
                         Or(Tok(TokenType.Delete), Tok(TokenType.Update)),
                         Or(
-                            Prod(1, Tok(TokenType.Set), Or(Tok(TokenType.Null), Tok(TokenType.Default))),
-                            Prod(1, Tok(TokenType.Cascade)),
-                            Prod(1, Tok(TokenType.Restrict)),
-                            Prod(1, Tok(TokenType.No), Tok(TokenType.Action))
+                            Prod(".set", 1, Tok(TokenType.Set), Or(Tok(TokenType.Null), Tok(TokenType.Default))),
+                            Prod(".cascade", 1, Tok(TokenType.Cascade)),
+                            Prod(".restrict", 1, Tok(TokenType.Restrict)),
+                            Prod(".no-action", 1, Tok(TokenType.No), Tok(TokenType.Action))
                         )
                     ),
-                    Prod(1, Tok(TokenType.Match), Id("match type"))
+                    Prod(".match", 1, Tok(TokenType.Match), Id("match type"))
                 )),
                 Opt(
                     Opt(Tok(TokenType.Not)),
@@ -350,7 +351,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // conflict-clause ::= [ ON CONFLICT ( ROLLBACK | ABORT | FAIL | IGNORE | REPLACE ) ]
-            _dict["conflict-clause"] = Prod(1,
+            TopProd("conflict-clause", 1,
                 Opt(2,
                     Tok(TokenType.On), Tok(TokenType.Conflict),
                     Or(Tok(TokenType.Rollback), Tok(TokenType.Abort), Tok(TokenType.Fail),
@@ -363,7 +364,7 @@ namespace SqlNotebookScript.Interpreter {
             //      ( DELETE | INSERT | UPDATE [OF column-name [ "," column-name ]* ] ) ON table-name
             //      [ FOR EACH ROW ] [ WHEN <expr> ]
             //      BEGIN ( ( <update-stmt> | <insert-stmt> | <delete-stmt> | <select-stmt> ) ";" )+ END
-            _dict["create-trigger-stmt"] = Prod(3,
+            TopProd("create-trigger-stmt", 3,
                 Tok(TokenType.Create),
                 Opt(Tok(TokenType.Temp), Tok("temporary")),
                 Tok(TokenType.Trigger),
@@ -371,16 +372,16 @@ namespace SqlNotebookScript.Interpreter {
                 Opt(Id("database name"), Tok(TokenType.Dot)),
                 Id("trigger name"),
                 Opt(Or(
-                    Prod(1, Tok(TokenType.Before)),
-                    Prod(1, Tok(TokenType.After)),
-                    Prod(1, Tok(TokenType.Instead), Tok(TokenType.Of))
+                    Prod(".before", 1, Tok(TokenType.Before)),
+                    Prod(".after", 1, Tok(TokenType.After)),
+                    Prod(".instead-of", 1, Tok(TokenType.Instead), Tok(TokenType.Of))
                 )),
                 Or(
-                    Prod(1, Tok(TokenType.Delete)),
-                    Prod(1, Tok(TokenType.Insert)),
-                    Prod(1,
+                    Prod(".delete", 1, Tok(TokenType.Delete)),
+                    Prod(".insert", 1, Tok(TokenType.Insert)),
+                    Prod(".update", 1,
                         Tok(TokenType.Update),
-                        Opt(1, Tok(TokenType.Of), Lst(TokenType.Comma, 1, Id("column name")))
+                        Opt(1, Tok(TokenType.Of), Lst(".column", TokenType.Comma, 1, Id("column name")))
                     )
                 ),
                 Tok(TokenType.On),
@@ -388,7 +389,7 @@ namespace SqlNotebookScript.Interpreter {
                 Opt(1, Tok(TokenType.For), Tok(TokenType.Each), Tok(TokenType.Row)),
                 Opt(1, Tok(TokenType.When), SubProd("expr")),
                 Tok(TokenType.Begin),
-                Lst(null, 1,
+                Lst(".stmt", null, 1,
                     Or(SubProd("update-stmt"), SubProd("insert-stmt"), SubProd("delete-stmt"), SubProd("select-stmt")),
                     Tok(TokenType.Semi)
                 ),
@@ -397,7 +398,7 @@ namespace SqlNotebookScript.Interpreter {
 
             // create-view-stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ]
             //      [database-name "."] view-name [ "(" column-name [ "," column-name ]* ")" ] AS <select-stmt>
-            _dict["create-view-stmt"] = Prod(3,
+            TopProd("create-view-stmt", 3,
                 Tok(TokenType.Create),
                 Opt(Tok(TokenType.Temp), Tok("temporary")),
                 Tok(TokenType.View),
@@ -406,7 +407,7 @@ namespace SqlNotebookScript.Interpreter {
                 Id("view name"),
                 Opt(1,
                     Tok(TokenType.Lp),
-                    Lst(TokenType.Comma, 1, Id("column name")),
+                    Lst(".column", TokenType.Comma, 1, Id("column name")),
                     Tok(TokenType.Rp)
                 ),
                 Tok(TokenType.As),
@@ -416,7 +417,7 @@ namespace SqlNotebookScript.Interpreter {
             // create-virtual-table-stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ]
             //      [ database-name "." ] table-name
             //      USING module-name [ "(" module-argument [ "," module-argument ]* ")" ]
-            _dict["create-virtual-table-stmt"] = Prod(2,
+            TopProd("create-virtual-table-stmt", 2,
                 Tok(TokenType.Create), Tok(TokenType.Virtual), Tok(TokenType.Table),
                 Opt(1, Tok(TokenType.If), Tok(TokenType.Not), Tok(TokenType.Exists)),
                 Opt(Id("database name"), Tok(TokenType.Dot)),
@@ -425,17 +426,17 @@ namespace SqlNotebookScript.Interpreter {
                 Id("module name"),
                 Opt(1,
                     Tok(TokenType.Lp),
-                    Lst(TokenType.Comma, 1, SubProd("expr")),
+                    Lst(".arg", TokenType.Comma, 1, SubProd("expr")),
                     Tok(TokenType.Rp)
                 )
             );
 
             // with-clause ::= WITH [ RECURSIVE ] <cte-table-name> AS "(" <select-stmt> ")"
             //      [ "," <cte-table-name> AS "(" <select-stmt> ")" ]*
-            _dict["with-clause"] = Prod(1,
+            TopProd("with-clause", 1,
                 Tok(TokenType.With),
                 Opt(Tok(TokenType.Recursive)),
-                Lst(TokenType.Comma, 1,
+                Lst(".cte", TokenType.Comma, 1,
                     SubProd("cte-table-name"),
                     Tok(TokenType.As),
                     Tok(TokenType.Lp),
@@ -445,18 +446,18 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // cte-table-name ::= table-name [ "(" column-name [ "," column-name ]* ")" ]
-            _dict["cte-table-name"] = Prod(1,
+            TopProd("cte-table-name", 1,
                 Id("table name"),
                 Opt(1,
                     Tok(TokenType.Lp),
-                    Lst(TokenType.Comma, 1, Id("column name")),
+                    Lst(".column", TokenType.Comma, 1, Id("column name")),
                     Tok(TokenType.Rp)
                 )
             );
 
             // common-table-expression ::= table-name [ "(" column-name [ "," column-name ]* ")" ] 
             //      AS "(" <select-stmt> ")"
-            _dict["common-table-expression"] = Prod(1,
+            TopProd("common-table-expression", 1,
                 SubProd("cte-table-name"),
                 Tok(TokenType.As),
                 Tok(TokenType.Lp),
@@ -469,7 +470,7 @@ namespace SqlNotebookScript.Interpreter {
             //          [ ORDER BY <ordering-term> [ "," <ordering-term> ]* ]
             //          LIMIT <expr> [ ( OFFSET | "," ) <expr> ]
             //      ]
-            _dict["delete-stmt"] = Prod(2,
+            TopProd("delete-stmt", 2,
                 Opt(SubProd("with-clause")),
                 Tok(TokenType.Delete), Tok(TokenType.From),
                 SubProd("qualified-table-name"),
@@ -478,7 +479,7 @@ namespace SqlNotebookScript.Interpreter {
                     Opt(1,
                         Tok(TokenType.Order),
                         Tok(TokenType.By),
-                        Lst(TokenType.Comma, 1, SubProd("ordering-term"))
+                        Lst(".order", TokenType.Comma, 1, SubProd("ordering-term"))
                     ),
                     Tok(TokenType.Limit),
                     SubProd("expr"),
@@ -490,14 +491,14 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // detach-stmt ::= DETACH [ DATABASE ] database-name
-            _dict["detach-stmt"] = Prod(1,
+            TopProd("detach-stmt", 1,
                 Tok(TokenType.Detach),
                 Opt(Tok(TokenType.Database)),
                 Id("database name")
             );
 
             // drop-index-stmt ::= DROP INDEX [ IF EXISTS ] [ database-name "." ] index-name
-            _dict["drop-index-stmt"] = Prod(2,
+            TopProd("drop-index-stmt", 2,
                 Tok(TokenType.Drop),
                 Tok(TokenType.Index),
                 Opt(1, Tok(TokenType.If), Tok(TokenType.Exists)),
@@ -506,7 +507,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // drop-table-stmt ::= DROP TABLE [ IF EXISTS ] [ database-name "." ] table-name
-            _dict["drop-table-stmt"] = Prod(2,
+            TopProd("drop-table-stmt", 2,
                 Tok(TokenType.Drop),
                 Tok(TokenType.Table),
                 Opt(1, Tok(TokenType.If), Tok(TokenType.Exists)),
@@ -515,7 +516,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // drop-trigger-stmt ::= DROP TRIGGER [ IF EXISTS ] [ database-name "." ] trigger-name
-            _dict["drop-trigger-stmt"] = Prod(2,
+            TopProd("drop-trigger-stmt", 2,
                 Tok(TokenType.Drop),
                 Tok(TokenType.Trigger),
                 Opt(1, Tok(TokenType.If), Tok(TokenType.Exists)),
@@ -524,7 +525,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // drop-view-stmt ::= DROP VIEW [ IF EXISTS ] [ database-name "." ] view-name
-            _dict["drop-view-stmt"] = Prod(2,
+            TopProd("drop-view-stmt", 2,
                 Tok(TokenType.Drop),
                 Tok(TokenType.View),
                 Opt(1, Tok(TokenType.If), Tok(TokenType.Exists)),
@@ -552,44 +553,44 @@ namespace SqlNotebookScript.Interpreter {
             //      binding order does not matter.) ...
 
             // expr ::= or-expr
-            _dict["expr"] = Prod(1,
+            TopProd("expr", 1,
                 SubProd("or-expr")
             );
 
             // or-expr ::= and-expr [ OR and-expr ]*
-            _dict["or-expr"] = Prod(1,
-                Lst(TokenType.Or, 1, SubProd("and-expr"))
+            TopProd("or-expr", 1,
+                Lst(".term", TokenType.Or, 1, SubProd("and-expr"))
             );
 
             // and-expr ::= eq-expr [ AND eq-expr ]*
-            _dict["and-expr"] = Prod(1,
-                Lst(TokenType.And, 1, SubProd("eq-expr"))
+            TopProd("and-expr", 1,
+                Lst(".term", TokenType.And, 1, SubProd("eq-expr"))
             );
 
             // eq-expr ::= ineq-expr [ eq-expr-op | eq-expr-is | eq-expr-in | eq-expr-like | eq-expr-between ]*
-            _dict["eq-expr"] = Prod(1,
+            TopProd("eq-expr", 1,
                 SubProd("ineq-expr"),
-                Lst(null, 0,
+                Lst(".term", null, 0,
                     Or(SubProd("eq-expr-op"), SubProd("eq-expr-is"), SubProd("eq-expr-in"), SubProd("eq-expr-like")))
             );
 
             // eq-expr-op ::= ( "=" | "==" | "!=" | "<>" ) ineq-expr
-            _dict["eq-expr-op"] = Prod(1,
+            TopProd("eq-expr-op", 1,
                 Or(Tok("="), Tok("=="), Tok("!="), Tok("<>")),
                 SubProd("ineq-expr")
             );
 
             // eq-expr-is ::= (IS [NOT] ineq-expr) | ISNULL | NOTNULL | (NOT NULL)
-            _dict["eq-expr-is"] = Prod(1,
+            TopProd("eq-expr-is", 1,
                 Or(
-                    Prod(1,
+                    Prod(".is-not", 1,
                         Tok(TokenType.Is),
                         Opt(Tok(TokenType.Not)),
                         SubProd("ineq-expr")
                     ),
-                    Prod(1, Tok(TokenType.IsNull)),
-                    Prod(1, Tok(TokenType.NotNull)),
-                    Prod(1, Tok(TokenType.Not), Tok(TokenType.Null))
+                    Prod(".is-null", 1, Tok(TokenType.IsNull)),
+                    Prod(".notnull", 1, Tok(TokenType.NotNull)),
+                    Prod(".not-null", 1, Tok(TokenType.Not), Tok(TokenType.Null))
                 )
             );
 
@@ -598,19 +599,19 @@ namespace SqlNotebookScript.Interpreter {
             //                      "(" [ <select-stmt> | <expr> [ "," <expr> ]* ] ")" | 
             //                      [database-name "."] table-name 
             //                  )
-            _dict["eq-expr-in"] = Prod(2,
+            TopProd("eq-expr-in", 2,
                 Opt(Tok(TokenType.Not)),
                 Tok(TokenType.In),
                 Or(
-                    Prod(1,
+                    Prod(".select", 1,
                         Tok(TokenType.Lp),
                         Opt(Or(
                             SubProd("select-stmt"),
-                            Lst(TokenType.Comma, 1, SubProd("expr"))
+                            Lst(".value", TokenType.Comma, 1, SubProd("expr"))
                         )),
                         Tok(TokenType.Rp)
                     ),
-                    Prod(2,
+                    Prod(".table", 2,
                         Opt(Id("database name"), Tok(TokenType.Dot)),
                         Id("table name")
                     )
@@ -618,7 +619,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // eq-expr-like ::= [NOT] (LIKE | GLOB | REGEXP | MATCH) <ineq-expr> [ESCAPE <ineq-expr>]
-            _dict["eq-expr-like"] = Prod(2,
+            TopProd("eq-expr-like", 2,
                 Opt(Tok(TokenType.Not)),
                 Or(Tok("like"), Tok("glob"), Tok("regexp"), Tok("match")),
                 SubProd("ineq-expr"),
@@ -626,7 +627,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // eq-expr-between ::= [NOT] BETWEEN <ineq-expr> AND <ineq-expr>
-            _dict["eq-expr-between"] = Prod(2,
+            TopProd("eq-expr-between", 2,
                 Opt(Tok(TokenType.Not)),
                 Tok(TokenType.Between),
                 SubProd("ineq-expr"),
@@ -635,38 +636,38 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // ineq-expr ::= <bitwise-expr> [ ( "<" | "<=" | ">" | ">=" ) <bitwise-expr> ]*
-            _dict["ineq-expr"] = Prod(1,
-                LstP(Or(Tok("<"), Tok("<="), Tok(">"), Tok(">=")), 1, SubProd("bitwise-expr"))
+            TopProd("ineq-expr", 1,
+                LstP(".term", Or(Tok("<"), Tok("<="), Tok(">"), Tok(">=")), 1, SubProd("bitwise-expr"))
             );
 
             // bitwise-expr ::= <add-expr> [ ( "<<" | ">>" | "&" | "|" ) <add-expr> ]*
-            _dict["bitwise-expr"] = Prod(1,
-                LstP(Or(Tok("<<"), Tok(">>"), Tok("&"), Tok("|")), 1, SubProd("add-expr"))
+            TopProd("bitwise-expr", 1,
+                LstP(".term", Or(Tok("<<"), Tok(">>"), Tok("&"), Tok("|")), 1, SubProd("add-expr"))
             );
 
             // add-expr ::= <mult-expr> [ ( "+" | "-" ) <mult-expr> ]*
-            _dict["add-expr"] = Prod(1,
-                LstP(Or(Tok("+"), Tok("-")), 1, SubProd("mult-expr"))
+            TopProd("add-expr", 1,
+                LstP(".term", Or(Tok("+"), Tok("-")), 1, SubProd("mult-expr"))
             );
 
             // mult-expr ::= <concat-expr> [ ( "*" | "/" | "%" ) <concat-expr> ]*
-            _dict["mult-expr"] = Prod(1,
-                LstP(Or(Tok("*"), Tok("/"), Tok("%")), 1, SubProd("concat-expr"))
+            TopProd("mult-expr", 1,
+                LstP(".term", Or(Tok("*"), Tok("/"), Tok("%")), 1, SubProd("concat-expr"))
             );
 
             // concat-expr ::= <unary-expr> [ "||" <unary-expr> ]*
-            _dict["concat-expr"] = Prod(1,
-                LstP(Tok("||"), 1, SubProd("unary-expr"))
+            TopProd("concat-expr", 1,
+                LstP(".term", Tok("||"), 1, SubProd("unary-expr"))
             );
 
             // unary-expr ::= [ "-" | "+" | "NOT" ] <collate-expr>
-            _dict["unary-expr"] = Prod(2,
+            TopProd("unary-expr", 2,
                 Opt(Or(Tok("-"), Tok("+"), Tok(TokenType.Not))),
                 SubProd("collate-expr")
             );
 
             // collate-expr ::= ["~"] <expr-term> [COLLATE collation-name]
-            _dict["collate-expr"] = Prod(2,
+            TopProd("collate-expr", 2,
                 Opt(Tok("~")),
                 SubProd("expr-term"),
                 Opt(1, Tok(TokenType.Collate), Id("collation name"))
@@ -682,45 +683,45 @@ namespace SqlNotebookScript.Interpreter {
             //      [ [NOT] EXISTS ] ( <select-stmt> ) |
             //      CASE [ <expr> ] WHEN <expr> THEN <expr> [ ELSE <expr> ] END |
             //      <raise-function>
-            _dict["expr-term"] = Prod(1,
+            TopProd("expr-term", 1,
                 Or(
                     // <literal-value>
-                    Prod(1, SubProd("literal-value")),
+                    Prod(".literal-value", 1, SubProd("literal-value")),
                     // expr ::= function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* | "*" ] ")"
-                    Prod(2,
+                    Prod(".function-call", 2,
                         Id("function name"),
                         Tok(TokenType.Lp),
                         Opt(Or(
-                            Prod(1, Tok(TokenType.Star)),
-                            Prod(2,
+                            Prod(".star", 1, Tok(TokenType.Star)),
+                            Prod(".args", 2,
                                 Opt(Tok(TokenType.Distinct)),
-                                Lst(TokenType.Comma, 1, SubProd("expr"))
+                                Lst(".arg", TokenType.Comma, 1, SubProd("expr"))
                             )
                         )),
                         Tok(TokenType.Rp)
                     ),
                     // [ [ database-name "." ] table-name "." ] column-name
-                    Prod(1,
+                    Prod(".column-name", 1,
                         Id("database, table, or column name"),
                         Opt(Tok(TokenType.Dot), Id("table or column name")),
                         Opt(Tok(TokenType.Dot), Id("column name"))
                     ),
                     // <bind-parameter>
-                    Prod(1, Id("variable name", allowVar: true)),
+                    Prod(".variable-name", 1, Id("variable name", allowVar: true)),
                     // expr ::= "(" <expr> ")"
-                    Prod(1,
+                    Prod(".parentheses", 1,
                         Tok(TokenType.Lp),
                         SubProd("expr"),
                         Tok(TokenType.Rp)
                     ),
                     // expr ::= CAST "(" <expr> AS <type-name> ")"
-                    Prod(1,
+                    Prod(".cast", 1,
                         Tok(TokenType.Cast), Tok(TokenType.Lp),
                         SubProd("expr"), Tok(TokenType.As), SubProd("type-name"),
                         Tok(TokenType.Rp)
                     ),
                     // expr ::= [ [NOT] EXISTS ] ( <select-stmt> )
-                    Prod(2,
+                    Prod(".exists", 2,
                         Opt(
                             Opt(Tok(TokenType.Not)),
                             Tok(TokenType.Exists)
@@ -730,7 +731,7 @@ namespace SqlNotebookScript.Interpreter {
                         Tok(TokenType.Rp)
                     ),
                     // expr ::= CASE [ <expr> ] WHEN <expr> THEN <expr> [ ELSE <expr> ] END
-                    Prod(1,
+                    Prod(".case", 1,
                         Tok(TokenType.Case),
                         Opt(SubProd("expr")),
                         Tok(TokenType.When),
@@ -740,17 +741,17 @@ namespace SqlNotebookScript.Interpreter {
                         Opt(1, Tok(TokenType.Else), SubProd("expr"))
                     ),
                     // expr ::= <raise-function>
-                    Prod(1, SubProd("raise-function"))
+                    Prod(".raise", 1, SubProd("raise-function"))
                 )
             );
 
             // raise-function ::= RAISE ( IGNORE | (( ROLLBACK | ABORT | FAIL ) "," error-message) )
-            _dict["raise-function"] = Prod(1,
+            TopProd("raise-function", 1,
                 Tok(TokenType.Raise),
                 Tok(TokenType.Lp),
                 Or(
-                    Prod(1, Tok(TokenType.Ignore)),
-                    Prod(1,
+                    Prod(".ignore", 1, Tok(TokenType.Ignore)),
+                    Prod(".rollback-abort-fail", 1,
                         Or(Tok(TokenType.Rollback), Tok(TokenType.Abort), Tok(TokenType.Fail)),
                         Tok(TokenType.Comma),
                         LitStr("error message")
@@ -766,7 +767,7 @@ namespace SqlNotebookScript.Interpreter {
             // literal-value ::= CURRENT_TIME
             // literal-value ::= CURRENT_DATE
             // literal-value ::= CURRENT_TIMESTAMP
-            _dict["literal-value"] = Prod(1,
+            TopProd("literal-value", 1,
                 Or(
                     Tok(TokenType.Integer),
                     Tok(TokenType.Float),
@@ -788,10 +789,10 @@ namespace SqlNotebookScript.Interpreter {
             //          <select-stmt> |
             //          DEFAULT VALUES
             //      )
-            _dict["insert-stmt"] = Prod(1,
+            TopProd("insert-stmt", 1,
                 Opt(SubProd("with-clause")),
                 Or(
-                    Prod(1,
+                    Prod(".insert", 1,
                         Tok(TokenType.Insert),
                         Opt(1,
                             Tok(TokenType.Or),
@@ -800,42 +801,42 @@ namespace SqlNotebookScript.Interpreter {
                             )
                         )
                     ),
-                    Prod(1, Tok(TokenType.Replace))
+                    Prod(".replace", 1, Tok(TokenType.Replace))
                 ),
                 Tok(TokenType.Into),
                 Opt(Id("database name"), Tok(TokenType.Dot)),
                 Id("table name"),
                 Opt(
                     Tok(TokenType.Lp),
-                    Lst(TokenType.Comma, 1, Id("column name")),
+                    Lst(".column", TokenType.Comma, 1, Id("column name")),
                     Tok(TokenType.Rp)
                 ),
                 Or(
-                    Prod(1,
+                    Prod(".values", 1,
                         Tok(TokenType.Values),
-                        Lst(TokenType.Comma, 1,
+                        Lst(".row", TokenType.Comma, 1,
                             Tok(TokenType.Lp),
-                            Lst(TokenType.Comma, 1, SubProd("expr")),
+                            Lst(".value", TokenType.Comma, 1, SubProd("expr")),
                             Tok(TokenType.Rp)
                         )
                     ),
-                    Prod(1, SubProd("select-stmt")),
-                    Prod(1, Tok(TokenType.Default), Tok(TokenType.Values))
+                    Prod(".select", 1, SubProd("select-stmt")),
+                    Prod(".default-values", 1, Tok(TokenType.Default), Tok(TokenType.Values))
                 )
             );
 
             // pragma-stmt ::= PRAGMA [ database-name "." ] pragma-name
             //      [ "=" <pragma-value> | "(" <pragma-value> ")" ]
-            _dict["pragma-stmt"] = Prod(1,
+            TopProd("pragma-stmt", 1,
                 Tok(TokenType.Pragma),
                 Opt(Id("database name"), Tok(TokenType.Dot)),
                 Id("pragma name"),
                 Opt(Or(
-                    Prod(1,
+                    Prod(".equals", 1,
                         Tok(TokenType.Eq),
                         SubProd("pragma-value")
                     ),
-                    Prod(1,
+                    Prod(".paren", 1,
                         Tok(TokenType.Lp),
                         SubProd("pragma-value"),
                         Tok(TokenType.Rp)
@@ -846,7 +847,7 @@ namespace SqlNotebookScript.Interpreter {
             // pragma-value ::= <signed-number>
             // pragma-value ::= name
             // pragma-value ::= string-literal
-            _dict["pragma-value"] = Prod(1,
+            TopProd("pragma-value", 1,
                 Or(
                     SubProd("signed-number"),
                     Id("name"),
@@ -855,7 +856,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // reindex-stmt ::= REINDEX [ [ database-name "." ] table-or-index-or-collation-name ]
-            _dict["reindex-stmt"] = Prod(1,
+            TopProd("reindex-stmt", 1,
                 Tok(TokenType.Reindex),
                 Opt(
                     Opt(Id("database name"), Tok(TokenType.Dot)),
@@ -873,23 +874,23 @@ namespace SqlNotebookScript.Interpreter {
             // [ GROUP BY <expr> [ , <expr> ]* [ HAVING <expr> ] ] | VALUES ( <expr> [ , <expr> ]* ) [ , ( <expr> [ , <expr> ]* ) ]* ]1 ]*
             // [ ORDER BY <ordering-term> [ , <ordering-term> ]* ]
             // [ LIMIT <expr> [ [ OFFSET | , ]1 <expr> ] ]
-            _dict["select-stmt"] = Prod(1,
+            TopProd("select-stmt", 1,
                 Opt(1,
                     Tok(TokenType.With),
                     Opt(Tok(TokenType.Recursive)),
-                    Lst(TokenType.Comma, 1, SubProd("common-table-expression"))
+                    Lst(".cte", TokenType.Comma, 1, SubProd("common-table-expression"))
                 ),
-                LstP(SubProd("compound-operator"), 1,
+                LstP(".compound-operand", SubProd("compound-operator"), 1,
                     Or(
-                        Prod(1,
+                        Prod(".select", 1,
                             Tok(TokenType.Select),
                             Opt(Or(Tok(TokenType.Distinct), Tok(TokenType.All))),
-                            Lst(TokenType.Comma, 1, SubProd("result-column")),
+                            Lst(".column", TokenType.Comma, 1, SubProd("result-column")),
                             Opt(1,
                                 Tok(TokenType.From),
                                 Or(
                                     SubProd("join-clause"),
-                                    Lst(TokenType.Comma, 1, SubProd("table-or-subquery"))
+                                    Lst(".table", TokenType.Comma, 1, SubProd("table-or-subquery"))
                                 )
                             ),
                             Opt(1,
@@ -898,15 +899,15 @@ namespace SqlNotebookScript.Interpreter {
                             ),
                             Opt(1,
                                 Tok(TokenType.Group), Tok(TokenType.By),
-                                Lst(TokenType.Comma, 1, SubProd("expr")),
+                                Lst(".group-expr", TokenType.Comma, 1, SubProd("expr")),
                                 Opt(1, Tok(TokenType.Having), SubProd("expr"))
                             )
                         ),
-                        Prod(1,
+                        Prod(".values", 1,
                             Tok(TokenType.Values),
-                            Lst(TokenType.Comma, 1, 
+                            Lst(".row", TokenType.Comma, 1, 
                                 Tok(TokenType.Lp),
-                                Lst(TokenType.Comma, 1, SubProd("expr")),
+                                Lst(".value", TokenType.Comma, 1, SubProd("expr")),
                                 Tok(TokenType.Rp)
                             )
                         )
@@ -914,7 +915,7 @@ namespace SqlNotebookScript.Interpreter {
                 ),
                 Opt(1,
                     Tok(TokenType.Order), Tok(TokenType.By),
-                    Lst(TokenType.Comma, 1, SubProd("ordering-term"))
+                    Lst(".term", TokenType.Comma, 1, SubProd("ordering-term"))
                 ),
                 Opt(1,
                     Tok(TokenType.Limit),
@@ -931,9 +932,9 @@ namespace SqlNotebookScript.Interpreter {
             // we've also changed the optional join-operator into an at-least-one, because the select-stmt production
             // already contains a case for a single table-or-subquery, so join-clause is only needed if a join-operator
             // is present.
-            _dict["join-clause"] = Prod(1,
+            TopProd("join-clause", 1,
                 SubProd("table-or-subquery"),
-                Lst(null, 1,
+                Lst(".term", null, 1,
                     SubProd("join-operator"),
                     SubProd("table-or-subquery"),
                     SubProd("join-constraint")
@@ -947,20 +948,20 @@ namespace SqlNotebookScript.Interpreter {
             // table-or-subquery ::= "(" ( <table-or-subquery> [ "," <table-or-subquery> ]* | <join-clause> ) ")"
             // table-or-subquery ::= "(" <select-stmt> ")" [ [ AS ] table-alias ]
             // note: the table-function-name production is described in the syntax diagram but not the text BNF.
-            _dict["table-or-subquery"] = Prod(1,
+            TopProd("table-or-subquery", 1,
                 Or(
-                    Prod(3,
+                    Prod(".table-function-call", 3,
                         Opt(Id("database name"), Tok(TokenType.Dot)),
                         Id("table function name"),
                         Tok(TokenType.Lp),
-                        Lst(TokenType.Comma, 0, SubProd("expr")),
+                        Lst(".arg", TokenType.Comma, 0, SubProd("expr")),
                         Tok(TokenType.Rp),
                         Opt(
                             Opt(Tok(TokenType.As)),
                             Id("table alias")
                         )
                     ),
-                    Prod(2,
+                    Prod(".table", 2,
                         Opt(Id("database name"), Tok(TokenType.Dot)),
                         Id("table name"),
                         Opt(
@@ -968,11 +969,11 @@ namespace SqlNotebookScript.Interpreter {
                             Id("table alias")
                         ),
                         Opt(Or(
-                            Prod(1, Tok(TokenType.Indexed), Tok(TokenType.By), Id("index name")),
-                            Prod(1, Tok(TokenType.Not), Tok(TokenType.Indexed))
+                            Prod(".indexed-by", 1, Tok(TokenType.Indexed), Tok(TokenType.By), Id("index name")),
+                            Prod(".not-indexed", 1, Tok(TokenType.Not), Tok(TokenType.Indexed))
                         ))
                     ),
-                    Prod(2,
+                    Prod(".select", 2,
                         Tok(TokenType.Lp),
                         SubProd("select-stmt"),
                         Tok(TokenType.Rp),
@@ -981,10 +982,10 @@ namespace SqlNotebookScript.Interpreter {
                             Id("table alias")
                         )
                     ),
-                    Prod(1,
+                    Prod(".joins", 1,
                         Tok(TokenType.Lp),
                         Or(
-                            Lst(TokenType.Comma, 1, SubProd("table-or-subquery")),
+                            Lst(".term", TokenType.Comma, 1, SubProd("table-or-subquery")),
                             SubProd("join-clause")
                         ),
                         Tok(TokenType.Rp)
@@ -995,15 +996,15 @@ namespace SqlNotebookScript.Interpreter {
             // result-column ::= *
             // result-column ::= table-name . *
             // result-column ::= <expr> [ [ AS ] column-alias ]
-            _dict["result-column"] = Prod(1,
+            TopProd("result-column", 1,
                 Or(
-                    Prod(1, Tok(TokenType.Star)),
-                    Prod(3,
+                    Prod(".star", 1, Tok(TokenType.Star)),
+                    Prod(".table-star", 3,
                         Id("table name"),
                         Tok(TokenType.Dot),
                         Tok(TokenType.Star)
                     ),
-                    Prod(1,
+                    Prod(".expr", 1,
                         SubProd("expr"),
                         Opt(
                             Opt(Tok(TokenType.As)),
@@ -1015,16 +1016,16 @@ namespace SqlNotebookScript.Interpreter {
 
             // join-operator ::= ,
             // join-operator ::= [ NATURAL ] [ LEFT [ OUTER ] | INNER | CROSS ] JOIN
-            _dict["join-operator"] = Prod(1,
+            TopProd("join-operator", 1,
                 Or(
-                    Prod(1, Tok(TokenType.Comma)),
-                    Prod(3,
+                    Prod(".comma", 1, Tok(TokenType.Comma)),
+                    Prod(".join", 3,
                         Opt(Tok("natural")),
                         Opt(
                             Or(
-                                Prod(1, Tok("left"), Opt(Tok("outer"))),
-                                Prod(1, Tok("inner")),
-                                Prod(1, Tok("cross"))
+                                Prod(".left", 1, Tok("left"), Opt(Tok("outer"))),
+                                Prod(".inner", 1, Tok("inner")),
+                                Prod(".cross", 1, Tok("cross"))
                             )
                         ),
                         Tok("join")
@@ -1033,20 +1034,20 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // join-constraint ::= [ ON <expr> | USING ( column-name [ , column-name ]* ) ]
-            _dict["join-constraint"] = Prod(1,
+            TopProd("join-constraint", 1,
                 Opt(Or(
-                    Prod(1, Tok(TokenType.On), SubProd("expr")),
-                    Prod(1,
+                    Prod(".on", 1, Tok(TokenType.On), SubProd("expr")),
+                    Prod(".using", 1,
                         Tok(TokenType.Using),
                         Tok(TokenType.Lp),
-                        Lst(TokenType.Comma, 1, Id("column name")),
+                        Lst(".column", TokenType.Comma, 1, Id("column name")),
                         Tok(TokenType.Rp)
                     )
                 ))
             );
 
             // ordering-term ::= <expr> [ COLLATE collation-name ] [ ASC | DESC ]
-            _dict["ordering-term"] = Prod(1,
+            TopProd("ordering-term", 1,
                 SubProd("expr"),
                 Opt(1, Tok(TokenType.Collate), Id("collation name")),
                 Opt(Or(Tok(TokenType.Asc), Tok(TokenType.Desc)))
@@ -1056,11 +1057,11 @@ namespace SqlNotebookScript.Interpreter {
             // compound-operator ::= UNION ALL
             // compound-operator ::= INTERSECT
             // compound-operator ::= EXCEPT
-            _dict["compound-operator"] = Prod(1,
+            TopProd("compound-operator", 1,
                 Or(
-                    Prod(1, Tok(TokenType.Union), Opt(Tok(TokenType.All))),
-                    Prod(1, Tok(TokenType.Intersect)),
-                    Prod(1, Tok(TokenType.Except))
+                    Prod(".union", 1, Tok(TokenType.Union), Opt(Tok(TokenType.All))),
+                    Prod(".intersect", 1, Tok(TokenType.Intersect)),
+                    Prod(".except", 1, Tok(TokenType.Except))
                 )
             );
 
@@ -1071,7 +1072,7 @@ namespace SqlNotebookScript.Interpreter {
             //          [ ORDER BY <ordering-term> [ , <ordering-term> ]* ]
             //          LIMIT <expr> [ ( OFFSET | , ) <expr> ]
             //      ]
-            _dict["update-stmt"] = Prod(2,
+            TopProd("update-stmt", 2,
                 Opt(SubProd("with-clause")),
                 Tok(TokenType.Update),
                 Opt(1,
@@ -1081,12 +1082,12 @@ namespace SqlNotebookScript.Interpreter {
                 ),
                 SubProd("qualified-table-name"),
                 Tok(TokenType.Set),
-                Lst(TokenType.Comma, 1, Id("column name"), Tok(TokenType.Eq), SubProd("expr")),
+                Lst(".assignment", TokenType.Comma, 1, Id("column name"), Tok(TokenType.Eq), SubProd("expr")),
                 Opt(1, Tok(TokenType.Where), SubProd("expr")),
                 Opt(2,
                     Opt(
                         Tok(TokenType.Order), Tok(TokenType.By),
-                        Lst(TokenType.Comma, 1, SubProd("ordering-term"))
+                        Lst(".order-term", TokenType.Comma, 1, SubProd("ordering-term"))
                     ),
                     Tok(TokenType.Limit),
                     SubProd("expr"),
@@ -1098,21 +1099,25 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // qualified-table-name ::= [ database-name . ] table-name [ INDEXED BY index-name | NOT INDEXED ]
-            _dict["qualified-table-name"] = Prod(2,
+            TopProd("qualified-table-name", 2,
                 Opt(Id("database name"), Tok(TokenType.Dot)),
                 Id("table name"),
                 Opt(Or(
-                    Prod(1, Tok(TokenType.Indexed), Tok(TokenType.By), Id("index name")),
-                    Prod(1, Tok(TokenType.Not), Tok(TokenType.Indexed))
+                    Prod(".indexed-by", 1, Tok(TokenType.Indexed), Tok(TokenType.By), Id("index name")),
+                    Prod(".not-indexed", 1, Tok(TokenType.Not), Tok(TokenType.Indexed))
                 ))
             );
 
             // vacuum-stmt ::= VACUUM
-            _dict["vacuum-stmt"] = Prod(1, Tok(TokenType.Vacuum));
+            TopProd("vacuum-stmt", 1, Tok(TokenType.Vacuum));
         }
 
-        private static SpecProd Prod(int numReq, params SpecTerm[] terms) {
-            return new SpecProd { NumReq = numReq, Terms = terms };
+        private static void TopProd(string name, int numReq, params SpecTerm[] terms) {
+            _dict[name] = Prod(name, numReq, terms);
+        }
+
+        private static SpecProd Prod(string name, int numReq, params SpecTerm[] terms) {
+            return new SpecProd { Name = name, NumReq = numReq, Terms = terms };
         }
 
         private static IdentifierTerm Id(string desc, bool allowVar = false) {
@@ -1151,27 +1156,27 @@ namespace SqlNotebookScript.Interpreter {
             return new ProdTerm { ProdName = name };
         }
 
-        private static ListTerm Lst(TokenType? separator, int min, params SpecTerm[] terms) {
+        private static ListTerm Lst(string subProdName, TokenType? separator, int min, params SpecTerm[] terms) {
             return new ListTerm {
-                SeparatorProd = separator.HasValue ? Prod(1, Tok(separator.Value)) : null,
+                SeparatorProd = separator.HasValue ? Prod(".list-separator", 1, Tok(separator.Value)) : null,
                 Min = min,
-                ItemProd = Prod(terms.Length, terms)
+                ItemProd = Prod(subProdName, terms.Length, terms)
             };
         }
 
-        private static ListTerm LstP(SpecProd separatorProd, int min, params SpecTerm[] terms) {
+        private static ListTerm LstP(string subProdName, SpecProd separatorProd, int min, params SpecTerm[] terms) {
             return new ListTerm {
                 SeparatorProd = separatorProd,
                 Min = min,
-                ItemProd = Prod(terms.Length, terms)
+                ItemProd = Prod(subProdName, terms.Length, terms)
             };
         }
 
-        private static ListTerm LstP(SpecTerm separatorTerm, int min, params SpecTerm[] terms) {
+        private static ListTerm LstP(string subProdName, SpecTerm separatorTerm, int min, params SpecTerm[] terms) {
             return new ListTerm {
-                SeparatorProd = Prod(1, separatorTerm),
+                SeparatorProd = Prod(".list-separator", 1, separatorTerm),
                 Min = min,
-                ItemProd = Prod(terms.Length, terms)
+                ItemProd = Prod(subProdName, terms.Length, terms)
             };
         }
 

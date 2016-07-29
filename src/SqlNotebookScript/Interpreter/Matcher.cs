@@ -158,6 +158,7 @@ namespace SqlNotebookScript.Interpreter {
     }
 
     public sealed class SpecProd {
+        public string Name { get; set; }
         public SpecTerm[] Terms { get; set; }
 
         // numReq = number of terms that must be present for the production to be chosen.  if further input terms
