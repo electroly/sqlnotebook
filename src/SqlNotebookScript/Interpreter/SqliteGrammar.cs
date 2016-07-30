@@ -23,13 +23,15 @@ namespace SqlNotebookScript.Interpreter {
         public static IReadOnlyDictionary<string, SpecProd> Prods { get; } = _dict;
 
         static SqliteGrammar() {
+            string p;
+
             // sql-stmt ::= [ EXPLAIN [ QUERY PLAN ] ] ( <alter-table-stmt> | <analyze-stmt> | <attach-stmt> | 
             //      <begin-stmt> | <commit-stmt> | <create-index-stmt> | <create-table-stmt> | <create-trigger-stmt> |
             //      <create-view-stmt> | <create-virtual-table-stmt> | <delete-stmt> | 
             //      <detach-stmt> | <drop-index-stmt> | <drop-table-stmt> | <drop-trigger-stmt> | <drop-view-stmt> | 
             //      <insert-stmt> | <pragma-stmt> | <reindex-stmt> | <release-stmt> | <rollback-stmt> | 
             //      <savepoint-stmt> | <select-stmt> | <update-stmt> | <update-stmt-limited> | <vacuum-stmt> )
-            TopProd("sql-stmt", 2,
+            TopProd(p = "sql-stmt", 2,
                 Opt(1, Tok(TokenType.Explain), Opt(1, Tok(TokenType.Query), Tok(TokenType.Plan))),
                 Or(
                     SubProd("select-stmt"),
@@ -63,16 +65,16 @@ namespace SqlNotebookScript.Interpreter {
             // alter-table-stmt ::= 
             //      ALTER TABLE [ database-name "." ] table-name 
             //      ( RENAME TO new-table-name ) | ( ADD [COLUMN] <column-def> )
-            TopProd("alter-table-stmt", 1,
+            TopProd(p = "alter-table-stmt", 1,
                 Tok(TokenType.Alter), Tok(TokenType.Table),
                 Opt(Id("database name"), Tok(TokenType.Dot)),
                 Id("table name"),
                 Or(
-                    Prod(".rename", 1,
+                    Prod($"{p}.rename", 1,
                         Tok(TokenType.Rename), Tok(TokenType.To),
                         Id("new table name")
                     ),
-                    Prod(".add", 1,
+                    Prod($"{p}.add", 1,
                         Tok(TokenType.Add),
                         Opt(Tok(TokenType.ColumnKw)),
                         SubProd("column-def")
@@ -81,7 +83,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // analyze-stmt ::= ANALYZE [ database-table-index-name [ "." table-or-index-name ] ]
-            TopProd("analyze-stmt", 1,
+            TopProd(p = "analyze-stmt", 1,
                 Tok(TokenType.Analyze),
                 Opt(
                     Id("database, table, or index name"),
@@ -90,7 +92,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // attach-stmt ::= ATTACH [ DATABASE ] <expr> AS database-name
-            TopProd("attach-stmt", 1,
+            TopProd(p = "attach-stmt", 1,
                 Tok(TokenType.Attach),
                 Opt(Tok(TokenType.Database)),
                 SubProd("expr"),
@@ -99,20 +101,20 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // begin-stmt ::= BEGIN [ DEFERRED | IMMEDIATE | EXCLUSIVE ] [ TRANSACTION ]
-            TopProd("begin-stmt", 1,
+            TopProd(p = "begin-stmt", 1,
                 Tok(TokenType.Begin),
                 Opt(Or(Tok(TokenType.Deferred), Tok(TokenType.Immediate), Tok(TokenType.Exclusive))),
                 Opt(Tok(TokenType.Transaction))
             );
 
             // commit-stmt ::= ( COMMIT | END ) [ TRANSACTION ]
-            TopProd("commit-stmt", 1,
+            TopProd(p = "commit-stmt", 1,
                 Or(Tok(TokenType.Commit), Tok(TokenType.End)),
                 Opt(Tok(TokenType.Transaction))
             );
 
             // rollback-stmt ::= ROLLBACK [ TRANSACTION ] [ TO [ SAVEPOINT ] savepoint-name ]
-            TopProd("rollback-stmt", 1,
+            TopProd(p = "rollback-stmt", 1,
                 Tok(TokenType.Rollback),
                 Opt(Tok(TokenType.Transaction)),
                 Opt(1,
@@ -123,13 +125,13 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // savepoint-stmt ::= SAVEPOINT savepoint-name
-            TopProd("savepoint-stmt", 1,
+            TopProd(p = "savepoint-stmt", 1,
                 Tok(TokenType.Savepoint),
                 Id("savepoint name")
             );
 
             // release-stmt ::= RELEASE [ SAVEPOINT ] savepoint-name
-            TopProd("release-stmt", 1,
+            TopProd(p = "release-stmt", 1,
                 Tok(TokenType.Release),
                 Opt(Tok(TokenType.Savepoint)),
                 Id("savepoint name")
@@ -138,7 +140,7 @@ namespace SqlNotebookScript.Interpreter {
             // create-index-stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ]
             //      [ database-name "." ] index-name ON table-name "(" <indexed-column> [ "," <indexed-column> ]* ")"
             //      [ WHERE <expr> ]
-            Prod("create-index-stmt", 3,
+            TopProd(p = "create-index-stmt", 3,
                 Tok(TokenType.Create),
                 Opt(Tok(TokenType.Unique)),
                 Tok(TokenType.Index),
@@ -148,13 +150,13 @@ namespace SqlNotebookScript.Interpreter {
                 Tok(TokenType.On),
                 Id("table name"),
                 Tok(TokenType.Lp),
-                Lst(".column", TokenType.Comma, 1, SubProd("indexed-column")),
+                Lst($"{p}.column", TokenType.Comma, 1, SubProd("indexed-column")),
                 Tok(TokenType.Rp),
                 Opt(1, Tok(TokenType.Where), SubProd("expr"))
             );
 
             // indexed-column ::= ( column-name | expr ) [ COLLATE collation-name ] [ ASC | DESC ]
-            TopProd("indexed-column", 1,
+            TopProd(p = "indexed-column", 1,
                 Or(SubProd("expr"), Id("column name")),
                 Opt(1, Tok(TokenType.Collate), Id("collation name")),
                 Opt(Or(Tok(TokenType.Asc), Tok(TokenType.Desc)))
@@ -166,7 +168,7 @@ namespace SqlNotebookScript.Interpreter {
             //          "(" <column-def> [ "," <column-def> ]* [ "," <table-constraint> ]* ")" [WITHOUT ROWID] 
             //        | AS <select-stmt> 
             //      )
-            TopProd("create-table-stmt", 3,
+            TopProd(p = "create-table-stmt", 3,
                 Tok(TokenType.Create),
                 Opt(Or(Tok(TokenType.Temp), Tok("temporary"))),
                 Tok(TokenType.Table),
@@ -174,15 +176,15 @@ namespace SqlNotebookScript.Interpreter {
                 Opt(Id("database name"), Tok(TokenType.Dot)),
                 Id("table name"),
                 Or(
-                    Prod(".column-defs", 1,
+                    Prod($"{p}.column-defs", 1,
                         Tok(TokenType.Lp),
-                        Lst(".def", TokenType.Comma, 1, Or(SubProd("table-constraint"), SubProd("column-def"))),
+                        Lst($"{p}.def", TokenType.Comma, 1, Or(SubProd("table-constraint"), SubProd("column-def"))),
                         // this definition allows column definitions to appear after table constraints, which is illegal.
                         // it would be nice to improve here.
                         Tok(TokenType.Rp),
                         Opt(1, Tok(TokenType.Without), Tok("rowid"))
                     ),
-                    Prod(".as", 1,
+                    Prod($"{p}.as", 1,
                         Tok(TokenType.As),
                         SubProd("select-stmt")
                     )
@@ -190,16 +192,16 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // column-def ::= column-name [ <type-name> ] [ <column-constraint> ]*
-            TopProd("column-def", 1,
+            TopProd(p = "column-def", 1,
                 Id("column name"),
                 Opt(SubProd("type-name")),
-                Lst(".constraint", null, 0, SubProd("column-constraint"))
+                Lst($"{p}.constraint", null, 0, SubProd("column-constraint"))
             );
 
             // type-name ::= name+ [ "(" <signed-number> ")" | "(" <signed-number> "," <signed-number> ")" ]
             // implemented as: name+ [ "(" <signed-number> [ "," <signed-number> ] ")" ]
-            TopProd("type-name", 1,
-                Lst(".part", null, 1, Or(
+            TopProd(p = "type-name", 1,
+                Lst($"{p}.part", null, 1, Or(
                     Id("data type"),
                     Toks(
                         // these tokens are okay to enter as part of the data type.  the list was created by testing
@@ -240,27 +242,27 @@ namespace SqlNotebookScript.Interpreter {
             //      |   ( DEFAULT ( <signed-number> | <literal-value> | "(" <expr> ")" ) )
             //      |   ( COLLATE collation-name )
             //      |   ( <foreign-key-clause> )
-            TopProd("column-constraint", 2,
+            TopProd(p = "column-constraint", 2,
                 Opt(1, Tok(TokenType.Constraint), Id("constraint name")),
                 Or(
-                    Prod(".primary-key", 1,
+                    Prod($"{p}.primary-key", 1,
                         Tok(TokenType.Primary), Tok(TokenType.Key),
                         Opt(Or(Tok(TokenType.Asc), Tok(TokenType.Desc))),
                         SubProd("conflict-clause"),
                         Opt(Tok(TokenType.Autoincr))
                     ),
-                    Prod(".not-null", 1, 
+                    Prod($"{p}.not-null", 1, 
                         Tok(TokenType.Not), Tok(TokenType.Null), SubProd("conflict -clause")),
-                    Prod(".null", 1, Tok(TokenType.Null), SubProd("conflict -clause")),
-                    Prod(".unique", 1, Tok(TokenType.Unique), SubProd("conflict -clause")),
-                    Prod(".check", 1,
+                    Prod($"{p}.null", 1, Tok(TokenType.Null), SubProd("conflict -clause")),
+                    Prod($"{p}.unique", 1, Tok(TokenType.Unique), SubProd("conflict -clause")),
+                    Prod($"{p}.check", 1,
                         Tok(TokenType.Check), Tok(TokenType.Lp), SubProd("expr"), Tok(TokenType.Rp)),
-                    Prod(".default", 1,
+                    Prod($"{p}.default", 1,
                         Tok(TokenType.Default),
                         Or(
-                            Prod(".number", 1, SubProd("signed-number")),
-                            Prod(".literal", 1, SubProd("literal-value")),
-                            Prod(".expr", 1, Tok(TokenType.Lp), SubProd("expr"), Tok(TokenType.Rp))
+                            Prod($"{p}.number", 1, SubProd("signed-number")),
+                            Prod($"{p}.literal", 1, SubProd("literal-value")),
+                            Prod($"{p}.expr", 1, Tok(TokenType.Lp), SubProd("expr"), Tok(TokenType.Rp))
                         )
                     ),
                     Prod("column-constraint/collate", 1, Tok(TokenType.Collate), Id("collation name")),
@@ -269,7 +271,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // signed-number ::= [ + | - ] numeric-literal
-            TopProd("signed-number", 2,
+            TopProd(p = "signed-number", 2,
                 Opt(Or(Tok("+"), Tok("-"))),
                 Or(
                     Tok(TokenType.Integer),
@@ -281,30 +283,30 @@ namespace SqlNotebookScript.Interpreter {
             //      ( ( PRIMARY KEY | UNIQUE ) "(" <indexed-column> [ , <indexed-column> ]* ")" 
             //      <conflict-clause> | CHECK "(" <expr> ")" | FOREIGN KEY "(" column-name [ , column-name ]* ")" 
             //      <foreign-key-clause> )
-            TopProd("table-constraint", 2,
+            TopProd(p = "table-constraint", 2,
                 Opt(1, Tok(TokenType.Constraint), Id("constraint name")),
                 Or(
-                    Prod(".key-or-unique", 1,
+                    Prod($"{p}.key-or-unique", 1,
                         Or(
-                            Prod(".primary-key", 1, Tok(TokenType.Primary), Tok(TokenType.Key)),
-                            Prod(".unique", 1, Tok(TokenType.Unique))
+                            Prod($"{p}.primary-key", 1, Tok(TokenType.Primary), Tok(TokenType.Key)),
+                            Prod($"{p}.unique", 1, Tok(TokenType.Unique))
                         ),
                         Tok(TokenType.Lp),
-                        Lst(".column", TokenType.Comma, 1, SubProd("indexed-column")),
+                        Lst($"{p}.column", TokenType.Comma, 1, SubProd("indexed-column")),
                         Tok(TokenType.Rp),
                         SubProd("conflict-clause")
                     ),
-                    Prod(".check", 1,
+                    Prod($"{p}.check", 1,
                         Tok(TokenType.Check),
                         Tok(TokenType.Lp),
                         SubProd("expr"),
                         Tok(TokenType.Rp)
                     ),
-                    Prod(".foreign-key", 1,
+                    Prod($"{p}.foreign-key", 1,
                         Tok(TokenType.Foreign),
                         Tok(TokenType.Key),
                         Tok(TokenType.Lp),
-                        Lst(".column", TokenType.Comma, 1, Id("column name")),
+                        Lst($"{p}.column", TokenType.Comma, 1, Id("column name")),
                         Tok(TokenType.Rp),
                         SubProd("foreign-key-clause")
                     )
@@ -323,25 +325,25 @@ namespace SqlNotebookScript.Interpreter {
             //          )
             //      ]*
             //      [ [NOT] DEFERRABLE [ INITIALLY DEFERRED | INITIALLY IMMEDIATE ] ]
-            TopProd("foreign-key-clause", 1,
+            TopProd(p = "foreign-key-clause", 1,
                 Tok(TokenType.References), Id("foreign table name"),
                 Opt(
                     Tok(TokenType.Lp),
-                    Lst(".column", TokenType.Comma, 1, Id("column name")),
+                    Lst($"{p}.column", TokenType.Comma, 1, Id("column name")),
                     Tok(TokenType.Rp)
                 ),
-                Lst(".on-clause", null, 0, Or(
-                    Prod(".on", 1,
+                Lst($"{p}.on-clause", null, 0, Or(
+                    Prod($"{p}.on", 1,
                         Tok(TokenType.On),
                         Or(Tok(TokenType.Delete), Tok(TokenType.Update)),
                         Or(
-                            Prod(".set", 1, Tok(TokenType.Set), Or(Tok(TokenType.Null), Tok(TokenType.Default))),
-                            Prod(".cascade", 1, Tok(TokenType.Cascade)),
-                            Prod(".restrict", 1, Tok(TokenType.Restrict)),
-                            Prod(".no-action", 1, Tok(TokenType.No), Tok(TokenType.Action))
+                            Prod($"{p}.set", 1, Tok(TokenType.Set), Or(Tok(TokenType.Null), Tok(TokenType.Default))),
+                            Prod($"{p}.cascade", 1, Tok(TokenType.Cascade)),
+                            Prod($"{p}.restrict", 1, Tok(TokenType.Restrict)),
+                            Prod($"{p}.no-action", 1, Tok(TokenType.No), Tok(TokenType.Action))
                         )
                     ),
-                    Prod(".match", 1, Tok(TokenType.Match), Id("match type"))
+                    Prod($"{p}.match", 1, Tok(TokenType.Match), Id("match type"))
                 )),
                 Opt(
                     Opt(Tok(TokenType.Not)),
@@ -351,7 +353,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // conflict-clause ::= [ ON CONFLICT ( ROLLBACK | ABORT | FAIL | IGNORE | REPLACE ) ]
-            TopProd("conflict-clause", 1,
+            TopProd(p = "conflict-clause", 1,
                 Opt(2,
                     Tok(TokenType.On), Tok(TokenType.Conflict),
                     Or(Tok(TokenType.Rollback), Tok(TokenType.Abort), Tok(TokenType.Fail),
@@ -364,7 +366,7 @@ namespace SqlNotebookScript.Interpreter {
             //      ( DELETE | INSERT | UPDATE [OF column-name [ "," column-name ]* ] ) ON table-name
             //      [ FOR EACH ROW ] [ WHEN <expr> ]
             //      BEGIN ( ( <update-stmt> | <insert-stmt> | <delete-stmt> | <select-stmt> ) ";" )+ END
-            TopProd("create-trigger-stmt", 3,
+            TopProd(p = "create-trigger-stmt", 3,
                 Tok(TokenType.Create),
                 Opt(Tok(TokenType.Temp), Tok("temporary")),
                 Tok(TokenType.Trigger),
@@ -372,16 +374,16 @@ namespace SqlNotebookScript.Interpreter {
                 Opt(Id("database name"), Tok(TokenType.Dot)),
                 Id("trigger name"),
                 Opt(Or(
-                    Prod(".before", 1, Tok(TokenType.Before)),
-                    Prod(".after", 1, Tok(TokenType.After)),
-                    Prod(".instead-of", 1, Tok(TokenType.Instead), Tok(TokenType.Of))
+                    Prod($"{p}.before", 1, Tok(TokenType.Before)),
+                    Prod($"{p}.after", 1, Tok(TokenType.After)),
+                    Prod($"{p}.instead-of", 1, Tok(TokenType.Instead), Tok(TokenType.Of))
                 )),
                 Or(
-                    Prod(".delete", 1, Tok(TokenType.Delete)),
-                    Prod(".insert", 1, Tok(TokenType.Insert)),
-                    Prod(".update", 1,
+                    Prod($"{p}.delete", 1, Tok(TokenType.Delete)),
+                    Prod($"{p}.insert", 1, Tok(TokenType.Insert)),
+                    Prod($"{p}.update", 1,
                         Tok(TokenType.Update),
-                        Opt(1, Tok(TokenType.Of), Lst(".column", TokenType.Comma, 1, Id("column name")))
+                        Opt(1, Tok(TokenType.Of), Lst($"{p}.column", TokenType.Comma, 1, Id("column name")))
                     )
                 ),
                 Tok(TokenType.On),
@@ -389,7 +391,7 @@ namespace SqlNotebookScript.Interpreter {
                 Opt(1, Tok(TokenType.For), Tok(TokenType.Each), Tok(TokenType.Row)),
                 Opt(1, Tok(TokenType.When), SubProd("expr")),
                 Tok(TokenType.Begin),
-                Lst(".stmt", null, 1,
+                Lst($"{p}.stmt", null, 1,
                     Or(SubProd("update-stmt"), SubProd("insert-stmt"), SubProd("delete-stmt"), SubProd("select-stmt")),
                     Tok(TokenType.Semi)
                 ),
@@ -398,7 +400,7 @@ namespace SqlNotebookScript.Interpreter {
 
             // create-view-stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ]
             //      [database-name "."] view-name [ "(" column-name [ "," column-name ]* ")" ] AS <select-stmt>
-            TopProd("create-view-stmt", 3,
+            TopProd(p = "create-view-stmt", 3,
                 Tok(TokenType.Create),
                 Opt(Tok(TokenType.Temp), Tok("temporary")),
                 Tok(TokenType.View),
@@ -407,7 +409,7 @@ namespace SqlNotebookScript.Interpreter {
                 Id("view name"),
                 Opt(1,
                     Tok(TokenType.Lp),
-                    Lst(".column", TokenType.Comma, 1, Id("column name")),
+                    Lst($"{p}.column", TokenType.Comma, 1, Id("column name")),
                     Tok(TokenType.Rp)
                 ),
                 Tok(TokenType.As),
@@ -417,7 +419,7 @@ namespace SqlNotebookScript.Interpreter {
             // create-virtual-table-stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ]
             //      [ database-name "." ] table-name
             //      USING module-name [ "(" module-argument [ "," module-argument ]* ")" ]
-            TopProd("create-virtual-table-stmt", 2,
+            TopProd(p = "create-virtual-table-stmt", 2,
                 Tok(TokenType.Create), Tok(TokenType.Virtual), Tok(TokenType.Table),
                 Opt(1, Tok(TokenType.If), Tok(TokenType.Not), Tok(TokenType.Exists)),
                 Opt(Id("database name"), Tok(TokenType.Dot)),
@@ -426,17 +428,17 @@ namespace SqlNotebookScript.Interpreter {
                 Id("module name"),
                 Opt(1,
                     Tok(TokenType.Lp),
-                    Lst(".arg", TokenType.Comma, 1, SubProd("expr")),
+                    Lst($"{p}.arg", TokenType.Comma, 1, SubProd("expr")),
                     Tok(TokenType.Rp)
                 )
             );
 
             // with-clause ::= WITH [ RECURSIVE ] <cte-table-name> AS "(" <select-stmt> ")"
             //      [ "," <cte-table-name> AS "(" <select-stmt> ")" ]*
-            TopProd("with-clause", 1,
+            TopProd(p = "with-clause", 1,
                 Tok(TokenType.With),
                 Opt(Tok(TokenType.Recursive)),
-                Lst(".cte", TokenType.Comma, 1,
+                Lst($"{p}.cte", TokenType.Comma, 1,
                     SubProd("cte-table-name"),
                     Tok(TokenType.As),
                     Tok(TokenType.Lp),
@@ -446,18 +448,18 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // cte-table-name ::= table-name [ "(" column-name [ "," column-name ]* ")" ]
-            TopProd("cte-table-name", 1,
+            TopProd(p = "cte-table-name", 1,
                 Id("table name"),
                 Opt(1,
                     Tok(TokenType.Lp),
-                    Lst(".column", TokenType.Comma, 1, Id("column name")),
+                    Lst($"{p}.column", TokenType.Comma, 1, Id("column name")),
                     Tok(TokenType.Rp)
                 )
             );
 
             // common-table-expression ::= table-name [ "(" column-name [ "," column-name ]* ")" ] 
             //      AS "(" <select-stmt> ")"
-            TopProd("common-table-expression", 1,
+            TopProd(p = "common-table-expression", 1,
                 SubProd("cte-table-name"),
                 Tok(TokenType.As),
                 Tok(TokenType.Lp),
@@ -470,7 +472,7 @@ namespace SqlNotebookScript.Interpreter {
             //          [ ORDER BY <ordering-term> [ "," <ordering-term> ]* ]
             //          LIMIT <expr> [ ( OFFSET | "," ) <expr> ]
             //      ]
-            TopProd("delete-stmt", 2,
+            TopProd(p = "delete-stmt", 2,
                 Opt(SubProd("with-clause")),
                 Tok(TokenType.Delete), Tok(TokenType.From),
                 SubProd("qualified-table-name"),
@@ -479,7 +481,7 @@ namespace SqlNotebookScript.Interpreter {
                     Opt(1,
                         Tok(TokenType.Order),
                         Tok(TokenType.By),
-                        Lst(".order", TokenType.Comma, 1, SubProd("ordering-term"))
+                        Lst($"{p}.order", TokenType.Comma, 1, SubProd("ordering-term"))
                     ),
                     Tok(TokenType.Limit),
                     SubProd("expr"),
@@ -491,14 +493,14 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // detach-stmt ::= DETACH [ DATABASE ] database-name
-            TopProd("detach-stmt", 1,
+            TopProd(p = "detach-stmt", 1,
                 Tok(TokenType.Detach),
                 Opt(Tok(TokenType.Database)),
                 Id("database name")
             );
 
             // drop-index-stmt ::= DROP INDEX [ IF EXISTS ] [ database-name "." ] index-name
-            TopProd("drop-index-stmt", 2,
+            TopProd(p = "drop-index-stmt", 2,
                 Tok(TokenType.Drop),
                 Tok(TokenType.Index),
                 Opt(1, Tok(TokenType.If), Tok(TokenType.Exists)),
@@ -507,7 +509,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // drop-table-stmt ::= DROP TABLE [ IF EXISTS ] [ database-name "." ] table-name
-            TopProd("drop-table-stmt", 2,
+            TopProd(p = "drop-table-stmt", 2,
                 Tok(TokenType.Drop),
                 Tok(TokenType.Table),
                 Opt(1, Tok(TokenType.If), Tok(TokenType.Exists)),
@@ -516,7 +518,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // drop-trigger-stmt ::= DROP TRIGGER [ IF EXISTS ] [ database-name "." ] trigger-name
-            TopProd("drop-trigger-stmt", 2,
+            TopProd(p = "drop-trigger-stmt", 2,
                 Tok(TokenType.Drop),
                 Tok(TokenType.Trigger),
                 Opt(1, Tok(TokenType.If), Tok(TokenType.Exists)),
@@ -525,7 +527,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // drop-view-stmt ::= DROP VIEW [ IF EXISTS ] [ database-name "." ] view-name
-            TopProd("drop-view-stmt", 2,
+            TopProd(p = "drop-view-stmt", 2,
                 Tok(TokenType.Drop),
                 Tok(TokenType.View),
                 Opt(1, Tok(TokenType.If), Tok(TokenType.Exists)),
@@ -553,44 +555,44 @@ namespace SqlNotebookScript.Interpreter {
             //      binding order does not matter.) ...
 
             // expr ::= or-expr
-            TopProd("expr", 1,
+            TopProd(p = "expr", 1,
                 SubProd("or-expr")
             );
 
             // or-expr ::= and-expr [ OR and-expr ]*
-            TopProd("or-expr", 1,
-                Lst(".term", TokenType.Or, 1, SubProd("and-expr"))
+            TopProd(p = "or-expr", 1,
+                Lst($"{p}.term", TokenType.Or, 1, SubProd("and-expr"))
             );
 
             // and-expr ::= eq-expr [ AND eq-expr ]*
-            TopProd("and-expr", 1,
-                Lst(".term", TokenType.And, 1, SubProd("eq-expr"))
+            TopProd(p = "and-expr", 1,
+                Lst($"{p}.term", TokenType.And, 1, SubProd("eq-expr"))
             );
 
             // eq-expr ::= ineq-expr [ eq-expr-op | eq-expr-is | eq-expr-in | eq-expr-like | eq-expr-between ]*
-            TopProd("eq-expr", 1,
+            TopProd(p = "eq-expr", 1,
                 SubProd("ineq-expr"),
-                Lst(".term", null, 0,
+                Lst($"{p}.term", null, 0,
                     Or(SubProd("eq-expr-op"), SubProd("eq-expr-is"), SubProd("eq-expr-in"), SubProd("eq-expr-like")))
             );
 
             // eq-expr-op ::= ( "=" | "==" | "!=" | "<>" ) ineq-expr
-            TopProd("eq-expr-op", 1,
+            TopProd(p = "eq-expr-op", 1,
                 Or(Tok("="), Tok("=="), Tok("!="), Tok("<>")),
                 SubProd("ineq-expr")
             );
 
             // eq-expr-is ::= (IS [NOT] ineq-expr) | ISNULL | NOTNULL | (NOT NULL)
-            TopProd("eq-expr-is", 1,
+            TopProd(p = "eq-expr-is", 1,
                 Or(
-                    Prod(".is-not", 1,
+                    Prod($"{p}.is-not", 1,
                         Tok(TokenType.Is),
                         Opt(Tok(TokenType.Not)),
                         SubProd("ineq-expr")
                     ),
-                    Prod(".is-null", 1, Tok(TokenType.IsNull)),
-                    Prod(".notnull", 1, Tok(TokenType.NotNull)),
-                    Prod(".not-null", 1, Tok(TokenType.Not), Tok(TokenType.Null))
+                    Prod($"{p}.is-null", 1, Tok(TokenType.IsNull)),
+                    Prod($"{p}.notnull", 1, Tok(TokenType.NotNull)),
+                    Prod($"{p}.not-null", 1, Tok(TokenType.Not), Tok(TokenType.Null))
                 )
             );
 
@@ -599,19 +601,19 @@ namespace SqlNotebookScript.Interpreter {
             //                      "(" [ <select-stmt> | <expr> [ "," <expr> ]* ] ")" | 
             //                      [database-name "."] table-name 
             //                  )
-            TopProd("eq-expr-in", 2,
+            TopProd(p = "eq-expr-in", 2,
                 Opt(Tok(TokenType.Not)),
                 Tok(TokenType.In),
                 Or(
-                    Prod(".select", 1,
+                    Prod($"{p}.select", 1,
                         Tok(TokenType.Lp),
                         Opt(Or(
                             SubProd("select-stmt"),
-                            Lst(".value", TokenType.Comma, 1, SubProd("expr"))
+                            Lst($"{p}.value", TokenType.Comma, 1, SubProd("expr"))
                         )),
                         Tok(TokenType.Rp)
                     ),
-                    Prod(".table", 2,
+                    Prod($"{p}.table", 2,
                         Opt(Id("database name"), Tok(TokenType.Dot)),
                         Id("table name")
                     )
@@ -619,7 +621,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // eq-expr-like ::= [NOT] (LIKE | GLOB | REGEXP | MATCH) <ineq-expr> [ESCAPE <ineq-expr>]
-            TopProd("eq-expr-like", 2,
+            TopProd(p = "eq-expr-like", 2,
                 Opt(Tok(TokenType.Not)),
                 Or(Tok("like"), Tok("glob"), Tok("regexp"), Tok("match")),
                 SubProd("ineq-expr"),
@@ -627,7 +629,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // eq-expr-between ::= [NOT] BETWEEN <ineq-expr> AND <ineq-expr>
-            TopProd("eq-expr-between", 2,
+            TopProd(p = "eq-expr-between", 2,
                 Opt(Tok(TokenType.Not)),
                 Tok(TokenType.Between),
                 SubProd("ineq-expr"),
@@ -636,38 +638,38 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // ineq-expr ::= <bitwise-expr> [ ( "<" | "<=" | ">" | ">=" ) <bitwise-expr> ]*
-            TopProd("ineq-expr", 1,
+            TopProd(p = "ineq-expr", 1,
                 LstP(".term", Or(Tok("<"), Tok("<="), Tok(">"), Tok(">=")), 1, SubProd("bitwise-expr"))
             );
 
             // bitwise-expr ::= <add-expr> [ ( "<<" | ">>" | "&" | "|" ) <add-expr> ]*
-            TopProd("bitwise-expr", 1,
+            TopProd(p = "bitwise-expr", 1,
                 LstP(".term", Or(Tok("<<"), Tok(">>"), Tok("&"), Tok("|")), 1, SubProd("add-expr"))
             );
 
             // add-expr ::= <mult-expr> [ ( "+" | "-" ) <mult-expr> ]*
-            TopProd("add-expr", 1,
+            TopProd(p = "add-expr", 1,
                 LstP(".term", Or(Tok("+"), Tok("-")), 1, SubProd("mult-expr"))
             );
 
             // mult-expr ::= <concat-expr> [ ( "*" | "/" | "%" ) <concat-expr> ]*
-            TopProd("mult-expr", 1,
+            TopProd(p = "mult-expr", 1,
                 LstP(".term", Or(Tok("*"), Tok("/"), Tok("%")), 1, SubProd("concat-expr"))
             );
 
             // concat-expr ::= <unary-expr> [ "||" <unary-expr> ]*
-            TopProd("concat-expr", 1,
+            TopProd(p = "concat-expr", 1,
                 LstP(".term", Tok("||"), 1, SubProd("unary-expr"))
             );
 
             // unary-expr ::= [ "-" | "+" | "NOT" ] <collate-expr>
-            TopProd("unary-expr", 2,
+            TopProd(p = "unary-expr", 2,
                 Opt(Or(Tok("-"), Tok("+"), Tok(TokenType.Not))),
                 SubProd("collate-expr")
             );
 
             // collate-expr ::= ["~"] <expr-term> [COLLATE collation-name]
-            TopProd("collate-expr", 2,
+            TopProd(p = "collate-expr", 2,
                 Opt(Tok("~")),
                 SubProd("expr-term"),
                 Opt(1, Tok(TokenType.Collate), Id("collation name"))
@@ -683,45 +685,45 @@ namespace SqlNotebookScript.Interpreter {
             //      [ [NOT] EXISTS ] ( <select-stmt> ) |
             //      CASE [ <expr> ] WHEN <expr> THEN <expr> [ ELSE <expr> ] END |
             //      <raise-function>
-            TopProd("expr-term", 1,
+            TopProd(p = "expr-term", 1,
                 Or(
                     // <literal-value>
-                    Prod(".literal-value", 1, SubProd("literal-value")),
+                    Prod($"{p}.literal-value", 1, SubProd("literal-value")),
                     // expr ::= function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* | "*" ] ")"
-                    Prod(".function-call", 2,
+                    Prod($"{p}.function-call", 2,
                         Id("function name"),
                         Tok(TokenType.Lp),
                         Opt(Or(
-                            Prod(".star", 1, Tok(TokenType.Star)),
-                            Prod(".args", 2,
+                            Prod($"{p}.star", 1, Tok(TokenType.Star)),
+                            Prod($"{p}.args", 2,
                                 Opt(Tok(TokenType.Distinct)),
-                                Lst(".arg", TokenType.Comma, 1, SubProd("expr"))
+                                Lst($"{p}.arg", TokenType.Comma, 1, SubProd("expr"))
                             )
                         )),
                         Tok(TokenType.Rp)
                     ),
                     // [ [ database-name "." ] table-name "." ] column-name
-                    Prod(".column-name", 1,
+                    Prod($"{p}.column-name", 1,
                         Id("database, table, or column name"),
                         Opt(Tok(TokenType.Dot), Id("table or column name")),
                         Opt(Tok(TokenType.Dot), Id("column name"))
                     ),
                     // <bind-parameter>
-                    Prod(".variable-name", 1, Id("variable name", allowVar: true)),
+                    Prod($"{p}.variable-name", 1, Id("variable name", allowVar: true)),
                     // expr ::= "(" <expr> ")"
-                    Prod(".parentheses", 1,
+                    Prod($"{p}.parentheses", 1,
                         Tok(TokenType.Lp),
                         SubProd("expr"),
                         Tok(TokenType.Rp)
                     ),
                     // expr ::= CAST "(" <expr> AS <type-name> ")"
-                    Prod(".cast", 1,
+                    Prod($"{p}.cast", 1,
                         Tok(TokenType.Cast), Tok(TokenType.Lp),
                         SubProd("expr"), Tok(TokenType.As), SubProd("type-name"),
                         Tok(TokenType.Rp)
                     ),
                     // expr ::= [ [NOT] EXISTS ] ( <select-stmt> )
-                    Prod(".exists", 2,
+                    Prod($"{p}.exists", 2,
                         Opt(
                             Opt(Tok(TokenType.Not)),
                             Tok(TokenType.Exists)
@@ -731,7 +733,7 @@ namespace SqlNotebookScript.Interpreter {
                         Tok(TokenType.Rp)
                     ),
                     // expr ::= CASE [ <expr> ] WHEN <expr> THEN <expr> [ ELSE <expr> ] END
-                    Prod(".case", 1,
+                    Prod($"{p}.case", 1,
                         Tok(TokenType.Case),
                         Opt(SubProd("expr")),
                         Tok(TokenType.When),
@@ -741,17 +743,17 @@ namespace SqlNotebookScript.Interpreter {
                         Opt(1, Tok(TokenType.Else), SubProd("expr"))
                     ),
                     // expr ::= <raise-function>
-                    Prod(".raise", 1, SubProd("raise-function"))
+                    Prod($"{p}.raise", 1, SubProd("raise-function"))
                 )
             );
 
             // raise-function ::= RAISE ( IGNORE | (( ROLLBACK | ABORT | FAIL ) "," error-message) )
-            TopProd("raise-function", 1,
+            TopProd(p = "raise-function", 1,
                 Tok(TokenType.Raise),
                 Tok(TokenType.Lp),
                 Or(
-                    Prod(".ignore", 1, Tok(TokenType.Ignore)),
-                    Prod(".rollback-abort-fail", 1,
+                    Prod($"{p}.ignore", 1, Tok(TokenType.Ignore)),
+                    Prod($"{p}.rollback-abort-fail", 1,
                         Or(Tok(TokenType.Rollback), Tok(TokenType.Abort), Tok(TokenType.Fail)),
                         Tok(TokenType.Comma),
                         LitStr("error message")
@@ -767,7 +769,7 @@ namespace SqlNotebookScript.Interpreter {
             // literal-value ::= CURRENT_TIME
             // literal-value ::= CURRENT_DATE
             // literal-value ::= CURRENT_TIMESTAMP
-            TopProd("literal-value", 1,
+            TopProd(p = "literal-value", 1,
                 Or(
                     Tok(TokenType.Integer),
                     Tok(TokenType.Float),
@@ -789,10 +791,10 @@ namespace SqlNotebookScript.Interpreter {
             //          <select-stmt> |
             //          DEFAULT VALUES
             //      )
-            TopProd("insert-stmt", 1,
+            TopProd(p = "insert-stmt", 1,
                 Opt(SubProd("with-clause")),
                 Or(
-                    Prod(".insert", 1,
+                    Prod($"{p}.insert", 1,
                         Tok(TokenType.Insert),
                         Opt(1,
                             Tok(TokenType.Or),
@@ -801,42 +803,42 @@ namespace SqlNotebookScript.Interpreter {
                             )
                         )
                     ),
-                    Prod(".replace", 1, Tok(TokenType.Replace))
+                    Prod($"{p}.replace", 1, Tok(TokenType.Replace))
                 ),
                 Tok(TokenType.Into),
                 Opt(Id("database name"), Tok(TokenType.Dot)),
                 Id("table name"),
                 Opt(
                     Tok(TokenType.Lp),
-                    Lst(".column", TokenType.Comma, 1, Id("column name")),
+                    Lst($"{p}.column", TokenType.Comma, 1, Id("column name")),
                     Tok(TokenType.Rp)
                 ),
                 Or(
-                    Prod(".values", 1,
+                    Prod($"{p}.values", 1,
                         Tok(TokenType.Values),
-                        Lst(".row", TokenType.Comma, 1,
+                        Lst($"{p}.row", TokenType.Comma, 1,
                             Tok(TokenType.Lp),
-                            Lst(".value", TokenType.Comma, 1, SubProd("expr")),
+                            Lst($"{p}.value", TokenType.Comma, 1, SubProd("expr")),
                             Tok(TokenType.Rp)
                         )
                     ),
-                    Prod(".select", 1, SubProd("select-stmt")),
-                    Prod(".default-values", 1, Tok(TokenType.Default), Tok(TokenType.Values))
+                    Prod($"{p}.select", 1, SubProd("select-stmt")),
+                    Prod($"{p}.default-values", 1, Tok(TokenType.Default), Tok(TokenType.Values))
                 )
             );
 
             // pragma-stmt ::= PRAGMA [ database-name "." ] pragma-name
             //      [ "=" <pragma-value> | "(" <pragma-value> ")" ]
-            TopProd("pragma-stmt", 1,
+            TopProd(p = "pragma-stmt", 1,
                 Tok(TokenType.Pragma),
                 Opt(Id("database name"), Tok(TokenType.Dot)),
                 Id("pragma name"),
                 Opt(Or(
-                    Prod(".equals", 1,
+                    Prod($"{p}.equals", 1,
                         Tok(TokenType.Eq),
                         SubProd("pragma-value")
                     ),
-                    Prod(".paren", 1,
+                    Prod($"{p}.paren", 1,
                         Tok(TokenType.Lp),
                         SubProd("pragma-value"),
                         Tok(TokenType.Rp)
@@ -847,7 +849,7 @@ namespace SqlNotebookScript.Interpreter {
             // pragma-value ::= <signed-number>
             // pragma-value ::= name
             // pragma-value ::= string-literal
-            TopProd("pragma-value", 1,
+            TopProd(p = "pragma-value", 1,
                 Or(
                     SubProd("signed-number"),
                     Id("name"),
@@ -856,7 +858,7 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // reindex-stmt ::= REINDEX [ [ database-name "." ] table-or-index-or-collation-name ]
-            TopProd("reindex-stmt", 1,
+            TopProd(p = "reindex-stmt", 1,
                 Tok(TokenType.Reindex),
                 Opt(
                     Opt(Id("database name"), Tok(TokenType.Dot)),
@@ -874,23 +876,23 @@ namespace SqlNotebookScript.Interpreter {
             // [ GROUP BY <expr> [ , <expr> ]* [ HAVING <expr> ] ] | VALUES ( <expr> [ , <expr> ]* ) [ , ( <expr> [ , <expr> ]* ) ]* ]1 ]*
             // [ ORDER BY <ordering-term> [ , <ordering-term> ]* ]
             // [ LIMIT <expr> [ [ OFFSET | , ]1 <expr> ] ]
-            TopProd("select-stmt", 1,
+            TopProd(p = "select-stmt", 1,
                 Opt(1,
                     Tok(TokenType.With),
                     Opt(Tok(TokenType.Recursive)),
-                    Lst(".cte", TokenType.Comma, 1, SubProd("common-table-expression"))
+                    Lst($"{p}.cte", TokenType.Comma, 1, SubProd("common-table-expression"))
                 ),
                 LstP(".compound-operand", SubProd("compound-operator"), 1,
                     Or(
-                        Prod(".select", 1,
+                        Prod($"{p}.select", 1,
                             Tok(TokenType.Select),
                             Opt(Or(Tok(TokenType.Distinct), Tok(TokenType.All))),
-                            Lst(".column", TokenType.Comma, 1, SubProd("result-column")),
+                            Lst($"{p}.column", TokenType.Comma, 1, SubProd("result-column")),
                             Opt(1,
                                 Tok(TokenType.From),
                                 Or(
                                     SubProd("join-clause"),
-                                    Lst(".table", TokenType.Comma, 1, SubProd("table-or-subquery"))
+                                    Lst($"{p}.table", TokenType.Comma, 1, SubProd("table-or-subquery"))
                                 )
                             ),
                             Opt(1,
@@ -899,15 +901,15 @@ namespace SqlNotebookScript.Interpreter {
                             ),
                             Opt(1,
                                 Tok(TokenType.Group), Tok(TokenType.By),
-                                Lst(".group-expr", TokenType.Comma, 1, SubProd("expr")),
+                                Lst($"{p}.group-expr", TokenType.Comma, 1, SubProd("expr")),
                                 Opt(1, Tok(TokenType.Having), SubProd("expr"))
                             )
                         ),
-                        Prod(".values", 1,
+                        Prod($"{p}.values", 1,
                             Tok(TokenType.Values),
-                            Lst(".row", TokenType.Comma, 1, 
+                            Lst($"{p}.row", TokenType.Comma, 1, 
                                 Tok(TokenType.Lp),
-                                Lst(".value", TokenType.Comma, 1, SubProd("expr")),
+                                Lst($"{p}.value", TokenType.Comma, 1, SubProd("expr")),
                                 Tok(TokenType.Rp)
                             )
                         )
@@ -915,7 +917,7 @@ namespace SqlNotebookScript.Interpreter {
                 ),
                 Opt(1,
                     Tok(TokenType.Order), Tok(TokenType.By),
-                    Lst(".term", TokenType.Comma, 1, SubProd("ordering-term"))
+                    Lst($"{p}.term", TokenType.Comma, 1, SubProd("ordering-term"))
                 ),
                 Opt(1,
                     Tok(TokenType.Limit),
@@ -932,9 +934,9 @@ namespace SqlNotebookScript.Interpreter {
             // we've also changed the optional join-operator into an at-least-one, because the select-stmt production
             // already contains a case for a single table-or-subquery, so join-clause is only needed if a join-operator
             // is present.
-            TopProd("join-clause", 1,
+            TopProd(p = "join-clause", 1,
                 SubProd("table-or-subquery"),
-                Lst(".term", null, 1,
+                Lst($"{p}.term", null, 1,
                     SubProd("join-operator"),
                     SubProd("table-or-subquery"),
                     SubProd("join-constraint")
@@ -948,20 +950,22 @@ namespace SqlNotebookScript.Interpreter {
             // table-or-subquery ::= "(" ( <table-or-subquery> [ "," <table-or-subquery> ]* | <join-clause> ) ")"
             // table-or-subquery ::= "(" <select-stmt> ")" [ [ AS ] table-alias ]
             // note: the table-function-name production is described in the syntax diagram but not the text BNF.
-            TopProd("table-or-subquery", 1,
+            TopProd(p = "table-or-subquery", 1,
                 Or(
-                    Prod(".table-function-call", 3,
-                        Opt(Id("database name"), Tok(TokenType.Dot)),
-                        Id("table function name"),
+                    Prod($"{p}.table-function-call", 3,
+                        SubProd(Prod($"{p}.table-function-name", 2,
+                            Opt(Id("database name"), Tok(TokenType.Dot)),
+                            Id("table function name")
+                        )),
                         Tok(TokenType.Lp),
-                        Lst(".arg", TokenType.Comma, 0, SubProd("expr")),
+                        Lst($"{p}.arg", TokenType.Comma, 0, SubProd("expr")),
                         Tok(TokenType.Rp),
                         Opt(
                             Opt(Tok(TokenType.As)),
                             Id("table alias")
                         )
                     ),
-                    Prod(".table", 2,
+                    Prod($"{p}.table", 2,
                         Opt(Id("database name"), Tok(TokenType.Dot)),
                         Id("table name"),
                         Opt(
@@ -969,11 +973,11 @@ namespace SqlNotebookScript.Interpreter {
                             Id("table alias")
                         ),
                         Opt(Or(
-                            Prod(".indexed-by", 1, Tok(TokenType.Indexed), Tok(TokenType.By), Id("index name")),
-                            Prod(".not-indexed", 1, Tok(TokenType.Not), Tok(TokenType.Indexed))
+                            Prod($"{p}.indexed-by", 1, Tok(TokenType.Indexed), Tok(TokenType.By), Id("index name")),
+                            Prod($"{p}.not-indexed", 1, Tok(TokenType.Not), Tok(TokenType.Indexed))
                         ))
                     ),
-                    Prod(".select", 2,
+                    Prod($"{p}.select", 2,
                         Tok(TokenType.Lp),
                         SubProd("select-stmt"),
                         Tok(TokenType.Rp),
@@ -982,10 +986,10 @@ namespace SqlNotebookScript.Interpreter {
                             Id("table alias")
                         )
                     ),
-                    Prod(".joins", 1,
+                    Prod($"{p}.joins", 1,
                         Tok(TokenType.Lp),
                         Or(
-                            Lst(".term", TokenType.Comma, 1, SubProd("table-or-subquery")),
+                            Lst($"{p}.term", TokenType.Comma, 1, SubProd("table-or-subquery")),
                             SubProd("join-clause")
                         ),
                         Tok(TokenType.Rp)
@@ -996,15 +1000,15 @@ namespace SqlNotebookScript.Interpreter {
             // result-column ::= *
             // result-column ::= table-name . *
             // result-column ::= <expr> [ [ AS ] column-alias ]
-            TopProd("result-column", 1,
+            TopProd(p = "result-column", 1,
                 Or(
-                    Prod(".star", 1, Tok(TokenType.Star)),
-                    Prod(".table-star", 3,
+                    Prod($"{p}.star", 1, Tok(TokenType.Star)),
+                    Prod($"{p}.table-star", 3,
                         Id("table name"),
                         Tok(TokenType.Dot),
                         Tok(TokenType.Star)
                     ),
-                    Prod(".expr", 1,
+                    Prod($"{p}.expr", 1,
                         SubProd("expr"),
                         Opt(
                             Opt(Tok(TokenType.As)),
@@ -1016,16 +1020,16 @@ namespace SqlNotebookScript.Interpreter {
 
             // join-operator ::= ,
             // join-operator ::= [ NATURAL ] [ LEFT [ OUTER ] | INNER | CROSS ] JOIN
-            TopProd("join-operator", 1,
+            TopProd(p = "join-operator", 1,
                 Or(
-                    Prod(".comma", 1, Tok(TokenType.Comma)),
-                    Prod(".join", 3,
+                    Prod($"{p}.comma", 1, Tok(TokenType.Comma)),
+                    Prod($"{p}.join", 3,
                         Opt(Tok("natural")),
                         Opt(
                             Or(
-                                Prod(".left", 1, Tok("left"), Opt(Tok("outer"))),
-                                Prod(".inner", 1, Tok("inner")),
-                                Prod(".cross", 1, Tok("cross"))
+                                Prod($"{p}.left", 1, Tok("left"), Opt(Tok("outer"))),
+                                Prod($"{p}.inner", 1, Tok("inner")),
+                                Prod($"{p}.cross", 1, Tok("cross"))
                             )
                         ),
                         Tok("join")
@@ -1034,20 +1038,20 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // join-constraint ::= [ ON <expr> | USING ( column-name [ , column-name ]* ) ]
-            TopProd("join-constraint", 1,
+            TopProd(p = "join-constraint", 1,
                 Opt(Or(
-                    Prod(".on", 1, Tok(TokenType.On), SubProd("expr")),
-                    Prod(".using", 1,
+                    Prod($"{p}.on", 1, Tok(TokenType.On), SubProd("expr")),
+                    Prod($"{p}.using", 1,
                         Tok(TokenType.Using),
                         Tok(TokenType.Lp),
-                        Lst(".column", TokenType.Comma, 1, Id("column name")),
+                        Lst($"{p}.column", TokenType.Comma, 1, Id("column name")),
                         Tok(TokenType.Rp)
                     )
                 ))
             );
 
             // ordering-term ::= <expr> [ COLLATE collation-name ] [ ASC | DESC ]
-            TopProd("ordering-term", 1,
+            TopProd(p = "ordering-term", 1,
                 SubProd("expr"),
                 Opt(1, Tok(TokenType.Collate), Id("collation name")),
                 Opt(Or(Tok(TokenType.Asc), Tok(TokenType.Desc)))
@@ -1057,11 +1061,11 @@ namespace SqlNotebookScript.Interpreter {
             // compound-operator ::= UNION ALL
             // compound-operator ::= INTERSECT
             // compound-operator ::= EXCEPT
-            TopProd("compound-operator", 1,
+            TopProd(p = "compound-operator", 1,
                 Or(
-                    Prod(".union", 1, Tok(TokenType.Union), Opt(Tok(TokenType.All))),
-                    Prod(".intersect", 1, Tok(TokenType.Intersect)),
-                    Prod(".except", 1, Tok(TokenType.Except))
+                    Prod($"{p}.union", 1, Tok(TokenType.Union), Opt(Tok(TokenType.All))),
+                    Prod($"{p}.intersect", 1, Tok(TokenType.Intersect)),
+                    Prod($"{p}.except", 1, Tok(TokenType.Except))
                 )
             );
 
@@ -1072,7 +1076,7 @@ namespace SqlNotebookScript.Interpreter {
             //          [ ORDER BY <ordering-term> [ , <ordering-term> ]* ]
             //          LIMIT <expr> [ ( OFFSET | , ) <expr> ]
             //      ]
-            TopProd("update-stmt", 2,
+            TopProd(p = "update-stmt", 2,
                 Opt(SubProd("with-clause")),
                 Tok(TokenType.Update),
                 Opt(1,
@@ -1082,12 +1086,12 @@ namespace SqlNotebookScript.Interpreter {
                 ),
                 SubProd("qualified-table-name"),
                 Tok(TokenType.Set),
-                Lst(".assignment", TokenType.Comma, 1, Id("column name"), Tok(TokenType.Eq), SubProd("expr")),
+                Lst($"{p}.assignment", TokenType.Comma, 1, Id("column name"), Tok(TokenType.Eq), SubProd("expr")),
                 Opt(1, Tok(TokenType.Where), SubProd("expr")),
                 Opt(2,
                     Opt(
                         Tok(TokenType.Order), Tok(TokenType.By),
-                        Lst(".order-term", TokenType.Comma, 1, SubProd("ordering-term"))
+                        Lst($"{p}.order-term", TokenType.Comma, 1, SubProd("ordering-term"))
                     ),
                     Tok(TokenType.Limit),
                     SubProd("expr"),
@@ -1099,17 +1103,17 @@ namespace SqlNotebookScript.Interpreter {
             );
 
             // qualified-table-name ::= [ database-name . ] table-name [ INDEXED BY index-name | NOT INDEXED ]
-            TopProd("qualified-table-name", 2,
+            TopProd(p = "qualified-table-name", 2,
                 Opt(Id("database name"), Tok(TokenType.Dot)),
                 Id("table name"),
                 Opt(Or(
-                    Prod(".indexed-by", 1, Tok(TokenType.Indexed), Tok(TokenType.By), Id("index name")),
-                    Prod(".not-indexed", 1, Tok(TokenType.Not), Tok(TokenType.Indexed))
+                    Prod($"{p}.indexed-by", 1, Tok(TokenType.Indexed), Tok(TokenType.By), Id("index name")),
+                    Prod($"{p}.not-indexed", 1, Tok(TokenType.Not), Tok(TokenType.Indexed))
                 ))
             );
 
             // vacuum-stmt ::= VACUUM
-            TopProd("vacuum-stmt", 1, Tok(TokenType.Vacuum));
+            TopProd(p = "vacuum-stmt", 1, Tok(TokenType.Vacuum));
         }
 
         private static void TopProd(string name, int numReq, params SpecTerm[] terms) {
@@ -1154,6 +1158,10 @@ namespace SqlNotebookScript.Interpreter {
 
         private static ProdTerm SubProd(string name) {
             return new ProdTerm { ProdName = name };
+        }
+
+        private static OrTerm SubProd(SpecProd prod) {
+            return new OrTerm { Prods = new[] { prod } };
         }
 
         private static ListTerm Lst(string subProdName, TokenType? separator, int min, params SpecTerm[] terms) {

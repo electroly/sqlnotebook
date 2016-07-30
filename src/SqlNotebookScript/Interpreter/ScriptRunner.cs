@@ -119,6 +119,7 @@ namespace SqlNotebookScript.Interpreter {
                 [typeof(Ast.SetStmt)] = (s, e) => ExecuteSetStmt((Ast.SetStmt)s, e),
                 [typeof(Ast.IfStmt)] = (s, e) => ExecuteIfStmt((Ast.IfStmt)s, e),
                 [typeof(Ast.WhileStmt)] = (s, e) => ExecuteWhileStmt((Ast.WhileStmt)s, e),
+                [typeof(Ast.BlockStmt)] = (s, e) => ExecuteBlockStmt((Ast.BlockStmt)s, e),
                 [typeof(Ast.BreakStmt)] = (s, e) => ExecuteBreakStmt((Ast.BreakStmt)s, e),
                 [typeof(Ast.ContinueStmt)] = (s, e) => ExecuteContinueStmt((Ast.ContinueStmt)s, e),
                 [typeof(Ast.PrintStmt)] = (s, e) => ExecutePrintStmt((Ast.PrintStmt)s, e),
@@ -181,9 +182,25 @@ namespace SqlNotebookScript.Interpreter {
         }
 
         private void ExecuteSqlStmt(Ast.SqlStmt stmt, ScriptEnv env) {
-            var dt = _notebook.Query(stmt.Sql, env.Vars);
-            if (dt.Columns.Any()) {
-                env.Output.DataTables.Add(dt);
+            foreach (var beforeStmt in stmt.RunBefore) {
+                ExecuteStmt(beforeStmt, env);
+                if (env.DidThrow) {
+                    return;
+                }
+            }
+
+            try {
+                var dt = _notebook.Query(stmt.Sql, env.Vars);
+                if (dt.Columns.Any()) {
+                    env.Output.DataTables.Add(dt);
+                }
+            } finally {
+                foreach (var afterStmt in stmt.RunAfter) {
+                    ExecuteStmt(afterStmt, env);
+                    if (env.DidThrow) {
+                        break;
+                    }
+                }
             }
         }
 
@@ -264,6 +281,10 @@ namespace SqlNotebookScript.Interpreter {
                         $"produced a value of {condition} instead of the expected 0 or 1.");
                 }
             } while (condition == 1);
+        }
+
+        private void ExecuteBlockStmt(Ast.BlockStmt stmt, ScriptEnv env) {
+            ExecuteBlock(stmt.Block, env);
         }
 
         private void ExecuteBreakStmt(Ast.BreakStmt stmt, ScriptEnv env) {

@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="INotebook.cs" />
     <Compile Include="Interpreter\OptionParsingExtensions.cs" />
+    <Compile Include="Interpreter\ScriptPreprocessor.cs" />
     <Compile Include="ScalarFunctions\ArrayFunctions.cs" />
     <Compile Include="Interpreter\Ast.cs" />
     <Compile Include="Interpreter\CsvImporter.cs" />
@@ -73,7 +74,7 @@
     <Compile Include="Utils\DateTimeUtil.cs" />
     <Compile Include="Utils\Slot.cs" />
     <Compile Include="Interpreter\SqliteGrammar.cs" />
-    <Compile Include="Interpreter\SqlValidator.cs" />
+    <Compile Include="Interpreter\SqliteParser.cs" />
     <Compile Include="Interpreter\TokenQueue.cs" />
     <Compile Include="Interpreter\TxtExporter.cs" />
     <Compile Include="Interpreter\TxtImporter.cs" />

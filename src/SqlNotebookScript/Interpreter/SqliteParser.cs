@@ -14,15 +14,9 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace SqlNotebookScript.Interpreter {
 
-    public static class SqlValidator {
+    public static class SqliteParser {
         public struct Result {
             public readonly bool IsValid;
             public readonly int NumValidTokens;
@@ -43,9 +37,9 @@ namespace SqlNotebookScript.Interpreter {
             }
         }
 
-        public static Result ReadExpr(TokenQueue q) {
+        public static Result ReadExpr(TokenQueue q, out Ast.SqliteSyntaxProduction ast) {
             var startingLocation = q.GetLocation();
-            var matchResult = Matcher.Match("expr", q);
+            var matchResult = Matcher.Match("expr", q, out ast);
             var numTokens = q.GetLocation() - startingLocation;
             if (matchResult.IsMatch) {
                 return new Result(numTokens);
@@ -54,9 +48,9 @@ namespace SqlNotebookScript.Interpreter {
             }
         }
 
-        public static Result ReadStmt(TokenQueue q, string rootProdName = "sql-stmt") {
+        public static Result ReadStmt(TokenQueue q, out Ast.SqliteSyntaxProduction ast, string rootProdName = "sql-stmt") {
             var startingLocation = q.GetLocation();
-            var matchResult = Matcher.Match(rootProdName, q);
+            var matchResult = Matcher.Match(rootProdName, q, out ast);
             var numTokens = q.GetLocation() - startingLocation;
             if (matchResult.IsMatch) {
                 return new Result(numTokens);

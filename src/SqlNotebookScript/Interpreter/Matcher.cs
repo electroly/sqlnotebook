@@ -53,8 +53,10 @@ namespace SqlNotebookScript.Interpreter {
 
     public sealed class MatchFrame {
         // which production and term are we working on?
+        public int ProdStartLoc;
         public SpecProd Prod;
         public int TermIndex;
+        public Ast.SqliteSyntaxProduction AstProd;
 
         // OptionalTerm
         public OptionalTermState OptionalState;
@@ -78,8 +80,10 @@ namespace SqlNotebookScript.Interpreter {
 
         public void Clear(bool all = true) {
             if (all) {
+                ProdStartLoc = 0;
                 Prod = null;
                 TermIndex = 0;
+                AstProd = null;
             }
             OptionalState = OptionalTermState.Start;
             OptionalStartLoc = 0;
@@ -107,6 +111,8 @@ namespace SqlNotebookScript.Interpreter {
 
         public int Count { get { return _topIndex + 1; } }
 
+        public TokenQueue Queue { get; set; }
+
         public bool Any() {
             return _topIndex >= 0;
         }
@@ -123,6 +129,8 @@ namespace SqlNotebookScript.Interpreter {
             }
 
             _frames[_topIndex].Prod = prod;
+            _frames[_topIndex].ProdStartLoc = Queue.GetLocation();
+            _frames[_topIndex].AstProd = new Ast.SqliteSyntaxProduction { Name = prod.Name };
             return _frames[_topIndex];
         }
 
@@ -415,20 +423,25 @@ namespace SqlNotebookScript.Interpreter {
     }
 
     public static class Matcher {
-        public static MatchResult Match(string rootProdName, TokenQueue q) {
+        public static MatchResult Match(string rootProdName, TokenQueue q, out Ast.SqliteSyntaxProduction ast) {
             // we use an explicit stack rather than function call recursion because our BNF grammar is deeply nested,
             // particularly the productions for 'expr'.
-            var stack = new MatchStack();
+            var stack = new MatchStack { Queue = q };
             stack.Push(SqliteGrammar.Prods[rootProdName]);
             MatchResult? rootResult = null;
+            Ast.SqliteSyntaxProduction rootAst = null;
 
-            Action<MatchResult> finishFrame = frameResult => {
+            Action<MatchResult, Ast.SqliteSyntaxProduction> finishFrame = (frameResult, frameAstProd) => {
                 stack.Pop();
                 var parentFrame = stack.Peek();
                 if (parentFrame == null) {
                     rootResult = frameResult;
+                    rootAst = frameAstProd;
                 } else {
                     parentFrame.SubResult = frameResult;
+                    if (frameResult.IsMatch) {
+                        parentFrame.AstProd.Items.Add(frameAstProd);
+                    }
                 }
             };
 
@@ -450,16 +463,20 @@ namespace SqlNotebookScript.Interpreter {
                 if (result.HasValue) {
                     // we are done matching this term
                     if (result.Value.IsMatch) {
-                        // this term matches.  move to the next term in the production.
+                        // move to the next term in the production.
                         frame.Clear(all: false);
                         frame.TermIndex++;
                         if (frame.TermIndex >= frame.Prod.Terms.Length) {
                             // we have matched this full production
-                            finishFrame(MatchResult.Matched);
+                            var prodEndLoc = q.GetLocation();
+                            frame.AstProd.StartToken = frame.ProdStartLoc;
+                            frame.AstProd.NumTokens = prodEndLoc - frame.ProdStartLoc;
+                            frame.AstProd.Text = q.Substring(frame.ProdStartLoc, prodEndLoc - frame.ProdStartLoc);
+                            finishFrame(MatchResult.Matched, frame.AstProd);
                         }
                     } else {
                         // we needed a match and didn't find one.  we have to abandon this production.
-                        finishFrame(result.Value);
+                        finishFrame(result.Value, null);
                     }
                 }
             }
@@ -472,6 +489,7 @@ namespace SqlNotebookScript.Interpreter {
                 throw new Exception("Expected a MatchResult but one was not set.");
             }
 
+            ast = rootAst;
             return rootResult.Value;
         }
     }
