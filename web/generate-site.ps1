@@ -46,10 +46,17 @@ function WriteDocFiles() {
         $endIndex = $html.IndexOf("</title>")
         $title = $html.Substring($startIndex, $endIndex - $startIndex)
 
-        # remove meta and title tags from article body
-        $startIndex = $html.IndexOf("<meta")
-        $endIndex = $html.IndexOf("</title>") + 8
-        $html = $html.Remove($startIndex, $endIndex - $startIndex)
+        # strip stuff from article body that we don't want embedded in the resulting html body
+        $html = $html -replace "<!doctype[^<]*>",""
+        $html = $html -replace "<!DOCTYPE[^<]*>",""
+        $html = $html -replace "<meta[^<]*>",""
+        $html = $html -replace "<title>[^<]*</title>",""
+        $html = $html -replace "<html>",""
+        $html = $html -replace "</html>",""
+        $html = $html -replace "<head>",""
+        $html = $html -replace "</head>",""
+        $html = $html -replace "<body>",""
+        $html = $html -replace "</body>",""
 
         $siteFilePath = [System.IO.Path]::Combine($sitePath, $docFilename)
         WriteFile $siteFilePath (FormatPage $title $html "SQL Notebook online documentation.")
