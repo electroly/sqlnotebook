@@ -230,7 +230,21 @@ namespace SqlNotebook.Properties {
         ///a:hover {
         ///    text-decoration: underline;
         ///}
-        ///.
+        ///img.diagram {
+        ///    border: 1px solid white;
+        ///}
+        ///a img.diagram:hover {
+        ///    border: 1px solid #4078c0;
+        ///}
+        ///div.figure {
+        ///    text-align: center;
+        ///}
+        ///div.caption {
+        ///    font-size: 8pt;
+        ///    font-style: italic;
+        ///    color: gray;
+        ///}
+        ///u [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HelpCss {
             get {
@@ -349,6 +363,16 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SqliteSiteErrorPlaceholderPng {
+            get {
+                object obj = ResourceManager.GetObject("SqliteSiteErrorPlaceholderPng", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap SqlNotebookIcon48 {
@@ -432,7 +456,7 @@ namespace SqlNotebook.Properties {
         ///&lt;li&gt;&lt;a href=&quot;#fatcow&quot;&gt;Free FatCow-Farm Fresh Icons&lt;/a&gt;&lt;/li&gt;
         ///&lt;li&gt;&lt;a href=&quot;#dockpanelsuite&quot;&gt;DockPanelSuite&lt;/a&gt;&lt;/li&gt;
         ///&lt;li&gt;&lt;a href=&quot;#sharpziplib&quot;&gt;SharpZipLib&lt;/a&gt;&lt;/li&gt;
-        ///&lt;li&gt;&lt;a href=&quot;#exceldatareader&quot;&gt;Exc [rest of string was truncated]&quot;;.
+        ///&lt;li&gt;&lt;a href=&quot;#npoi&quot;&gt;NPOI&lt;/a&gt;&lt;/li&gt;        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ThirdPartyLicensesHtml {
             get {

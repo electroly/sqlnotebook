@@ -22,6 +22,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using HtmlAgilityPack;
 using SqlNotebook.Properties;
@@ -33,6 +34,7 @@ namespace SqlNotebook {
         private readonly Notebook _notebook;
         private readonly HttpServer _httpServer;
         private string _indexHtml = "";
+        private string _booksTxt;
 
         public ushort PortNumber { get; private set; }
 
@@ -50,7 +52,11 @@ namespace SqlNotebook {
                 InitNewNotebook(filePath);
             }
             _notebook.Invoke(() => {
-                _indexHtml = BuildIndexHtml();
+                try {
+                    _indexHtml = BuildIndexHtml();
+                } catch (Exception ex) {
+                    _indexHtml = ex.Message;
+                }
             });
             _httpServer = StartHttpServer();
         }
@@ -95,6 +101,10 @@ namespace SqlNotebook {
                 foreach (var pair in sqliteDocAmalgamation.SqlNotebookDoc) {
                     var filename = pair.Key;
                     var content = pair.Value;
+                    if (filename.EndsWith("books.txt")) {
+                        _booksTxt = content;
+                        continue;
+                    }
 
                     string text, title;
                     ParseHtml(content, out text, out title);
@@ -201,8 +211,12 @@ namespace SqlNotebook {
                 if (rawUrl.StartsWith("/sqlite-doc/") && (rawUrl.EndsWith(".jpg") || rawUrl.EndsWith(".gif") || rawUrl.EndsWith(".png"))) {
                     // we don't store images in our resources, instead we download them on-the-fly
                     var sqliteUrl = rawUrl.Replace("/sqlite-doc", "http://www.sqlite.org");
-                    using (var webClient = new WebClient()) {
-                        bytes = webClient.DownloadData(sqliteUrl);
+                    try {
+                        using (var webClient = new WebClient()) {
+                            bytes = webClient.DownloadData(sqliteUrl);
+                        }
+                    } catch {
+                        bytes = Resources.SqliteSiteErrorPlaceholderPng;
                     }
                 } else if (rawUrl == "/index.html") {
                     bytes = Encoding.UTF8.GetBytes(header + _indexHtml);
@@ -243,6 +257,35 @@ namespace SqlNotebook {
             return (ushort)port;
         }
 
+        private sealed class GroupDef {
+            public string Book;
+            public string Group;
+            public Regex Pattern;
+            public string Html = "";
+        }
+
+        private List<GroupDef> ReadGroupDefs() {
+            if (_booksTxt == null) {
+                throw new Exception("Internal error: books.txt was not found in the documents archive.");
+            }
+            var lines = _booksTxt.Split('\n');
+            var list = new List<GroupDef>();
+            foreach (var line in lines) {
+                if (line.StartsWith("Group#")) {
+                    var cells = line.Split(new[] { '#' }, 4);
+                    if (cells.Length != 4) {
+                        throw new Exception("Internal error. Invalid group line: " + line);
+                    }
+                    list.Add(new GroupDef {
+                        Book = cells[1],
+                        Group = cells[2],
+                        Pattern = new Regex(cells[3].Trim())
+                    });
+                }
+            }
+            return list;
+        }
+
         private string BuildIndexHtml() { // run from notebook thread
             const string PAGE_TMPL =
                 @"<title>Help Index</title>
@@ -259,8 +302,7 @@ namespace SqlNotebook {
                 <h2><img src=""/link.png"" class=""header-icon"">Quick Links</h2>
                   <ul>
                     <li><a href='/sqlite-doc/lang.html'>Basic SQL Syntax</a></li>
-                    <li><a href='/extended-syntax.html'>Extended SQL Notebook Syntax</a></li>
-                    <li><a href='/sqlite-doc/lang_corefunc.html'>SQL Functions</a></li>
+                    <li><a href='/sqlite-doc/lang_corefunc.html'>SQLite Functions</a></li>
                     <li><a href='/sqlite-doc/lang_datefunc.html'>Date & Time Functions</a></li>
                     <li><a href='/sqlite-doc/lang_aggfunc.html'>Aggregate Functions</a></li>
                     <li><a href='/sqlite-doc/json1.html'>JSON Functions</a></li>
@@ -269,18 +311,33 @@ namespace SqlNotebook {
             const string BOOK_TMPL = "<h2><img src=\"/book.png\" class=\"header-icon\"><span class=\"book-title\">{0}</span></h2><ul>{1}</ul>";
             const string DOC_TMPL = "<li><a href=\"{0}\">{1}</a></li>";
 
-            return string.Format(PAGE_TMPL, string.Join("",
+            var groupDefs = ReadGroupDefs();
+
+            var docs =
                 from row in _notebook.Query("SELECT path, book, title FROM docs").Rows
-                let x = new { Path = row[0].ToString(), Book = row[1].ToString(), Title = row[2].ToString() }
-                group x by x.Book into grp
+                let doc = new { Path = row[0].ToString(), Book = row[1].ToString(), Title = row[2].ToString() }
+                orderby doc.Title.StartsWith("The ") ? doc.Title.Substring(4) : doc.Title
+                select doc;
+
+            foreach (var doc in docs) {
+                foreach (var groupDef in groupDefs) {
+                    if (groupDef.Book == doc.Book && groupDef.Pattern.IsMatch(doc.Title)) {
+                        groupDef.Html += string.Format(DOC_TMPL,
+                            doc.Path.Substring(1).Replace('\\', '/'),
+                            WebUtility.HtmlEncode(doc.Title));
+                        break;
+                    }
+                }
+            }
+
+            return string.Format(PAGE_TMPL, string.Join("",
+                from def in groupDefs
+                group def by def.Book into grp
                 orderby grp.Key
-                let docs =
-                    from doc in grp
-                    orderby doc.Title.StartsWith("The ") ? doc.Title.Substring(4) : doc.Title
-                    select string.Format(DOC_TMPL,
-                        doc.Path.Substring(1).Replace('\\', '/'),
-                        WebUtility.HtmlEncode(doc.Title))
-                select string.Format(BOOK_TMPL, WebUtility.HtmlEncode(grp.Key), string.Join("", docs))
+                let bookHtml = string.Join("",
+                    from def in grp
+                    select $"<li><b style=\"font-size: 14px;\">{def.Group}</b><ul style=\"padding-top: 5px; padding-bottom: 10px;\">{def.Html}</ul></li>")
+                select string.Format(BOOK_TMPL, WebUtility.HtmlEncode(grp.Key), bookHtml)
             ));
         }
 

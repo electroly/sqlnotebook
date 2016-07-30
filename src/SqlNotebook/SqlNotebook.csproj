@@ -416,6 +416,7 @@
     <None Include="Resources\SqlNotebookIcon48.png" />
     <None Include="Resources\Help.css" />
     <None Include="Resources\ThirdPartyLicenses.html" />
+    <Content Include="Resources\SqliteSiteErrorPlaceholder.png" />
     <Content Include="SqlNotebookIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -52,7 +52,7 @@ namespace SqlNotebookScript.Interpreter {
                 var args = tableFunctionCallNode.TraverseDottedChildren()
                     .Where(x => x.Name == "table-or-subquery.arg").ToList();
                 if (args.Count < 1 || args.Count > 4) {
-                    throw new ScriptPreprocessorException($"READ_CSV: Between 1 and 4 argument are required.");
+                    throw new ScriptPreprocessorException($"READ_CSV: Between 1 and 4 arguments are required.");
                 }
 
                 var filePathExpr = args[0];
