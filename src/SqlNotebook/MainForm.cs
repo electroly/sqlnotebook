@@ -141,11 +141,41 @@ namespace SqlNotebook {
                 _isTransactionOpen);
 
             if (isNew) {
-                _manager.NewNote("Getting Started", Resources.GettingStartedRtf);
-                Load += (sender, e) => {
-                    OpenItem(new NotebookItem(NotebookItemType.Note, "Getting Started"));
-                    _isDirty.Value = false;
-                };
+                switch (Settings.Default.AutoCreateInNewNotebooks) {
+                    case 0: // "Getting Started" note
+                        
+                        Load += (sender, e) => {
+                            var name = _manager.NewNote("Getting Started", Resources.GettingStartedRtf);
+                            OpenItem(new NotebookItem(NotebookItemType.Note, name));
+                            _isDirty.Value = false;
+                        };
+                        break;
+
+                    case 1: // New note
+                        Load += (sender, e) => {
+                            var name = _manager.NewNote();
+                            OpenItem(new NotebookItem(NotebookItemType.Note, name));
+                            _isDirty.Value = false;
+                        };
+                        break;
+
+                    case 2: // New console
+                        Load += (sender, e) => {
+                            var name = _manager.NewConsole();
+                            OpenItem(new NotebookItem(NotebookItemType.Console, name));
+                            _isDirty.Value = false;
+                        };
+                        break;
+
+                    case 3: // New script
+                        Load += (sender, e) => {
+                            var name = _manager.NewScript();
+                            OpenItem(new NotebookItem(NotebookItemType.Script, name));
+                            _isDirty.Value = false;
+                        };
+                        break;
+                }
+
             }
 
             Load += (sender, e) => _manager.Rescan();
@@ -659,6 +689,10 @@ namespace SqlNotebook {
             _notebook.BeginUserCancel();
             _cancelLnk.IsLink = false;
             _cancelLnk.Text = "Canceling...";
+        }
+
+        private void OptionsMnu_Click(object sender, EventArgs e) {
+            new OptionsForm().ShowDialogAndDispose(this);
         }
     }
 }

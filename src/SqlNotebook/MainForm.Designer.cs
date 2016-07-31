@@ -29,11 +29,14 @@
         private void InitializeComponent()
         {
             System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
             this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this._statusStrip = new System.Windows.Forms.StatusStrip();
             this._openTransactionLbl = new System.Windows.Forms.ToolStripStatusLabel();
             this._statusLbl = new System.Windows.Forms.ToolStripStatusLabel();
+            this._cancelLnk = new System.Windows.Forms.ToolStripStatusLabel();
             this._statusProgressbar = new System.Windows.Forms.ToolStripProgressBar();
             this._toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
@@ -41,7 +44,6 @@
             this._openMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._saveMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._saveAsMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this._exitMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._importBtn = new System.Windows.Forms.ToolStripDropDownButton();
             this._importFileMnu = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,8 +75,10 @@
             this._newNoteBtn = new System.Windows.Forms.ToolStripButton();
             this._newConsoleBtn = new System.Windows.Forms.ToolStripButton();
             this._newScriptBtn = new System.Windows.Forms.ToolStripButton();
-            this._cancelLnk = new System.Windows.Forms.ToolStripStatusLabel();
+            this._optionsMnu = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
             this._toolStripContainer.SuspendLayout();
@@ -140,10 +144,20 @@
             this._statusLbl.Image = global::SqlNotebook.Properties.Resources.Hourglass;
             this._statusLbl.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Name = "_statusLbl";
-            this._statusLbl.Size = new System.Drawing.Size(505, 17);
+            this._statusLbl.Size = new System.Drawing.Size(729, 17);
             this._statusLbl.Spring = true;
             this._statusLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Visible = false;
+            // 
+            // _cancelLnk
+            // 
+            this._cancelLnk.IsLink = true;
+            this._cancelLnk.Margin = new System.Windows.Forms.Padding(0, 3, 5, 2);
+            this._cancelLnk.Name = "_cancelLnk";
+            this._cancelLnk.Size = new System.Drawing.Size(43, 17);
+            this._cancelLnk.Text = "Cancel";
+            this._cancelLnk.Visible = false;
+            this._cancelLnk.Click += new System.EventHandler(this.CancelLnk_Click);
             // 
             // _statusProgressbar
             // 
@@ -185,7 +199,9 @@
             this._openMnu,
             this._saveMnu,
             this._saveAsMnu,
-            this.toolStripSeparator4,
+            toolStripSeparator4,
+            this._optionsMnu,
+            toolStripSeparator7,
             this._exitMnu});
             this.toolStripDropDownButton1.Image = global::SqlNotebook.Properties.Resources.DatabaseTable;
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -231,8 +247,8 @@
             // 
             // toolStripSeparator4
             // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(152, 6);
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new System.Drawing.Size(152, 6);
             // 
             // _exitMnu
             // 
@@ -501,15 +517,17 @@
             this._newScriptBtn.Text = "New script";
             this._newScriptBtn.Click += new System.EventHandler(this.NewScriptBtn_Click);
             // 
-            // _cancelLnk
+            // _optionsMnu
             // 
-            this._cancelLnk.IsLink = true;
-            this._cancelLnk.Margin = new System.Windows.Forms.Padding(0, 3, 5, 2);
-            this._cancelLnk.Name = "_cancelLnk";
-            this._cancelLnk.Size = new System.Drawing.Size(43, 17);
-            this._cancelLnk.Text = "Cancel";
-            this._cancelLnk.Visible = false;
-            this._cancelLnk.Click += new System.EventHandler(this.CancelLnk_Click);
+            this._optionsMnu.Name = "_optionsMnu";
+            this._optionsMnu.Size = new System.Drawing.Size(155, 22);
+            this._optionsMnu.Text = "Options...";
+            this._optionsMnu.Click += new System.EventHandler(this.OptionsMnu_Click);
+            // 
+            // toolStripSeparator7
+            // 
+            toolStripSeparator7.Name = "toolStripSeparator7";
+            toolStripSeparator7.Size = new System.Drawing.Size(152, 6);
             // 
             // MainForm
             // 
@@ -553,7 +571,6 @@
         private System.Windows.Forms.ToolStripMenuItem _newMnu;
         private System.Windows.Forms.ToolStripMenuItem _openMnu;
         private System.Windows.Forms.ToolStripMenuItem _saveMnu;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem _exitMnu;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton2;
         private System.Windows.Forms.ToolStripMenuItem _aboutMnu;
@@ -583,6 +600,7 @@
         private System.Windows.Forms.ToolStripMenuItem recentFilesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem recentServersToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel _cancelLnk;
+        private System.Windows.Forms.ToolStripMenuItem _optionsMnu;
     }
 }
 
