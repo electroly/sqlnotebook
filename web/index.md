@@ -43,6 +43,6 @@ User-created documents can be stored directly in notebook files. The app include
 </div>
 
 ### License
-SQL Notebook is **free and open source** software (MIT license).  [View the project on GitHub!](https://github.com/electroly/sqlnotebook)
+SQL Notebook is **free and open source** software available under the popular [MIT license](license.html).  [View the project on GitHub!](https://github.com/electroly/sqlnotebook)
 
 Copyright © 2016 [Brian Luft](https://github.com/electroly)

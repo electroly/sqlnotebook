@@ -1,6 +1,6 @@
 # Download & Install
 
-The current version is **0.5** and was released on **April 25, 2016**.  SQL Notebook requires a 64-bit computer running Windows 7 or higher.  This software is open source and available free of charge.  [View the release history on GitHub](https://github.com/electroly/sqlnotebook/releases).
+The current version is **0.5** and was released on **April 25, 2016**.  SQL Notebook requires a 64-bit computer running Windows 7 or higher.  This software is open source ([MIT license](license.html)) and available free of charge.  [View the release history on GitHub](https://github.com/electroly/sqlnotebook/releases).
 <br><br>
 
 ### [Download Installer .EXE (preferred)](https://sqlnotebook.com/install/setup.exe)

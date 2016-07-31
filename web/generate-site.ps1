@@ -156,6 +156,16 @@ function GenerateDocMd() {
     $obj.WriteTempDocMd($docPath, $webPath)
 }
 
+function GenerateLicenseMd() {
+    $html = (MdToHtml ..\license.md)
+    $thirdPartyHtml = (ReadFile ..\src\SqlNotebook\Resources\ThirdPartyLicenses.html)
+    $thirdPartyHtml = $thirdPartyHtml -replace "<!DOCTYPE html>",""
+    $thirdPartyHtml = $thirdPartyHtml -replace "<meta[^>]*>",""
+    $thirdPartyHtml = $thirdPartyHtml -replace "<style>[^<]*</style>",""
+    $html += "<br><hr><br>" + $thirdPartyHtml
+    return (FormatPage "License" $html "SQL Notebook is freely available under the MIT license.")
+}
+
 New-Item site -Type Directory -ErrorAction SilentlyContinue
 New-Item site/art -Type Directory -ErrorAction SilentlyContinue
 New-Item temp -Type Directory -ErrorAction SilentlyContinue
@@ -180,6 +190,9 @@ WriteFile .\site\video-help.html (FormatMdPage "Example Video: Help Viewer" .\vi
 # the doc index page is a special case
 GenerateDocMd
 WriteFile .\site\doc.html (FormatMdPage "Documentation" .\temp\doc.md "Index of SQL Notebook user documentation.")
+
+# the license page is a special case
+WriteFile .\site\license.html (GenerateLicenseMd)
 
 # html-based pages
 WriteDocFiles
