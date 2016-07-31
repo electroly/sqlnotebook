@@ -53,11 +53,11 @@ namespace SqlNotebookScript.Interpreter {
 
     public sealed class ScriptParser {
         private readonly INotebook _notebook;
-        private readonly ScriptPreprocessor _preprocessor;
+        private readonly MacroProcessor _preprocessor;
 
         public ScriptParser(INotebook notebook) {
             _notebook = notebook;
-            _preprocessor = new ScriptPreprocessor(notebook);
+            _preprocessor = new MacroProcessor(notebook);
         }
 
         public Ast.Script Parse(string input) {

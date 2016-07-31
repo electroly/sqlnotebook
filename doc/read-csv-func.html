@@ -2,26 +2,35 @@
 <html>
 <head>
 
+
+  
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+  
   <title>READ_CSV Function</title>
 </head>
 
+
 <body>
 
+
 <h1><code>READ_CSV</code> Function</h1>
+
 
 <p>
 Reads a CSV file line-by-line and returns it in a table. This function
 is used in the <code>FROM</code> clause of a <code>SELECT</code>
 statement and can participate in <code>JOIN</code>s as if
-it were a table. &nbsp;However, it cannot be used in a <span style="font-family: monospace;">CREATE TRIGGER</span><code></code>
-statement. &nbsp;Internally, the <code>READ_CSV</code>
+it were a table. However, it cannot be used in a <span style="font-family: monospace;">CREATE TRIGGER</span><code></code>
+statement. Internally, the <code>READ_CSV</code>
 function is translated into an <code>IMPORT CSV</code>
 statement that runs prior to the statement that contains the <code>READ_CSV</code>
 call.
 </p>
 
+
 <h2>Syntax</h2>
+
 
 <blockquote>
   <code>READ_CSV(<i>file-path</i>,&nbsp;</code><code>[<span style="font-style: italic;">has-header-row</span>]</code><code>,
@@ -29,69 +38,97 @@ call.
 [<i>file-encoding</i>])</code>
 </blockquote>
 
+
 <h2>Arguments</h2>
+
 
 <ul class="args">
 
+
   <li> <b>file-path</b> (string expression)<br>
 
+
 The absolute path to the CSV file to read.</li>
+
 
   <li><b>has-header-row</b> (integer expression,
 optional, 0 or 1, default: 1)<br>
 
+
 Indicates whether the CSV file begins with a column header line. If the
 file contains a column header but not on the first line of the file,
 use the <span style="font-style: italic;">skip-lines</span> parameter to indicate how many lines to skip before the column header appears.
+    
     <ul class="enum">
+
 
       <li>0 = No column header. The generic column names <code>column1</code>, <code>column2</code>, etc. will be used.</li>
 
+
       <li>1 = A column header row exists.</li>
 
+
+    
     </ul>
+
 
   </li>
 
+
   <li><b>skip-lines</b> (integer expression,
 optional, default: 0)<br>
+
 
 Indicates how many initial lines should be skipped in the input file.
 This is used if the column header (or the data if there is no column
 header) does not appear on the first line of the file.</li>
 
+
   <li> <b>file-encoding</b> (integer expression,
 optional, 0-65535, default: 0)<br>
+
 
 Indicates the text encoding to use when reading the file. Specify 0 to
 detect the encoding automatically. Any nonzero integer is treated as a
 Windows code page number. </li>
 
+
 </ul>
 
+
 <h2>Return Value</h2>
+
 
 <blockquote>
 A table with&nbsp;columns defined by the input file.</blockquote>
 
+
 <h2>Examples</h2>
 
+
 <ul class="examples">
+
 
   <li> <code>SELECT * FROM
 READ_CSV('C:\file.csv') LIMIT 50;</code><br>
 
+
 Returns a table containing the first 50 rows in "file.csv", with column names taken from the first line in the file. </li>
+
 
   <li> <code>SELECT * FROM
 READ_CSV('C:\ShiftJIS.csv', 1, 0, 932);</code><br>
 
+
 Returns a table containing the contents of "ShiftJIS.csv", which is
-read using the Japanese Shift-JIS encoding (code page 932). &nbsp;The default values for&nbsp;<span style="font-style: italic;">has-header-row</span> (1) and&nbsp;<span style="font-style: italic;">skip-lines</span> (0) are used. </li>
+read using the Japanese Shift-JIS encoding (code page 932). The default values for&nbsp;<span style="font-style: italic;">has-header-row</span> (1) and&nbsp;<span style="font-style: italic;">skip-lines</span> (0) are used. </li>
+
 
 </ul>
 
+
 <br>
+
 
 </body>
 </html>

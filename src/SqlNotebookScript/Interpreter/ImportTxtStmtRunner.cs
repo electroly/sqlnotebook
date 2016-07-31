@@ -20,7 +20,7 @@ using System.Text;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.Interpreter {
-    public sealed class TxtImporter {
+    public sealed class ImportTxtStmtRunner {
         private readonly INotebook _notebook;
         private readonly ScriptEnv _env;
         private readonly ScriptRunner _runner;
@@ -40,12 +40,12 @@ namespace SqlNotebookScript.Interpreter {
         private readonly Encoding _fileEncoding; // or null for automatic
 
         // must be run from the SQLite thread
-        public static void Import(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportTxtStmt stmt) {
-            var importer = new TxtImporter(notebook, env, runner, stmt);
+        public static void Run(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportTxtStmt stmt) {
+            var importer = new ImportTxtStmtRunner(notebook, env, runner, stmt);
             SqlUtil.WithTransaction(notebook, importer.Import);
         }
 
-        private TxtImporter(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportTxtStmt stmt) {
+        private ImportTxtStmtRunner(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportTxtStmt stmt) {
             _notebook = notebook;
             _env = env;
             _runner = runner;

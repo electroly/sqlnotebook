@@ -24,7 +24,7 @@ using SqlNotebookScript;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.Interpreter {
-    public sealed class CsvImporter {
+    public sealed class ImportCsvStmtRunner {
         private readonly INotebook _notebook;
         private readonly ScriptEnv _env;
         private readonly ScriptRunner _runner;
@@ -40,12 +40,12 @@ namespace SqlNotebookScript.Interpreter {
         private readonly IfConversionFails _ifConversionFails;
 
         // must be run from the SQLite thread
-        public static void Import(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportCsvStmt stmt) {
-            var importer = new CsvImporter(notebook, env, runner, stmt);
+        public static void Run(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportCsvStmt stmt) {
+            var importer = new ImportCsvStmtRunner(notebook, env, runner, stmt);
             SqlUtil.WithTransaction(notebook, importer.Import);
         }
 
-        private CsvImporter(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportCsvStmt stmt) {
+        private ImportCsvStmtRunner(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportCsvStmt stmt) {
             _notebook = notebook;
             _env = env;
             _runner = runner;

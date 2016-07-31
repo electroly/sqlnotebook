@@ -17,25 +17,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
+using Ast = SqlNotebookScript.Interpreter.Ast;
 
-namespace SqlNotebookScript.Interpreter {
-    public sealed class ScriptPreprocessorException : Exception {
-        public ScriptPreprocessorException(string message) : base(message) { }
-    }
-
-    public sealed class ScriptPreprocessor {
-        private readonly INotebook _notebook;
-
-        public ScriptPreprocessor(INotebook notebook) {
-            _notebook = notebook;
-        }
-
-        public void PreprocessStmt(Ast.SqlStmt input) {
-            while (ApplyReadCsvMacro(input)) { }
-        }
-
-        private bool ApplyReadCsvMacro(Ast.SqlStmt input) {
+namespace SqlNotebookScript.Macros {
+    public sealed class ReadCsvMacro : CustomMacro {
+        public override bool Apply(Ast.SqlStmt input) {
             var tableFunctionCallNodes = input.Traverse()
                 .OfType<Ast.SqliteSyntaxProduction>()
                 .Where(x => x.Name == "table-or-subquery.table-function-call");
@@ -52,7 +40,7 @@ namespace SqlNotebookScript.Interpreter {
                 var args = tableFunctionCallNode.TraverseDottedChildren()
                     .Where(x => x.Name == "table-or-subquery.arg").ToList();
                 if (args.Count < 1 || args.Count > 4) {
-                    throw new ScriptPreprocessorException($"READ_CSV: Between 1 and 4 arguments are required.");
+                    throw new MacroProcessorException($"READ_CSV: Between 1 and 4 arguments are required.");
                 }
 
                 var filePathExpr = args[0];
@@ -85,7 +73,7 @@ namespace SqlNotebookScript.Interpreter {
                 input.RunAfter.Add(dropTableStmt);
 
                 // replace the READ_CSV(...) call with the table name
-                var originalTokens = _notebook.Tokenize(input.Sql).Select(x => x.Text).ToList();
+                var originalTokens = Notebook.Tokenize(input.Sql).Select(x => x.Text).ToList();
                 for (int i = 0; i < tableFunctionCallNode.NumTokens; i++) {
                     originalTokens.RemoveAt(tableFunctionCallNode.StartToken);
                 }
@@ -96,35 +84,6 @@ namespace SqlNotebookScript.Interpreter {
                 return true;
             }
             return false;
-        }
-
-        private Ast.Expr NewExpr(string text) {
-            var tokens = _notebook.Tokenize(text);
-            var q = new TokenQueue(tokens, _notebook);
-            Ast.SqliteSyntaxProduction ast;
-            var result = SqliteParser.ReadExpr(q, out ast);
-            if (result.IsValid && q.Eof()) {
-                return new Ast.Expr { Sql = text, SqliteSyntax = ast };
-            } else {
-                throw new ScriptPreprocessorException($"\"{text}\" is not a valid SQL expression.");
-            }
-        }
-
-        private Ast.SqlStmt NewSqlStmt(string text) {
-            var ast = ParseSqlStmt(text);
-            return new Ast.SqlStmt { Sql = text, SqliteSyntax = ast };
-        }
-
-        private Ast.SqliteSyntaxProduction ParseSqlStmt(string text) {
-            var tokens = _notebook.Tokenize(text);
-            var q = new TokenQueue(tokens, _notebook);
-            Ast.SqliteSyntaxProduction ast;
-            var result = SqliteParser.ReadStmt(q, out ast);
-            if (result.IsValid && q.Eof()) {
-                return ast;
-            } else {
-                throw new ScriptPreprocessorException($"\"{text}\" is not a valid SQL statement.");
-            }
         }
     }
 }

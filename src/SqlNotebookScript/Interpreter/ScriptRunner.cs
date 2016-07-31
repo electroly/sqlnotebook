@@ -366,7 +366,7 @@ namespace SqlNotebookScript.Interpreter {
 
         private void ExecuteImportCsvStmt(Ast.ImportCsvStmt stmt, ScriptEnv env) {
             try {
-                CsvImporter.Import(_notebook, env, this, stmt);
+                ImportCsvStmtRunner.Run(_notebook, env, this, stmt);
             } catch (Exception ex) {
                 Throw(env, -1, ex.Message, -1);
             }
@@ -374,7 +374,7 @@ namespace SqlNotebookScript.Interpreter {
 
         private void ExecuteImportXlsStmt(Ast.ImportXlsStmt stmt, ScriptEnv env) {
             try {
-                XlsImporter.Import(_notebook, env, this, stmt);
+                ImportXlsStmtRunner.Run(_notebook, env, this, stmt);
             } catch (Exception ex) {
                 Throw(env, -1, ex.Message, -1);
             }
@@ -382,7 +382,7 @@ namespace SqlNotebookScript.Interpreter {
 
         private void ExecuteImportTxtStmt(Ast.ImportTxtStmt stmt, ScriptEnv env) {
             try {
-                TxtImporter.Import(_notebook, env, this, stmt);
+                ImportTxtStmtRunner.Run(_notebook, env, this, stmt);
             } catch (Exception ex) {
                 Throw(env, -1, ex.Message, -1);
             }
@@ -390,7 +390,7 @@ namespace SqlNotebookScript.Interpreter {
 
         private void ExecuteExportTxtStmt(Ast.ExportTxtStmt stmt, ScriptEnv env) {
             try {
-                TxtExporter.Export(_notebook, env, this, stmt);
+                ExportTxtStmtRunner.Run(_notebook, env, this, stmt);
             } catch (Exception ex) {
                 Throw(env, -1, ex.Message, -1);
             }

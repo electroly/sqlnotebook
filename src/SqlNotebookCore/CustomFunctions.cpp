@@ -62,73 +62,10 @@ static Object^ GetArg(sqlite3_value* arg) {
     }
 }
 
-static String^ GetTypeName(int type) {
-    switch (type) {
-        case SQLITE_INTEGER: return "INTEGER";
-        case SQLITE_FLOAT: return "FLOAT";
-        case SQLITE_TEXT: return "TEXT";
-        case SQLITE_NULL: return "NULL";
-        case SQLITE_BLOB: return "BLOB";
-        default: return String::Format("UNKNOWN ({0})", type);
-    }
-}
-
-static Int64 GetIntArg(sqlite3_value* arg, String^ paramName, String^ functionName) {
-    auto type = sqlite3_value_type(arg);
-    if (type == SQLITE_INTEGER) { 
-        return (Int64)GetArg(arg);
-    } else {
-        throw gcnew Exception(String::Format(
-            "{0}: The \"{1}\" argument must be an INTEGER value, but type {2} was provided.",
-            functionName, paramName, GetTypeName(type)));
-    }
-}
-
-static String^ GetStrArg(sqlite3_value* arg, String^ paramName, String^ functionName) {
-    auto type = sqlite3_value_type(arg);
-    if (type == SQLITE_TEXT) {
-        return (String^)GetArg(arg);
-    } else {
-        throw gcnew Exception(String::Format(
-            "{0}: The \"{1}\" argument must be a TEXT value, but type {2} was provided.",
-            functionName, paramName, GetTypeName(type)));
-    }
-}
-
-static array<Byte>^ GetBlobArg(sqlite3_value* arg, String^ paramName, String^ functionName) {
-    auto type = sqlite3_value_type(arg);
-    if (type == SQLITE_BLOB) {
-        return (array<Byte>^)GetArg(arg);
-    } else {
-        throw gcnew Exception(String::Format(
-            "{0}: The \"{1}\" argument must be a BLOB value, but type {2} was provided.",
-            functionName, paramName, GetTypeName(type)));
-    }
-}
-
 static void SqliteResultError(sqlite3_context* ctx, String^ message) {
     auto messageWstr = Util::WStr(message);
     sqlite3_result_error16(ctx, messageWstr.c_str(), -1);
 }
-
-// ---
-
-static void ErrorNumber(sqlite3_context* ctx, int, sqlite3_value**) {
-    auto notebook = GetNotebook(ctx);
-    Notebook::SqliteResult(ctx, notebook->UserData->LastError->ErrorNumber);
-}
-
-static void ErrorMessage(sqlite3_context* ctx, int, sqlite3_value**) {
-    auto notebook = GetNotebook(ctx);
-    Notebook::SqliteResult(ctx, notebook->UserData->LastError->ErrorMessage);
-}
-
-static void ErrorState(sqlite3_context* ctx, int, sqlite3_value**) {
-    auto notebook = GetNotebook(ctx);
-    Notebook::SqliteResult(ctx, notebook->UserData->LastError->ErrorState);
-}
-
-// ---
 
 static void DeleteGcrootCustomFunctionContext(void* ptr) {
     delete (gcroot<CustomFunctionContext^>*)ptr;
@@ -197,6 +134,21 @@ void Notebook::RegisterGenericFunction(CustomScalarFunction^ function) {
         /* xFinal */ nullptr,
         /* xDestroy */ DeleteGcrootGenericFunctionContext
     ));
+}
+
+static void ErrorNumber(sqlite3_context* ctx, int, sqlite3_value**) {
+    auto notebook = GetNotebook(ctx);
+    Notebook::SqliteResult(ctx, notebook->UserData->LastError->ErrorNumber);
+}
+
+static void ErrorMessage(sqlite3_context* ctx, int, sqlite3_value**) {
+    auto notebook = GetNotebook(ctx);
+    Notebook::SqliteResult(ctx, notebook->UserData->LastError->ErrorMessage);
+}
+
+static void ErrorState(sqlite3_context* ctx, int, sqlite3_value**) {
+    auto notebook = GetNotebook(ctx);
+    Notebook::SqliteResult(ctx, notebook->UserData->LastError->ErrorState);
 }
 
 void Notebook::InstallCustomFunctions() {

@@ -62,12 +62,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomMacro.cs" />
     <Compile Include="INotebook.cs" />
     <Compile Include="Interpreter\OptionParsingExtensions.cs" />
-    <Compile Include="Interpreter\ScriptPreprocessor.cs" />
+    <Compile Include="Interpreter\MacroProcessor.cs" />
+    <Compile Include="Macros\ReadCsvMacro.cs" />
     <Compile Include="ScalarFunctions\ArrayFunctions.cs" />
     <Compile Include="Interpreter\Ast.cs" />
-    <Compile Include="Interpreter\CsvImporter.cs" />
+    <Compile Include="Interpreter\ImportCsvStmtRunner.cs" />
     <Compile Include="Interpreter\Matcher.cs" />
     <Compile Include="Interpreter\ScriptParser.cs" />
     <Compile Include="Interpreter\ScriptRunner.cs" />
@@ -76,10 +78,10 @@
     <Compile Include="Interpreter\SqliteGrammar.cs" />
     <Compile Include="Interpreter\SqliteParser.cs" />
     <Compile Include="Interpreter\TokenQueue.cs" />
-    <Compile Include="Interpreter\TxtExporter.cs" />
-    <Compile Include="Interpreter\TxtImporter.cs" />
+    <Compile Include="Interpreter\ExportTxtStmtRunner.cs" />
+    <Compile Include="Interpreter\ImportTxtStmtRunner.cs" />
     <Compile Include="Utils\SqlUtil.cs" />
-    <Compile Include="Interpreter\XlsImporter.cs" />
+    <Compile Include="Interpreter\ImportXlsStmtRunner.cs" />
     <Compile Include="SimpleDataTable.cs" />
     <Compile Include="Utils\ArrayUtil.cs" />
     <Compile Include="ScalarFunctions\DateFunctions.cs" />
@@ -99,6 +101,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
