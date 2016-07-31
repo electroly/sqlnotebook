@@ -34,5 +34,9 @@ namespace SqlNotebook {
         private void GithubLnk_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
             Process.Start("https://github.com/electroly/sqlnotebook");
         }
+
+        private void WebsiteLnk_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+            Process.Start("https://sqlnotebook.com/");
+        }
     }
 }

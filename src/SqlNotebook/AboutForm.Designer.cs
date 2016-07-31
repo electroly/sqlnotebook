@@ -26,9 +26,9 @@
             System.Windows.Forms.Button _okBtn;
             System.Windows.Forms.PictureBox pictureBox1;
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this._githubLnk = new System.Windows.Forms.LinkLabel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this._websiteLnk = new System.Windows.Forms.LinkLabel();
             this._webBrowser = new System.Windows.Forms.WebBrowser();
             this.panel2 = new System.Windows.Forms.Panel();
             _okBtn = new System.Windows.Forms.Button();
@@ -41,7 +41,7 @@
             // _okBtn
             // 
             _okBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            _okBtn.Location = new System.Drawing.Point(368, 306);
+            _okBtn.Location = new System.Drawing.Point(409, 367);
             _okBtn.Name = "_okBtn";
             _okBtn.Size = new System.Drawing.Size(88, 26);
             _okBtn.TabIndex = 0;
@@ -62,33 +62,23 @@
             // 
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.SystemColors.Window;
-            this.label2.Font = new System.Drawing.Font("Calibri", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(66, 11);
+            this.label2.Font = new System.Drawing.Font("Calibri", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(66, 7);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(155, 29);
+            this.label2.Size = new System.Drawing.Size(206, 39);
             this.label2.TabIndex = 4;
             this.label2.Text = "SQL Notebook";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.BackColor = System.Drawing.SystemColors.Window;
-            this.label3.Location = new System.Drawing.Point(68, 40);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(158, 15);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Copyright © 2016 Brian Luft.";
             // 
             // _githubLnk
             // 
             this._githubLnk.AutoSize = true;
             this._githubLnk.BackColor = System.Drawing.SystemColors.Window;
-            this._githubLnk.Location = new System.Drawing.Point(227, 40);
+            this._githubLnk.Location = new System.Drawing.Point(201, 45);
             this._githubLnk.Name = "_githubLnk";
-            this._githubLnk.Size = new System.Drawing.Size(90, 15);
+            this._githubLnk.Size = new System.Drawing.Size(113, 15);
             this._githubLnk.TabIndex = 6;
             this._githubLnk.TabStop = true;
-            this._githubLnk.Text = "View on GitHub";
+            this._githubLnk.Text = "View GitHub project";
             this._githubLnk.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.GithubLnk_LinkClicked);
             // 
             // panel1
@@ -97,14 +87,26 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BackColor = System.Drawing.SystemColors.Window;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this._websiteLnk);
             this.panel1.Controls.Add(this._githubLnk);
             this.panel1.Controls.Add(pictureBox1);
-            this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Location = new System.Drawing.Point(-1, -1);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(470, 74);
+            this.panel1.Size = new System.Drawing.Size(511, 74);
             this.panel1.TabIndex = 7;
+            // 
+            // _websiteLnk
+            // 
+            this._websiteLnk.AutoSize = true;
+            this._websiteLnk.BackColor = System.Drawing.SystemColors.Window;
+            this._websiteLnk.Location = new System.Drawing.Point(70, 45);
+            this._websiteLnk.Name = "_websiteLnk";
+            this._websiteLnk.Size = new System.Drawing.Size(125, 15);
+            this._websiteLnk.TabIndex = 7;
+            this._websiteLnk.TabStop = true;
+            this._websiteLnk.Text = "Visit sqlnotebook.com";
+            this._websiteLnk.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.WebsiteLnk_LinkClicked);
             // 
             // _webBrowser
             // 
@@ -117,7 +119,7 @@
             this._webBrowser.MinimumSize = new System.Drawing.Size(20, 20);
             this._webBrowser.Name = "_webBrowser";
             this._webBrowser.ScriptErrorsSuppressed = true;
-            this._webBrowser.Size = new System.Drawing.Size(468, 226);
+            this._webBrowser.Size = new System.Drawing.Size(509, 287);
             this._webBrowser.TabIndex = 8;
             this._webBrowser.WebBrowserShortcutsEnabled = false;
             // 
@@ -130,7 +132,7 @@
             this.panel2.Controls.Add(this._webBrowser);
             this.panel2.Location = new System.Drawing.Point(-1, 72);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(470, 228);
+            this.panel2.Size = new System.Drawing.Size(511, 289);
             this.panel2.TabIndex = 9;
             // 
             // AboutForm
@@ -138,7 +140,7 @@
             this.AcceptButton = _okBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(468, 344);
+            this.ClientSize = new System.Drawing.Size(509, 405);
             this.Controls.Add(this.panel2);
             this.Controls.Add(_okBtn);
             this.Controls.Add(this.panel1);
@@ -162,10 +164,10 @@
 
         #endregion
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.LinkLabel _githubLnk;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.WebBrowser _webBrowser;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.LinkLabel _websiteLnk;
     }
 }
