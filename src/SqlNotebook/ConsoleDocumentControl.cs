@@ -107,7 +107,7 @@ namespace SqlNotebook {
                 _manager.Rescan();
                 return true;
             } catch (Exception ex) {
-                MessageDialog.ShowError(ParentForm, "Console Error", "An error occurred.", ex.Message);
+                MessageForm.ShowError(TopLevelControl, "Console Error", "An error occurred.", ex.Message);
                 return false;
             } finally {
                 _consoleTxt.ReadOnly = false;

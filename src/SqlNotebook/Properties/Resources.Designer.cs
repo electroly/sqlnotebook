@@ -163,6 +163,16 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Exclamation32 {
+            get {
+                object obj = ResourceManager.GetObject("Exclamation32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Folder {
             get {
                 object obj = ResourceManager.GetObject("Folder", resourceCulture);
@@ -191,10 +201,12 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033\deflangfe1033{\fonttbl{\f0\fswiss\fprq2\fcharset0 Calibri;}{\f1\fswiss\fprq2\fcharset0 MS Shell Dlg 2;}{\f2\fswiss\fprq2\fcharset1 Segoe UI Symbol;}{\f3\fnil\fcharset0 Calibri;}{\f4\fmodern\fprq1\fcharset0 Consolas;}}
+        ///   Looks up a localized string similar to {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033\deflangfe1033{\fonttbl{\f0\fnil\fcharset0 Arial;}{\f1\fswiss\fprq2\fcharset1 Segoe UI Symbol;}{\f2\fnil\fcharset0 Calibri;}}
         ///{\colortbl ;\red0\green0\blue0;\red0\green0\blue255;\red255\green0\blue0;}
-        ///{\*\generator Riched20 10.0.10586}{\*\mmathPr\mnaryLim0\mdispDef1\mwrapIndent1440 }\viewkind4\uc1 
-        ///\pard\nowidctlpar\cf1\b\f0\fs32 Getting Started with SQL Noteboo [rest of string was truncated]&quot;;.
+        ///{\*\generator Riched20 10.0.10586}{\*\mmathPr\mdispDef1\mwrapIndent1440 }\viewkind4\uc1 
+        ///\pard\nowidctlpar\cf1\b\fs32 Getting Started with SQL Notebook\cf0\b0\fs17\par
+        ///\fs16\par
+        ///\fs22 This notebook is an SQLite database. You can work with SQL tables stor [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GettingStartedRtf {
             get {
@@ -214,15 +226,15 @@ namespace SqlNotebook.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to body {
-        ///    font-family: Calibri;
-        ///    font-size: 10pt;
+        ///    font-family: Arial;
+        ///    font-size: 11pt;
         ///    padding-bottom: 50px;
         ///    padding-left: 10px;
         ///    max-width: 800px;
+        ///    line-height: 140%;
         ///}
-        ///pre, tt {
-        ///    font-family: Consolas;
-        ///    font-size: 9pt;
+        ///pre, tt, code {
+        ///    font-family: &quot;Consolas&quot;;
         ///}
         ///a {
         ///    text-decoration: none;
@@ -242,9 +254,7 @@ namespace SqlNotebook.Properties {
         ///div.caption {
         ///    font-size: 8pt;
         ///    font-style: italic;
-        ///    color: gray;
-        ///}
-        ///u [rest of string was truncated]&quot;;.
+        ///    color: gr [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HelpCss {
             get {
@@ -450,17 +460,23 @@ namespace SqlNotebook.Properties {
         ///a, a:visited { text-decoration: none; color: blue; }
         ///a:hover { text-decoration: underline; }
         ///&lt;/style&gt;
-        ///Third party licenses:
-        ///&lt;ul&gt;
-        ///&lt;li&gt;&lt;a href=&quot;#sqlite&quot;&gt;SQLite&lt;/a&gt;&lt;/li&gt;
-        ///&lt;li&gt;&lt;a href=&quot;#fatcow&quot;&gt;Free FatCow-Farm Fresh Icons&lt;/a&gt;&lt;/li&gt;
-        ///&lt;li&gt;&lt;a href=&quot;#dockpanelsuite&quot;&gt;DockPanelSuite&lt;/a&gt;&lt;/li&gt;
-        ///&lt;li&gt;&lt;a href=&quot;#sharpziplib&quot;&gt;SharpZipLib&lt;/a&gt;&lt;/li&gt;
-        ///&lt;li&gt;&lt;a href=&quot;#npoi&quot;&gt;NPOI&lt;/a&gt;&lt;/li&gt;        /// [rest of string was truncated]&quot;;.
+        ///SQL Notebook&lt;br&gt;
+        ///Copyright © 2016 Brian Luft&lt;br&gt;&lt;br&gt;
+        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &amp;quot;Software&amp;quot;), to deal in the Software without restriction, including  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ThirdPartyLicensesHtml {
             get {
                 return ResourceManager.GetString("ThirdPartyLicensesHtml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Warning32 {
+            get {
+                object obj = ResourceManager.GetObject("Warning32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

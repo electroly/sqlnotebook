@@ -392,7 +392,7 @@ namespace SqlNotebook {
                 DialogResult = DialogResult.OK;
                 GeneratedImportSql = GetImportSql();
             } else {
-                MessageDialog.ShowError(this, "Import Error", errorMessage);
+                MessageForm.ShowError(this, "Import Error", errorMessage);
             }
         }
     }

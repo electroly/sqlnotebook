@@ -105,10 +105,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.6.9.8\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
@@ -226,7 +222,7 @@
     <Compile Include="LoadingContainerControl.Designer.cs">
       <DependentUpon>LoadingContainerControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="MessageDialog.cs" />
+    <Compile Include="MessageForm.cs" />
     <Compile Include="NotebookManager.cs" />
     <Compile Include="NoteDocumentControl.cs">
       <SubType>UserControl</SubType>

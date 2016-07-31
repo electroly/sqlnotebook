@@ -29,7 +29,7 @@ namespace SqlNotebook {
             try {
                 schema = await Task.Run(() => DatabaseSchema.FromNotebook(manager.Notebook));
             } catch (Exception ex) {
-                MessageDialog.ShowError(owner,
+                MessageForm.ShowError(owner,
                     "Import Error",
                     "Failed to read the list of tables in the notebook.",
                     ex.Message);
@@ -51,7 +51,7 @@ namespace SqlNotebook {
                 manager.Rescan();
             } catch (Exception ex) {
                 manager.PopStatus();
-                MessageDialog.ShowError(owner, "Import Error", "The import failed.", ex.GetErrorMessage());
+                MessageForm.ShowError(owner, "Import Error", "The import failed.", ex.GetErrorMessage());
                 return false;
             }
 

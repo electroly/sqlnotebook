@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using SqlNotebook.Properties;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {
@@ -103,31 +103,22 @@ namespace SqlNotebook {
             // can't delete tables or views if an operation is in progress
             bool isTableOrView = type == NotebookItemType.Table || type == NotebookItemType.View;
             if (isTableOrView && _operationInProgress) {
-                MessageDialog.ShowError(_mainForm,
+                MessageForm.ShowError(_mainForm,
                     "Delete Item",
                     "Cannot delete tables or views while an operation is in progress.",
                     "Please wait until the current operation finishes, and then try again.");
                 return;
             }
 
-            var d = new TaskDialog {
-                Caption = "Delete Item",
-                InstructionText = $"Are you sure you want to delete\n\"{name}\"?",
-                StartupLocation = TaskDialogStartupLocation.CenterOwner,
-                OwnerWindowHandle = _mainForm.Handle,
-                Icon = TaskDialogStandardIcon.Warning,
-                Cancelable = true
+            var deleteBtn = "&Delete";
+            var d = new MessageForm {
+                Title = "Delete Item",
+                Message = $"Are you sure you want to delete \"{name}\"?",
+                Buttons = new[] { deleteBtn, "Cancel" },
+                Icon = Resources.Warning32
             };
-            var deleteBtn = new TaskDialogButton("delete", "&Delete");
-            deleteBtn.Click += (sender2, e2) => { d.Close(TaskDialogResult.Ok); };
-            var cancelBtn = new TaskDialogButton("cancel", "Cancel");
-            cancelBtn.Click += (sender2, e2) => { d.Close(TaskDialogResult.Cancel); };
-            d.Controls.Add(deleteBtn);
-            d.Controls.Add(cancelBtn);
-            using (d) {
-                if (d.Show() != TaskDialogResult.Ok) {
-                    return;
-                }
+            if (d.ShowDialog(this) != deleteBtn) {
+                return;
             }
 
             var item = new NotebookItem(type, name);
@@ -209,7 +200,7 @@ namespace SqlNotebook {
             // can't delete tables or views if an operation is in progress
             bool isTableOrView = type == NotebookItemType.Table || type == NotebookItemType.View;
             if (isTableOrView && _operationInProgress) {
-                MessageDialog.ShowError(_mainForm,
+                MessageForm.ShowError(_mainForm,
                     "Delete Item",
                     "Cannot rename tables or views while an operation is in progress.",
                     "Please wait until the current operation finishes, and then try again.");
@@ -219,7 +210,7 @@ namespace SqlNotebook {
             try {
                 _manager.RenameItem(new NotebookItem(type, lvi.Text), e.Label);
             } catch (Exception ex) {
-                MessageDialog.ShowError(ParentForm, "Rename Error", ex.Message);
+                MessageForm.ShowError(TopLevelControl, "Rename Error", ex.Message);
             }
         }
 

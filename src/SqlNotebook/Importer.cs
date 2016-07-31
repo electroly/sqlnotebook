@@ -167,7 +167,7 @@ namespace SqlNotebook {
             if (exception == null) {
                 _manager.SetDirty();
             } else {
-                MessageDialog.ShowError(_owner, "Import Error", "The import failed.", exception.Message);
+                MessageForm.ShowError(_owner, "Import Error", "The import failed.", exception.Message);
             }
         }
 
@@ -780,7 +780,7 @@ namespace SqlNotebook {
                 if (f.ResultException == null) {
                     successfulConnect = true;
                 } else {
-                    MessageDialog.ShowError(owner,
+                    MessageForm.ShowError(owner,
                         "Connection Error",
                         $"The connection to {ProductName} failed.",
                         f.ResultException.Message);

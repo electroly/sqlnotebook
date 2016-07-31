@@ -220,7 +220,7 @@ namespace SqlNotebook {
                 _manager.Rescan();
                 return true;
             } catch (Exception ex) {
-                MessageDialog.ShowError(ParentForm, "Script Error", "An error occurred.", ex.Message);
+                MessageForm.ShowError(TopLevelControl, "Script Error", "An error occurred.", ex.Message);
                 return false;
             }
         }

@@ -65,7 +65,7 @@ namespace SqlNotebook {
                     }
                     _grid.DataSource = dt;
                 } else {
-                    MessageDialog.ShowError(_mainForm, "Preview Table", "An error occurred.", exception.Message);
+                    MessageForm.ShowError(_mainForm, "Preview Table", "An error occurred.", exception.Message);
                 }
             };
         }

@@ -292,8 +292,10 @@ namespace SqlNotebook {
                     itemRec.Name = newName;
 
                     if (item.Type == NotebookItemType.Script) {
-                        var scriptParamRec = Notebook.UserData.ScriptParameters.Single(x => x.ScriptName == item.Name);
-                        scriptParamRec.ScriptName = newName;
+                        var scriptParamRec = Notebook.UserData.ScriptParameters.SingleOrDefault(x => x.ScriptName == item.Name);
+                        if (scriptParamRec != null) {
+                            scriptParamRec.ScriptName = newName;
+                        }
                     }
                     break;
 

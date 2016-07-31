@@ -23,7 +23,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.WindowsAPICodePack.Dialogs;
 using SqlNotebook.Properties;
 using SqlNotebookCore;
 using SqlNotebookScript.Interpreter;
@@ -328,7 +327,7 @@ namespace SqlNotebook {
                     break;
 
                 default:
-                    MessageDialog.ShowError(this, "Import Error", $"The file type \"{extension}\" is not supported.");
+                    MessageForm.ShowError(this, "Import Error", $"The file type \"{extension}\" is not supported.");
                     break;
             }
         }
@@ -358,7 +357,7 @@ namespace SqlNotebook {
         }
 
         private void ErrorBox(string title, string message, string details = null) {
-            MessageDialog.ShowError(this, title, message, details);
+            MessageForm.ShowError(this, title, message, details);
         }
 
         private void NewConsoleBtn_Click(object sender, EventArgs e) {
@@ -495,35 +494,22 @@ namespace SqlNotebook {
 
             if (_isDirty) {
                 var shortFilename = _isNew ? "Untitled" : Path.GetFileNameWithoutExtension(_filePath);
-                var d = new TaskDialog {
-                    Caption = "SQL Notebook",
-                    InstructionText = $"Do you want to save changes to {shortFilename}?",
-                    OwnerWindowHandle = Handle,
-                    StartupLocation = TaskDialogStartupLocation.CenterOwner
+
+                var saveBtn = "&Save";
+                var dontSaveBtn = "Do&n't Save";
+                var cancelBtn = "Cancel";
+                var d = new MessageForm {
+                    Title = "SQL Notebook",
+                    Message = $"Do you want to save changes to {shortFilename}?",
+                    Buttons = new[] { saveBtn, dontSaveBtn, cancelBtn }
                 };
-                using (d) {
-                    var saveBtn = new TaskDialogButton("save", "&Save");
-                    saveBtn.Click += (sender2, e2) => d.Close(TaskDialogResult.Yes);
-                    d.Controls.Add(saveBtn);
-
-                    var dontSaveBtn = new TaskDialogButton("no", "Do&n't Save");
-                    dontSaveBtn.Click += (sender2, e2) => d.Close(TaskDialogResult.No);
-                    d.Controls.Add(dontSaveBtn);
-
-                    var cancelBtn = new TaskDialogButton("cancel", "Cancel");
-                    cancelBtn.Click += (sender2, e2) => d.Close(TaskDialogResult.Cancel);
-                    d.Controls.Add(cancelBtn);
-
-                    switch (d.Show()) {
-                        case TaskDialogResult.Yes:
-                            if (!SaveOrSaveAs()) {
-                                e.Cancel = true;
-                            }
-                            break;
-                        case TaskDialogResult.Cancel:
-                            e.Cancel = true;
-                            return;
+                var btn = d.ShowDialog(this);
+                if (btn == saveBtn) {
+                    if (!SaveOrSaveAs()) {
+                        e.Cancel = true;
                     }
+                } else if (btn == null || btn == cancelBtn) {
+                    e.Cancel = true;
                 }
             }
         }
