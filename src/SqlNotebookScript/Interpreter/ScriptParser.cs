@@ -170,16 +170,21 @@ namespace SqlNotebookScript.Interpreter {
                 throw new SyntaxException(new[] { "string", "identifier" }, q);
             }
 
-            while (IsVariableName(q.PeekToken()?.GetUnescapedText() ?? "") && q.Peek(1) == "=") {
-                var arg = new Ast.ArgumentPair();
-                arg.Name = ParseVariableName(q);
-                q.Take("=");
-                if (q.Peek() == "default") {
-                    q.Take();
-                } else {
-                    arg.Value = ParseExpr(q);
+            if (IsVariableName(q.PeekToken()?.GetUnescapedText() ?? "") && q.Peek(1) == "=") {
+                while (true) {
+                    var arg = new Ast.ArgumentPair();
+                    arg.Name = ParseVariableName(q);
+                    q.Take("=");
+                    if (q.Peek() == "default") {
+                        q.Take();
+                    } else {
+                        arg.Value = ParseExpr(q);
+                    }
+                    stmt.Arguments.Add(arg);
+                    if (!q.TakeMaybe(",")) {
+                        break;
+                    }
                 }
-                stmt.Arguments.Add(arg);
             }
 
             ConsumeSemicolon(q);
