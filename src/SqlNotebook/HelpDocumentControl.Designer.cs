@@ -59,13 +59,12 @@
             // 
             // _homeBtn
             // 
-            this._homeBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this._homeBtn.Image = ((System.Drawing.Image)(resources.GetObject("_homeBtn.Image")));
             this._homeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._homeBtn.Name = "_homeBtn";
             this._homeBtn.Padding = new System.Windows.Forms.Padding(3);
-            this._homeBtn.Size = new System.Drawing.Size(26, 26);
-            this._homeBtn.Text = "toolStripButton11";
+            this._homeBtn.Size = new System.Drawing.Size(66, 26);
+            this._homeBtn.Text = "Home";
             this._homeBtn.Click += new System.EventHandler(this.HomeBtn_Click);
             // 
             // _backBtn

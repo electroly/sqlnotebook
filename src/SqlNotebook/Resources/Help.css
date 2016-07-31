@@ -1,13 +1,12 @@
 body {
-    font-family: Calibri;
+    font-family: Arial;
     font-size: 10pt;
     padding-bottom: 50px;
     padding-left: 10px;
     max-width: 800px;
 }
-pre, tt {
-    font-family: Consolas;
-    font-size: 9pt;
+pre, tt, code {
+    font-family: "Consolas";
 }
 a {
     text-decoration: none;

@@ -256,7 +256,11 @@ namespace SqlNotebook {
                     bytes = Resources.LinkGo32Png;
                 } else if (rawUrl.StartsWith("/search?q=")) {
                     var keyword = rawUrl.Substring("/search?q=".Length);
-                    bytes = Encoding.UTF8.GetBytes(header + BuildSearchHtml(keyword));
+                    if (keyword.Trim().Any()) {
+                        bytes = Encoding.UTF8.GetBytes(header + BuildSearchHtml(keyword));
+                    } else {
+                        bytes = Encoding.UTF8.GetBytes(header + _indexHtml);
+                    }
                 } else if (rawUrl.StartsWith("/art/")) {
                     bytes = null;
                     try {
@@ -324,24 +328,19 @@ namespace SqlNotebook {
             const string PAGE_TMPL =
                 @"<title>Help Index</title>
                 <style>
-                    img.header-icon {{
+                    img.header-icon {
                         padding-top: 5px;
                         vertical-align: middle;
                         margin-right: 10px;
-                    }}
-                    h1 {{
+                    }
+                    h1 {
                         margin-bottom: -12px;
-                    }}
+                    }
+                    ul {
+                        list-style-type: square;
+                    }
                 </style>
-                <h2><img src=""/link.png"" class=""header-icon"">Quick Links</h2>
-                  <ul>
-                    <li><a href='/sqlite-doc/lang.html'>Basic SQL Syntax</a></li>
-                    <li><a href='/sqlite-doc/lang_corefunc.html'>SQLite Functions</a></li>
-                    <li><a href='/sqlite-doc/lang_datefunc.html'>Date & Time Functions</a></li>
-                    <li><a href='/sqlite-doc/lang_aggfunc.html'>Aggregate Functions</a></li>
-                    <li><a href='/sqlite-doc/json1.html'>JSON Functions</a></li>
-                </ul>
-                {0}";
+                ";
             const string BOOK_TMPL = "<h2><img src=\"/book.png\" class=\"header-icon\"><span class=\"book-title\">{0}</span></h2><ul>{1}</ul>";
             const string DOC_TMPL = "<li><a href=\"{0}\">{1}</a></li>";
 
@@ -364,7 +363,7 @@ namespace SqlNotebook {
                 }
             }
 
-            return string.Format(PAGE_TMPL, string.Join("",
+            return PAGE_TMPL + string.Join("",
                 from def in groupDefs
                 group def by def.Book into grp
                 orderby grp.Key
@@ -372,7 +371,7 @@ namespace SqlNotebook {
                     from def in grp
                     select $"<li><b style=\"font-size: 14px;\">{def.Group}</b><ul style=\"padding-top: 5px; padding-bottom: 10px;\">{def.Html}</ul></li>")
                 select string.Format(BOOK_TMPL, WebUtility.HtmlEncode(grp.Key), bookHtml)
-            ));
+            );
         }
 
         private string BuildSearchHtml(string keyword) { // run from notebook thread
