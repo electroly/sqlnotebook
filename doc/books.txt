@@ -1,7 +1,7 @@
+Group#SQL Notebook Help#Import and Export Statements#^(IMPORT|EXPORT).*Statement$
+Group#SQL Notebook Help#File I/O Functions#^(READ_|LIST_FILES|LIST_XLS|DOWNLOAD).*Function$
 Group#SQL Notebook Help#Array Access Functions#^ARRAY.*Function$
 Group#SQL Notebook Help#Date and Time Functions#^(DATE|DAY|EOMONTH|GETDATE|GETUTCDATE|ISDATE|MONTH|SWITCHOFFSET).*Function$
-Group#SQL Notebook Help#File I/O Functions#^(READ_|LIST_FILES|DOWNLOAD).*Function$
-Group#SQL Notebook Help#Import and Export Statements#^IMPORT.*Statement$
 Group#SQL Notebook Help#Other#.*
 Group#SQLite Documentation#Query Language#(^SQLite Query Language)|(^Query Language)|(^Pragma statements)|(^EXPLAIN)|(JSON1)
 Group#SQLite Documentation#SQLite Syntax#(^SQLite Syntax)|(^Syntax Diagrams)|(^List of SQLite Syntax)

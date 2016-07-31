@@ -35,6 +35,7 @@ namespace SqlNotebook {
         private readonly HttpServer _httpServer;
         private string _indexHtml = "";
         private string _booksTxt;
+        private Dictionary<string, byte[]> _artFiles = new Dictionary<string, byte[]>(); // filename -> png data
 
         public ushort PortNumber { get; private set; }
 
@@ -63,6 +64,7 @@ namespace SqlNotebook {
 
         private void InitNewNotebook(string filePath) {
             var sqliteDocAmalgamation = ReadSqliteDocAmalgamationFromResources();
+            _artFiles = sqliteDocAmalgamation.SqlNotebookArt;
 
             var sqliteFileSeparator = $"{Environment.NewLine}--[file separator]--{Environment.NewLine}";
             var sqliteFiles =
@@ -76,12 +78,12 @@ namespace SqlNotebook {
 
                 _notebook.Execute(
                     @"CREATE TABLE docs (
-                            id INTEGER PRIMARY KEY,
-                            path TEXT NOT NULL,
-                            book TEXT NOT NULL, 
-                            title TEXT NOT NULL,
-                            html TEXT NOT NULL
-                        )");
+                        id INTEGER PRIMARY KEY,
+                        path TEXT NOT NULL,
+                        book TEXT NOT NULL, 
+                        title TEXT NOT NULL,
+                        html TEXT NOT NULL
+                    )");
                 _notebook.Execute("CREATE VIRTUAL TABLE docs_fts USING fts5 (id, title, text)");
                 int i = 0;
                 for (; i < sqliteFiles.Count; i++) {
@@ -127,6 +129,7 @@ namespace SqlNotebook {
         private sealed class DocAmalgamation {
             public string SqliteDoc { get; set; }
             public Dictionary<string, string> SqlNotebookDoc { get; set; } = new Dictionary<string, string>();
+            public Dictionary<string, byte[]> SqlNotebookArt { get; set; } = new Dictionary<string, byte[]>();
         }
 
         private static DocAmalgamation ReadSqliteDocAmalgamationFromResources() {
@@ -135,16 +138,24 @@ namespace SqlNotebook {
             using (var zipStream = new MemoryStream(Resources.SqliteDocZip))
             using (var archive = new ZipArchive(zipStream)) {
                 foreach (var entry in archive.Entries) {
-                    string content;
-                    using (var txtStream = entry.Open())
-                    using (var reader = new StreamReader(txtStream, Encoding.UTF8)) {
-                        content = reader.ReadToEnd();
-                    }
-
-                    if (entry.Name == "sqlite-doc.txt") {
-                        doc.SqliteDoc = content;
+                    if (entry.Name.EndsWith(".png")) {
+                        using (var entryStream = entry.Open())
+                        using (var memoryStream = new MemoryStream()) {
+                            entryStream.CopyTo(memoryStream);
+                            doc.SqlNotebookArt["/art/" + entry.Name] = memoryStream.ToArray();
+                        }
                     } else {
-                        doc.SqlNotebookDoc[entry.Name] = content;
+                        string content;
+                        using (var txtStream = entry.Open())
+                        using (var reader = new StreamReader(txtStream, Encoding.UTF8)) {
+                            content = reader.ReadToEnd();
+                        }
+
+                        if (entry.Name == "sqlite-doc.txt") {
+                            doc.SqliteDoc = content;
+                        } else {
+                            doc.SqlNotebookDoc[entry.Name] = content;
+                        }
                     }
                 }
             }
@@ -229,6 +240,8 @@ namespace SqlNotebook {
                 } else if (rawUrl.StartsWith("/search?q=")) {
                     var keyword = rawUrl.Substring("/search?q=".Length);
                     bytes = Encoding.UTF8.GetBytes(header + BuildSearchHtml(keyword));
+                } else if (rawUrl.StartsWith("/art/")) {
+                    bytes = _artFiles.GetValueOrDefault(rawUrl);
                 } else {
                     var path = "." + rawUrl.Replace("/", "\\");
                     string html = null;
@@ -242,7 +255,7 @@ namespace SqlNotebook {
                     }
                     bytes = Encoding.UTF8.GetBytes(header + html);
                 }
-                e.Result = bytes;
+                e.Result = bytes ?? new byte[0];
             };
             return server;
         }

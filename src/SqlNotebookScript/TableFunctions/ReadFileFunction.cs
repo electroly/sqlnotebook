@@ -27,7 +27,7 @@ namespace SqlNotebookScript.TableFunctions {
         public override int HiddenColumnCount => 2;
 
         public override string CreateTableSql =>
-            "CREATE TABLE read_file_lines (_file_path HIDDEN, _encoding HIDDEN, number PRIMARY KEY, line)";
+            "CREATE TABLE read_file (_file_path HIDDEN, _encoding HIDDEN, number PRIMARY KEY, line)";
 
         public override IEnumerable<object[]> Execute(object[] hiddenValues) {
             var filePathObj = hiddenValues[0];

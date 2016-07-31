@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>LIST_XLS_WORKSHEETS Function</title>
+
+
+</head>
+
+
+<body>
+
+<h1><code>LIST_XLS_WORKSHEETS</code> Function</h1>
+
+<p>
+Returns a table containing the names and index numbers of the
+worksheets in a particular Excel workbook. &nbsp;The workbook may
+be in <code>.XLS</code> or <code>.XLSX</code>
+format. This is a table-valued function that can be used in the <code>FROM</code>
+clause of a <code>SELECT</code> statement and can
+participate in <code>JOIN</code>s as if it were a table.
+</p>
+
+<h2>Syntax</h2>
+
+<blockquote> <code>LIST_XLS_WORKSHEETS(<i>file-path</i>)</code>
+</blockquote>
+
+<h2>Arguments</h2>
+
+<ul class="args">
+
+  <li> <b>file-path</b> (string)<br>
+
+The absolute path of the <code>.XLS</code> or <code>.XLSX</code>
+workbook to inspect. </li>
+
+</ul>
+
+<h2>Return Value</h2>
+
+<blockquote>
+A table with the following columns:
+  <table>
+
+    <thead> <tr>
+
+      <th style="text-align: left;">Column name</th>
+
+      <th style="text-align: left;">Description</th>
+
+      <th style="text-align: left;">Example value</th>
+
+    </tr>
+
+    </thead> <tbody>
+
+      <tr>
+
+        <td><code>number</code></td>
+
+        <td>1-based index</td>
+
+        <td>1</td>
+
+      </tr>
+
+      <tr>
+
+        <td><code>name</code></td>
+
+        <td>Worksheet name</td>
+
+        <td>"Sheet1"</td>
+
+      </tr>
+
+    </tbody>
+  </table>
+
+</blockquote>
+
+<h2>Examples</h2>
+
+<ul class="examples">
+
+  <li> <code>SELECT * FROM
+LIST_XLS_WORKSHEETS('C:\Workbook.xls');</code><br>
+
+Returns a table listing all the worksheets in the "Workbook.xls" file. </li>
+
+  <li> <code>SELECT name FROM
+LIST_XLS_WORKSHEETS('C:\Workbook.xls') WHERE number = 2;</code> <br>
+
+Returns the name of the second worksheet in "Workbook.xls", or an empty
+table if there are fewer than 2 worksheets in the workbook.</li>
+
+</ul>
+
+<br>
+
+</body>
+</html>

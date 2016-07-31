@@ -70,7 +70,12 @@ namespace SqlNotebookScript.Interpreter {
                         break;
 
                     case "LAST_ROW":
-                        _lastRowIndex = _stmt.OptionsList.GetOptionInt(option, _runner, _env, 1, minValue: 1) - 1;
+                        var lastRowNum = _stmt.OptionsList.GetOptionInt(option, _runner, _env, 0, minValue: 0);
+                        if (lastRowNum == 0) {
+                            _lastRowIndex = null;
+                        } else {
+                            _lastRowIndex = lastRowNum - 1;
+                        }
                         break;
 
                     case "FIRST_COLUMN":
@@ -83,7 +88,12 @@ namespace SqlNotebookScript.Interpreter {
                         break;
 
                     case "LAST_COLUMN":
-                        index = XlsUtil.ColumnRefToIndex(_stmt.OptionsList.GetOption<object>(option, _runner, _env, null));
+                        var lastColumnValue = _stmt.OptionsList.GetOption<object>(option, _runner, _env, null);
+                        if (lastColumnValue.Equals(0)) {
+                            _lastColumnIndex = null;
+                            break;
+                        }
+                        index = XlsUtil.ColumnRefToIndex(lastColumnValue);
                         if (index.HasValue) {
                             _lastColumnIndex = index.Value;
                         } else {

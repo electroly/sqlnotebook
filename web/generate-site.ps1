@@ -25,7 +25,12 @@ function FormatPage($title, $content, $metaDesc) {
     } else {
         $title = $title + " - SQL Notebook"
     }
-    return $tmpl.Replace("<!--TITLE-->", $title).Replace("<!--CONTENT-->", $content).Replace("<!--HEADER-->", $header).Replace("<!--METADESC-->", $metaDesc)
+    $result = $tmpl.Replace("<!--TITLE-->", $title).Replace("<!--CONTENT-->", $content).Replace("<!--HEADER-->", $header).Replace("<!--METADESC-->", $metaDesc)
+
+    if ($metaDesc -eq "") {
+        $result = $result -replace "<meta name=[^<]*>",""
+    }
+    return $result
 }
 
 function FormatMdPage($title, $mdPath, $metaDesc) {
@@ -34,7 +39,7 @@ function FormatMdPage($title, $mdPath, $metaDesc) {
 }
 
 function WriteDocFiles() {
-    $docFilenames = ls ..\doc | select -expand Name
+    $docFilenames = ls -file ..\doc | select -expand Name
     $docPath = (Resolve-Path ..\doc)
     $sitePath = (Resolve-Path .\site)
     foreach ($docFilename in $docFilenames) {
@@ -62,7 +67,7 @@ function WriteDocFiles() {
         $html = $html -replace "</body>",""
 
         $siteFilePath = [System.IO.Path]::Combine($sitePath, $docFilename)
-        WriteFile $siteFilePath (FormatPage $title $html "SQL Notebook online documentation.")
+        WriteFile $siteFilePath (FormatPage $title $html "")
     }
 }
 
@@ -157,6 +162,7 @@ New-Item temp -Type Directory -ErrorAction SilentlyContinue
 
 copy .\sqlnotebook.css .\site\
 copy .\art\*.* .\site\art\
+copy ..\doc\art\*.png .\site\art\
 copy .\error.html .\site\
 copy .\favicon.ico .\site\
 copy .\robots.txt .\site\

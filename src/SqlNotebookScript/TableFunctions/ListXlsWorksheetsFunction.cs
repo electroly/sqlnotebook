@@ -37,7 +37,7 @@ namespace SqlNotebookScript.TableFunctions {
 
             try {
                 return XlsUtil.ReadWorksheetNames(filePath).Select((name, i) => new object[] {
-                    filePath, i, name
+                    filePath, i + 1, name
                 }).ToList();
             } catch (Exception ex) {
                 throw new Exception($"{Name.ToUpper()}: {ex.Message}");

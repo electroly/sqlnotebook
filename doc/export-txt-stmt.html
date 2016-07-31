@@ -1,54 +1,96 @@
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>EXPORT TXT Statement</title>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
 
-<h1><code>EXPORT</code> <code>TXT</code> Statement</h1>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>EXPORT TXT Statement</title>
+
+
+</head>
+
+
+
+<body>
+
+<h1><code>EXPORT</code> <code>TXT</code>
+Statement</h1>
+
 <p>
-Writes a text file (.TXT) to disk from a <code>SELECT</code> query.  If the query has multiple columns, they are concatenated together with no separator.  The text is not escaped or quoted.
+Writes a text file (.TXT) to disk from a <code>SELECT</code>
+query. If the query has multiple columns, they are concatenated
+together with no separator. The text is not escaped or quoted.
 </p>
 
 <h2>Syntax</h2>
+
 <p>
-<a href="https://sqlnotebook.com/art/doc-export-txt-stmt-2.png"><img src="https://sqlnotebook.com/art/doc-export-txt-stmt-2.png" alt="Syntax for the EXPORT TXT statement" class="diagram" onload="this.width *= 0.75;"></a>
-</p>
+<img style="width: 458px; height: 155px;" alt="Syntax for the EXPORT TXT statement." src="art/doc-export-txt-stmt.png"></p>
 
 <h2>Arguments</h2>
+
 <ul class="args">
-    <li>
-        <b>filename</b> (string expression)<br>
-        The absolute path to the text file to write.  The file does not need to exist.  If it does exist, by default new lines will be appended to it.  Use the <code>TRUNCATE_EXISTING_FILE</code> option to overwrite the existing file.
-    </li>
-    <li>
-        <b>select-stmt</b><br>
-        A <code>SELECT</code> statement that provides the rows to write to the file.
-    </li>
+
+  <li> <b>filename</b> (string expression)<br>
+
+The absolute path to the text file to write. The file does not need to
+exist. If it does exist, by default new lines will be appended to it.
+Use the <code>TRUNCATE_EXISTING_FILE</code> option to
+overwrite the existing file. </li>
+
+  <li> <b>select-stmt</b><br>
+
+A <code>SELECT</code> statement that provides the rows to
+write to the file. </li>
+
 </ul>
 
 <h2>Options</h2>
+
 <ul class="opts">
-    <li>
-        <b><code>TRUNCATE_EXISTING_FILE</code></b> (0 or 1, default: 0)<br>
-        If the output file exists, this option indicates whether the existing file contents should be deleted.
-        <ul class="enum">
-            <li>0 = Keep existing file data and append new lines</li>
-            <li>1 = Delete existing file data</li>
-        </ul>
-    </li>
-    <li>
-        <b><code>FILE_ENCODING</code></b> (integer 0-65535, default: 0)<br>
-        Indicates the text encoding to use when writing the text file.  Specify 0 to use UTF-8.  Any nonzero integer is treated as a Windows code page number.
-    </li>
+
+  <li> <b><code>TRUNCATE_EXISTING_FILE</code></b>
+(0 or 1, default: 0)<br>
+
+If the output file exists, this option indicates whether the existing
+file contents should be deleted.
+    <ul class="enum">
+
+      <li>0 = Keep existing file data and append new lines</li>
+
+      <li>1 = Delete existing file data</li>
+
+    </ul>
+
+  </li>
+
+  <li> <b><code>FILE_ENCODING</code></b>
+(integer 0-65535, default: 0)<br>
+
+Indicates the text encoding to use when writing the text file. Specify
+0 to use UTF-8. Any nonzero integer is treated as a Windows code page
+number. </li>
+
 </ul>
 
 <h2>Examples</h2>
+
 <ol class="examples">
-    <li>
-        <code>EXPORT TXT 'C:\MyFile.txt' FROM (SELECT * FROM mytable);</code><br>
-        Writes the contents of <code>mytable</code> into a file called "MyFile.txt".  Because no options are specified, the lines are appended to "MyFie.txt" and the UTF-8 encoding is used.
-    </li>
-    <li>
-        <code>EXPORT TXT 'C:\MyFile.txt' FROM (SELECT * FROM mytable) OPTIONS (TRUNCATE_EXISTING_FILE: 1);</code><br>
-        Overwrite "MyFile.txt" if it already exists.
-    </li>
+
+  <li> <code>EXPORT TXT 'C:\MyFile.txt' FROM (SELECT *
+FROM mytable);</code><br>
+
+Writes the contents of <code>mytable</code> into a file
+called "MyFile.txt". Because no options are specified, the lines are
+appended to "MyFie.txt" and the UTF-8 encoding is used. </li>
+
+  <li> <code>EXPORT TXT 'C:\MyFile.txt' FROM (SELECT *
+FROM mytable) OPTIONS (TRUNCATE_EXISTING_FILE: 1);</code><br>
+
+Overwrite "MyFile.txt" if it already exists. </li>
+
 </ol>
 
 <br>
+
+</body>
+</html>

@@ -24,13 +24,22 @@ try {
 	
 	# add our own documentation to the zip
 	$docPath = Resolve-Path ([System.IO.Path]::Combine($path, "..\..\..\doc"))
-	$docFilenames = ls $docPath | Select -Expand "Name"
+	$docFilenames = ls -file $docPath | Select -Expand "Name"
 	ForEach ($docFilename in $docFilenames) {
-		$data = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($docPath, $docFilename))
+		$data = [System.IO.File]::ReadAllBytes([System.IO.Path]::Combine($docPath, $docFilename))
 		$entry = $archive.CreateEntry($docFilename, [System.IO.Compression.CompressionLevel]::Optimal)
 		$stream = $entry.Open()
-		$bytes = $utf8.GetBytes($data)
-		$stream.Write($bytes, 0, $bytes.Length)
+		$stream.Write($data, 0, $data.Length)
+		$stream.Close()
+	}
+
+    $docArtPath = Resolve-Path ([System.IO.Path]::Combine($path, "..\..\..\doc\art"))
+	$docArtFilenames = ls -file ([System.IO.Path]::Combine($path, "..\..\..\doc\art\*.png")) | Select -Expand "Name"
+	ForEach ($docArtFilename in $docArtFilenames) {
+		$data = [System.IO.File]::ReadAllBytes([System.IO.Path]::Combine($docArtPath, $docArtFilename))
+		$entry = $archive.CreateEntry($docArtFilename, [System.IO.Compression.CompressionLevel]::NoCompression)
+		$stream = $entry.Open()
+		$stream.Write($data, 0, $data.Length)
 		$stream.Close()
 	}
 
