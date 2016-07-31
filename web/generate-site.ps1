@@ -157,12 +157,10 @@ function GenerateDocMd() {
 }
 
 function GenerateLicenseMd() {
-    $html = (MdToHtml ..\license.md)
-    $thirdPartyHtml = (ReadFile ..\src\SqlNotebook\Resources\ThirdPartyLicenses.html)
-    $thirdPartyHtml = $thirdPartyHtml -replace "<!DOCTYPE html>",""
-    $thirdPartyHtml = $thirdPartyHtml -replace "<meta[^>]*>",""
-    $thirdPartyHtml = $thirdPartyHtml -replace "<style>[^<]*</style>",""
-    $html += "<br><hr><br>" + $thirdPartyHtml
+    $html = (ReadFile ..\src\SqlNotebook\Resources\ThirdPartyLicenses.html)
+    $html = $html -replace "<!DOCTYPE html>",""
+    $html = $html -replace "<meta[^>]*>",""
+    $html = $html -replace "<style>[^<]*</style>",""
     return (FormatPage "License" $html "SQL Notebook is freely available under the MIT license.")
 }
 
