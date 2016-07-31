@@ -1,10 +1,9 @@
 # Documentation
-SQL Notebook ships with an in-app searchable help system that includes all of the documentation listed here.  Press F1 inside the application to see the list of help topics.
+SQL Notebook ships with an in-app searchable help system that includes all of the documentation listed here. Press F1 inside the application to see the list of help topics.
 
-There is extensive documentation available for SQLite, the engine underlying SQL Notebook.    
-<a href="https://www.sqlite.org/docs.html">Click here to view the SQLite documentation</a>.
+There is extensive documentation available for SQLite, the engine that provides the foundation for SQL Notebook. <a href="https://www.sqlite.org/docs.html">Click here to view the SQLite documentation</a>.
 <br><br>
 
-### SQL Notebook Help
+## SQL Notebook Help
 #INSERT-DOC-INDEX-HERE
 <br><br>

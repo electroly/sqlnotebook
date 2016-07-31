@@ -260,10 +260,8 @@ namespace SqlNotebookScript.Interpreter {
 
         private void ExecuteWhileStmt(Ast.WhileStmt stmt, ScriptEnv env) {
             long condition;
-            bool skipConditionCheck = false; // "continue" skips the condition check
             do {
-                condition = skipConditionCheck ? 1 : EvaluateExpr<long>(stmt.Condition, env);
-                skipConditionCheck = false;
+                condition = EvaluateExpr<long>(stmt.Condition, env);
                 if (condition == 1) {
                     ExecuteBlock(stmt.Block, env);
                     if (env.DidReturn || env.DidThrow) {
@@ -273,7 +271,6 @@ namespace SqlNotebookScript.Interpreter {
                         break;
                     } else if (env.DidContinue) {
                         env.DidContinue = false;
-                        skipConditionCheck = true;
                     }
                 } else if (condition != 0) {
                     throw new ScriptException(
@@ -333,10 +330,14 @@ namespace SqlNotebookScript.Interpreter {
         }
 
         private void ExecuteThrowStmt(Ast.ThrowStmt stmt, ScriptEnv env) {
-            var errorNumber = EvaluateExpr(stmt.ErrorNumber, env);
-            var errorMessage = EvaluateExpr(stmt.Message, env); ;
-            var errorState = EvaluateExpr(stmt.State, env);
-            Throw(env, errorNumber, errorMessage, errorState);
+            if (stmt.HasErrorValues) {
+                var errorNumber = EvaluateExpr(stmt.ErrorNumber, env);
+                var errorMessage = EvaluateExpr(stmt.Message, env); ;
+                var errorState = EvaluateExpr(stmt.State, env);
+                Throw(env, errorNumber, errorMessage, errorState);
+            } else {
+                env.DidThrow = true;
+            }
         }
 
         private void Throw(ScriptEnv env, object errorNumber, object errorMessage, object errorState) {

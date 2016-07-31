@@ -77,3 +77,15 @@ table {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+code {
+    font-size: 11pt;
+}
+h1, h1 code {
+    font-size: 24px;
+}
+h2 {
+    font-size: 20px;
+}
+h3 {
+    font-size: 18px;
+}

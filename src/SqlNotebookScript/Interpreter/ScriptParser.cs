@@ -200,6 +200,7 @@ namespace SqlNotebookScript.Interpreter {
             var stmt = new Ast.ThrowStmt { SourceToken = q.SourceToken };
             q.Take("throw");
             if (PeekExpr(q)) {
+                stmt.HasErrorValues = true;
                 stmt.ErrorNumber = ParseExpr(q);
                 q.Take(",");
                 stmt.Message = ParseExpr(q);

@@ -1,0 +1,8 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>CONTINUE Statement</title></head>
+<body>
+<h1><code>CONTINUE</code> Statement
+</h1>Restarts the enclosing <code>WHILE</code> loop. It is an error to call <code>CONTINUE</code> outside of a <code>WHILE</code> loop.<br><h2>Syntax</h2>
+<p style="margin-left: 40px;">
+<code>CONTINUE</code></p><h2>Examples</h2><ul class="examples"><li><code>DECLARE @counter = 0;<br>WHILE @counter &lt; 10 BEGIN<br>&nbsp; &nbsp; SET @counter = @counter + 1;<br>&nbsp; &nbsp; IF @counter % 2 = 0<br>&nbsp; &nbsp; &nbsp; &nbsp; CONTINUE;<br>&nbsp; &nbsp; PRINT @counter;<br>END</code><br>Prints the odd numbers from 1 to 9 in increasing order.</li></ul></body></html>

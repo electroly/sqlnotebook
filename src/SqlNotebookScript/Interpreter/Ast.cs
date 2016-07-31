@@ -181,6 +181,7 @@ namespace SqlNotebookScript.Interpreter.Ast {
     }
 
     public sealed class ThrowStmt : Stmt {
+        public bool HasErrorValues { get; set; }
         public Expr ErrorNumber { get; set; }
         public Expr Message { get; set; }
         public Expr State { get; set; }

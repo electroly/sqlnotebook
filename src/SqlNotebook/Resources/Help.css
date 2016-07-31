@@ -1,9 +1,10 @@
 body {
     font-family: Arial;
-    font-size: 10pt;
+    font-size: 11pt;
     padding-bottom: 50px;
     padding-left: 10px;
     max-width: 800px;
+    line-height: 140%;
 }
 pre, tt, code {
     font-family: "Consolas";
@@ -50,4 +51,16 @@ table {
     border-collapse: collapse;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+h1 {
+    font-size: 26px;
+}
+h1 code {
+    font-size: 28px;
+}
+h2 {
+    font-size: 22px;
+}
+h3 {
+    font-size: 18px;
 }

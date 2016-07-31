@@ -45,6 +45,11 @@ namespace SqlNotebookScript.ScalarFunctions {
         public override double Execute(double x) => Math.Acos(x);
     }
 
+    public sealed class AsinFunction : MonadicMathFunction {
+        public override string Name => "asin";
+        public override double Execute(double x) => Math.Asin(x);
+    }
+
     public sealed class AtanFunction : MonadicMathFunction {
         public override string Name => "atan";
         public override double Execute(double x) => Math.Atan(x);
@@ -98,6 +103,11 @@ namespace SqlNotebookScript.ScalarFunctions {
     public sealed class RoundFunction : MonadicMathFunction {
         public override string Name => "round";
         public override double Execute(double x) => Math.Round(x);
+    }
+
+    public sealed class SignFunction : MonadicMathFunction {
+        public override string Name => "sign";
+        public override double Execute(double x) => Math.Sign(x);
     }
 
     public sealed class SinFunction : MonadicMathFunction {
