@@ -34,8 +34,6 @@ namespace SqlNotebook {
         private readonly Notebook _notebook;
         private readonly HttpServer _httpServer;
         private string _indexHtml = "";
-        private string _booksTxt;
-        private Dictionary<string, byte[]> _artFiles = new Dictionary<string, byte[]>(); // filename -> png data
 
         public ushort PortNumber { get; private set; }
 
@@ -64,7 +62,6 @@ namespace SqlNotebook {
 
         private void InitNewNotebook(string filePath) {
             var sqliteDocAmalgamation = ReadSqliteDocAmalgamationFromResources();
-            _artFiles = sqliteDocAmalgamation.SqlNotebookArt;
 
             var sqliteFileSeparator = $"{Environment.NewLine}--[file separator]--{Environment.NewLine}";
             var sqliteFiles =
@@ -84,6 +81,10 @@ namespace SqlNotebook {
                         title TEXT NOT NULL,
                         html TEXT NOT NULL
                     )");
+                _notebook.Execute(
+                    @"CREATE TABLE books_txt (number INTEGER PRIMARY KEY, line TEXT NOT NULL)");
+                _notebook.Execute(
+                    @"CREATE TABLE art (file_path TEXT PRIMARY KEY, content BLOB)");
                 _notebook.Execute("CREATE VIRTUAL TABLE docs_fts USING fts5 (id, title, text)");
                 int i = 0;
                 for (; i < sqliteFiles.Count; i++) {
@@ -104,7 +105,13 @@ namespace SqlNotebook {
                     var filename = pair.Key;
                     var content = pair.Value;
                     if (filename.EndsWith("books.txt")) {
-                        _booksTxt = content;
+                        int lineNum = 0;
+                        foreach (var line in content.Split('\n')) {
+                            _notebook.Execute("INSERT INTO books_txt VALUES (@number, @line)", new Dictionary<string, object> {
+                                ["@number"] = lineNum++,
+                                ["@line"] = line.Trim()
+                            });
+                        }
                         continue;
                     }
 
@@ -118,6 +125,16 @@ namespace SqlNotebook {
                         ["@id"] = i, ["@title"] = title, ["@text"] = text
                     });
                     i++;
+                }
+
+                // SQL Notebook art files
+                foreach (var pair in sqliteDocAmalgamation.SqlNotebookArt) {
+                    var filename = pair.Key;
+                    var bytes = pair.Value;
+                    _notebook.Execute("INSERT INTO art VALUES (@file_path, @bytes)", new Dictionary<string, object> {
+                        ["@file_path"] = filename,
+                        ["@bytes"] = bytes
+                    });
                 }
 
                 _notebook.Execute("COMMIT");
@@ -241,7 +258,14 @@ namespace SqlNotebook {
                     var keyword = rawUrl.Substring("/search?q=".Length);
                     bytes = Encoding.UTF8.GetBytes(header + BuildSearchHtml(keyword));
                 } else if (rawUrl.StartsWith("/art/")) {
-                    bytes = _artFiles.GetValueOrDefault(rawUrl);
+                    bytes = null;
+                    try {
+                        _notebook.Invoke(() => {
+                            bytes = (byte[])_notebook.QueryValue(
+                                "SELECT content FROM art WHERE file_path = @file_path",
+                                new Dictionary<string, object> { ["@file_path"] = rawUrl });
+                        });
+                    } catch { }
                 } else {
                     var path = "." + rawUrl.Replace("/", "\\");
                     string html = null;
@@ -278,12 +302,9 @@ namespace SqlNotebook {
         }
 
         private List<GroupDef> ReadGroupDefs() {
-            if (_booksTxt == null) {
-                throw new Exception("Internal error: books.txt was not found in the documents archive.");
-            }
-            var lines = _booksTxt.Split('\n');
+            var dt = _notebook.Query("SELECT line FROM books_txt ORDER BY number");
             var list = new List<GroupDef>();
-            foreach (var line in lines) {
+            foreach (var line in dt.Rows.Select(x => x[0].ToString())) {
                 if (line.StartsWith("Group#")) {
                     var cells = line.Split(new[] { '#' }, 4);
                     if (cells.Length != 4) {
