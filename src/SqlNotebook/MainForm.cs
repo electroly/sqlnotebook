@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -86,7 +87,8 @@ namespace SqlNotebook {
             _dockPanel = new DockPanel {
                 Dock = DockStyle.Fill,
                 Theme = new VS2012LightTheme(),
-                DocumentStyle = DocumentStyle.DockingWindow
+                DocumentStyle = DocumentStyle.DockingWindow,
+                DefaultFloatWindowSize = new Size(700, 700)
             };
             _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
 
@@ -242,30 +244,31 @@ namespace SqlNotebook {
 
             UserControlDockContent f = null;
             Func<string> getName = null;
+            var dockAreas = DockAreas.Document | DockAreas.Float;
             if (item.Type == NotebookItemType.Console) {
                 var doc = new ConsoleDocumentControl(item.Name, _manager, this, _operationInProgress);
-                f = new UserControlDockContent(item.Name, doc) {
+                f = new UserControlDockContent(item.Name, doc, dockAreas) {
                     Icon = Resources.ApplicationXpTerminalIco
                 };
                 f.FormClosing += (sender2, e2) => doc.Save();
                 getName = () => doc.ItemName;
             } else if (item.Type == NotebookItemType.Note) {
                 var doc = new NoteDocumentControl(item.Name, _manager);
-                f = new UserControlDockContent(item.Name, doc) {
+                f = new UserControlDockContent(item.Name, doc, dockAreas) {
                     Icon = Resources.NoteIco
                 };
                 f.FormClosing += (sender2, e2) => doc.Save();
                 getName = () => doc.ItemName;
             } else if (item.Type == NotebookItemType.Script) {
                 var doc = new QueryDocumentControl(item.Name, _manager, this, _operationInProgress);
-                f = new UserControlDockContent(item.Name, doc) {
+                f = new UserControlDockContent(item.Name, doc, dockAreas) {
                     Icon = Resources.ScriptIco
                 };
                 f.FormClosing += (sender2, e2) => doc.Save();
                 getName = () => doc.ItemName;
             } else if (item.Type == NotebookItemType.Table || item.Type == NotebookItemType.View) {
                 var doc = new TableDocumentControl(_manager, item.Name, this);
-                f = new UserControlDockContent(item.Name, doc) {
+                f = new UserControlDockContent(item.Name, doc, dockAreas) {
                     Icon = Resources.TableIco
                 };
             }
@@ -669,7 +672,7 @@ namespace SqlNotebook {
                     helpCtl = (HelpDocumentControl)_helpDoc.Content;
                 } else {
                     helpCtl = new HelpDocumentControl(() => _helpServer.PortNumber) { Dock = DockStyle.Fill };
-                    _helpDoc = new UserControlDockContent("Help Viewer", helpCtl) {
+                    _helpDoc = new UserControlDockContent("Help Viewer", helpCtl, DockAreas.Document | DockAreas.Float) {
                         Icon = Resources.HelpIco
                     };
                     _helpDoc.FormClosed += (sender, e) => _helpDoc = null;

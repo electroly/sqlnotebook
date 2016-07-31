@@ -181,6 +181,14 @@ namespace SqlNotebook {
 
             _sqlPanel.Controls.Add(_scintilla);
 
+            // if this tool window has been pulled off into a floating window, then the MainForm's key handler won't
+            // trigger on F5, so catch it here.
+            _scintilla.KeyDown += async (sender, e) => {
+                if (e.KeyCode == Keys.F5) {
+                    await Execute();
+                }
+            };
+
             Load += (sender, e) => {
                 string initialText = _manager.GetItemData(ItemName);
                 if (initialText != null) {
