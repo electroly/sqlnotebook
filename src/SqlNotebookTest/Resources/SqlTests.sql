@@ -22,6 +22,25 @@ SELECT 1 FROM sqlite_master CROSS JOIN sqlite_master
 SELECT a.*, b.* FROM sqlite_master a CROSS JOIN sqlite_master b
 SELECT a.*, b.* FROM sqlite_master AS a CROSS JOIN sqlite_master AS b
 SELECT * FROM other.sqlite_master
+select name from sqlite_master
+select name from sqlite_master as asdf
+select name from sqlite_master asdf
+select name from sqlite_master "asdf"
+select name from sqlite_master as "asdf"
+select name from sqlite_master as 'asdf'
+select * from sqlite_master as 'asdf'
+select 'asdf'.* from sqlite_master as 'asdf'
+select 'asdf'.* from sqlite_master as asdf
+select asdf.* from sqlite_master as 'asdf'
+select * from 'sqlite_master' as 'asdf'
+select * from 'sqlite_master'
+select name as a from sqlite_master
+select name as a from 'sqlite_master'
+select name a from 'sqlite_master'
+select name as 'a' from 'sqlite_master'
+select name 'a' from 'sqlite_master'
+select 'sqlite_master'.'name' from sqlite_master
+select 'asdf'.'name' from 'sqlite_master' as 'asdf'
 
 -- alter-table-stmt
 ALTER TABLE other.tbl1 RENAME TO tbl2
@@ -340,10 +359,43 @@ CREATE TABLE _534ca27e (a, b, FOREIGN KEY (a, b) REFERENCES fkc_tbl (a, b) DEFER
 -- SQLite test suite - randexpr1.test
 CREATE TABLE t1(a,b,c,d,e,f)
 INSERT INTO t1 VALUES(100,200,300,400,500,600)
-SELECT coalesce((select 11 from t1 where 19 in (t1.b,+11,coalesce((select max((abs(17)/abs(t1.f))) from t1 where ((abs(t1.f)/abs(t1.b)) in (select case (min(t1.a | d*d)+(abs(count(*)-count(*)+ -count(*)*max( -t1.c))-max(f))) when  -count(distinct 19) then ((count(*))) else max(13) end from t1 union select count(distinct b) from t1)) or 19 in (t1.a,t1.c,17)),17) | 17)),13) FROM t1 WHERE not not c=a-+(select case ~case  -~+count(distinct (select count(distinct t1.a)*max(13) from t1))+max( -19*f)*max(f)*max(f)* -count(distinct d)-(count(distinct 11)) | max(t1.f)*count(*) when count(distinct b) then count(distinct t1.b) else  -min(t1.f) end*cast(avg(11) AS integer) when max(t1.f) then max(c) else count(*) end from t1)+d
-SELECT f*f*(abs(case when (17-coalesce((select max(11) from t1 where coalesce((select max(t1.c-11*t1.a) from t1 where +e=(abs(d)/abs(11))+ -13),t1.b)<b and exists(select 1 from t1 where t1.f between d and  -t1.c)),19)-19 in (select max(t1.e) | min(t1.e) from t1 union select count(*) from t1) and 17>t1.e) then e else 17 end)/abs(c)) FROM t1 WHERE (t1.a in ((t1.f-t1.c)+b,11,t1.a+f))
+SELECT coalesce((select 11 from t1),1) from t1
+SELECT coalesce((select 12 from t1 where 19 in (1, 2, 3)),1) from t1
+SELECT coalesce((select 13 from t1 where 19 in (t1.b,+11,15 | 17)),13) FROM t1
+SELECT coalesce((select 23 from t1 where 19 in (1,2,coalesce((select 1 from t1 where 1 = 1),17) | 17)),13) FROM t1
+SELECT coalesce((select 24 from t1 where 19 in (1,2,coalesce((select 1 from t1 where (1 in (select 123 from t1))),17) | 17)),13) FROM t1
+select case when  19 = 0 then 123 else 3 end from t1
+SELECT coalesce((select 26 from t1 where 19 in (1,2,coalesce((select 1 from t1 where (1 in (select case when  19 = 0 then 123 else 3 end from t1))),17) | 17)),13) FROM t1
+SELECT coalesce((select 25 from t1 where 19 in (1,2,coalesce((select 1 from t1 where (1 in (select case when  -count(19) = 0 then 123 else 3 end from t1))),17) | 17)),13) FROM t1
+SELECT coalesce((select 22 from t1 where 19 in (1,2,coalesce((select 1 from t1 where (1 in (select case 123 when  -count(19) then 123 else 3 end from t1))),17) | 17)),13) FROM t1
+SELECT coalesce((select 21 from t1 where 19 in (1,2,coalesce((select 1 from t1 where (1 in (select case 123 when  -count(19) then 123 else 3 end from t1 union select count(b) from t1))),17) | 17)),13) FROM t1
+SELECT coalesce((select 20 from t1 where 19 in (t1.b,+11,coalesce((select 1 from t1 where (1 in (select case 123 when  -count(19) then 123 else max(13) end from t1 union select count(b) from t1))),17) | 17)),13) FROM t1
+SELECT coalesce((select 19 from t1 where 19 in (t1.b,+11,coalesce((select 1 from t1 where (1 in (select case 123 when  -count(distinct 19) then 123 else max(13) end from t1 union select count(distinct b) from t1))),17) | 17)),13) FROM t1
+SELECT coalesce((select 14 from t1 where 19 in (t1.b,+11,coalesce((select 1 from t1 where (1 in (select case 123 when  -count(distinct 19) then ((count(*))) else max(13) end from t1 union select count(distinct b) from t1))),17) | 17)),13) FROM t1
+SELECT coalesce((select 15 from t1 where 19 in (t1.b,+11,coalesce((select 1 from t1 where (1 in (select case (min(t1.a | d*d)+(abs(count(*)-count(*)+ -count(*)*max( -t1.c))-max(f))) when  -count(distinct 19) then ((count(*))) else max(13) end from t1 union select count(distinct b) from t1))),17) | 17)),13) FROM t1
+SELECT coalesce((select 16 from t1 where 19 in (t1.b,+11,coalesce((select max((abs(17)/abs(t1.f))) from t1 where ((abs(t1.f)/abs(t1.b)) in (select case (min(t1.a | d*d)+(abs(count(*)-count(*)+ -count(*)*max( -t1.c))-max(f))) when  -count(distinct 19) then ((count(*))) else max(13) end from t1 union select count(distinct b) from t1)) or 19 in (t1.a,t1.c,17)),17) | 17)),13) FROM t1
+select not not (1=1)
+select -+5
+select -~+5
+select a-+5 from t1
+select cast(5 as integer)
+select cast(avg(11) as integer) from t1
+select case 5 when 1 then 1 when 2 then 2 else 3 end
+SELECT 30 FROM t1 WHERE not not c=a-+(select case ~case  -~+count(distinct (select count(distinct t1.a)*max(13) from t1))+max( -19*f)*max(f)*max(f)* -count(distinct d)-(count(distinct 11)) | max(t1.f)*count(*) when count(distinct b) then count(distinct t1.b) else  -min(t1.f) end*cast(avg(11) AS integer) when max(t1.f) then max(c) else count(*) end from t1)+d
+SELECT coalesce((select 17 from t1 where 19 in (t1.b,+11,coalesce((select max((abs(17)/abs(t1.f))) from t1 where ((abs(t1.f)/abs(t1.b)) in (select case (min(t1.a | d*d)+(abs(count(*)-count(*)+ -count(*)*max( -t1.c))-max(f))) when  -count(distinct 19) then ((count(*))) else max(13) end from t1 union select count(distinct b) from t1)) or 19 in (t1.a,t1.c,17)),17) | 17)),13) FROM t1 WHERE not not c=a-+(select case ~case  -~+count(distinct (select count(distinct t1.a)*max(13) from t1))+max( -19*f)*max(f)*max(f)* -count(distinct d)-(count(distinct 11)) | max(t1.f)*count(*) when count(distinct b) then count(distinct t1.b) else  -min(t1.f) end*cast(avg(11) AS integer) when max(t1.f) then max(c) else count(*) end from t1)+d
+select 33 from t1 where 1 between 2 and 3
+select 32 from t1 where t1.f between d and  -t1.c
+SELECT 31, f*f*(abs(case when (17-coalesce((select max(11) from t1 where coalesce((select max(t1.c-11*t1.a) from t1 where +e=(abs(d)/abs(11))+ -13),t1.b)<b and exists(select 1 from t1 where t1.f between d and  -t1.c)),19)-19 in (select max(t1.e) | min(t1.e) from t1 union select count(*) from t1) and 17>t1.e) then e else 17 end)/abs(c)) FROM t1 WHERE (t1.a in ((t1.f-t1.c)+b,11,t1.a+f))
 SELECT ~case when 19 not between ~case when coalesce((select max(t1.c*(select cast(avg(13) AS integer) from t1)) from t1 where exists(select 1 from t1 where case when (t1.b in (d,b,t1.c)) and 13>t1.d then e+t1.c when 19 between t1.f and t1.f then 11 else e end between t1.e and 17) and c=t1.f),t1.c) not between t1.a and (19) then c else t1.b end*a-19 and b then b when a not in (a,t1.f,11) then a else a end FROM t1 WHERE NOT ((select abs((+min(t1.c)*min(t1.d)*count(*)))*count(*)++count(distinct ~13*11+t1.f) | case abs(+count(*)) when min(t1.e) then count(*) else max(13) end from t1)*t1.b between d and a++19 and t1.c in (select ~((abs(17)/abs(c)))-d from t1 union select t1.f from t1))
 SELECT coalesce((select coalesce((select t1.e from t1 where case when c+a in (select t1.f from t1 union select 13 from t1) then c when not not exists(select 1 from t1 where d>= -11) then t1.d else  -t1.f end between b and 11 or d not between e and 11), -f)+e+ -11*17 from t1 where not exists(select 1 from t1 where exists(select 1 from t1 where t1.e in (select ~min(e) from t1 union select case case count(distinct f) & min(19)+min(a) when count(*) then max( -t1.c) else max(17) end when (max(t1.c)) then min(11) else min(t1.c) end from t1)) or d=a)),t1.e) FROM t1 WHERE NOT (+t1.e<~case when t1.e in (select (abs(c)/abs(~t1.d)) from t1 union select a from t1) then coalesce((select e from t1 where t1.d+ -coalesce((select max(11-t1.e*b) from t1 where 19 in (11,t1.b,e)),11)*t1.e+19 in (select t1.d from t1 union select  -t1.d from t1)),17) | t1.e+e when t1.f in (17,f,f) then t1.b else 17 end*13)
+SELECT case when f | c>t1.d-case when (abs(t1.b-t1.d*f)/abs(c))=t1.e then 17 when not exists(select 1 from t1 where t1.b=(11) or c not in (13,17,b)) or a<e then t1.f else 19 end+b-t1.f and t1.b between t1.b and t1.f and e in (t1.f,b,b) then (select cast(avg(e) AS integer)-~ -~count(*) from t1) else 11 end FROM t1 WHERE e<=case when (case when 17<>a then t1.c when not 11<(f) then case when t1.c= -b then c else 11 end else e end | f>=t1.b and b not between  -(t1.e) and f) then 17 when f in (select  -count(distinct t1.e) from t1 union select case min(f) when case cast(avg( -t1.b) AS integer) when cast(avg(e) AS integer) then  -max(e) else min(t1.b) end then count(*) else (cast(avg(t1.e) AS integer)) end from t1) then case c when e then t1.f else 13 end else t1.d end
+SELECT case t1.d & t1.f+(e)+case when +t1.e-d*t1.a+17-b*(abs(t1.f)/abs( -a))-case when 19>=e then ~t1.a*case when t1.e>19 and t1.f<>d then t1.a else t1.d end & b*e else 17 end+t1.a=17 then t1.c else t1.b end when 17 then t1.b else t1.b end FROM t1 WHERE case when c<=13*t1.a then 11 else  -case when t1.f*e>= -((19)) then case when a>=t1.c then t1.d*e else b end else coalesce((select t1.b from t1 where 11+d-17-t1.d-t1.b not in (case d-17 when f then t1.d else t1.b end,e,t1.c)),t1.c) end*19 end<>b
+SELECT t1.f-coalesce((select max(+e | b) from t1 where case when  -(abs(11)/abs(~(19 | t1.d)))-~c*e not in (19,b*t1.b,b) then 11 when f<=13 then d else t1.d end in (select (count(*))-cast(avg(11 | 17*t1.b) AS integer) from t1 union select count(distinct a-17) from t1)),t1.c)-c FROM t1 WHERE NOT (case when (t1.f*a<=11+d+coalesce((select max(19+19) from t1 where 13 in (select min(f)+cast(avg((abs(t1.e)/abs((select count(distinct c) from t1)))) AS integer)+(~cast(avg(e) AS integer))-min(c) from t1 union select count(*) from t1)),b)) then (a) else t1.b end-t1.b<=t1.b and 13 in (select t1.e from t1 union select t1.e from t1) and a<e)
+SELECT ~(d)-(select case case cast(avg(t1.b- -~b) AS integer) when max(coalesce((select e from t1 where 11<>e),coalesce((select c from t1 where c not in (t1.e,a,(17)) or t1.b in ((b),t1.c,t1.f)),13))) then +cast(avg(d) AS integer) | case max(t1.c) when min((e)) then max(e)+cast(avg(t1.d) AS integer) else min(t1.f) end+max(d) else count(*) end |  -cast(avg(t1.f) AS integer) |  - -count(distinct c)*max(b) when count(distinct t1.d) then  - -min(a) else count(*) end from t1) FROM t1 WHERE t1.c+a=t1.e+t1.c*t1.e | case t1.d when case when 13 in (select min(c) from t1 union select max(d) from t1) or t1.f>=13 then 19 when t1.c<=11 then  -t1.b else 13 end then 13 else t1.e end or f in (select t1.a from t1 union select t1.f from t1) or (t1.a<t1.b) and e>t1.b and (((t1.d not between  -a and t1.f))) or t1.a not in ( -t1.d,13,a) and d<c or d=t1.d or e<d
+SELECT case when coalesce((select t1.b from t1 where a not in (19,coalesce((select max(t1.f) from t1 where (select count(distinct t1.b) from t1) in (t1.e,t1.f*13-11,d)),(t1.f))-17*c,c) or t1.c<=11),19)>13 and f not in (t1.a,11,t1.d) then (((e))) when f=11 or f not in (a,19,17) then 13 else e end FROM t1 WHERE c in (select min(t1.a*a+(select count(distinct t1.b+(t1.a)- - -c) from t1)-t1.e) from t1 union select count(*) from t1) and c in (select min(t1.d) from t1 union select cast(avg(d) AS integer)+abs(case count(*) when count(distinct 11) then  -count(distinct 19) else count(distinct (t1.b)) end) | cast(avg((t1.c)) AS integer)+count(*) from t1) and e=13 and t1.d>c or 13 not in (17,(t1.f),t1.a) or (11)=t1.b and t1.e>=a or 11<=t1.b or d<=17
+SELECT f+case when 17-t1.f in (select ~count(distinct (abs((abs(c)/abs(c)))/abs((abs(11)/abs(+case  -t1.a when t1.d then  -13 else 17 end))))-t1.c) from t1 union select ~case cast(avg(t1.c) AS integer) when  -~ -count(*)*max((t1.f))+count(*) then (min(d)) else max(a) end-count(distinct t1.a)+ -count(*)-count(*) from t1) then d when b not between t1.f and t1.e then a else 11 end+t1.a FROM t1 WHERE NOT ((exists(select 1 from t1 where case when exists(select 1 from t1 where case when (t1.e+case (t1.b) when f then case t1.c when 11 |  -13-coalesce((select max(d) from t1 where c not in ( -t1.e,t1.c,17) and t1.c<17),e)*17+t1.a then t1.b else 11 end else d end)+t1.f not in (d,13,d) then f else t1.d end not between (c) and f) then t1.e else f end-t1.c in (t1.b,t1.a,f))))
+SELECT case (19) when t1.a then t1.f+coalesce((select max(t1.f) from t1 where case when t1.c=t1.a or (t1.d | case when t1.f=t1.d then a else coalesce((select max(case when 11>=a then t1.b else d end+t1.a) from t1 where  -t1.a not between t1.e and 19),11) end<>t1.d) then t1.e else c end-t1.f*b+f=19),t1.b) | (t1.a)+e else a end FROM t1 WHERE NOT ((case e when d then +(select (min(t1.a)) from t1) else case when a in ((select min(case  -t1.c when d then d else f end+ -e)-+cast(avg(19) AS integer)+max(d) from t1)*t1.d |  -t1.c,b,e) then t1.d when t1.b in (select +min(e) | min(t1.b) from t1 union select  -count(distinct e) from t1) then d else 11 end*13-(e) end not in (t1.c,c,17)))
+SELECT t1.d+(abs(11)/abs(e*~(select  -+ -case min(t1.e) when count(distinct case when (exists(select 1 from t1 where (t1.d not in (19+11,t1.e,t1.c)))) then c*b-t1.a else  -c end) then count(*)+case (cast(avg(a) AS integer))-count(distinct f) when  -(count(*)) then count(distinct e) else max(t1.b) end- -count(distinct 17)* -min(t1.c) else count(distinct  -19) end-count(distinct b) & cast(avg(19) AS integer) from t1)))-~t1.c FROM t1 WHERE c*coalesce((select e from t1 where case when exists(select 1 from t1 where not exists(select 1 from t1 where coalesce((select +b | 13 from t1 where ((17<(select (+~min(coalesce((select t1.c from t1 where case e when 13 then a else 11 end not in ( -b,t1.b,e)),(a)))) from t1)+d-19))),17) not between t1.b and t1.a)) then 11*d else t1.a end in (select c from t1 union select t1.e from t1)),t1.f) not between ( -d) and 13
 DROP TABLE t1
 
 -- SQLite test suite - where.test
@@ -394,3 +446,65 @@ SELECT period, vsum FROM (SELECT a.period, (select sum(val) from t5 where period
 DROP TABLE t1
 DROP TABLE t2
 DROP TABLE t5
+
+-- SQLite test suite - regexp1.test
+CREATE TABLE t1(x INTEGER PRIMARY KEY, y TEXT)
+SELECT x FROM t1 WHERE y REGEXP 'by|in' ORDER BY x
+SELECT x FROM t1 WHERE y REGEXP 'shallx?y? ?z?all' ORDER BY x
+DROP TABLE t1
+
+-- SQLite test suite - like.test
+CREATE TABLE t1(x TEXT)
+SELECT x FROM t1 WHERE x LIKE 'abc' ORDER BY 1
+SELECT x FROM t1 WHERE x GLOB 'abc*' ORDER BY x
+SELECT rowid, * FROM t1 WHERE rowid GLOB '1*' ORDER BY rowid
+DROP TABLE t1
+
+-- SQLite test suite - misc1.test
+CREATE TABLE agger(one text, two text, three text, four text)
+SELECT sum(one), two, four FROM agger GROUP BY two, four ORDER BY sum(one) desc
+CREATE TABLE t4(abort, asc, begin, cluster, conflict, copy, delimiters, desc, end, explain, fail, ignore, key, offset, pragma, replace, temp, vacuum, view)
+DROP TABLE agger
+
+-- SQLite test suite - misc2.test
+CREATE TABLE FOO(bar integer)
+CREATE TRIGGER foo_insert BEFORE INSERT ON foo BEGIN SELECT CASE WHEN (NOT new.bar BETWEEN 0 AND 20) THEN raise(rollback, 'aiieee') END; END
+DROP TABLE FOO
+CREATE TABLE t1(a,b,c)
+CREATE TABLE t2(a,b,c)
+SELECT rowid, * FROM (SELECT * FROM t1, t2)
+CREATE VIEW v1 AS SELECT * FROM t1, t2
+SELECT rowid, * FROM v1
+SELECT * FROM (SELECT a, b AS 'a', c AS 'a', 4 AS 'a' FROM t1)
+SELECT a FROM t1 WHERE a>2147483647
+SELECT a FROM t1 WHERE a<2147483648
+SELECT a FROM t1 WHERE a<10000000000
+SELECT a FROM t1 WHERE a<1000000000000 ORDER BY 1
+CREATE TABLE counts(n INTEGER PRIMARY KEY)
+CREATE TEMP TABLE x AS SELECT dim1.n, dim2.n, dim3.n FROM counts AS dim1, counts AS dim2, counts AS dim3 WHERE dim1.n<10 AND dim2.n<10 AND dim3.n<10
+DROP TABLE counts
+CREATE TABLE t1229(x)
+CREATE TRIGGER r1229 BEFORE INSERT ON t1229 BEGIN INSERT INTO t1229 SELECT y FROM (SELECT new.x y); END
+DROP TABLE t1
+DROP TABLE t2
+
+-- SQLite test suite - misc3.test
+SELECT 2e-25*0.5e25
+SELECT 2.0e-25*000000.500000000000000000000000000000e+00025
+SELECT 000000000002e-0000000025*0.5e25
+SELECT 2e-25*0.5e250
+SELECT 2.0e-250*0.5e25
+SELECT '-2.0e-127' * '-0.5e27'
+SELECT '+2.0e-127' * '-0.5e27'
+SELECT 2.0e-27 * '+0.5e+127'
+SELECT 2.0e-27 * '+0.000005e+132'
+
+-- SQLite test suite - where7.test
+CREATE TABLE t1(a INTEGER PRIMARY KEY,b,c,d)
+CREATE TABLE t2(a INTEGER PRIMARY KEY,b,c,d,e,f TEXT,g)
+SELECT a FROM t1 WHERE b=3 OR c=6 ORDER BY a
+SELECT a FROM t1 WHERE b=3 OR +c=6 ORDER BY a
+SELECT a FROM t1 WHERE (3=b OR c=6) AND +a>0 ORDER BY a
+SELECT a FROM t1 WHERE (b BETWEEN 0 AND 2) OR (c BETWEEN 9 AND 999) ORDER BY +a DESC
+SELECT a FROM t2 WHERE b=1070 OR (g='edcbazy' AND f GLOB 'wxyza*') OR (d>=89.0 AND d<90.0 AND d NOT NULL) OR ((a BETWEEN 18 AND 20) AND a!=19) OR (g='qponmlk' AND f GLOB 'nopqr*') OR (g='fedcbaz' AND f GLOB 'stuvw*') OR (f GLOB '?hijk*' AND f GLOB 'ghij*')
+SELECT a FROM t2 WHERE a=74 OR a=50 OR (g='hgfedcb' AND f GLOB 'hijkl*') OR ((a BETWEEN 16 AND 18) AND a!=17) OR c=21021 OR ((a BETWEEN 82 AND 84) AND a!=83)

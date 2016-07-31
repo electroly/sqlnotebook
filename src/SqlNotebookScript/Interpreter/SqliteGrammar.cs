@@ -14,6 +14,7 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -193,7 +194,13 @@ namespace SqlNotebookScript.Interpreter {
 
             // column-def ::= column-name [ <type-name> ] [ <column-constraint> ]*
             TopProd(p = "column-def", 1,
-                Id("column name"),
+                Or(Id("column name"),
+                    // per SQLite test suite file misc1.test, these are valid to use as column names
+                    Toks(TokenType.Abort, TokenType.Asc, TokenType.Begin, TokenType.Conflict, TokenType.Desc,
+                        TokenType.End, TokenType.Explain, TokenType.Fail, TokenType.Ignore, TokenType.Key,
+                        TokenType.Offset, TokenType.Pragma, TokenType.Replace, TokenType.Temp, TokenType.Vacuum,
+                        TokenType.View)
+                ),
                 Opt(SubProd("type-name")),
                 Lst($"{p}.constraint", null, 0, SubProd("column-constraint"))
             );
@@ -252,9 +259,9 @@ namespace SqlNotebookScript.Interpreter {
                         Opt(Tok(TokenType.Autoincr))
                     ),
                     Prod($"{p}.not-null", 1, 
-                        Tok(TokenType.Not), Tok(TokenType.Null), SubProd("conflict -clause")),
-                    Prod($"{p}.null", 1, Tok(TokenType.Null), SubProd("conflict -clause")),
-                    Prod($"{p}.unique", 1, Tok(TokenType.Unique), SubProd("conflict -clause")),
+                        Tok(TokenType.Not), Tok(TokenType.Null), SubProd("conflict-clause")),
+                    Prod($"{p}.null", 1, Tok(TokenType.Null), SubProd("conflict-clause")),
+                    Prod($"{p}.unique", 1, Tok(TokenType.Unique), SubProd("conflict-clause")),
                     Prod($"{p}.check", 1,
                         Tok(TokenType.Check), Tok(TokenType.Lp), SubProd("expr"), Tok(TokenType.Rp)),
                     Prod($"{p}.default", 1,
@@ -265,8 +272,8 @@ namespace SqlNotebookScript.Interpreter {
                             Prod($"{p}.expr", 1, Tok(TokenType.Lp), SubProd("expr"), Tok(TokenType.Rp))
                         )
                     ),
-                    Prod("column-constraint/collate", 1, Tok(TokenType.Collate), Id("collation name")),
-                    Prod("column-constraint/foreign-key", 1, SubProd("foreign -key-clause"))
+                    Prod($"{p}.collate", 1, Tok(TokenType.Collate), Id("collation name")),
+                    Prod($"{p}.foreign-key", 1, SubProd("foreign-key-clause"))
                 )
             );
 
@@ -573,7 +580,8 @@ namespace SqlNotebookScript.Interpreter {
             TopProd(p = "eq-expr", 1,
                 SubProd("ineq-expr"),
                 Lst($"{p}.term", null, 0,
-                    Or(SubProd("eq-expr-op"), SubProd("eq-expr-is"), SubProd("eq-expr-in"), SubProd("eq-expr-like")))
+                    Or(SubProd("eq-expr-op"), SubProd("eq-expr-is"), SubProd("eq-expr-in"), SubProd("eq-expr-like"),
+                    SubProd("eq-expr-between")))
             );
 
             // eq-expr-op ::= ( "=" | "==" | "!=" | "<>" ) ineq-expr
@@ -662,15 +670,18 @@ namespace SqlNotebookScript.Interpreter {
                 LstP(".term", Tok("||"), 1, SubProd("unary-expr"))
             );
 
-            // unary-expr ::= [ "-" | "+" | "NOT" ] <collate-expr>
+            // unary-expr ::= [ "-" | "+" | "NOT" | "~" ]* <collate-expr>
+            TopProd(p = "unary-operator", 1,
+                Or(Tok("-"), Tok("+"), Tok(TokenType.Not), Tok("~"))
+            );
+
             TopProd(p = "unary-expr", 2,
-                Opt(Or(Tok("-"), Tok("+"), Tok(TokenType.Not))),
+                Lst(".operator", null, 0, SubProd("unary-operator")),
                 SubProd("collate-expr")
             );
 
-            // collate-expr ::= ["~"] <expr-term> [COLLATE collation-name]
+            // collate-expr ::= <expr-term> [COLLATE collation-name]
             TopProd(p = "collate-expr", 2,
-                Opt(Tok("~")),
                 SubProd("expr-term"),
                 Opt(1, Tok(TokenType.Collate), Id("collation name"))
             );
@@ -683,12 +694,10 @@ namespace SqlNotebookScript.Interpreter {
             //      "(" <expr> ")" |
             //      CAST "(" <expr> AS <type-name> ")" |
             //      [ [NOT] EXISTS ] ( <select-stmt> ) |
-            //      CASE [ <expr> ] WHEN <expr> THEN <expr> [ ELSE <expr> ] END |
+            //      CASE [ <expr> ] ( WHEN <expr> THEN <expr> )+ [ ELSE <expr> ] END |
             //      <raise-function>
             TopProd(p = "expr-term", 1,
                 Or(
-                    // <literal-value>
-                    Prod($"{p}.literal-value", 1, SubProd("literal-value")),
                     // expr ::= function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* | "*" ] ")"
                     Prod($"{p}.function-call", 2,
                         Id("function name"),
@@ -704,12 +713,23 @@ namespace SqlNotebookScript.Interpreter {
                     ),
                     // [ [ database-name "." ] table-name "." ] column-name
                     Prod($"{p}.column-name", 1,
-                        Id("database, table, or column name"),
-                        Opt(Tok(TokenType.Dot), Id("table or column name")),
-                        Opt(Tok(TokenType.Dot), Id("column name"))
+                        Or(
+                            Prod(".dotted-identifier", 2,
+                                Or(Id("database, table, or column name"), LitStr("database, table, or column name")),
+                                Tok(TokenType.Dot),
+                                Or(Id("table or column name"), LitStr("table or column name")),
+                                Opt(
+                                    Tok(TokenType.Dot),
+                                    Or(Id("column name"), LitStr("column name"))
+                                )
+                            ),
+                            Prod(".bare-col-identifier", 1, Id("column name"))
+                        )
                     ),
                     // <bind-parameter>
                     Prod($"{p}.variable-name", 1, Id("variable name", allowVar: true)),
+                    // <literal-value>
+                    Prod($"{p}.literal-value", 1, SubProd("literal-value")),
                     // expr ::= "(" <expr> ")"
                     Prod($"{p}.parentheses", 1,
                         Tok(TokenType.Lp),
@@ -732,15 +752,17 @@ namespace SqlNotebookScript.Interpreter {
                         SubProd("select-stmt"),
                         Tok(TokenType.Rp)
                     ),
-                    // expr ::= CASE [ <expr> ] WHEN <expr> THEN <expr> [ ELSE <expr> ] END
+                    // expr ::= CASE [ <expr> ] (WHEN <expr> THEN <expr>)+ [ ELSE <expr> ] END
                     Prod($"{p}.case", 1,
                         Tok(TokenType.Case),
                         Opt(SubProd("expr")),
-                        Tok(TokenType.When),
-                        SubProd("expr"),
-                        Tok(TokenType.Then),
-                        SubProd("expr"),
-                        Opt(1, Tok(TokenType.Else), SubProd("expr"))
+                        Lst(".when", null, 1, 
+                            Tok(TokenType.When),
+                            SubProd("expr"),
+                            Tok(TokenType.Then),
+                            SubProd("expr")),
+                        Opt(1, Tok(TokenType.Else), SubProd("expr")),
+                        Tok(TokenType.End)
                     ),
                     // expr ::= <raise-function>
                     Prod($"{p}.raise", 1, SubProd("raise-function"))
@@ -962,15 +984,15 @@ namespace SqlNotebookScript.Interpreter {
                         Tok(TokenType.Rp),
                         Opt(
                             Opt(Tok(TokenType.As)),
-                            Id("table alias")
+                            Or(Id("table alias"), LitStr("table alias"))
                         )
                     ),
                     Prod($"{p}.table", 2,
-                        Opt(Id("database name"), Tok(TokenType.Dot)),
-                        Id("table name"),
+                        Or(Id("database or table name"), LitStr("database or table name")),
+                        Opt(Tok(TokenType.Dot), Or(Id("table name"), LitStr("table name"))),
                         Opt(
                             Opt(Tok(TokenType.As)),
-                            Id("table alias")
+                            Or(Id("table alias"), LitStr("table alias"))
                         ),
                         Opt(Or(
                             Prod($"{p}.indexed-by", 1, Tok(TokenType.Indexed), Tok(TokenType.By), Id("index name")),
@@ -983,7 +1005,7 @@ namespace SqlNotebookScript.Interpreter {
                         Tok(TokenType.Rp),
                         Opt(
                             Opt(Tok(TokenType.As)),
-                            Id("table alias")
+                            Or(Id("table alias"), LitStr("table alias"))
                         )
                     ),
                     Prod($"{p}.joins", 1,
@@ -1004,7 +1026,7 @@ namespace SqlNotebookScript.Interpreter {
                 Or(
                     Prod($"{p}.star", 1, Tok(TokenType.Star)),
                     Prod($"{p}.table-star", 3,
-                        Id("table name"),
+                        Or(Id("table name"), LitStr("table name")),
                         Tok(TokenType.Dot),
                         Tok(TokenType.Star)
                     ),
@@ -1012,7 +1034,7 @@ namespace SqlNotebookScript.Interpreter {
                         SubProd("expr"),
                         Opt(
                             Opt(Tok(TokenType.As)),
-                            Id("column alias")
+                            Or(Id("column alias"), LitStr("column alias"))
                         )
                     )
                 )
@@ -1114,6 +1136,8 @@ namespace SqlNotebookScript.Interpreter {
 
             // vacuum-stmt ::= VACUUM
             TopProd(p = "vacuum-stmt", 1, Tok(TokenType.Vacuum));
+
+            SelfCheck();
         }
 
         private static void TopProd(string name, int numReq, params SpecTerm[] terms) {
@@ -1194,6 +1218,46 @@ namespace SqlNotebookScript.Interpreter {
 
         private static BreakpointTerm Breakpoint() {
             return new BreakpointTerm();
+        }
+
+        private static void SelfCheck() {
+            // make sure all SubProd() calls refer to productions that we have heard of
+            foreach (var prod in _dict.Values) {
+                SelfCheck(prod);
+            }
+        }
+
+        private static void SelfCheck(SpecProd prod) {
+            foreach (var term in prod.Terms) {
+                if (term is ProdTerm) {
+                    var prodTerm = (ProdTerm)term;
+                    if (!_dict.ContainsKey(prodTerm.ProdName)) {
+                        throw new Exception($"Internal error. Production {prod.Name} references sub-production " +
+                            $"\"{prodTerm.ProdName}\" which does not exist.");
+                    }
+                }
+                foreach (var subProd in GetSubProds(term)) {
+                    SelfCheck(subProd);
+                }
+            }
+        }
+
+        private static IEnumerable<SpecProd> GetSubProds(SpecTerm term) {
+            if (term is OptionalTerm) {
+                var optTerm = (OptionalTerm)term;
+                yield return optTerm.Prod;
+            } else if (term is OrTerm) {
+                var orTerm = (OrTerm)term;
+                foreach (var prod in orTerm.Prods) {
+                    yield return prod;
+                }
+            } else if (term is ListTerm) {
+                var listTerm = (ListTerm)term;
+                yield return listTerm.ItemProd;
+                if (listTerm.SeparatorProd != null) {
+                    yield return listTerm.SeparatorProd;
+                }
+            }
         }
     }
 }
