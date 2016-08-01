@@ -5,7 +5,7 @@
 <h1><code>EXECUTE</code> Statement
 </h1>Executes the script called <span style="font-style: italic;">script-name</span>, which may be enclosed in quotes if the script name contains spaces or special characters. If a <span style="font-style: italic;">result-variable</span> is specified, then that variable will contain the scalar value, if any, returned from the script. The <span style="font-style: italic;">result-variable</span> does not need to be declared beforehand; the <code>EXECUTE</code> statement itself will declare the variable if it does not exist. If the script does not call <code>RETURN</code>, then the return value is <code>NULL</code>.<br><br>A script may define its own input parameters using the <code>DECLARE PARAMETER</code> statement. If parameters are present in the script, then any <code>EXECUTE</code> statement that calls it must provide argument values for those parameters. The exception is if the <code>DECLARE PARAMETER</code> statement includes a default value. If so, then the <code>EXECUTE</code> statement may omit that parameter, or it may use the special keyword <code>DEFAULT</code>; in both cases, the default value defined by the <code>DECLARE PARAMETER</code> statement is used. <br><h2>Syntax</h2>
 <p>
-<img style="width: 380px; height: 188px;" alt="Syntax for the EXECUTE statement." src="art/doc-execute-stmt.png"><br></p>
+<img style="width: 405px; height: 200px;" alt="Syntax for the EXECUTE statement" src="art/doc-execute-stmt.png"><br></p>
 <h2>Arguments</h2>
 <ul class="args"><li><span style="font-weight: bold;">result-variable</span> (variable name)<br>If provided, this is a variable name beginning with an at sign (<code>@</code>), dollar sign (<code>$</code>),
 or colon (<code>:</code>)
