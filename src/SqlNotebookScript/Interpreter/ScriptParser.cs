@@ -93,6 +93,7 @@ namespace SqlNotebookScript.Interpreter {
                 case "begin": return q.Peek(1) == "try" ? ParseTryCatchStmt(q) : ParseSqlStmt(q);
                 case "import": return ParseImportStmt(q);
                 case "export": return ParseExportStmt(q);
+                case "for": return ParseForStmt(q);
                 default: return ParseSqlStmt(q);
             }
         }
@@ -128,6 +129,22 @@ namespace SqlNotebookScript.Interpreter {
             var stmt = new Ast.WhileStmt { SourceToken = q.SourceToken };
             q.Take("while");
             stmt.Condition = ParseExpr(q);
+            stmt.Block = ParseBlock(q);
+            ConsumeSemicolon(q);
+            return stmt;
+        }
+
+        private Ast.Stmt ParseForStmt(TokenQueue q) {
+            var stmt = new Ast.ForStmt { SourceToken = q.SourceToken };
+            q.Take("for");
+            stmt.VariableName = ParseVariableName(q);
+            q.Take("=");
+            stmt.FirstNumberExpr = ParseExpr(q);
+            q.Take("to");
+            stmt.LastNumberExpr = ParseExpr(q);
+            if (q.TakeMaybe("step")) {
+                stmt.StepExpr = ParseExpr(q);
+            }
             stmt.Block = ParseBlock(q);
             ConsumeSemicolon(q);
             return stmt;

@@ -150,6 +150,16 @@ namespace SqlNotebookScript.Interpreter.Ast {
         protected override IEnumerable<Node> GetChildren() => new Node[] { Condition, Block };
     }
 
+    public sealed class ForStmt : Stmt {
+        public string VariableName { get; set; }
+        public Expr FirstNumberExpr { get; set; }
+        public Expr LastNumberExpr { get; set; }
+        public Expr StepExpr { get; set; } // may be null
+        public Block Block { get; set; }
+        protected override IEnumerable<Node> GetChildren() => 
+            new Node[] { FirstNumberExpr, LastNumberExpr, StepExpr, Block };
+    }
+
     public sealed class BreakStmt : Stmt {
         protected override bool IsLeaf { get; } = true;
     }

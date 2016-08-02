@@ -119,6 +119,7 @@ namespace SqlNotebookScript.Interpreter {
                 [typeof(Ast.SetStmt)] = (s, e) => ExecuteSetStmt((Ast.SetStmt)s, e),
                 [typeof(Ast.IfStmt)] = (s, e) => ExecuteIfStmt((Ast.IfStmt)s, e),
                 [typeof(Ast.WhileStmt)] = (s, e) => ExecuteWhileStmt((Ast.WhileStmt)s, e),
+                [typeof(Ast.ForStmt)] = (s, e) => ExecuteForStmt((Ast.ForStmt)s, e),
                 [typeof(Ast.BlockStmt)] = (s, e) => ExecuteBlockStmt((Ast.BlockStmt)s, e),
                 [typeof(Ast.BreakStmt)] = (s, e) => ExecuteBreakStmt((Ast.BreakStmt)s, e),
                 [typeof(Ast.ContinueStmt)] = (s, e) => ExecuteContinueStmt((Ast.ContinueStmt)s, e),
@@ -278,6 +279,45 @@ namespace SqlNotebookScript.Interpreter {
                         $"produced a value of {condition} instead of the expected 0 or 1.");
                 }
             } while (condition == 1);
+        }
+
+        private void ExecuteForStmt(Ast.ForStmt stmt, ScriptEnv env) {
+            var firstNumber = EvaluateExpr<long>(stmt.FirstNumberExpr, env);
+            var lastNumber = EvaluateExpr<long>(stmt.LastNumberExpr, env);
+
+            long step = firstNumber <= lastNumber ? 1 : -1;
+            if (stmt.StepExpr != null) {
+                step = EvaluateExpr<long>(stmt.StepExpr, env);
+            }
+
+            if (step == 0) {
+                throw new ScriptException("The STEP value in a FOR statement must not be zero.");
+            } else if (step < 0 && firstNumber < lastNumber) {
+                throw new ScriptException(
+                    "The STEP value in a FOR statement must be positive if \"first-number\" < \"last-number\".");
+            } else if (step > 0 && firstNumber > lastNumber) {
+                throw new ScriptException(
+                    "The STEP value in a FOR statement must be negative if \"first-number\" > \"last-number\".");
+            }
+
+            var upward = step > 0;
+            long counter = firstNumber;
+
+            while ((upward && counter <= lastNumber) || (!upward && counter >= lastNumber)) {
+                env.Vars[stmt.VariableName] = counter;
+
+                ExecuteBlock(stmt.Block, env);
+                if (env.DidReturn || env.DidThrow) {
+                    return;
+                } else if (env.DidBreak) {
+                    env.DidBreak = false;
+                    break;
+                } else if (env.DidContinue) {
+                    env.DidContinue = false;
+                }
+
+                counter += step;
+            }
         }
 
         private void ExecuteBlockStmt(Ast.BlockStmt stmt, ScriptEnv env) {

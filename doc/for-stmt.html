@@ -1,0 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>FOR Statement</title></head>
+<body>
+<h1><code>FOR</code> Statement
+</h1>Executes the provided statements while incrementing or decrementing a counter variable at each iteration.<br><br>The loop may be terminated without regard to the counter by using the <a href="break-stmt.html"><code>BREAK</code></a> statement. The current iteration of the loop can be abandoned and the next iteration of the loop started by using the <a href="continue-stmt.html"><code>CONTINUE</code></a> statement.<h2>Syntax</h2>
+<p>
+<img style="width: 602px; height: 170px;" alt="Syntax for the FOR statement" src="art/doc-for-stmt.png"><br></p>
+<h2>Arguments</h2>
+<ul class="args"><li><span style="font-weight: bold;">variable-name</span> (variable name)<br>The name of the counter variable.  The variable name must being with an at sign (<code>@</code>), dollar sign (<code>$</code>),
+or colon (<code>:</code>). The variable need not be previously declared; the <code>FOR</code>
+statement acts as a variable declaration if needed. This variable will
+receive an integer value that changes with each iteration of the loop.</li><li><span style="font-weight: bold;">first-number</span> (integer)<br>The value of the counter variable on the first iteration of the loop.</li><li><span style="font-weight: bold;">last-number</span> (integer)<br>The loop stops if the counter steps past this value.</li><li><span style="font-weight: bold;">step</span> (integer, optional)<br>The number to add to the counter variable on each iteration. If <span style="font-style: italic;">first-number</span> ≤ <span style="font-style: italic;">last-number</span> then the default step is 1, otherwise the default step is -1.</li><li><span style="font-weight: bold;">stmt</span> (statement)<br>The statements to execute on each iteration of the loop. &nbsp;If more than one <span style="font-style: italic;">stmt</span> is desired, the <code>BEGIN</code> and <code>END</code> keywords must be used.<span style="font-weight: bold;"></span><br></li></ul><h2>Examples</h2><ul class="examples"><li><code>FOR @counter&nbsp;= 1 TO 10<br>&nbsp; &nbsp; PRINT @counter;</code><br>Prints the numbers 1 to 10 (inclusive) in increasing order.</li><li><code>FOR @counter&nbsp;= 10 TO 1<br>&nbsp; &nbsp; PRINT @counter;</code><br>Prints the numbers 10 to 1 (inclusive) in decreasing order.</li><li><code>FOR @counter&nbsp;= 1 TO 10 STEP 2<br>&nbsp; &nbsp; PRINT @counter;</code><br>Prints the odd numbers 1 to 9 (inclusive) in increasing order.</li></ul></body></html>
