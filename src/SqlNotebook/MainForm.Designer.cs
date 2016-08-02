@@ -30,8 +30,8 @@
         {
             System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this._statusStrip = new System.Windows.Forms.StatusStrip();
             this._openTransactionLbl = new System.Windows.Forms.ToolStripStatusLabel();
@@ -44,6 +44,7 @@
             this._openMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._saveMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._saveAsMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._optionsMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._exitMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._importBtn = new System.Windows.Forms.ToolStripDropDownButton();
             this._importFileMnu = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,7 +76,6 @@
             this._newNoteBtn = new System.Windows.Forms.ToolStripButton();
             this._newConsoleBtn = new System.Windows.Forms.ToolStripButton();
             this._newScriptBtn = new System.Windows.Forms.ToolStripButton();
-            this._optionsMnu = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
@@ -91,6 +91,16 @@
             toolStripSeparator6.Name = "toolStripSeparator6";
             toolStripSeparator6.Size = new System.Drawing.Size(200, 6);
             // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new System.Drawing.Size(152, 6);
+            // 
+            // toolStripSeparator7
+            // 
+            toolStripSeparator7.Name = "toolStripSeparator7";
+            toolStripSeparator7.Size = new System.Drawing.Size(152, 6);
+            // 
             // _toolStripContainer
             // 
             // 
@@ -100,11 +110,11 @@
             // 
             // _toolStripContainer.ContentPanel
             // 
-            this._toolStripContainer.ContentPanel.Size = new System.Drawing.Size(898, 727);
+            this._toolStripContainer.ContentPanel.Size = new System.Drawing.Size(931, 752);
             this._toolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this._toolStripContainer.Location = new System.Drawing.Point(0, 0);
             this._toolStripContainer.Name = "_toolStripContainer";
-            this._toolStripContainer.Size = new System.Drawing.Size(898, 780);
+            this._toolStripContainer.Size = new System.Drawing.Size(931, 805);
             this._toolStripContainer.TabIndex = 0;
             this._toolStripContainer.Text = "toolStripContainer1";
             // 
@@ -124,7 +134,7 @@
             this._statusProgressbar});
             this._statusStrip.Location = new System.Drawing.Point(0, 0);
             this._statusStrip.Name = "_statusStrip";
-            this._statusStrip.Size = new System.Drawing.Size(898, 22);
+            this._statusStrip.Size = new System.Drawing.Size(931, 22);
             this._statusStrip.TabIndex = 0;
             // 
             // _openTransactionLbl
@@ -187,7 +197,7 @@
             this._toolStrip.Name = "_toolStrip";
             this._toolStrip.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
             this._toolStrip.ShowItemToolTips = false;
-            this._toolStrip.Size = new System.Drawing.Size(898, 31);
+            this._toolStrip.Size = new System.Drawing.Size(931, 31);
             this._toolStrip.Stretch = true;
             this._toolStrip.TabIndex = 1;
             // 
@@ -245,10 +255,12 @@
             this._saveAsMnu.Text = "Save &as";
             this._saveAsMnu.Click += new System.EventHandler(this.SaveAsMnu_Click);
             // 
-            // toolStripSeparator4
+            // _optionsMnu
             // 
-            toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new System.Drawing.Size(152, 6);
+            this._optionsMnu.Name = "_optionsMnu";
+            this._optionsMnu.Size = new System.Drawing.Size(155, 22);
+            this._optionsMnu.Text = "Options...";
+            this._optionsMnu.Click += new System.EventHandler(this.OptionsMnu_Click);
             // 
             // _exitMnu
             // 
@@ -517,23 +529,11 @@
             this._newScriptBtn.Text = "New script";
             this._newScriptBtn.Click += new System.EventHandler(this.NewScriptBtn_Click);
             // 
-            // _optionsMnu
-            // 
-            this._optionsMnu.Name = "_optionsMnu";
-            this._optionsMnu.Size = new System.Drawing.Size(155, 22);
-            this._optionsMnu.Text = "Options...";
-            this._optionsMnu.Click += new System.EventHandler(this.OptionsMnu_Click);
-            // 
-            // toolStripSeparator7
-            // 
-            toolStripSeparator7.Name = "toolStripSeparator7";
-            toolStripSeparator7.Size = new System.Drawing.Size(152, 6);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(898, 780);
+            this.ClientSize = new System.Drawing.Size(931, 805);
             this.Controls.Add(this._toolStripContainer);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
