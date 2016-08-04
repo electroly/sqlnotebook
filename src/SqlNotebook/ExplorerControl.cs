@@ -156,7 +156,7 @@ namespace SqlNotebook {
                         var name = (string)dt.Get(i, "name");
                         var info = (string)dt.Get(i, "type");
                         info += Convert.ToInt32(dt.Get(i, "notnull")) != 0 ? " NOT NULL" : "";
-                        info += Convert.ToInt32(dt.Get(i, "pk")) != 1 ? " PRIMARY KEY" : "";
+                        info += Convert.ToInt32(dt.Get(i, "pk")) != 0 ? " PRIMARY KEY" : "";
                         details.Add(Tuple.Create(name, info));
                     }
                 } else if (lvi.Group.Name == "Script") {
