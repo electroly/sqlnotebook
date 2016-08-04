@@ -31,11 +31,15 @@
             this._grid = new System.Windows.Forms.DataGridView();
             this._resultToolStrip = new System.Windows.Forms.ToolStrip();
             this._executeBtn = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this._prevBtn = new System.Windows.Forms.ToolStripButton();
             this._resultSetLbl = new System.Windows.Forms.ToolStripLabel();
             this._nextBtn = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
+            this._sendTableMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._sendNoteMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this._sendCsvMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._sendExcelMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._rowCountLbl = new System.Windows.Forms.ToolStripLabel();
             ((System.ComponentModel.ISupportInitialize)(this._splitContainer)).BeginInit();
             this._splitContainer.Panel1.SuspendLayout();
@@ -62,8 +66,8 @@
             // _splitContainer.Panel2
             // 
             this._splitContainer.Panel2.Controls.Add(this.toolStripContainer1);
-            this._splitContainer.Size = new System.Drawing.Size(482, 410);
-            this._splitContainer.SplitterDistance = 158;
+            this._splitContainer.Size = new System.Drawing.Size(694, 614);
+            this._splitContainer.SplitterDistance = 235;
             this._splitContainer.SplitterWidth = 5;
             this._splitContainer.TabIndex = 0;
             // 
@@ -73,7 +77,7 @@
             this._sqlPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._sqlPanel.Location = new System.Drawing.Point(0, 0);
             this._sqlPanel.Name = "_sqlPanel";
-            this._sqlPanel.Size = new System.Drawing.Size(482, 158);
+            this._sqlPanel.Size = new System.Drawing.Size(694, 235);
             this._sqlPanel.TabIndex = 0;
             // 
             // toolStripContainer1
@@ -82,11 +86,11 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this._grid);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(482, 222);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(694, 345);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(482, 247);
+            this.toolStripContainer1.Size = new System.Drawing.Size(694, 374);
             this.toolStripContainer1.TabIndex = 1;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -120,7 +124,7 @@
             this._grid.ShowCellToolTips = false;
             this._grid.ShowEditingIcon = false;
             this._grid.ShowRowErrors = false;
-            this._grid.Size = new System.Drawing.Size(482, 222);
+            this._grid.Size = new System.Drawing.Size(694, 345);
             this._grid.TabIndex = 0;
             // 
             // _resultToolStrip
@@ -130,16 +134,15 @@
             this._resultToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this._resultToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._executeBtn,
-            this.toolStripSeparator2,
             this._prevBtn,
             this._resultSetLbl,
             this._nextBtn,
-            this.toolStripSeparator1,
+            this.toolStripDropDownButton1,
             this._rowCountLbl});
             this._resultToolStrip.Location = new System.Drawing.Point(0, 0);
             this._resultToolStrip.Name = "_resultToolStrip";
             this._resultToolStrip.ShowItemToolTips = false;
-            this._resultToolStrip.Size = new System.Drawing.Size(482, 25);
+            this._resultToolStrip.Size = new System.Drawing.Size(694, 29);
             this._resultToolStrip.Stretch = true;
             this._resultToolStrip.TabIndex = 0;
             // 
@@ -147,30 +150,29 @@
             // 
             this._executeBtn.Image = global::SqlNotebook.Properties.Resources.ControlPlayBlue;
             this._executeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._executeBtn.Margin = new System.Windows.Forms.Padding(1, 1, 0, 2);
             this._executeBtn.Name = "_executeBtn";
-            this._executeBtn.Size = new System.Drawing.Size(67, 22);
+            this._executeBtn.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this._executeBtn.Size = new System.Drawing.Size(67, 26);
             this._executeBtn.Text = "Execute";
             this._executeBtn.Click += new System.EventHandler(this.ExecuteBtn_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // _prevBtn
             // 
             this._prevBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this._prevBtn.Image = ((System.Drawing.Image)(resources.GetObject("_prevBtn.Image")));
             this._prevBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._prevBtn.Margin = new System.Windows.Forms.Padding(5, 1, 0, 2);
             this._prevBtn.Name = "_prevBtn";
-            this._prevBtn.Size = new System.Drawing.Size(23, 22);
+            this._prevBtn.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            this._prevBtn.Size = new System.Drawing.Size(30, 26);
             this._prevBtn.Text = "toolStripButton1";
             this._prevBtn.Click += new System.EventHandler(this.PrevBtn_Click);
             // 
             // _resultSetLbl
             // 
             this._resultSetLbl.Name = "_resultSetLbl";
-            this._resultSetLbl.Size = new System.Drawing.Size(36, 22);
+            this._resultSetLbl.Size = new System.Drawing.Size(36, 26);
             this._resultSetLbl.Text = "1 of 1";
             // 
             // _nextBtn
@@ -179,20 +181,71 @@
             this._nextBtn.Image = ((System.Drawing.Image)(resources.GetObject("_nextBtn.Image")));
             this._nextBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._nextBtn.Name = "_nextBtn";
-            this._nextBtn.Size = new System.Drawing.Size(23, 22);
+            this._nextBtn.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            this._nextBtn.Size = new System.Drawing.Size(30, 26);
             this._nextBtn.Text = "toolStripButton2";
             this._nextBtn.Click += new System.EventHandler(this.NextBtn_Click);
             // 
-            // toolStripSeparator1
+            // toolStripDropDownButton1
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._sendTableMnu,
+            this._sendNoteMnu,
+            this.toolStripSeparator4,
+            this._sendCsvMnu,
+            this._sendExcelMnu});
+            this.toolStripDropDownButton1.Image = global::SqlNotebook.Properties.Resources.TextExports;
+            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton1.Margin = new System.Windows.Forms.Padding(8, 1, 0, 2);
+            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(76, 26);
+            this.toolStripDropDownButton1.Text = "Send to";
+            // 
+            // _sendTableMnu
+            // 
+            this._sendTableMnu.Image = ((System.Drawing.Image)(resources.GetObject("_sendTableMnu.Image")));
+            this._sendTableMnu.Name = "_sendTableMnu";
+            this._sendTableMnu.Size = new System.Drawing.Size(165, 22);
+            this._sendTableMnu.Text = "Table...";
+            this._sendTableMnu.Click += new System.EventHandler(this.SendTableMnu_Click);
+            // 
+            // _sendNoteMnu
+            // 
+            this._sendNoteMnu.Image = ((System.Drawing.Image)(resources.GetObject("_sendNoteMnu.Image")));
+            this._sendNoteMnu.Name = "_sendNoteMnu";
+            this._sendNoteMnu.Size = new System.Drawing.Size(165, 22);
+            this._sendNoteMnu.Text = "Note...";
+            this._sendNoteMnu.Visible = false;
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(162, 6);
+            this.toolStripSeparator4.Visible = false;
+            // 
+            // _sendCsvMnu
+            // 
+            this._sendCsvMnu.Image = ((System.Drawing.Image)(resources.GetObject("_sendCsvMnu.Image")));
+            this._sendCsvMnu.Name = "_sendCsvMnu";
+            this._sendCsvMnu.Size = new System.Drawing.Size(165, 22);
+            this._sendCsvMnu.Text = "CSV text file...";
+            this._sendCsvMnu.Visible = false;
+            // 
+            // _sendExcelMnu
+            // 
+            this._sendExcelMnu.Image = ((System.Drawing.Image)(resources.GetObject("_sendExcelMnu.Image")));
+            this._sendExcelMnu.Name = "_sendExcelMnu";
+            this._sendExcelMnu.Size = new System.Drawing.Size(165, 22);
+            this._sendExcelMnu.Text = "Excel workbook...";
+            this._sendExcelMnu.Visible = false;
             // 
             // _rowCountLbl
             // 
+            this._rowCountLbl.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this._rowCountLbl.Margin = new System.Windows.Forms.Padding(0, 1, 8, 2);
             this._rowCountLbl.Name = "_rowCountLbl";
-            this._rowCountLbl.Size = new System.Drawing.Size(41, 22);
-            this._rowCountLbl.Text = "0 rows";
+            this._rowCountLbl.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+            this._rowCountLbl.Size = new System.Drawing.Size(5, 26);
             // 
             // QueryDocumentControl
             // 
@@ -201,7 +254,7 @@
             this.Controls.Add(this._splitContainer);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "QueryDocumentControl";
-            this.Size = new System.Drawing.Size(482, 410);
+            this.Size = new System.Drawing.Size(694, 614);
             this._splitContainer.Panel1.ResumeLayout(false);
             this._splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._splitContainer)).EndInit();
@@ -225,12 +278,16 @@
         private System.Windows.Forms.ToolStripContainer toolStripContainer1;
         private System.Windows.Forms.ToolStrip _resultToolStrip;
         private System.Windows.Forms.ToolStripButton _executeBtn;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.DataGridView _grid;
         private System.Windows.Forms.ToolStripButton _prevBtn;
         private System.Windows.Forms.ToolStripButton _nextBtn;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripLabel _resultSetLbl;
         private System.Windows.Forms.ToolStripLabel _rowCountLbl;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
+        private System.Windows.Forms.ToolStripMenuItem _sendCsvMnu;
+        private System.Windows.Forms.ToolStripMenuItem _sendTableMnu;
+        private System.Windows.Forms.ToolStripMenuItem _sendNoteMnu;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem _sendExcelMnu;
     }
 }

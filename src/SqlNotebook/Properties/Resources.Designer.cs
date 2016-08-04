@@ -163,6 +163,16 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Exclamation16 {
+            get {
+                object obj = ResourceManager.GetObject("Exclamation16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Exclamation32 {
             get {
                 object obj = ResourceManager.GetObject("Exclamation32", resourceCulture);
@@ -456,13 +466,13 @@ namespace SqlNotebook.Properties {
         ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
         ///&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
         ///&lt;style&gt;
-        ///* { font-family: Calibri; font-size: 8pt; }
+        ///* { font-family: Arial; font-size: 8pt; }
         ///a, a:visited { text-decoration: none; color: blue; }
         ///a:hover { text-decoration: underline; }
         ///&lt;/style&gt;
         ///SQL Notebook&lt;br&gt;
         ///Copyright © 2016 Brian Luft&lt;br&gt;&lt;br&gt;
-        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &amp;quot;Software&amp;quot;), to deal in the Software without restriction, including  [rest of string was truncated]&quot;;.
+        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &amp;quot;Software&amp;quot;), to deal in the Software without restriction, including wi [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ThirdPartyLicensesHtml {
             get {

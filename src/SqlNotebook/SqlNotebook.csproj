@@ -245,6 +245,12 @@
     <Compile Include="ConsoleRichTextBox.cs" />
     <Compile Include="RecentDataSources.cs" />
     <Compile Include="Bind.cs" />
+    <Compile Include="SendToTableForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SendToTableForm.Designer.cs">
+      <DependentUpon>SendToTableForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SqlTextControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -341,6 +347,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="QueryDocumentControl.resx">
       <DependentUpon>QueryDocumentControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SendToTableForm.resx">
+      <DependentUpon>SendToTableForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SqlTextControl.resx">
       <DependentUpon>SqlTextControl.cs</DependentUpon>

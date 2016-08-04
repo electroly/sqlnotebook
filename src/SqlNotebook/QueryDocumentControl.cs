@@ -27,6 +27,7 @@ using SqlNotebookScript.Interpreter;
 using ScintillaNET;
 using SqlNotebookScript;
 using SqlNotebookScript.Utils;
+using SqlNotebook.Properties;
 
 namespace SqlNotebook {
     public partial class QueryDocumentControl : UserControl, IDocumentControl {
@@ -271,7 +272,13 @@ namespace SqlNotebook {
             if (_results.Count == 0) {
                 _resultSetLbl.Text = "(no results)";
                 _rowCountLbl.Text = "";
+                foreach (ToolStripItem btn in _resultToolStrip.Items) {
+                    btn.Visible = btn == _executeBtn;
+                }
             } else {
+                foreach (ToolStripItem btn in _resultToolStrip.Items) {
+                    btn.Visible = true;
+                }
                 var source = index >= 0 && index < _results.Count ? _results[index] : null;
                 _grid.DataSource = source;
                 foreach (DataGridViewColumn col in _grid.Columns) {
@@ -293,6 +300,66 @@ namespace SqlNotebook {
 
         private void NextBtn_Click(object sender, EventArgs e) {
             ShowResult(_selectedResultIndex + 1);
+        }
+
+        private async void SendTableMnu_Click(object sender, EventArgs e) {
+            var f = new SendToTableForm(
+                $"{ItemName}_result",
+                _manager.Items
+                    .Where(x => x.Type == NotebookItemType.Table || x.Type == NotebookItemType.View)
+                    .Select(x => x.Name)
+                    .ToList()
+            );
+            string name;
+            if (f.ShowDialogAndDispose(this) == DialogResult.OK) {
+                name = f.SelectedName;
+            } else {
+                return;
+            }
+
+            var dt = _results[_selectedResultIndex];
+            var columnDefs = dt.Columns.Cast<DataColumn>().Select(x => 
+                $"{x.ColumnName.DoubleQuote()} {GetSqlNameForDbType(x.DataType)}");
+            var createSql = $"CREATE TABLE {name.DoubleQuote()} ({string.Join(", ", columnDefs)})";
+
+            var insertSql = SqlUtil.GetInsertSql(name, dt.Columns.Count);
+
+            Exception exception = null;
+            _manager.PushStatus($"Sending data to \"{name}\"...");
+            await Task.Run(() => {
+                try {
+                    _notebook.Invoke(() => {
+                        SqlUtil.WithTransaction(_notebook, () => {
+                            _manager.ExecuteScript(createSql);
+                            foreach (DataRow row in dt.Rows) {
+                                _notebook.Execute(insertSql, row.ItemArray);
+                            }
+                        });
+                    });
+                    _manager.Rescan();
+                } catch (Exception ex) {
+                    exception = ex;
+                }
+            });
+            _manager.PopStatus();
+            
+            if (exception != null) {
+                MessageForm.ShowError(this, "Send to Table", exception.Message);
+            }
+        }
+
+        private static string GetSqlNameForDbType(Type type) {
+            if (type == typeof(string)) {
+                return "TEXT";
+            } else if (type == typeof(int) || type == typeof(long)) {
+                return "INTEGER";
+            } else if (type == typeof(double)) {
+                return "FLOAT";
+            } else if (type == typeof(byte[])) {
+                return "BLOB";
+            } else {
+                return "ANY";
+            }
         }
     }
 }
