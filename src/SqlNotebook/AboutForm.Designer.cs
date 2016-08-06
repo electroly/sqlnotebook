@@ -41,7 +41,7 @@
             // _okBtn
             // 
             _okBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            _okBtn.Location = new System.Drawing.Point(409, 367);
+            _okBtn.Location = new System.Drawing.Point(568, 447);
             _okBtn.Name = "_okBtn";
             _okBtn.Size = new System.Drawing.Size(88, 26);
             _okBtn.TabIndex = 0;
@@ -93,7 +93,7 @@
             this.panel1.Controls.Add(this.label2);
             this.panel1.Location = new System.Drawing.Point(-1, -1);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(511, 74);
+            this.panel1.Size = new System.Drawing.Size(670, 74);
             this.panel1.TabIndex = 7;
             // 
             // _websiteLnk
@@ -119,7 +119,7 @@
             this._webBrowser.MinimumSize = new System.Drawing.Size(20, 20);
             this._webBrowser.Name = "_webBrowser";
             this._webBrowser.ScriptErrorsSuppressed = true;
-            this._webBrowser.Size = new System.Drawing.Size(509, 287);
+            this._webBrowser.Size = new System.Drawing.Size(668, 367);
             this._webBrowser.TabIndex = 8;
             this._webBrowser.WebBrowserShortcutsEnabled = false;
             // 
@@ -132,7 +132,7 @@
             this.panel2.Controls.Add(this._webBrowser);
             this.panel2.Location = new System.Drawing.Point(-1, 72);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(511, 289);
+            this.panel2.Size = new System.Drawing.Size(670, 369);
             this.panel2.TabIndex = 9;
             // 
             // AboutForm
@@ -140,7 +140,7 @@
             this.AcceptButton = _okBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(509, 405);
+            this.ClientSize = new System.Drawing.Size(668, 485);
             this.Controls.Add(this.panel2);
             this.Controls.Add(_okBtn);
             this.Controls.Add(this.panel1);

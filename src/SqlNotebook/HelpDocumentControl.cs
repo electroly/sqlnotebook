@@ -25,12 +25,13 @@ namespace SqlNotebook {
         string IDocumentControl.DocumentText { get; } = "";
         public void Save() { }
 
+        public Action<string> SetTitleProc { get; set; } = x => { };
+
         public HelpDocumentControl(Func<int> getPortFunc) {
             InitializeComponent();
             _browser.DocumentTitleChanged += (sender, e) => UpdateToolbar();
             _browser.CanGoBackChanged += (sender, e) => UpdateToolbar();
             _browser.CanGoForwardChanged += (sender, e) => UpdateToolbar();
-            _browser.Navigating += (sender, e) => _titleLbl.Text = "Loading...";
             _browser.Navigated += (sender, e) => UpdateToolbar();
             _getPortFunc = getPortFunc;
         }
@@ -40,7 +41,7 @@ namespace SqlNotebook {
         }
         
         private void UpdateToolbar() {
-            _titleLbl.Text = _browser.DocumentTitle;
+            SetTitleProc(_browser.DocumentTitle);
             _backBtn.Enabled = _browser.CanGoBack;
             _forwardBtn.Enabled = _browser.CanGoForward;
         }

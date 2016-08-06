@@ -129,7 +129,7 @@
             // 
             // _resultToolStrip
             // 
-            this._resultToolStrip.BackColor = System.Drawing.SystemColors.Window;
+            this._resultToolStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
             this._resultToolStrip.Dock = System.Windows.Forms.DockStyle.None;
             this._resultToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this._resultToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -141,6 +141,7 @@
             this._rowCountLbl});
             this._resultToolStrip.Location = new System.Drawing.Point(0, 0);
             this._resultToolStrip.Name = "_resultToolStrip";
+            this._resultToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this._resultToolStrip.ShowItemToolTips = false;
             this._resultToolStrip.Size = new System.Drawing.Size(694, 29);
             this._resultToolStrip.Stretch = true;
@@ -150,7 +151,7 @@
             // 
             this._executeBtn.Image = global::SqlNotebook.Properties.Resources.ControlPlayBlue;
             this._executeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._executeBtn.Margin = new System.Windows.Forms.Padding(1, 1, 0, 2);
+            this._executeBtn.Margin = new System.Windows.Forms.Padding(2, 1, 0, 2);
             this._executeBtn.Name = "_executeBtn";
             this._executeBtn.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this._executeBtn.Size = new System.Drawing.Size(67, 26);

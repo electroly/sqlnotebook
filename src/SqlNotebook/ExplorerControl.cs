@@ -32,6 +32,7 @@ namespace SqlNotebook {
             InitializeComponent();
             _list.EnableDoubleBuffer();
             _detailsLst.EnableDoubleBuffer();
+            EnableDisableToolbarButtons();
 
             _mainForm = mainForm;
             _manager = manager;
@@ -137,6 +138,8 @@ namespace SqlNotebook {
         }
 
         private void List_SelectedIndexChanged(object sender, EventArgs e) {
+            EnableDisableToolbarButtons();
+
             _detailsLst.BeginUpdate();
             _detailsLst.Items.Clear();
             if (_list.SelectedItems.Count != 1) {
@@ -150,7 +153,7 @@ namespace SqlNotebook {
 
             try {
                 if (lvi.Group.Name == "Table" || lvi.Group.Name == "View") {
-                    var dt = n.SpecialReadOnlyQuery($"PRAGMA table_info ({lvi.Text.DoubleQuote()})", 
+                    var dt = n.SpecialReadOnlyQuery($"PRAGMA table_info ({lvi.Text.DoubleQuote()})",
                         new Dictionary<string, object>());
                     for (int i = 0; i < dt.Rows.Count; i++) {
                         var name = (string)dt.Get(i, "name");
@@ -180,6 +183,11 @@ namespace SqlNotebook {
             }
             _detailsLst.Groups[0].Header = notebookItemName;
             _detailsLst.EndUpdate();
+        }
+
+        private void EnableDisableToolbarButtons() {
+            var exists = _list.SelectedItems.Count == 1;
+            _renameBtn.Enabled = _deleteBtn.Enabled = exists;
         }
 
         private void RenameMnu_Click(object sender, EventArgs e) {
@@ -222,6 +230,43 @@ namespace SqlNotebook {
                     DoDelete();
                 }
             }
+        }
+
+        private void NewNoteBtn_Click(object sender, EventArgs e) {
+            try {
+                _manager.OpenItem(new NotebookItem(NotebookItemType.Note, _manager.NewNote()));
+            } catch (Exception ex) {
+                MessageForm.ShowError(TopLevelControl, 
+                    "Notebook Error", "There was a problem creating the note.", ex.Message);
+            }
+        }
+
+        private void NewConsoleBtn_Click(object sender, EventArgs e) {
+            try {
+                _manager.OpenItem(new NotebookItem(NotebookItemType.Console, _manager.NewConsole()));
+            } catch (Exception ex) {
+                MessageForm.ShowError(TopLevelControl,
+                    "Notebook Error", "There was a problem creating the console.", ex.Message);
+            }
+        }
+
+        private void NewScriptBtn_Click(object sender, EventArgs e) {
+            try {
+                _manager.OpenItem(new NotebookItem(NotebookItemType.Script, _manager.NewScript()));
+            } catch (Exception ex) {
+                MessageForm.ShowError(TopLevelControl,
+                    "Notebook Error", "There was a problem creating the script.", ex.Message);
+            }
+        }
+
+        private void RenameBtn_Click(object sender, EventArgs e) {
+            if (_list.SelectedItems.Count == 1) {
+                _list.SelectedItems[0].BeginEdit();
+            }
+        }
+
+        private void DeleteBtn_Click(object sender, EventArgs e) {
+            DoDelete();
         }
     }
 }

@@ -49,12 +49,28 @@ namespace SqlNotebook {
         private readonly Dictionary<NotebookItem, UserControlDockContent> _openItems
             = new Dictionary<NotebookItem, UserControlDockContent>();
 
+        private sealed class MenuColorTable : ProfessionalColorTable {
+            public override Color MenuItemSelected => Color.FromArgb(225, 239, 251);
+            public override Color MenuItemBorder => Color.FromArgb(200, 228, 251);
+            public override Color MenuItemSelectedGradientBegin => Color.FromArgb(225, 239, 251);
+            public override Color MenuItemSelectedGradientEnd => Color.FromArgb(225, 239, 251);
+            public override Color ImageMarginGradientBegin => SystemColors.Window;
+            public override Color ImageMarginGradientMiddle => SystemColors.Window;
+            public override Color ImageMarginGradientEnd => SystemColors.Window;
+        }
+
+        private sealed class MenuRenderer : ToolStripProfessionalRenderer {
+            public MenuRenderer() : base(new MenuColorTable()) { }
+        }
+
         public MainForm(string filePath, bool isNew) {
             InitializeComponent();
-            _toolStrip.Items.Add(_searchTxt = new CueToolStripTextBox {
+            _menuStrip.Renderer = new MenuRenderer();
+            _menuStrip.Items.Add(_searchTxt = new CueToolStripTextBox {
                 Alignment = ToolStripItemAlignment.Right,
                 CueText = "Search Help",
-                AutoSize = false
+                AutoSize = false,
+                Margin = new Padding(0, 0, 5, 0)
             });
             _searchTxt.InnerTextBox.KeyDown += async (sender, e) => {
                 if (e.KeyCode == Keys.Enter) {
@@ -87,7 +103,8 @@ namespace SqlNotebook {
                 Dock = DockStyle.Fill,
                 Theme = new VS2012LightTheme(),
                 DocumentStyle = DocumentStyle.DockingWindow,
-                DefaultFloatWindowSize = new Size(700, 700)
+                DefaultFloatWindowSize = new Size(700, 700),
+                ShowDocumentIcon = true
             };
             _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
 
@@ -128,7 +145,7 @@ namespace SqlNotebook {
             };
 
             Slot.Bind(
-                () => _importBtn.Enabled = _saveAsMnu.Enabled = !_operationInProgress && !_isTransactionOpen,
+                () => _importMnu.Enabled = _saveAsMnu.Enabled = !_operationInProgress && !_isTransactionOpen,
                 _operationInProgress, _isTransactionOpen);
             Slot.Bind(
                 () => _exportMnu.Enabled = !_operationInProgress,
@@ -666,6 +683,7 @@ namespace SqlNotebook {
                     _helpDoc = new UserControlDockContent("Help Viewer", helpCtl, DockAreas.Document | DockAreas.Float) {
                         Icon = Resources.HelpIco
                     };
+                    helpCtl.SetTitleProc = x => _helpDoc.Text = x;
                     _helpDoc.FormClosed += (sender, e) => _helpDoc = null;
                     _helpDoc.Show(_dockPanel);
                 }

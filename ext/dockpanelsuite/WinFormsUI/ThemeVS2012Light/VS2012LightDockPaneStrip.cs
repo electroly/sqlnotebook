@@ -468,7 +468,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                 TextFormatFlags textFormat = TextFormatFlags.EndEllipsis |
                     TextFormatFlags.SingleLine |
                     TextFormatFlags.VerticalCenter |
-                    TextFormatFlags.HorizontalCenter;
+                    TextFormatFlags.Left; //CHANGED: from HorizontalCenter to Left
                 if (RightToLeft == RightToLeft.Yes)
                     return textFormat | TextFormatFlags.RightToLeft;
                 else
@@ -940,13 +940,15 @@ namespace WeifenLuo.WinFormsUI.Docking
                 + ToolWindowImageGapRight + ToolWindowTextGapRight;
         }
 
-        private const int TAB_CLOSE_BUTTON_WIDTH = 30;
+        private const int TAB_CLOSE_BUTTON_WIDTH = 16; //CHANGED: from 30 to 16
 
         private int GetMaxTabWidth_Document(int index)
         {
             IDockContent content = Tabs[index].Content;
             int height = GetTabRectangle_Document(index).Height;
-            Size sizeText = TextRenderer.MeasureText(content.DockHandler.TabText, BoldFont, new Size(DocumentTabMaxWidth, height), DocumentTextFormat);
+
+            //CHANGED: BoldFont to TextFont
+            Size sizeText = TextRenderer.MeasureText(content.DockHandler.TabText, TextFont, new Size(DocumentTabMaxWidth, height), DocumentTextFormat);
 
             int width;
             if (DockPane.DockPanel.ShowDocumentIcon)
