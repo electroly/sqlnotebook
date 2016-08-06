@@ -3,6 +3,6 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>BREAK Statement</title></head>
 <body>
 <h1><code>BREAK</code> Statement
-</h1>Terminates the enclosing <code>WHILE</code> loop. It is an error to call <code>BREAK</code> outside of a <code>WHILE</code> loop.<br><h2>Syntax</h2>
+</h1>Terminates the enclosing <a href="while-stmt.html"><code>WHILE</code></a>&nbsp;or <a href="for-stmt.html"><code>FOR</code></a> loop. It is an error to call <code>BREAK</code> outside of a <code>WHILE</code> or <code>FOR</code> loop.<br><h2>Syntax</h2>
 <p style="margin-left: 40px;">
 <code>BREAK</code></p><h2>Examples</h2><ul class="examples"><li><code>DECLARE @counter = 1;<br>WHILE 1 BEGIN<br>&nbsp; &nbsp; PRINT @counter;<br>&nbsp; &nbsp; SET @counter = @counter + 1;<br>&nbsp; &nbsp; IF @counter &gt; 10<br>&nbsp; &nbsp; &nbsp; &nbsp; BREAK;<br>END</code><br>Prints the numbers 1 to 10 in increasing order.</li></ul></body></html>
