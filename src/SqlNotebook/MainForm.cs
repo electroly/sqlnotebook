@@ -652,6 +652,11 @@ namespace SqlNotebook {
 
             string url = $"http://127.0.0.1:{_helpServer.PortNumber}{path}";
 
+            if (Settings.Default.UseExternalHelpBrowser) {
+                Process.Start(url);
+                return;
+            }
+
             BeginInvoke(new MethodInvoker(() => {
                 HelpDocumentControl helpCtl;
                 if (_helpDoc != null) {

@@ -27,6 +27,7 @@
             this._cancelBtn = new System.Windows.Forms.Button();
             this._autoCreateChk = new System.Windows.Forms.CheckBox();
             this._autoCreateCmb = new System.Windows.Forms.ComboBox();
+            this._helpExternalBrowserChk = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // _okBtn
@@ -76,6 +77,16 @@
             this._autoCreateCmb.Size = new System.Drawing.Size(155, 23);
             this._autoCreateCmb.TabIndex = 3;
             // 
+            // _helpExternalBrowserChk
+            // 
+            this._helpExternalBrowserChk.AutoSize = true;
+            this._helpExternalBrowserChk.Location = new System.Drawing.Point(12, 39);
+            this._helpExternalBrowserChk.Name = "_helpExternalBrowserChk";
+            this._helpExternalBrowserChk.Size = new System.Drawing.Size(281, 19);
+            this._helpExternalBrowserChk.TabIndex = 4;
+            this._helpExternalBrowserChk.Text = "Use external browser for viewing documentation";
+            this._helpExternalBrowserChk.UseVisualStyleBackColor = true;
+            // 
             // OptionsForm
             // 
             this.AcceptButton = this._okBtn;
@@ -83,6 +94,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._cancelBtn;
             this.ClientSize = new System.Drawing.Size(436, 123);
+            this.Controls.Add(this._helpExternalBrowserChk);
             this.Controls.Add(this._autoCreateCmb);
             this.Controls.Add(this._autoCreateChk);
             this.Controls.Add(this._cancelBtn);
@@ -107,5 +119,6 @@
         private System.Windows.Forms.Button _cancelBtn;
         private System.Windows.Forms.CheckBox _autoCreateChk;
         private System.Windows.Forms.ComboBox _autoCreateCmb;
+        private System.Windows.Forms.CheckBox _helpExternalBrowserChk;
     }
 }

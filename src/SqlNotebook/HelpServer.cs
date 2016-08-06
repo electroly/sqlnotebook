@@ -254,6 +254,8 @@ namespace SqlNotebook {
                     bytes = Resources.PageWhiteTextPng;
                 } else if (rawUrl == "/link.png") {
                     bytes = Resources.LinkGo32Png;
+                } else if (rawUrl == "/favicon.ico") {
+                    bytes = Resources.FaviconIco;
                 } else if (rawUrl.StartsWith("/search?q=")) {
                     var keyword = rawUrl.Substring("/search?q=".Length);
                     if (keyword.Trim().Any()) {
@@ -326,7 +328,7 @@ namespace SqlNotebook {
 
         private string BuildIndexHtml() { // run from notebook thread
             const string PAGE_TMPL =
-                @"<title>Help Index</title>
+                @"<title>SQL Notebook Help</title>
                 <style>
                     img.header-icon {
                         padding-top: 5px;

@@ -32,6 +32,8 @@ namespace SqlNotebook {
                 _autoCreateChk.Checked = true;
                 _autoCreateCmb.SelectedIndex = autoCreate;
             }
+
+            _helpExternalBrowserChk.Checked = Settings.Default.UseExternalHelpBrowser;
         }
 
         private void OkBtn_Click(object sender, EventArgs e) {
@@ -40,6 +42,7 @@ namespace SqlNotebook {
             } else {
                 Settings.Default.AutoCreateInNewNotebooks = -1;
             }
+            Settings.Default.UseExternalHelpBrowser = _helpExternalBrowserChk.Checked;
 
             Settings.Default.Save();
             DialogResult = DialogResult.OK;
