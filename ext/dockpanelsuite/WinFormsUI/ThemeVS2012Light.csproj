@@ -90,7 +90,6 @@
     <None Include="license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ThemeVS2012Light\Resources\ActiveTabHover_Close.png" />
