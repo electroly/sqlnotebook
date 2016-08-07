@@ -77,7 +77,7 @@ namespace SqlNotebookScript.Interpreter {
                     ),
                     Prod($"{p}.add", 1,
                         Tok(TokenType.Add),
-                        Opt(Tok(TokenType.ColumnKw)),
+                        Opt(Tok(TokenType.Columnkw)),
                         SubProd("column-def")
                     )
                 )
@@ -218,7 +218,7 @@ namespace SqlNotebookScript.Interpreter {
                         TokenType.Savepoint, TokenType.Release, TokenType.If, TokenType.Temp, TokenType.Without,
                         TokenType.Abort, TokenType.Action, TokenType.After, TokenType.Analyze, TokenType.Asc,
                         TokenType.Attach, TokenType.Before, TokenType.By, TokenType.Cascade, TokenType.Cast,
-                        TokenType.ColumnKw, TokenType.Conflict, TokenType.Database, TokenType.Desc, TokenType.Detach,
+                        TokenType.Columnkw, TokenType.Conflict, TokenType.Database, TokenType.Desc, TokenType.Detach,
                         TokenType.Each, TokenType.Fail, TokenType.For, TokenType.Ignore, TokenType.Initially,
                         TokenType.Instead, TokenType.LikeKw, TokenType.Match, TokenType.No, TokenType.Key,
                         TokenType.Of, TokenType.Offset, TokenType.Pragma, TokenType.Raise, TokenType.Recursive,
@@ -226,7 +226,7 @@ namespace SqlNotebookScript.Interpreter {
                         TokenType.View, TokenType.Virtual, TokenType.With, TokenType.Reindex, TokenType.Rename,
                         TokenType.CtimeKw, TokenType.Any, TokenType.Rem, TokenType.Concat, TokenType.Autoincr,
                         TokenType.Deferrable, TokenType.ToText, TokenType.ToBlob, TokenType.ToNumeric, TokenType.ToInt,
-                        TokenType.ToReal, TokenType.IsNot, TokenType.Function, TokenType.AggFunction,
+                        TokenType.ToReal, TokenType.Isnot, TokenType.Function, TokenType.AggFunction,
                         TokenType.Register
                     )
                 )),
@@ -598,8 +598,8 @@ namespace SqlNotebookScript.Interpreter {
                         Opt(Tok(TokenType.Not)),
                         SubProd("ineq-expr")
                     ),
-                    Prod($"{p}.is-null", 1, Tok(TokenType.IsNull)),
-                    Prod($"{p}.notnull", 1, Tok(TokenType.NotNull)),
+                    Prod($"{p}.is-null", 1, Tok(TokenType.Isnull)),
+                    Prod($"{p}.notnull", 1, Tok(TokenType.Notnull)),
                     Prod($"{p}.not-null", 1, Tok(TokenType.Not), Tok(TokenType.Null))
                 )
             );

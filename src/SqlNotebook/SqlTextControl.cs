@@ -63,10 +63,10 @@ namespace SqlNotebook {
             }
 
             var operatorTokens = new HashSet<TokenType>(new[] {
-                TokenType.Add, TokenType.Asterisk, TokenType.BitAnd, TokenType.Bitnot, TokenType.BitOr,
+                TokenType.Add, TokenType.Asterisk, TokenType.Bitand, TokenType.Bitnot, TokenType.Bitor,
                 TokenType.Comma, TokenType.Dot, TokenType.Eq, TokenType.Ge, TokenType.Gt, TokenType.Le, TokenType.Lp,
-                TokenType.LShift, TokenType.Lt, TokenType.Ne, TokenType.Plus, TokenType.Rp, TokenType.RShift,
-                TokenType.Semi, TokenType.Star, TokenType.UMinus, TokenType.UPlus
+                TokenType.Lshift, TokenType.Lt, TokenType.Ne, TokenType.Plus, TokenType.Rp, TokenType.Rshift,
+                TokenType.Semi, TokenType.Star, TokenType.Uminus, TokenType.Uplus
             });
 
             var sqlnbKeywords = new HashSet<string>(new[] {
