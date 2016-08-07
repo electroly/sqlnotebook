@@ -15,6 +15,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
@@ -56,6 +57,10 @@ namespace SqlNotebook {
 
         private void HomeBtn_Click(object sender, EventArgs e) {
             _browser.Navigate($"http://127.0.0.1:{_getPortFunc()}/index.html");
+        }
+
+        private void OpenBrowserBtn_Click(object sender, EventArgs e) {
+            Process.Start(_browser.Url.AbsoluteUri);
         }
     }
 }

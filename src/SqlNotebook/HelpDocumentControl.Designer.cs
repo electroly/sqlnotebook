@@ -29,6 +29,7 @@
             this._backBtn = new System.Windows.Forms.ToolStripButton();
             this._forwardBtn = new System.Windows.Forms.ToolStripButton();
             this._browser = new System.Windows.Forms.WebBrowser();
+            this._openBrowserBtn = new System.Windows.Forms.ToolStripButton();
             this._toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -39,7 +40,8 @@
             this._toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._homeBtn,
             this._backBtn,
-            this._forwardBtn});
+            this._forwardBtn,
+            this._openBrowserBtn});
             this._toolStrip.Location = new System.Drawing.Point(0, 0);
             this._toolStrip.Name = "_toolStrip";
             this._toolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
@@ -91,6 +93,18 @@
             this._browser.Size = new System.Drawing.Size(661, 476);
             this._browser.TabIndex = 2;
             // 
+            // _openBrowserBtn
+            // 
+            this._openBrowserBtn.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this._openBrowserBtn.Image = ((System.Drawing.Image)(resources.GetObject("_openBrowserBtn.Image")));
+            this._openBrowserBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._openBrowserBtn.Margin = new System.Windows.Forms.Padding(0, 1, 3, 2);
+            this._openBrowserBtn.Name = "_openBrowserBtn";
+            this._openBrowserBtn.Padding = new System.Windows.Forms.Padding(3);
+            this._openBrowserBtn.Size = new System.Drawing.Size(164, 27);
+            this._openBrowserBtn.Text = "Open in external browser";
+            this._openBrowserBtn.Click += new System.EventHandler(this.OpenBrowserBtn_Click);
+            // 
             // HelpDocumentControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -114,5 +128,6 @@
         private System.Windows.Forms.WebBrowser _browser;
         private System.Windows.Forms.ToolStripButton _backBtn;
         private System.Windows.Forms.ToolStripButton _homeBtn;
+        private System.Windows.Forms.ToolStripButton _openBrowserBtn;
     }
 }
