@@ -244,13 +244,19 @@ namespace SqlNotebook {
             }
         }
 
-        public ScriptOutput ExecuteScript(string code, IReadOnlyDictionary<string, object> args = null) {
+        public ScriptOutput ExecuteScript(string code, IReadOnlyDictionary<string, object> args = null,
+        bool withTransaction = false) {
             NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
             return Invoke(() => {
                 var parser = new ScriptParser(Notebook);
                 var script = parser.Parse(code);
                 var runner = new ScriptRunner(Notebook, Notebook.GetScripts());
-                return runner.Execute(script, args ?? new Dictionary<string, object>());
+                if (withTransaction) {
+                    return SqlUtil.WithTransaction(Notebook, 
+                        () => runner.Execute(script, args ?? new Dictionary<string, object>()));
+                } else {
+                    return runner.Execute(script, args ?? new Dictionary<string, object>());
+                }
             });
         }
 

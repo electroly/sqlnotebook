@@ -271,13 +271,23 @@ namespace SqlNotebookScript.Utils {
             }
             try {
                 action();
-                notebook.Execute("COMMIT");
+                if (didBeginTransaction) {
+                    notebook.Execute("COMMIT");
+                }
             } catch {
                 if (didBeginTransaction) {
                     notebook.Execute("ROLLBACK");
                 }
                 throw;
             }
+        }
+
+        public static T WithTransaction<T>(INotebook notebook, Func<T> func) {
+            var value = default(T);
+            WithTransaction(notebook, () => {
+                value = func();
+            });
+            return value;
         }
 
     }

@@ -47,7 +47,9 @@ namespace SqlNotebook {
 
             manager.PushStatus($"Importing \"{Path.GetFileName(filePath)}\"...");
             try {
-                await Task.Run(() => manager.ExecuteScript(importSql));
+                await Task.Run(() => {
+                    manager.ExecuteScript(importSql, withTransaction: true);
+                });
                 manager.Rescan();
             } catch (Exception ex) {
                 manager.PopStatus();
