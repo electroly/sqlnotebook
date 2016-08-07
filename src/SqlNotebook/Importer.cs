@@ -24,7 +24,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Excel;
 using Microsoft.VisualBasic.FileIO;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
@@ -46,7 +45,6 @@ namespace SqlNotebook {
 
         private readonly IReadOnlyList<Type> _fileSessionTypes = new[] {
             typeof(CsvImportSession),
-            typeof(ExcelImportSession),
             typeof(JsonImportSession)
         };
 
@@ -340,87 +338,6 @@ namespace SqlNotebook {
             return x;
         }
 
-    }
-
-    public sealed class ExcelImportSession : IFileImportSession {
-        private string _filePath;
-
-        public IReadOnlyList<string> SupportedFileExtensions {
-            get {
-                return new[] { ".xls", ".xlsx" };
-            }
-        }
-
-        private IExcelDataReader CreateReader(string filePath, Stream stream) {
-            IExcelDataReader x;
-            if (Path.GetExtension(filePath).ToLower() == ".xls") {
-                x = ExcelReaderFactory.CreateBinaryReader(stream);
-            } else {
-                x = ExcelReaderFactory.CreateOpenXmlReader(stream);
-            }
-            x.IsFirstRowAsColumnNames = FileHasHeaderRow;
-            return x;
-        }
-
-        public void FromFilePath(string filePath) {
-            _filePath = filePath;
-
-            using (var stream = File.OpenRead(filePath))
-            using (var reader = CreateReader(filePath, stream)) {
-                var tableNames = new List<string>();
-                for (int i = 0; i < reader.ResultsCount; i++) {
-                    tableNames.Add(Importer.CreateUniqueName(reader.Name, tableNames));
-                    reader.NextResult();
-                }
-                TableNames = tableNames;
-            }
-        }
-
-        public bool FromRecent(RecentDataSource recent, IWin32Window owner) {
-            FromFilePath(recent.ConnectionString);
-            return true;
-        }
-
-        public IReadOnlyList<string> TableNames { get; private set; } = new string[0];
-
-        public bool FileHasHeaderRow { get; set; }
-
-        public void AddToRecentlyUsed() {
-            RecentDataSources.Add(new RecentDataSource {
-                ConnectionString = _filePath,
-                DisplayName = Path.GetFileName(_filePath),
-                ImportSessionType = this.GetType()
-            });
-        }
-
-        public void PerformImport(Notebook notebook, IReadOnlyList<string> sourceTableNames, IReadOnlyList<string> targetTableNames) {
-            using (var stream = File.OpenRead(_filePath))
-            using (var reader = CreateReader(_filePath, stream))
-            using (var dataSet = reader.AsDataSet()) {
-                for (int i = 0; i < sourceTableNames.Count; i++) {
-                    var sourceName = sourceTableNames[i];
-                    var targetName = targetTableNames[i];
-                    var dt = dataSet.Tables[IndexOf(sourceTableNames, sourceName)];
-                    var columnNames = dt.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
-                    var quotedCols = columnNames.Select(x => x.DoubleQuote());
-                    notebook.Execute($"CREATE TABLE {targetName.DoubleQuote()} ({string.Join(",", quotedCols)})");
-                    var insertSql = $"INSERT INTO {targetName.DoubleQuote()} VALUES " +
-                        $"( {string.Join(",", columnNames.Select((x, j) => $"?{j + 1}"))} )";
-                    foreach (DataRow row in dt.Rows) {
-                        notebook.Execute(insertSql, row.ItemArray);
-                    }
-                }
-            }
-        }
-
-        private static int IndexOf(IReadOnlyList<string> list, string item) {
-            for (int i = 0; i < list.Count; i++) {
-                if (list[i] == item) {
-                    return i;
-                }
-            }
-            return -1;
-        }
     }
 
     public sealed class JsonImportSession : IFileImportSession {
