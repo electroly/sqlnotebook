@@ -321,4 +321,34 @@ namespace SqlNotebookScript.ScalarFunctions {
             return DateTimeUtil.GetDatePart(date, DatePart.Year);
         }
     }
+
+    public sealed class ToDateFunction : CustomScalarFunction {
+        public override bool IsDeterministic => true;
+        public override string Name => "to_date";
+        public override int ParamCount => 1;
+        public override object Execute(IReadOnlyList<object> args) {
+            var input = ArgUtil.GetDateArg(args[0], "input", Name);
+            return DateTimeUtil.FormatDate(input.DateTime);
+        }
+    }
+
+    public sealed class ToDateTimeFunction : CustomScalarFunction {
+        public override bool IsDeterministic => true;
+        public override string Name => "to_datetime";
+        public override int ParamCount => 1;
+        public override object Execute(IReadOnlyList<object> args) {
+            var input = ArgUtil.GetDateArg(args[0], "input", Name);
+            return DateTimeUtil.FormatDateTime(input.DateTime);
+        }
+    }
+
+    public sealed class ToDateTimeOffsetFunction : CustomScalarFunction {
+        public override bool IsDeterministic => true;
+        public override string Name => "to_datetimeoffset";
+        public override int ParamCount => 1;
+        public override object Execute(IReadOnlyList<object> args) {
+            var input = ArgUtil.GetDateArg(args[0], "input", Name);
+            return DateTimeUtil.FormatDateTimeOffset(input);
+        }
+    }
 }

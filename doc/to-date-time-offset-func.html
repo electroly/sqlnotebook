@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>TO_DATETIMEOFFSET Function</title></head>
+<body><h1><code>TO_DATETIMEOFFSET</code> Function</h1>
+<p>Attempts to convert the <span style="font-style: italic;">input</span> value to a date/time string formatted like&nbsp;"2016-08-06 22:11:30.948 -04:00".
+</p>
+
+<h2>Syntax</h2>
+<blockquote>
+<code>TO_DATETIME(<span style="font-style: italic;">input</span>)</code>
+</blockquote>
+
+<h2>Arguments</h2>
+<ul class="args"><li>
+        <b>input</b> (text)<br>The input string that can be parsed as a date and time. Internally, <span style="font-style: italic;">input</span> is parsed&nbsp;by the .NET <a href="https://msdn.microsoft.com/en-us/library/bb301909%28v=vs.110%29.aspx" target="_blank"><code>DateTimeOffset.TryParse</code></a> method.
+    </li></ul><h2>Return Value</h2>
+<blockquote>
+A date string formatted like "2016-08-06 22:11:30.948 -04:00".
+</blockquote>
+
+<h2>Examples</h2>
+<ul class="examples">
+    <li>
+        <code>PRINT TO_DATETIMEOFFSET('2016/5/9 5:39 PM');</code><br>Prints "2016-05-09 17:39:00.000 -04:00" where the time zone is the system's local time zone.</li><li><code>PRINT TO_DATETIMEOFFSET('2016/5/9 5:39 PM +3');</code><br>Prints "2016-05-09 17:39:00.000 +03:00".</li><li><code>PRINT TO_DATETIMEOFFSET('foobar');</code><br>Raises an error because "foobar" is not recognized as a valid date/time format.</li>
+</ul>
+
+<br>
+
+</body></html>
