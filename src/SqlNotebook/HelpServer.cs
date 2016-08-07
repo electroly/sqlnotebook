@@ -341,6 +341,13 @@ namespace SqlNotebook {
                     ul {
                         list-style-type: square;
                     }
+                    ul.group {
+                        padding-top: 5px;
+                        padding-bottom: 10px;
+                    }
+                    ul.group li {
+                        font-size: 12px;
+                    }
                 </style>
                 ";
             const string BOOK_TMPL = "<h2><img src=\"/book.png\" class=\"header-icon\"><span class=\"book-title\">{0}</span></h2><ul>{1}</ul>";
@@ -371,7 +378,7 @@ namespace SqlNotebook {
                 orderby grp.Key
                 let bookHtml = string.Join("",
                     from def in grp
-                    select $"<li><b style=\"font-size: 14px;\">{def.Group}</b><ul style=\"padding-top: 5px; padding-bottom: 10px;\">{def.Html}</ul></li>")
+                    select $"<li><b style=\"font-size: 14px;\">{def.Group}</b><ul class=\"group\">{def.Html}</ul></li>")
                 select string.Format(BOOK_TMPL, WebUtility.HtmlEncode(grp.Key), bookHtml)
             );
         }
