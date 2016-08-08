@@ -331,7 +331,7 @@ namespace SqlNotebook {
                 @"<title>SQL Notebook Help</title>
                 <style>
                     img.header-icon {
-                        padding-top: 5px;
+                        padding-top: 0px;
                         vertical-align: middle;
                         margin-right: 10px;
                     }

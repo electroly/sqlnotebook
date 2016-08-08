@@ -18,49 +18,71 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CefSharp.WinForms;
 
 namespace SqlNotebook {
-    public partial class HelpDocumentControl : UserControl, IDocumentControl {
-        private Func<int> _getPortFunc;
+    public partial class HelpDocumentControl : UserControl, IDocumentControl, IDocumentWithClosingEvent {
+        private readonly ChromiumWebBrowser _browser;
+        private string _title = "";
+        private readonly string _homeUrl;
 
         string IDocumentControl.ItemName { get; set; }
         public void Save() { }
 
         public Action<string> SetTitleProc { get; set; } = x => { };
 
-        public HelpDocumentControl(Func<int> getPortFunc) {
+        public void OnClosing() {
+            // CEF will crash if we don't remove the control before closing the form
+            _browserPanel.Controls.Remove(_browser);
+        }
+
+        public HelpDocumentControl(string homeUrl, string initialUrl = "about:blank") {
             InitializeComponent();
-            _browser.DocumentTitleChanged += (sender, e) => UpdateToolbar();
-            _browser.CanGoBackChanged += (sender, e) => UpdateToolbar();
-            _browser.CanGoForwardChanged += (sender, e) => UpdateToolbar();
-            _browser.Navigated += (sender, e) => UpdateToolbar();
-            _getPortFunc = getPortFunc;
+            _homeUrl = homeUrl;
+            _browser = new ChromiumWebBrowser(initialUrl) {
+                Dock = DockStyle.Fill
+            };
+            _browser.TitleChanged += (sender, e) => {
+                BeginInvoke(new MethodInvoker(() => {
+                    _title = e.Title;
+                    UpdateToolbar();
+                }));
+            };
+            _browser.AddressChanged += (sender, e) => {
+                BeginInvoke(new MethodInvoker(() => {
+                    UpdateToolbar();
+                }));
+            };
+            
+            _browserPanel.Controls.Add(_browser);
+            Disposed += (sender, e) => _browser.Dispose();
         }
 
         public void Navigate(string url) {
-            _browser.Navigate(url);
+            _browser.Load(url);
         }
         
         private void UpdateToolbar() {
-            SetTitleProc(_browser.DocumentTitle);
+            SetTitleProc(_title);
             _backBtn.Enabled = _browser.CanGoBack;
             _forwardBtn.Enabled = _browser.CanGoForward;
+            _progressBar.Visible = false;
         }
 
         private void BackBtn_Click(object sender, EventArgs e) {
-            _browser.GoBack();
+            _browser.GetBrowser().GoBack();
         }
 
         private void ForwardBtn_Click(object sender, EventArgs e) {
-            _browser.GoForward();
+            _browser.GetBrowser().GoForward();
         }
 
         private void HomeBtn_Click(object sender, EventArgs e) {
-            _browser.Navigate($"http://127.0.0.1:{_getPortFunc()}/index.html");
+            _browser.Load(_homeUrl);
         }
 
         private void OpenBrowserBtn_Click(object sender, EventArgs e) {
-            Process.Start(_browser.Url.AbsoluteUri);
+            Process.Start(_browser.Address);
         }
     }
 }

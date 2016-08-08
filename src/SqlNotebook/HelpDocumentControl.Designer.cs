@@ -28,8 +28,9 @@
             this._homeBtn = new System.Windows.Forms.ToolStripButton();
             this._backBtn = new System.Windows.Forms.ToolStripButton();
             this._forwardBtn = new System.Windows.Forms.ToolStripButton();
-            this._browser = new System.Windows.Forms.WebBrowser();
             this._openBrowserBtn = new System.Windows.Forms.ToolStripButton();
+            this._browserPanel = new System.Windows.Forms.Panel();
+            this._progressBar = new System.Windows.Forms.ToolStripProgressBar();
             this._toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -41,7 +42,8 @@
             this._homeBtn,
             this._backBtn,
             this._forwardBtn,
-            this._openBrowserBtn});
+            this._openBrowserBtn,
+            this._progressBar});
             this._toolStrip.Location = new System.Drawing.Point(0, 0);
             this._toolStrip.Name = "_toolStrip";
             this._toolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
@@ -82,17 +84,6 @@
             this._forwardBtn.Text = "Forward";
             this._forwardBtn.Click += new System.EventHandler(this.ForwardBtn_Click);
             // 
-            // _browser
-            // 
-            this._browser.AllowWebBrowserDrop = false;
-            this._browser.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._browser.Location = new System.Drawing.Point(0, 30);
-            this._browser.MinimumSize = new System.Drawing.Size(20, 20);
-            this._browser.Name = "_browser";
-            this._browser.ScriptErrorsSuppressed = true;
-            this._browser.Size = new System.Drawing.Size(661, 476);
-            this._browser.TabIndex = 2;
-            // 
             // _openBrowserBtn
             // 
             this._openBrowserBtn.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -105,12 +96,28 @@
             this._openBrowserBtn.Text = "Open in external browser";
             this._openBrowserBtn.Click += new System.EventHandler(this.OpenBrowserBtn_Click);
             // 
+            // _browserPanel
+            // 
+            this._browserPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._browserPanel.Location = new System.Drawing.Point(0, 30);
+            this._browserPanel.Name = "_browserPanel";
+            this._browserPanel.Size = new System.Drawing.Size(661, 476);
+            this._browserPanel.TabIndex = 2;
+            // 
+            // _progressBar
+            // 
+            this._progressBar.AutoSize = false;
+            this._progressBar.MarqueeAnimationSpeed = 25;
+            this._progressBar.Name = "_progressBar";
+            this._progressBar.Size = new System.Drawing.Size(100, 15);
+            this._progressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            // 
             // HelpDocumentControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.Controls.Add(this._browser);
+            this.Controls.Add(this._browserPanel);
             this.Controls.Add(this._toolStrip);
             this.Name = "HelpDocumentControl";
             this.Size = new System.Drawing.Size(661, 506);
@@ -125,9 +132,10 @@
 
         private System.Windows.Forms.ToolStrip _toolStrip;
         private System.Windows.Forms.ToolStripButton _forwardBtn;
-        private System.Windows.Forms.WebBrowser _browser;
         private System.Windows.Forms.ToolStripButton _backBtn;
         private System.Windows.Forms.ToolStripButton _homeBtn;
         private System.Windows.Forms.ToolStripButton _openBrowserBtn;
+        private System.Windows.Forms.Panel _browserPanel;
+        private System.Windows.Forms.ToolStripProgressBar _progressBar;
     }
 }

@@ -682,16 +682,17 @@ namespace SqlNotebook {
                 HelpDocumentControl helpCtl;
                 if (_helpDoc != null) {
                     helpCtl = (HelpDocumentControl)_helpDoc.Content;
+                    helpCtl.Navigate(url);
                 } else {
-                    helpCtl = new HelpDocumentControl(() => _helpServer.PortNumber) { Dock = DockStyle.Fill };
-                    _helpDoc = new UserControlDockContent("Help Viewer", helpCtl, DockAreas.Document | DockAreas.Float) {
+                    var homeUrl = $"http://127.0.0.1:{_helpServer.PortNumber}/index.html";
+                    helpCtl = new HelpDocumentControl(homeUrl, url) { Dock = DockStyle.Fill };
+                    _helpDoc = new UserControlDockContent("SQL Notebook Help", helpCtl, DockAreas.Document | DockAreas.Float) {
                         Icon = Resources.HelpIco
                     };
                     helpCtl.SetTitleProc = x => _helpDoc.Text = x;
                     _helpDoc.FormClosed += (sender, e) => _helpDoc = null;
                     _helpDoc.Show(_dockPanel);
                 }
-                helpCtl.Navigate(url);
                 _helpDoc.Activate();
                 _helpDoc.Focus();
             }));
