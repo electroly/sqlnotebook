@@ -462,12 +462,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\ext\vcredist2013\msvcr120.dll">
-        <Visible>false</Visible>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>false</Visible>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\ext\vcredist2013\msvcp120.dll">
-        <Visible>false</Visible>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>false</Visible>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup />
@@ -475,11 +475,13 @@
   <PropertyGroup>
     <PreBuildEvent>C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -ExecutionPolicy RemoteSigned -NonInteractive -Command .'$(ProjectDir)Resources\generate-sqlite-doc-zip.ps1'
 C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -ExecutionPolicy RemoteSigned -NonInteractive -Command .'$(ProjectDir)Resources\generate-tinymce-zip.ps1'
+
+
 </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>echo "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 SqlNotebook.exe
-
+    <PostBuildEvent>C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -ExecutionPolicy RemoteSigned -NonInteractive -Command .'$(ProjectDir)patch-app-manifest.ps1'
+echo "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 SqlNotebook.exe
 </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\cef.redist.x64.3.2704.1432\build\cef.redist.x64.targets" Condition="Exists('..\packages\cef.redist.x64.3.2704.1432\build\cef.redist.x64.targets')" />
