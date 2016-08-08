@@ -90,6 +90,8 @@ namespace SqlNotebook {
         private readonly Slot<bool> _isTransactionOpen;
         public object NoteServerLock { get; } = new object();
         public NoteServer NoteServer { get; private set; }
+        public object HelpServerLock { get; } = new object();
+        public HelpServer HelpServer { get; private set; }
 
         public NotebookManager(Notebook notebook, Slot<bool> isTransactionOpen) {
             Notebook = notebook;
@@ -98,6 +100,12 @@ namespace SqlNotebook {
             Task.Run(() => {
                 lock (NoteServerLock) {
                     NoteServer = new NoteServer(this);
+                }
+            });
+
+            Task.Run(() => {
+                lock (HelpServerLock) {
+                    HelpServer = new HelpServer();
                 }
             });
         }

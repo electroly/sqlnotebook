@@ -40,7 +40,6 @@ namespace SqlNotebook {
         private string _filePath {  get { return _notebook.GetFilePath(); } }
         private bool _isNew;
         private UserControlDockContent _helpDoc;
-        private HelpServer _helpServer;
         private CueToolStripTextBox _searchTxt;
         private Slot<bool> _isDirty = new Slot<bool>();
         private Slot<bool> _operationInProgress = new Slot<bool>();
@@ -73,12 +72,12 @@ namespace SqlNotebook {
                 AutoSize = false,
                 Margin = new Padding(0, 0, 5, 0)
             });
-            _searchTxt.InnerTextBox.KeyDown += async (sender, e) => {
+            _searchTxt.InnerTextBox.KeyDown += (sender, e) => {
                 if (e.KeyCode == Keys.Enter) {
                     e.Handled = true;
                     e.SuppressKeyPress = true;
                     var text = _searchTxt.Text;
-                    await OpenHelp("/search?q=" + System.Net.WebUtility.UrlEncode(text));
+                    OpenHelp("/search?q=" + System.Net.WebUtility.UrlEncode(text));
                     _searchTxt.Text = "";
                 }
             };
@@ -664,14 +663,14 @@ namespace SqlNotebook {
             Process.Start("https://github.com/electroly/sqlnotebook/issues/new");
         }
 
-        private async Task OpenHelp(string path) {
-            if (_helpServer == null) {
-                _manager.PushStatus("Starting help server...");
-                await Task.Run(() => _helpServer = new HelpServer());
-                _manager.PopStatus();
+        private void OpenHelp(string path) {
+            string url;
+            string homeUrl;
+            
+            lock (_manager.HelpServerLock) {
+                url = $"http://127.0.0.1:{_manager.HelpServer.PortNumber}{path}";
+                homeUrl = $"http://127.0.0.1:{_manager.HelpServer.PortNumber}/index.html";
             }
-
-            string url = $"http://127.0.0.1:{_helpServer.PortNumber}{path}";
 
             if (Settings.Default.UseExternalHelpBrowser) {
                 Process.Start(url);
@@ -684,7 +683,6 @@ namespace SqlNotebook {
                     helpCtl = (HelpDocumentControl)_helpDoc.Content;
                     helpCtl.Navigate(url);
                 } else {
-                    var homeUrl = $"http://127.0.0.1:{_helpServer.PortNumber}/index.html";
                     helpCtl = new HelpDocumentControl(homeUrl, url) { Dock = DockStyle.Fill };
                     _helpDoc = new UserControlDockContent("SQL Notebook Help", helpCtl, DockAreas.Document | DockAreas.Float) {
                         Icon = Resources.HelpIco
@@ -698,8 +696,8 @@ namespace SqlNotebook {
             }));
         }
 
-        private async void ViewDocMnu_Click(object sender, EventArgs e) {
-            await OpenHelp($"/index.html");
+        private void ViewDocMnu_Click(object sender, EventArgs e) {
+            OpenHelp($"/index.html");
         }
 
         private void CancelLnk_Click(object sender, EventArgs e) {
