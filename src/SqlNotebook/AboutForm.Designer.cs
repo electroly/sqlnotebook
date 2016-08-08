@@ -29,13 +29,11 @@
             this._githubLnk = new System.Windows.Forms.LinkLabel();
             this.panel1 = new System.Windows.Forms.Panel();
             this._websiteLnk = new System.Windows.Forms.LinkLabel();
-            this._webBrowser = new System.Windows.Forms.WebBrowser();
-            this.panel2 = new System.Windows.Forms.Panel();
+            this._browserPanel = new System.Windows.Forms.Panel();
             _okBtn = new System.Windows.Forms.Button();
             pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // _okBtn
@@ -108,32 +106,16 @@
             this._websiteLnk.Text = "Visit sqlnotebook.com";
             this._websiteLnk.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.WebsiteLnk_LinkClicked);
             // 
-            // _webBrowser
+            // _browserPanel
             // 
-            this._webBrowser.AllowWebBrowserDrop = false;
-            this._webBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this._browserPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._webBrowser.IsWebBrowserContextMenuEnabled = false;
-            this._webBrowser.Location = new System.Drawing.Point(0, 0);
-            this._webBrowser.MinimumSize = new System.Drawing.Size(20, 20);
-            this._webBrowser.Name = "_webBrowser";
-            this._webBrowser.ScriptErrorsSuppressed = true;
-            this._webBrowser.Size = new System.Drawing.Size(668, 367);
-            this._webBrowser.TabIndex = 8;
-            this._webBrowser.WebBrowserShortcutsEnabled = false;
-            // 
-            // panel2
-            // 
-            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel2.Controls.Add(this._webBrowser);
-            this.panel2.Location = new System.Drawing.Point(-1, 72);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(670, 369);
-            this.panel2.TabIndex = 9;
+            this._browserPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._browserPanel.Location = new System.Drawing.Point(-1, 72);
+            this._browserPanel.Name = "_browserPanel";
+            this._browserPanel.Size = new System.Drawing.Size(670, 369);
+            this._browserPanel.TabIndex = 9;
             // 
             // AboutForm
             // 
@@ -141,7 +123,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(668, 485);
-            this.Controls.Add(this.panel2);
+            this.Controls.Add(this._browserPanel);
             this.Controls.Add(_okBtn);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -157,7 +139,6 @@
             ((System.ComponentModel.ISupportInitialize)(pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -166,8 +147,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.LinkLabel _githubLnk;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.WebBrowser _webBrowser;
-        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel _browserPanel;
         private System.Windows.Forms.LinkLabel _websiteLnk;
     }
 }
