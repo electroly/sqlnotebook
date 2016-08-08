@@ -69,6 +69,7 @@ namespace SqlNotebook {
                 MessageBox.Show(ex.Message, "SQL Notebook", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } finally {
                 NotebookTempFiles.DeleteFiles();
+                Cef.Shutdown();
             }
         }
     }
