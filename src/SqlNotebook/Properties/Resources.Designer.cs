@@ -221,16 +221,16 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033\deflangfe1033{\fonttbl{\f0\fnil\fcharset0 Arial;}{\f1\fswiss\fprq2\fcharset1 Segoe UI Symbol;}{\f2\fnil\fcharset0 Calibri;}}
-        ///{\colortbl ;\red0\green0\blue0;\red0\green0\blue255;\red255\green0\blue0;}
-        ///{\*\generator Riched20 10.0.10586}{\*\mmathPr\mdispDef1\mwrapIndent1440 }\viewkind4\uc1 
-        ///\pard\nowidctlpar\cf1\b\fs32 Getting Started with SQL Notebook\cf0\b0\fs17\par
-        ///\fs16\par
-        ///\fs22 This notebook is an SQLite database. You can work with SQL tables stor [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot; &quot;http://www.w3.org/TR/html4/strict.dtd&quot;&gt;
+        ///&lt;html&gt;&lt;head&gt;&lt;meta content=&quot;text/html; charset=UTF-8&quot; http-equiv=&quot;content-type&quot;&gt;&lt;title&gt;Getting Started&lt;/title&gt;&lt;/head&gt;
+        ///&lt;body&gt;&lt;h1 style=&quot;font-family: Calibri;&quot;&gt;Getting Started with SQL Notebook&lt;/h1&gt;&lt;span style=&quot;font-family: Calibri;&quot;&gt;This
+        ///notebook is an SQLite database. Use the Create menu to begin adding new
+        ///data and queries to the notebook. Existing files and databases can be
+        ///accessed using the Import menu.&lt;/span&gt; [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string GettingStartedRtf {
+        internal static string GettingStartedHtml {
             get {
-                return ResourceManager.GetString("GettingStartedRtf", resourceCulture);
+                return ResourceManager.GetString("GettingStartedHtml", resourceCulture);
             }
         }
         
@@ -319,6 +319,28 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("NoteAdd", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///&lt;html&gt;&lt;body&gt;
+        ///&lt;script src=&quot;deploy/tinymce.min.js&quot;&gt;&lt;/script&gt;
+        ///&lt;textarea style=&quot;font-family: Calibri; font-size: 9pt;&quot;&gt;&lt;!--DOCUMENT_HTML--&gt;&lt;/textarea&gt;
+        ///&lt;script&gt;
+        ///tinymce.init({
+        ///    selector: &apos;textarea&apos;,
+        ///    height: 500,
+        ///    menubar: false,
+        ///    statusbar: false,
+        ///    theme: &apos;modern&apos;,
+        ///    plugins: [ &apos;lists hr table contextmenu paste&apos; ],
+        ///    toolbar1: &apos;h1 h2 formatselect | bold italic underline | alignleft aligncenter alignright | outdent indent | bullist numlist table hr&apos;,
+        ///    contextmen [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string NoteEditorHtml {
+            get {
+                return ResourceManager.GetString("NoteEditorHtml", resourceCulture);
             }
         }
         
@@ -487,6 +509,16 @@ namespace SqlNotebook.Properties {
         internal static string ThirdPartyLicensesHtml {
             get {
                 return ResourceManager.GetString("ThirdPartyLicensesHtml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TinymceZip {
+            get {
+                object obj = ResourceManager.GetObject("TinymceZip", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

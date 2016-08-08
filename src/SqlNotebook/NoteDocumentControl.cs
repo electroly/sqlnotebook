@@ -15,164 +15,62 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Drawing.Text;
 using System.Diagnostics;
+using CefSharp.WinForms;
+using System.Collections.Concurrent;
 
 namespace SqlNotebook {
-    public partial class NoteDocumentControl : UserControl, IDocumentControl {
+    public partial class NoteDocumentControl : UserControl, IDocumentControl, IDocumentWithClosingEvent {
         private readonly NotebookManager _manager;
-
-        public string DocumentText {
-            get {
-                return _text.Rtf;
-            }
-        }
+        private readonly ChromiumWebBrowser _browser;
+        private bool _mceLoaded;
 
         public string ItemName { get; set; }
 
+        private BlockingCollection<string> _consoleMessages = new BlockingCollection<string>();
+
         public void Save() {
-            _manager.SetItemData(ItemName, DocumentText);
+            if (!_mceLoaded) {
+                return;
+            }
+            var browser = _browser.GetBrowser();
+            var frame = browser.MainFrame;
+            frame.ExecuteJavaScriptAsync("console.log(tinymce.activeEditor.getContent());");
+            var text = _consoleMessages.Take();
+            _manager.SetItemData(ItemName, text);
+        }
+
+        public void OnClosing() {
+            Controls.Remove(_browser); // CEF will crash if we don't remove the control before closing the form
         }
 
         public NoteDocumentControl(string name, NotebookManager manager) {
             InitializeComponent();
+            
             ItemName = name;
             _manager = manager;
-            _text.SelectionFont = Font;
-            _text.SetInnerMargins(10, 10, 10, 0);
-
-            Load += (sender, e) => {
-                string initialRtf = _manager.GetItemData(ItemName);
-                if (initialRtf != null) {
-                    _text.Rtf = initialRtf;
-                }
-                Text_SelectionChanged(this, EventArgs.Empty);
-            };
-
-            _text.InstallCopyPasteHandling(allowRtfPaste: true);
-        }
-
-        private void FontMnu_Click(object sender, EventArgs e) {
-            var f = new FontDialog {
-                Font = _text.SelectionFont ?? _text.Font,
-                Color = _text.SelectionColor,
-                FontMustExist = true,
-                ShowApply = true,
-                ShowColor = true
-            };
-            f.Apply += (sender2, e2) => {
-                _text.SelectionFont = f.Font ?? _text.SelectionFont ?? _text.Font;
-                _text.SelectionColor = f.Color;
-            };
-            using (f) {
-                if (f.ShowDialog(ParentForm) == DialogResult.OK) {
-                    _text.SelectionFont = f.Font ?? _text.SelectionFont ?? _text.Font;
-                    _text.SelectionColor = f.Color;
-                }
-            }
-        }
-
-        private void ResetFontMnu_Click(object sender, EventArgs e) {
-            _text.SelectionFont = Font;
-            _text.SelectionColor = ForeColor;
-        }
-
-        private void Text_TextChanged(object sender, EventArgs e) {
-            _manager.SetDirty();
-        }
-
-        private void Text_SelectionChanged(object sender, EventArgs e) {
-            UpdateToolbar();
-        }
-
-        private void UpdateToolbar() {
-            var f = _text.SelectionFont;
-            bool multipleFonts = f == null;
-            _boldBtn.Checked = f?.Bold ?? false;
-            _italicBtn.Checked = f?.Italic ?? false;
-            _underlineBtn.Checked = f?.Underline ?? false;
-            _strikeBtn.Checked = f?.Strikeout ?? false;
-            _alignLeftBtn.Checked = _text.SelectionAlignment == HorizontalAlignment.Left;
-            _alignCenterBtn.Checked = _text.SelectionAlignment == HorizontalAlignment.Center;
-            _alignRightBtn.Checked = _text.SelectionAlignment == HorizontalAlignment.Right;
-            _boldBtn.Enabled = _italicBtn.Enabled = _underlineBtn.Enabled = _strikeBtn.Enabled = 
-                _fontSizeUpBtn.Enabled = _fontSizeDownBtn.Enabled = f != null;
-        }
-
-        private void FontSizeUpBtn_Click(object sender, EventArgs e) {
-            var f = _text.SelectionFont;
-            _text.SelectionFont = new Font(f.FontFamily, f.Size + 1, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
-        }
-
-        private void FontSizeDownBtn_Click(object sender, EventArgs e) {
-            var f = _text.SelectionFont;
-            _text.SelectionFont = new Font(f.FontFamily, Math.Max(8, f.Size - 1), f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
-        }
-
-        private void ToggleFontStyle(FontStyle flag) {
-            var f = _text.SelectionFont;
-            var s = f.Style & ~flag;
-            if ((f.Style & flag) == 0) {
-                s |= flag;
-            }
-            _text.SelectionFont = new Font(f.FontFamily, f.Size, s, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
-            UpdateToolbar();
-        }
-
-        private void BoldBtn_Click(object sender, EventArgs e) {
-            ToggleFontStyle(FontStyle.Bold);
-        }
-
-        private void ItalicBtn_Click(object sender, EventArgs e) {
-            ToggleFontStyle(FontStyle.Italic);
-        }
-
-        private void UnderlineBtn_Click(object sender, EventArgs e) {
-            ToggleFontStyle(FontStyle.Underline);
-        }
-
-        private void StrikeBtn_Click(object sender, EventArgs e) {
-            ToggleFontStyle(FontStyle.Strikeout);
-        }
-
-        private void AlignLeftBtn_Click(object sender, EventArgs e) {
-            _text.SelectionAlignment = HorizontalAlignment.Left;
-            UpdateToolbar();
-        }
-
-        private void AlignCenterBtn_Click(object sender, EventArgs e) {
-            _text.SelectionAlignment = HorizontalAlignment.Center;
-            UpdateToolbar();
-        }
-
-        private void AlignRightBtn_Click(object sender, EventArgs e) {
-            _text.SelectionAlignment = HorizontalAlignment.Right;
-            UpdateToolbar();
-        }
-
-        private void Text_LinkClicked(object sender, LinkClickedEventArgs e) {
-            if (e.LinkText.StartsWith("http://") || e.LinkText.StartsWith("https://")) {
-                Process.Start(e.LinkText);
-            }
-        }
-
-        private void Text_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e) {
-            if (e.Control && !e.Alt && !e.Shift) {
-                if (e.KeyCode == Keys.Z) {
-                    _text.Undo();
-                } else if (e.KeyCode == Keys.Y) {
-                    _text.Redo();
-                } else if (e.KeyCode == Keys.A) {
-                    _text.SelectAll();
-                }
+            lock (_manager.NoteServerLock) {
+                var encodedName = Convert.ToBase64String(Encoding.UTF8.GetBytes(name));
+                var url = $"http://127.0.0.1:{_manager.NoteServer.Port}/note_{encodedName}";
+                Debug.WriteLine(url);
+                _browser = new ChromiumWebBrowser(url) {
+                    Dock = DockStyle.Fill
+                };
+                _browser.ConsoleMessage += (sender, e) => {
+                    if (e.Message == "loaded") {
+                        BeginInvoke(new MethodInvoker(() => {
+                            _loadingPanel.Visible = false;
+                            _mceLoaded = true;
+                            _browser.Focus();
+                        }));
+                    } else {
+                        _consoleMessages.Add(e.Message);
+                    }
+                };
+                Controls.Add(_browser);
+                Disposed += (sender, e) => _browser.Dispose();
             }
         }
     }

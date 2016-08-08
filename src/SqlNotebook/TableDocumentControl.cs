@@ -72,7 +72,6 @@ namespace SqlNotebook {
 
         // IDocumentControl
         string IDocumentControl.ItemName { get; set; }
-        string IDocumentControl.DocumentText { get; } = "";
         public void Save() { }
 
         private void ScriptBtn_Click(object sender, EventArgs e) {

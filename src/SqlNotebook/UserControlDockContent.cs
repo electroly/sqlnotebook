@@ -30,6 +30,11 @@ namespace SqlNotebook {
 
             // disable floating windows
             DockAreas = dockAreas;
+
+            var closingEvent = control as IDocumentWithClosingEvent;
+            if (closingEvent != null) {
+                FormClosing += (sender, e) => closingEvent.OnClosing();
+            }
         }
     }
 }

@@ -88,10 +88,18 @@ namespace SqlNotebook {
         public event EventHandler<NotebookItemRenameEventArgs> NotebookItemRename;
         public event EventHandler<StatusUpdateEventArgs> StatusUpdate;
         private readonly Slot<bool> _isTransactionOpen;
+        public object NoteServerLock { get; } = new object();
+        public NoteServer NoteServer { get; private set; }
 
         public NotebookManager(Notebook notebook, Slot<bool> isTransactionOpen) {
             Notebook = notebook;
             _isTransactionOpen = isTransactionOpen;
+
+            Task.Run(() => {
+                lock (NoteServerLock) {
+                    NoteServer = new NoteServer(this);
+                }
+            });
         }
 
         public void Save() {

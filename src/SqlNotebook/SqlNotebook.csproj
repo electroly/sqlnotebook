@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\CefSharp.WinForms.51.0.0\build\CefSharp.WinForms.props" Condition="Exists('..\packages\CefSharp.WinForms.51.0.0\build\CefSharp.WinForms.props')" />
+  <Import Project="..\packages\CefSharp.Common.51.0.0\build\CefSharp.Common.props" Condition="Exists('..\packages\CefSharp.Common.51.0.0\build\CefSharp.Common.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,6 +16,8 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
     <PublishUrl>..\..\publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -226,11 +230,17 @@
     <Compile Include="NoteDocumentControl.Designer.cs">
       <DependentUpon>NoteDocumentControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="NoteServer.cs" />
     <Compile Include="OptionsForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="OptionsForm.Designer.cs">
       <DependentUpon>OptionsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="QueryDocumentControl.cs">
       <SubType>UserControl</SubType>
@@ -361,19 +371,14 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <None Include="Resources\favicon.ico.binary" />
-    <None Include="Resources\GettingStarted.rtf" />
     <None Include="Resources\sqlite-doc.zip" />
+    <None Include="Resources\tinymce.zip" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -426,12 +431,50 @@
     <None Include="Resources\SqlNotebookIcon48.png" />
     <None Include="Resources\Help.css" />
     <None Include="Resources\ThirdPartyLicenses.html" />
-    <Content Include="Resources\SqliteSiteErrorPlaceholder.png" />
+    <None Include="Resources\NoteEditor.html" />
+    <None Include="Resources\GettingStarted.html" />
+    <None Include="Resources\SqliteSiteErrorPlaceholder.png" />
     <Content Include="SqlNotebookIcon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(SolutionDir)packages\cef.redist.x64.3.2704.1432\CEF\**\*" Exclude="$(SolutionDir)packages\cef.redist.x64.3.2704.1432\CEF\x64\**\*;$(SolutionDir)packages\cef.redist.x64.3.2704.1432\CEF\locales\**\*.pak">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(SolutionDir)packages\cef.redist.x64.3.2704.1432\CEF\**\en-US.*">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(SolutionDir)packages\cef.redist.x64.3.2704.1432\CEF\x64\**\*">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(SolutionDir)packages\CefSharp.Common.51.0.0\CefSharp\x64\**\CefSharp.BrowserSubprocess.*">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\ext\vcredist2013\msvcr120.dll">
+        <Visible>false</Visible>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\ext\vcredist2013\msvcp120.dll">
+        <Visible>false</Visible>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -ExecutionPolicy RemoteSigned -NonInteractive -Command .'$(ProjectDir)Resources\generate-sqlite-doc-zip.ps1'
+C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -ExecutionPolicy RemoteSigned -NonInteractive -Command .'$(ProjectDir)Resources\generate-tinymce-zip.ps1'
 </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
@@ -439,6 +482,21 @@
 
 </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\cef.redist.x64.3.2704.1432\build\cef.redist.x64.targets" Condition="Exists('..\packages\cef.redist.x64.3.2704.1432\build\cef.redist.x64.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\cef.redist.x64.3.2704.1432\build\cef.redist.x64.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x64.3.2704.1432\build\cef.redist.x64.targets'))" />
+    <Error Condition="!Exists('..\packages\cef.redist.x86.3.2704.1432\build\cef.redist.x86.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x86.3.2704.1432\build\cef.redist.x86.targets'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Common.51.0.0\build\CefSharp.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.51.0.0\build\CefSharp.Common.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Common.51.0.0\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.51.0.0\build\CefSharp.Common.targets'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.WinForms.51.0.0\build\CefSharp.WinForms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.51.0.0\build\CefSharp.WinForms.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.WinForms.51.0.0\build\CefSharp.WinForms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.51.0.0\build\CefSharp.WinForms.targets'))" />
+  </Target>
+  <Import Project="..\packages\cef.redist.x86.3.2704.1432\build\cef.redist.x86.targets" Condition="Exists('..\packages\cef.redist.x86.3.2704.1432\build\cef.redist.x86.targets')" />
+  <Import Project="..\packages\CefSharp.Common.51.0.0\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.51.0.0\build\CefSharp.Common.targets')" />
+  <Import Project="..\packages\CefSharp.WinForms.51.0.0\build\CefSharp.WinForms.targets" Condition="Exists('..\packages\CefSharp.WinForms.51.0.0\build\CefSharp.WinForms.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

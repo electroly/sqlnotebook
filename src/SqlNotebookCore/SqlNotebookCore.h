@@ -51,10 +51,16 @@ namespace SqlNotebookCore {
         UserCancelException(String^ message) : Exception(message) {}
     };
 
+    public enum class HttpContentType {
+        Html, Css, Png, JavaScript
+    };
+
     public ref class HttpRequestEventArgs sealed : public EventArgs {
         public:
         String^ Url;
         array<Byte>^ Result;
+        HttpContentType ContentType;
+        int ResultCode;
     };
 
     public ref class HttpServer sealed : public IDisposable {
@@ -63,6 +69,7 @@ namespace SqlNotebookCore {
         ~HttpServer();
         !HttpServer();
         event EventHandler<HttpRequestEventArgs^>^ Request;
+        property uint16_t Port { uint16_t get() { return _port; } }
 
         internal:
         void SendRequestEvent(HttpRequestEventArgs^ e);
@@ -71,6 +78,7 @@ namespace SqlNotebookCore {
         bool _isDisposed;
         void* _mhd;
         void* _thisRef; // gcroot<HttpServer^>*
+        uint16_t _port;
     };
 
     public ref class Notebook sealed : public IDisposable, public INotebook {

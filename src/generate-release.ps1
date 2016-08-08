@@ -6,6 +6,7 @@
 
 Remove-Item ..\publish-portable -Recurse -ErrorAction SilentlyContinue
 mkdir ..\publish-portable
+mkdir ..\publish-portable\locales
 
 # folder: 'SqlNotebook_0_4_0_0'
 $folder = (dir '..\publish\Application Files' | ForEach {$_.Name} | Sort {$_} | Select -Last 1)
@@ -13,9 +14,10 @@ $folder = (dir '..\publish\Application Files' | ForEach {$_.Name} | Sort {$_} | 
 $absFolder = (Resolve-Path ('..\publish\Application Files\' + $folder))
 
 copy "$absFolder\*.*" ..\publish-portable\
-dir ..\publish-portable\ | ForEach {Rename-Item $_.FullName $_.FullName.Replace(".deploy", "")}
+copy "$absFolder\locales\*.*" ..\publish-portable\locales\
+dir ..\publish-portable\*.deploy | ForEach {Rename-Item $_.FullName $_.FullName.Replace(".deploy", "")}
+dir ..\publish-portable\locales\*.deploy | ForEach {Rename-Item $_.FullName $_.FullName.Replace(".deploy", "")}
 del ..\publish-portable\SqlNotebook.application
-del ..\publish-portable\SqlNotebook.exe.manifest
 
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem

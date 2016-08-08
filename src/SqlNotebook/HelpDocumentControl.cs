@@ -16,6 +16,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
@@ -23,7 +24,6 @@ namespace SqlNotebook {
         private Func<int> _getPortFunc;
 
         string IDocumentControl.ItemName { get; set; }
-        string IDocumentControl.DocumentText { get; } = "";
         public void Save() { }
 
         public Action<string> SetTitleProc { get; set; } = x => { };

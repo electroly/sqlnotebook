@@ -215,8 +215,8 @@ namespace SqlNotebook {
         }
 
         private HttpServer StartHttpServer() {
-            PortNumber = FindUnusedPort();
-            var server = new HttpServer(PortNumber);
+            var server = new HttpServer(0);
+            PortNumber = server.Port;
             server.Request += (sender, e) => {
                 var rawUrl = e.Url;
                 byte[] bytes;

@@ -65,6 +65,7 @@ namespace SqlNotebook {
 
         public MainForm(string filePath, bool isNew) {
             InitializeComponent();
+
             _menuStrip.Renderer = new MenuRenderer();
             _menuStrip.Items.Add(_searchTxt = new CueToolStripTextBox {
                 Alignment = ToolStripItemAlignment.Right,
@@ -161,9 +162,8 @@ namespace SqlNotebook {
             if (isNew) {
                 switch (Settings.Default.AutoCreateInNewNotebooks) {
                     case 0: // "Getting Started" note
-                        
                         Load += (sender, e) => {
-                            var name = _manager.NewNote("Getting Started", Resources.GettingStartedRtf);
+                            var name = _manager.NewNote("Getting Started", Resources.GettingStartedHtml);
                             OpenItem(new NotebookItem(NotebookItemType.Note, name));
                             _isDirty.Value = false;
                         };
@@ -250,6 +250,10 @@ namespace SqlNotebook {
             OpenItem(e.Item);
         }
 
+        private void ApplySaveOnClose(UserControlDockContent f, IDocumentControl doc) {
+            f.FormClosing += (sender, e) => doc.Save();
+        }
+
         private void OpenItem(NotebookItem item) {
             UserControlDockContent wnd;
             if (_openItems.TryGetValue(item, out wnd)) {
@@ -266,21 +270,21 @@ namespace SqlNotebook {
                 f = new UserControlDockContent(item.Name, doc, dockAreas) {
                     Icon = Resources.ApplicationXpTerminalIco
                 };
-                f.FormClosing += (sender2, e2) => doc.Save();
+                ApplySaveOnClose(f, doc);
                 getName = () => doc.ItemName;
             } else if (item.Type == NotebookItemType.Note) {
                 var doc = new NoteDocumentControl(item.Name, _manager);
                 f = new UserControlDockContent(item.Name, doc, dockAreas) {
                     Icon = Resources.NoteIco
                 };
-                f.FormClosing += (sender2, e2) => doc.Save();
+                ApplySaveOnClose(f, doc);
                 getName = () => doc.ItemName;
             } else if (item.Type == NotebookItemType.Script) {
                 var doc = new QueryDocumentControl(item.Name, _manager, this, _operationInProgress);
                 f = new UserControlDockContent(item.Name, doc, dockAreas) {
                     Icon = Resources.ScriptIco
                 };
-                f.FormClosing += (sender2, e2) => doc.Save();
+                ApplySaveOnClose(f, doc);
                 getName = () => doc.ItemName;
             } else if (item.Type == NotebookItemType.Table || item.Type == NotebookItemType.View) {
                 var doc = new TableDocumentControl(_manager, item.Name, this);

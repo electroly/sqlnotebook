@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using CefSharp;
 using SqlNotebookCore;
 
 namespace SqlNotebook {
@@ -32,6 +33,8 @@ namespace SqlNotebook {
         [STAThread]
         public static void Main()
         {
+            Cef.Initialize(new CefSettings(), shutdownOnProcessExit: false, performDependencyCheck: true);
+
             NotebookTempFiles.Init();
 
             Application.EnableVisualStyles();
