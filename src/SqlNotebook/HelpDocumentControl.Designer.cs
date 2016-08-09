@@ -29,8 +29,8 @@
             this._backBtn = new System.Windows.Forms.ToolStripButton();
             this._forwardBtn = new System.Windows.Forms.ToolStripButton();
             this._openBrowserBtn = new System.Windows.Forms.ToolStripButton();
-            this._browserPanel = new System.Windows.Forms.Panel();
             this._progressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this._browserPanel = new System.Windows.Forms.Panel();
             this._toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -96,6 +96,14 @@
             this._openBrowserBtn.Text = "Open in external browser";
             this._openBrowserBtn.Click += new System.EventHandler(this.OpenBrowserBtn_Click);
             // 
+            // _progressBar
+            // 
+            this._progressBar.AutoSize = false;
+            this._progressBar.MarqueeAnimationSpeed = 10;
+            this._progressBar.Name = "_progressBar";
+            this._progressBar.Size = new System.Drawing.Size(100, 15);
+            this._progressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            // 
             // _browserPanel
             // 
             this._browserPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -103,14 +111,6 @@
             this._browserPanel.Name = "_browserPanel";
             this._browserPanel.Size = new System.Drawing.Size(661, 476);
             this._browserPanel.TabIndex = 2;
-            // 
-            // _progressBar
-            // 
-            this._progressBar.AutoSize = false;
-            this._progressBar.MarqueeAnimationSpeed = 25;
-            this._progressBar.Name = "_progressBar";
-            this._progressBar.Size = new System.Drawing.Size(100, 15);
-            this._progressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             // 
             // HelpDocumentControl
             // 

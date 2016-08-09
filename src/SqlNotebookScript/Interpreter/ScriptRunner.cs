@@ -147,7 +147,10 @@ namespace SqlNotebookScript.Interpreter {
 
         // must be run from the SQLite thread
         public ScriptOutput Execute(Ast.Script script, IReadOnlyDictionary<string, object> args) {
-            var env = new ScriptEnv();
+            return Execute(script, new ScriptEnv(), args);
+        }
+
+        public ScriptOutput Execute(Ast.Script script, ScriptEnv env, IReadOnlyDictionary<string, object> args) {
             foreach (var arg in args) {
                 var lowercaseKey = arg.Key.ToLower();
                 env.Vars[lowercaseKey] = arg.Value;
@@ -156,7 +159,7 @@ namespace SqlNotebookScript.Interpreter {
             return env.Output;
         }
 
-        private void Execute(Ast.Script script, ScriptEnv env) {
+        public void Execute(Ast.Script script, ScriptEnv env) {
             ExecuteBlock(script.Block, env);
 
             if (env.DidBreak) {

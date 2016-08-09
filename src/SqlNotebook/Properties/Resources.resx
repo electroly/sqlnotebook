@@ -244,4 +244,13 @@
   <data name="GettingStartedHtml" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GettingStarted.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="SimpleConsoleCss" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\simple-console\simple-console.css;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SimpleConsoleJs" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\simple-console\simple-console.js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ConsoleHtml" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Console.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
 </root>

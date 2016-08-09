@@ -15,13 +15,14 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using SqlNotebookCore;
 using SqlNotebookScript;
 
 namespace SqlNotebook {
@@ -287,6 +288,11 @@ namespace SqlNotebook {
                 dt.Rows.Add(dtRow);
             }
             return dt;
+        }
+
+        public static void Drain<T>(this BlockingCollection<T> self) {
+            T item;
+            while (self.TryTake(out item)) { }
         }
     }
 }

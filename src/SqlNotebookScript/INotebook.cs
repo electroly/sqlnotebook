@@ -36,30 +36,31 @@ namespace SqlNotebookScript {
         public string Name;
         public string Type;
         public string Data;
-    };
+    }
 
     public sealed class ScriptParameterRecord {
         public string ScriptName;
         public List<string> ParamNames = new List<string>();
-    };
+    }
 
     public sealed class LastErrorRecord {
         public object ErrorNumber;
         public object ErrorMessage;
         public object ErrorState;
-    };
+    }
 
-    public sealed class ConsoleHistoryRecord {
-        public string Name;
-        public List<string> History = new List<string>();
-    };
+    public sealed class ConsoleStateRecord {
+        public string ConsoleName;
+        public List<string> VarNames;
+        public string VarDataB64; // Base-64 encoded blob array
+    }
 
     public sealed class NotebookUserData {
         public List<NotebookItemRecord> Items = new List<NotebookItemRecord>();
         public List<ScriptParameterRecord> ScriptParameters = new List<ScriptParameterRecord>();
         public LastErrorRecord LastError = new LastErrorRecord();
-        public List<ConsoleHistoryRecord> ConsoleHistories = new List<ConsoleHistoryRecord>();
-    };
+        public List<ConsoleStateRecord> ConsoleStates = new List<ConsoleStateRecord>();
+    }
 
     public sealed class Token {
         public TokenType Type;
@@ -67,7 +68,7 @@ namespace SqlNotebookScript {
         public override string ToString() => $"{Type}: \"{Text}\"";
         public ulong Utf8Start;
         public ulong Utf8Length;
-    };
+    }
 
     // this enum list can be generated from sqlite3.c's #define TK_* list using the following formula in Excel:
     // =SUBSTITUTE(PROPER(SUBSTITUTE(TRIM(MID(A1,8,30)),"TK_","")),"_","")&" = "&TRIM(RIGHT(A1,5))&","

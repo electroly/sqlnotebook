@@ -41,6 +41,10 @@ select name as 'a' from 'sqlite_master'
 select name 'a' from 'sqlite_master'
 select 'sqlite_master'.'name' from sqlite_master
 select 'asdf'.'name' from 'sqlite_master' as 'asdf'
+select 5
+select 5*5
+select (5*5)
+select ((5*5))
 
 -- alter-table-stmt
 ALTER TABLE other.tbl1 RENAME TO tbl2

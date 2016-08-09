@@ -281,7 +281,7 @@ namespace SqlNotebook {
                         }) as string;
                     });
                     if (html == null) {
-                        html = "The requested document is not available in the SQL Notebook help collection.";
+                        html = "<title>Not Found</title><body>The requested document is not available in the SQL Notebook help collection.</body>";
                     }
                     bytes = Encoding.UTF8.GetBytes(header + html);
                 }

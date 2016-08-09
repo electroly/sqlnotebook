@@ -111,6 +111,34 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///&lt;html&gt;
+        ///&lt;head&gt;
+        ///    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+        ///    &lt;script src=&quot;simple-console.js&quot;&gt;&lt;/script&gt;
+        ///    &lt;link rel=&quot;stylesheet&quot; href=&quot;simple-console.css&quot;&gt;
+        ///    &lt;style&gt;
+        ///        body, .simple-console, .simple-console-input {
+        ///            font-family: &apos;Consolas&apos;;
+        ///            font-size: 10pt;
+        ///        }
+        ///        span.command-history-icon {
+        ///            display: none;
+        ///        }
+        ///    &lt;/style&gt;
+        ///&lt;/head&gt;
+        ///&lt;body&gt;
+        ///&lt;script&gt;
+        ///    function scrollToBottom() {
+        ///       [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ConsoleHtml {
+            get {
+                return ResourceManager.GetString("ConsoleHtml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap ControlPlayBlue {
@@ -221,12 +249,8 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot; &quot;http://www.w3.org/TR/html4/strict.dtd&quot;&gt;
-        ///&lt;html&gt;&lt;head&gt;&lt;meta content=&quot;text/html; charset=UTF-8&quot; http-equiv=&quot;content-type&quot;&gt;&lt;title&gt;Getting Started&lt;/title&gt;&lt;/head&gt;
-        ///&lt;body&gt;&lt;h1 style=&quot;font-family: Calibri;&quot;&gt;Getting Started with SQL Notebook&lt;/h1&gt;&lt;span style=&quot;font-family: Calibri;&quot;&gt;This
-        ///notebook is an SQLite database. Use the Create menu to begin adding new
-        ///data and queries to the notebook. Existing files and databases can be
-        ///accessed using the Import menu.&lt;/span&gt; [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to &lt;p&gt;&lt;span style=&quot;color: #000000;&quot;&gt;&lt;strong&gt;&lt;span style=&quot;font-family: &apos;trebuchet ms&apos;, geneva, sans-serif; font-size: 18pt;&quot;&gt;Getting Started with SQL Notebook&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+        ///&lt;p&gt;&lt;span style=&quot;font-family: &apos;trebuchet ms&apos;, geneva, sans-serif; font-size: 10pt; color: #000000;&quot;&gt;This notebook is an SQLite database. Use the &lt;span style=&quot;color: #3366ff;&quot;&gt;CREATE&lt;/span&gt;&amp;nbsp;menu to begin adding new data and queries to the notebook. Existing files and databases can be accessed using the &lt;span style=&quot;color: #3 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GettingStartedHtml {
             get {
@@ -324,19 +348,20 @@ namespace SqlNotebook.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///&lt;html&gt;&lt;body&gt;
-        ///&lt;script src=&quot;deploy/tinymce.min.js&quot;&gt;&lt;/script&gt;
-        ///&lt;textarea style=&quot;font-family: Calibri; font-size: 9pt;&quot;&gt;&lt;!--DOCUMENT_HTML--&gt;&lt;/textarea&gt;
+        ///&lt;html&gt;
+        ///&lt;head&gt;&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;&lt;/head&gt;
+        ///&lt;body oncontextmenu=&quot;return false&quot;&gt;
+        ///&lt;script src=&quot;tinymce.min.js&quot;&gt;&lt;/script&gt;
+        ///&lt;textarea id=&quot;txt&quot; style=&quot;visibility: hidden&quot;&gt;&lt;!--DOCUMENT_HTML--&gt;&lt;/textarea&gt;
         ///&lt;script&gt;
-        ///tinymce.init({
-        ///    selector: &apos;textarea&apos;,
-        ///    height: 500,
-        ///    menubar: false,
-        ///    statusbar: false,
-        ///    theme: &apos;modern&apos;,
-        ///    plugins: [ &apos;lists hr table contextmenu paste&apos; ],
-        ///    toolbar1: &apos;h1 h2 formatselect | bold italic underline | alignleft aligncenter alignright | outdent indent | bullist numlist table hr&apos;,
-        ///    contextmen [rest of string was truncated]&quot;;.
+        ///    tinymce.init({
+        ///        selector: &apos;textarea&apos;,
+        ///        height: 500,
+        ///        auto_focus: true,
+        ///        menubar: false,
+        ///        statusbar: false,
+        ///        theme: &apos;modern&apos;,
+        ///        plugins: [ &apos;lists hr table paste textcolor contextmen [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string NoteEditorHtml {
             get {
@@ -401,6 +426,26 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("ScriptIco", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SimpleConsoleCss {
+            get {
+                object obj = ResourceManager.GetObject("SimpleConsoleCss", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SimpleConsoleJs {
+            get {
+                object obj = ResourceManager.GetObject("SimpleConsoleJs", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
@@ -498,13 +543,13 @@ namespace SqlNotebook.Properties {
         ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
         ///&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
         ///&lt;style&gt;
-        ///* { font-family: Arial; font-size: 8pt; }
+        ///* { font-family: &quot;Arial&quot;; font-size: 9pt; line-height: 140%; }
         ///a, a:visited { text-decoration: none; color: blue; }
         ///a:hover { text-decoration: underline; }
         ///&lt;/style&gt;
         ///SQL Notebook&lt;br&gt;
         ///Copyright © 2016 Brian Luft&lt;br&gt;&lt;br&gt;
-        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &amp;quot;Software&amp;quot;), to deal in the Software without restriction, including wi [rest of string was truncated]&quot;;.
+        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &amp;quot;Software&amp;quot;), to deal in the Software without rest [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ThirdPartyLicensesHtml {
             get {

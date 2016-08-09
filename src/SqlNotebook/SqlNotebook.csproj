@@ -125,6 +125,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -147,6 +148,7 @@
     <Compile Include="ConsoleDocumentControl.Designer.cs">
       <DependentUpon>ConsoleDocumentControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="ConsoleServer.cs" />
     <Compile Include="CueToolStripTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -434,6 +436,7 @@
     <None Include="Resources\NoteEditor.html" />
     <None Include="Resources\GettingStarted.html" />
     <None Include="Resources\SqliteSiteErrorPlaceholder.png" />
+    <None Include="Resources\Console.html" />
     <Content Include="SqlNotebookIcon.ico" />
   </ItemGroup>
   <ItemGroup>

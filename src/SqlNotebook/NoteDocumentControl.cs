@@ -15,6 +15,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
@@ -26,10 +27,9 @@ namespace SqlNotebook {
         private readonly NotebookManager _manager;
         private readonly ChromiumWebBrowser _browser;
         private bool _mceLoaded;
+        private BlockingCollection<string> _consoleMessages = new BlockingCollection<string>();
 
         public string ItemName { get; set; }
-
-        private BlockingCollection<string> _consoleMessages = new BlockingCollection<string>();
 
         public void Save() {
             if (!_mceLoaded) {
@@ -37,6 +37,7 @@ namespace SqlNotebook {
             }
             var browser = _browser.GetBrowser();
             var frame = browser.MainFrame;
+            _consoleMessages.Drain();
             frame.ExecuteJavaScriptAsync("console.log(tinymce.activeEditor.getContent());");
             var text = _consoleMessages.Take();
             _manager.SetItemData(ItemName, text);

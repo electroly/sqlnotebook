@@ -243,37 +243,29 @@ namespace SqlNotebook {
             }
         }
 
-        public void SetConsoleHistory(string name, IReadOnlyList<string> history) {
-            var ud = Notebook.UserData;
-            ud.ConsoleHistories.RemoveWhere(x => x.Name == name);
-            var historyRec = new ConsoleHistoryRecord { Name = name };
-            historyRec.History.AddRange(history);
-            ud.ConsoleHistories.Add(historyRec);
-        }
-
-        public List<string> GetConsoleHistory(string name) {
-            var historyRec = Notebook.UserData.ConsoleHistories.FirstOrDefault(x => x.Name == name);
-            if (historyRec == null) {
-                return new List<string>();
-            } else {
-                return historyRec.History;
-            }
-        }
-
         public ScriptOutput ExecuteScript(string code, IReadOnlyDictionary<string, object> args = null,
         bool withTransaction = false) {
+            Dictionary<string, object> vars;
+            return ExecuteScriptEx(code, args, withTransaction, out vars);
+        }
+
+        public ScriptOutput ExecuteScriptEx(string code, IReadOnlyDictionary<string, object> args,
+        bool withTransaction, out Dictionary<string, object> vars) {
             NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
-            return Invoke(() => {
+            var env = new ScriptEnv();
+            var output = Invoke(() => {
                 var parser = new ScriptParser(Notebook);
                 var script = parser.Parse(code);
                 var runner = new ScriptRunner(Notebook, Notebook.GetScripts());
                 if (withTransaction) {
                     return SqlUtil.WithTransaction(Notebook, 
-                        () => runner.Execute(script, args ?? new Dictionary<string, object>()));
+                        () => runner.Execute(script, env, args ?? new Dictionary<string, object>()));
                 } else {
-                    return runner.Execute(script, args ?? new Dictionary<string, object>());
+                    return runner.Execute(script, env, args ?? new Dictionary<string, object>());
                 }
             });
+            vars = env.Vars;
+            return output;
         }
 
         public void DeleteItem(NotebookItem item) {

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="simple-console.js"></script>
+    <link rel="stylesheet" href="simple-console.css">
+    <style>
+        body, .simple-console, .simple-console-input {
+            font-family: 'Consolas';
+            font-size: 10pt;
+        }
+        div.response, div.response * {
+            font-family: 'Segoe UI';
+            font-size: 9pt;
+            margin-bottom: 10px;
+        }
+        span.command-history-icon {
+            display: none;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        td, th {
+            border: 1px solid rgb(229, 229, 229);
+            padding: 3px;
+            padding-left: 6px;
+            padding-right: 6px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false">
+<script>
+    function scrollToBottom() {
+        var elem = document.getElementsByClassName("simple-console-output")[0];
+        elem.scrollTop = elem.scrollHeight;
+        var input = document.getElementsByClassName("simple-console-input")[0];
+        input.focus();
+    }
+
+    function dumpToConsole() {
+        var elem = document.getElementsByClassName("simple-console-output")[0];
+        console.log(elem.innerHTML);
+    }
+
+    function sendCommandRequest(command) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/execute_" + encodeURIComponent(command));
+        xhr.send();
+    }
+
+    function receiveCommandResponse(responseHtml) {
+        var elem = document.getElementsByClassName("simple-console-input-wrapper")[0];
+        con.logHTML(responseHtml);
+        elem.style.visibility = "visible";
+        scrollToBottom();
+    }
+
+    function handleCommand(command) {
+        var elem = document.getElementsByClassName("simple-console-input-wrapper")[0];
+        sendCommandRequest(command);
+        elem.style.visibility = "hidden";
+    }
+
+    var con = new SimpleConsole({
+        handleCommand: handleCommand,
+        placeholder: "",
+        storageID: "simple-console "
+    });
+    document.body.appendChild(con.element);
+
+    document.addEventListener("keypress", function(event) {
+        var input = document.getElementsByClassName("simple-console-input")[0];
+        if (input !== document.activeElement) {
+            input.focus();
+        }
+    });
+
+    var outputElem = document.getElementsByClassName("simple-console-output")[0];
+    outputElem.innerHTML = "SAVED_HISTORY_GOES_HERE";
+
+    console.log("loaded");
+</script>
+</body>
+</html>
