@@ -61,12 +61,12 @@ namespace SqlNotebook {
         private sealed class MenuRenderer : ToolStripProfessionalRenderer {
             public MenuRenderer() : base(new MenuColorTable()) { }
         }
-
+        
         public MainForm(string filePath, bool isNew) {
             InitializeComponent();
 
             _menuStrip.Renderer = new MenuRenderer();
-            _menuStrip.Items.Add(_searchTxt = new CueToolStripTextBox {
+            _menuStrip.Items.Insert(0, _searchTxt = new CueToolStripTextBox {
                 Alignment = ToolStripItemAlignment.Right,
                 CueText = "Search Help",
                 AutoSize = false,
@@ -151,7 +151,7 @@ namespace SqlNotebook {
                 () => _exportMnu.Enabled = !_operationInProgress,
                 _operationInProgress);
             Slot.Bind(
-                () => _saveMnu.Enabled = !_operationInProgress && _isDirty && !_isTransactionOpen,
+                () => _saveBtn.Enabled = _saveMnu.Enabled = !_operationInProgress && _isDirty && !_isTransactionOpen,
                 _operationInProgress, _isDirty, _isTransactionOpen);
             _isDirty.Change += (a, b) => SetTitle();
             Slot.Bind(

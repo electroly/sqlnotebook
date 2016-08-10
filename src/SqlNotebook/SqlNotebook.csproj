@@ -250,7 +250,6 @@
     <Compile Include="QueryDocumentControl.Designer.cs">
       <DependentUpon>QueryDocumentControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ConsoleRichTextBox.cs" />
     <Compile Include="RecentDataSources.cs" />
     <Compile Include="Bind.cs" />
     <Compile Include="SendToTableForm.cs">

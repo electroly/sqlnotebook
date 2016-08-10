@@ -31,6 +31,11 @@
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+            System.Windows.Forms.ToolStripMenuItem toolStripMenuItem17;
+            System.Windows.Forms.ToolStripMenuItem toolStripMenuItem22;
+            System.Windows.Forms.ToolStripMenuItem toolStripMenuItem20;
+            System.Windows.Forms.ToolStripMenuItem toolStripMenuItem19;
+            System.Windows.Forms.ToolStripMenuItem toolStripMenuItem18;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this._statusStrip = new System.Windows.Forms.StatusStrip();
@@ -39,6 +44,7 @@
             this._cancelLnk = new System.Windows.Forms.ToolStripStatusLabel();
             this._statusProgressbar = new System.Windows.Forms.ToolStripProgressBar();
             this._menuStrip = new System.Windows.Forms.MenuStrip();
+            this._saveBtn = new System.Windows.Forms.ToolStripMenuItem();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._newMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._openMnu = new System.Windows.Forms.ToolStripMenuItem();
@@ -76,9 +82,15 @@
             this.toolStripMenuItem14 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripMenuItem();
+            this._helpIndexBtn = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            toolStripMenuItem17 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem22 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem20 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem19 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem18 = new System.Windows.Forms.ToolStripMenuItem();
             this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
             this._toolStripContainer.SuspendLayout();
@@ -101,6 +113,58 @@
             toolStripSeparator6.Name = "toolStripSeparator6";
             toolStripSeparator6.Size = new System.Drawing.Size(152, 6);
             // 
+            // toolStripMenuItem17
+            // 
+            toolStripMenuItem17.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            toolStripMenuItem17.Image = global::SqlNotebook.Properties.Resources.PageWhite;
+            toolStripMenuItem17.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
+            toolStripMenuItem17.Name = "toolStripMenuItem17";
+            toolStripMenuItem17.Size = new System.Drawing.Size(28, 20);
+            toolStripMenuItem17.Text = "toolStripMenuItem17";
+            toolStripMenuItem17.ToolTipText = "New Notebook";
+            toolStripMenuItem17.Click += new System.EventHandler(this.NewMnu_Click);
+            // 
+            // toolStripMenuItem22
+            // 
+            toolStripMenuItem22.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            toolStripMenuItem22.Image = global::SqlNotebook.Properties.Resources.Folder;
+            toolStripMenuItem22.Name = "toolStripMenuItem22";
+            toolStripMenuItem22.Size = new System.Drawing.Size(28, 20);
+            toolStripMenuItem22.Text = "toolStripMenuItem17";
+            toolStripMenuItem22.ToolTipText = "Open Notebook";
+            toolStripMenuItem22.Click += new System.EventHandler(this.OpenMnu_Click);
+            // 
+            // toolStripMenuItem20
+            // 
+            toolStripMenuItem20.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            toolStripMenuItem20.Image = global::SqlNotebook.Properties.Resources.NoteAdd;
+            toolStripMenuItem20.Margin = new System.Windows.Forms.Padding(7, 0, 0, 0);
+            toolStripMenuItem20.Name = "toolStripMenuItem20";
+            toolStripMenuItem20.Size = new System.Drawing.Size(28, 20);
+            toolStripMenuItem20.Text = "toolStripMenuItem17";
+            toolStripMenuItem20.ToolTipText = "New Note";
+            toolStripMenuItem20.Click += new System.EventHandler(this.NewNoteBtn_Click);
+            // 
+            // toolStripMenuItem19
+            // 
+            toolStripMenuItem19.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            toolStripMenuItem19.Image = global::SqlNotebook.Properties.Resources.ApplicationXpTerminalAdd;
+            toolStripMenuItem19.Name = "toolStripMenuItem19";
+            toolStripMenuItem19.Size = new System.Drawing.Size(28, 20);
+            toolStripMenuItem19.Text = "toolStripMenuItem17";
+            toolStripMenuItem19.ToolTipText = "New Console";
+            toolStripMenuItem19.Click += new System.EventHandler(this.NewConsoleBtn_Click);
+            // 
+            // toolStripMenuItem18
+            // 
+            toolStripMenuItem18.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            toolStripMenuItem18.Image = global::SqlNotebook.Properties.Resources.ScriptAdd;
+            toolStripMenuItem18.Name = "toolStripMenuItem18";
+            toolStripMenuItem18.Size = new System.Drawing.Size(28, 20);
+            toolStripMenuItem18.Text = "toolStripMenuItem17";
+            toolStripMenuItem18.ToolTipText = "New Script";
+            toolStripMenuItem18.Click += new System.EventHandler(this.NewScriptBtn_Click);
+            // 
             // _toolStripContainer
             // 
             // 
@@ -110,6 +174,7 @@
             // 
             // _toolStripContainer.ContentPanel
             // 
+            this._toolStripContainer.ContentPanel.Padding = new System.Windows.Forms.Padding(7, 7, 7, 0);
             this._toolStripContainer.ContentPanel.Size = new System.Drawing.Size(931, 759);
             this._toolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this._toolStripContainer.Location = new System.Drawing.Point(0, 0);
@@ -154,7 +219,7 @@
             this._statusLbl.Image = global::SqlNotebook.Properties.Resources.Hourglass;
             this._statusLbl.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Name = "_statusLbl";
-            this._statusLbl.Size = new System.Drawing.Size(538, 17);
+            this._statusLbl.Size = new System.Drawing.Size(762, 17);
             this._statusLbl.Spring = true;
             this._statusLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Visible = false;
@@ -181,20 +246,39 @@
             // 
             // _menuStrip
             // 
-            this._menuStrip.BackColor = System.Drawing.SystemColors.Control;
+            this._menuStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
             this._menuStrip.Dock = System.Windows.Forms.DockStyle.None;
             this._menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            toolStripMenuItem17,
+            toolStripMenuItem22,
+            this._saveBtn,
+            toolStripMenuItem20,
+            toolStripMenuItem19,
+            toolStripMenuItem18,
             this.fileToolStripMenuItem,
             this.createToolStripMenuItem,
             this._importMnu,
             this._exportMnu,
-            this.helpToolStripMenuItem});
+            this.helpToolStripMenuItem,
+            this._helpIndexBtn});
             this._menuStrip.Location = new System.Drawing.Point(0, 0);
             this._menuStrip.Name = "_menuStrip";
             this._menuStrip.Padding = new System.Windows.Forms.Padding(2, 2, 0, 2);
+            this._menuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            this._menuStrip.ShowItemToolTips = true;
             this._menuStrip.Size = new System.Drawing.Size(931, 24);
             this._menuStrip.TabIndex = 2;
             this._menuStrip.Text = "menuStrip1";
+            // 
+            // _saveBtn
+            // 
+            this._saveBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this._saveBtn.Image = global::SqlNotebook.Properties.Resources.Diskette;
+            this._saveBtn.Name = "_saveBtn";
+            this._saveBtn.Size = new System.Drawing.Size(28, 20);
+            this._saveBtn.Text = "toolStripMenuItem17";
+            this._saveBtn.ToolTipText = "Save Notebook";
+            this._saveBtn.Click += new System.EventHandler(this.SaveMnu_Click);
             // 
             // fileToolStripMenuItem
             // 
@@ -207,9 +291,10 @@
             this._optionsMnu,
             toolStripSeparator6,
             this._exitMnu});
+            this.fileToolStripMenuItem.Margin = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "&File";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
+            this.fileToolStripMenuItem.Text = "&Notebook";
             // 
             // _newMnu
             // 
@@ -387,7 +472,7 @@
             this.toolStripMenuItem13});
             this._exportMnu.Name = "_exportMnu";
             this._exportMnu.Size = new System.Drawing.Size(52, 20);
-            this._exportMnu.Text = "&Export";
+            this._exportMnu.Text = "E&xport";
             // 
             // toolStripMenuItem5
             // 
@@ -498,6 +583,17 @@
             this.toolStripMenuItem16.Text = "About SQL Notebook";
             this.toolStripMenuItem16.Click += new System.EventHandler(this.AboutMnu_Click);
             // 
+            // _helpIndexBtn
+            // 
+            this._helpIndexBtn.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this._helpIndexBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this._helpIndexBtn.Image = global::SqlNotebook.Properties.Resources.Help;
+            this._helpIndexBtn.Name = "_helpIndexBtn";
+            this._helpIndexBtn.Size = new System.Drawing.Size(28, 20);
+            this._helpIndexBtn.Text = "View documentation";
+            this._helpIndexBtn.ToolTipText = "New Script";
+            this._helpIndexBtn.Click += new System.EventHandler(this.ViewDocMnu_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -571,6 +667,8 @@
         private System.Windows.Forms.ToolStripMenuItem _saveAsMnu;
         private System.Windows.Forms.ToolStripMenuItem _optionsMnu;
         private System.Windows.Forms.ToolStripMenuItem _exitMnu;
+        private System.Windows.Forms.ToolStripMenuItem _saveBtn;
+        private System.Windows.Forms.ToolStripMenuItem _helpIndexBtn;
     }
 }
 

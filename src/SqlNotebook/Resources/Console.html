@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html oncontextmenu="return false">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <script src="simple-console.js"></script>
@@ -27,9 +27,15 @@
             padding-right: 6px;
             text-align: left;
         }
+        span.input-chevron {
+            position: absolute;
+            left: 0;
+            top: 5px;
+            display: block;
+        }
     </style>
 </head>
-<body oncontextmenu="return false">
+<body>
 <script>
     function scrollToBottom() {
         var elem = document.getElementsByClassName("simple-console-output")[0];
@@ -75,6 +81,9 @@
             input.focus();
         }
     });
+
+    var inputElem = document.getElementsByClassName("simple-console-input")[0];
+    inputElem.spellcheck = false;
 
     var outputElem = document.getElementsByClassName("simple-console-output")[0];
     outputElem.innerHTML = "SAVED_HISTORY_GOES_HERE";

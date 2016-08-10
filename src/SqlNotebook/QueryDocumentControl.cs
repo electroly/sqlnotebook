@@ -16,35 +16,28 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SqlNotebookCore;
 using SqlNotebookScript.Interpreter;
-using ScintillaNET;
-using SqlNotebookScript;
 using SqlNotebookScript.Utils;
-using SqlNotebook.Properties;
 
 namespace SqlNotebook {
     public partial class QueryDocumentControl : UserControl, IDocumentControl {
         private readonly IWin32Window _mainForm;
         private readonly NotebookManager _manager;
         private readonly Notebook _notebook;
-        private readonly Scintilla _scintilla;
+        private readonly SqlTextControl _textCtl;
         private readonly List<DataTable> _results = new List<DataTable>();
         private int _selectedResultIndex = 0;
         private readonly Slot<bool> _operationInProgress;
 
-        public string DocumentText => _scintilla.Text;
-
         public string ItemName { get; set; }
 
         public void Save() {
-            _manager.SetItemData(ItemName, DocumentText);
+            _manager.SetItemData(ItemName, _textCtl.SqlText);
         }
 
         public QueryDocumentControl(string name, NotebookManager manager, IWin32Window mainForm, Slot<bool> operationInProgress) {
@@ -57,134 +50,15 @@ namespace SqlNotebook {
 
             _grid.EnableDoubleBuffering();
 
-            _scintilla = new Scintilla {
+            _textCtl = new SqlTextControl(false) {
                 Dock = DockStyle.Fill,
-                Lexer = ScintillaNET.Lexer.Container,
-                FontQuality = ScintillaNET.FontQuality.LcdOptimized,
-                IndentWidth = 4,
-                UseTabs = false,
-                BufferedDraw = true,
-                TabWidth = 4,
-                ScrollWidthTracking = true,
-                ScrollWidth = 1,
-                BorderStyle = BorderStyle.None,
+                Padding = new Padding(4, 0, 0, 0)
             };
-            foreach (var style in _scintilla.Styles) {
-                style.Font = "Consolas";
-                style.Size = 10;
-            }
-
-            var operatorTokens = new HashSet<TokenType>(new[] {
-                TokenType.Add, TokenType.Asterisk, TokenType.Bitand, TokenType.Bitnot, TokenType.Bitor,
-                TokenType.Comma, TokenType.Dot, TokenType.Eq, TokenType.Ge, TokenType.Gt, TokenType.Le, TokenType.Lp,
-                TokenType.Lshift, TokenType.Lt, TokenType.Ne, TokenType.Plus, TokenType.Rp, TokenType.Rshift,
-                TokenType.Semi, TokenType.Star, TokenType.Uminus, TokenType.Uplus
-            });
-
-            var sqlnbKeywords = new HashSet<string>(new[] {
-                "declare", "parameter", "while", "break", "continue", "print", "execute", "exec", "return", "throw",
-                "try", "catch"
-            });
-
-            var utf8Encoding = new UTF8Encoding(false);
-            
-            _scintilla.StyleNeeded += (sender, e) => {
-                var text = _scintilla.Text;
-                Task.Run(() => {
-                    var tokens = _notebook.Tokenize(text);
-                    ulong i = 0;
-                    var utf8 = utf8Encoding.GetBytes(text);
-                    var list = new List<Tuple<int, int>>(); // length, type; for successive calls to SetStyling()
-
-                    foreach (var token in tokens) {
-                        // treat characters between i and token.Utf8Start as a comment
-                        var numCommentBytes = token.Utf8Start - i;
-                        var strComment = Encoding.UTF8.GetString(utf8, (int)i, (int)numCommentBytes);
-                        list.Add(Tuple.Create(strComment.Length, ScintillaNET.Style.Sql.Comment));
-                        i += numCommentBytes;
-
-                        var strSpace = Encoding.UTF8.GetString(utf8, (int)i, (int)token.Utf8Length);
-                        int type = 0;
-                        if (operatorTokens.Contains(token.Type)) {
-                            type = ScintillaNET.Style.Sql.Operator;
-                        } else {
-                            switch (token.Type) {
-                                case TokenType.Space:
-                                case TokenType.Span:
-                                case TokenType.Illegal:
-                                case TokenType.Column:
-                                case TokenType.Table:
-                                    type = ScintillaNET.Style.Sql.Default;
-                                    break;
-
-                                case TokenType.String:
-                                case TokenType.UnclosedString:
-                                    type = ScintillaNET.Style.Sql.String;
-                                    break;
-
-                                case TokenType.Id:
-                                    if (sqlnbKeywords.Contains(token.Text.ToLower())) {
-                                        type = ScintillaNET.Style.Sql.Word;
-                                    } else {
-                                        type = ScintillaNET.Style.Sql.Identifier;
-                                    }
-                                    break;
-
-                                case TokenType.Variable:
-                                    type = ScintillaNET.Style.Sql.User1;
-                                    break;
-
-                                case TokenType.Integer:
-                                case TokenType.Float:
-                                    type = ScintillaNET.Style.Sql.Number;
-                                    break;
-
-                                default:
-                                    type = ScintillaNET.Style.Sql.Word;
-                                    break;
-                            }
-                        }
-
-                        list.Add(Tuple.Create(strSpace.Length, type));
-                        i += token.Utf8Length;
-                    }
-
-                    // everything from the last token to the end of the string is a comment
-                    var numEndCommentBytes = utf8.Length - (int)i;
-                    if (numEndCommentBytes > 0) {
-                        var strEndComment = Encoding.UTF8.GetString(utf8, (int)i, numEndCommentBytes);
-                        list.Add(Tuple.Create(strEndComment.Length, ScintillaNET.Style.Sql.Comment));
-                    }
-
-                    BeginInvoke(new MethodInvoker(() => {
-                        if (_scintilla.Text != text) {
-                            // the text changed while we were working, so discard these results because
-                            // another tokenization will soon deliver more up-to-date results.
-                            return;
-                        }
-
-                        _scintilla.StartStyling(0);
-                        foreach (var item in list) {
-                            _scintilla.SetStyling(item.Item1, item.Item2);
-                        }
-                    }));
-                });
-            };
-
-            _scintilla.Margins[1].Width = 0;
-            _scintilla.Styles[ScintillaNET.Style.Sql.String].ForeColor = Color.Red;
-            _scintilla.Styles[ScintillaNET.Style.Sql.Comment].ForeColor = Color.Green;
-            _scintilla.Styles[ScintillaNET.Style.Sql.Number].ForeColor = Color.Gray;
-            _scintilla.Styles[ScintillaNET.Style.Sql.Operator].ForeColor = Color.Gray;
-            _scintilla.Styles[ScintillaNET.Style.Sql.Word].ForeColor = Color.Blue;
-            _scintilla.Styles[ScintillaNET.Style.Sql.User1].Italic = true; // variables
-            _scintilla.Styles[ScintillaNET.Style.Sql.Number].ForeColor = Color.Gray;
-
-            _sqlPanel.Controls.Add(_scintilla);
+            _sqlPanel.Controls.Add(_textCtl);
 
             // if this tool window has been pulled off into a floating window, then the MainForm's key handler won't
             // trigger on F5, so catch it here.
-            _scintilla.KeyDown += async (sender, e) => {
+            _textCtl.Scintilla.KeyDown += async (sender, e) => {
                 if (e.KeyCode == Keys.F5) {
                     await Execute();
                 }
@@ -193,17 +67,17 @@ namespace SqlNotebook {
             Load += (sender, e) => {
                 string initialText = _manager.GetItemData(ItemName);
                 if (initialText != null) {
-                    _scintilla.Text = initialText;
+                    _textCtl.SqlText = initialText;
                 }
 
-                _scintilla.TextChanged += (sender2, e2) => _manager.SetDirty();
+                _textCtl.SqlTextChanged += (sender2, e2) => _manager.SetDirty();
 
                 ShowResult(0);
             };
         }
 
         public async Task Execute() {
-            await Execute(_scintilla.Text);
+            await Execute(_textCtl.SqlText);
         }
 
         private async void ExecuteBtn_Click(object sender, EventArgs e) {

@@ -28,6 +28,8 @@ namespace SqlNotebook {
     public partial class SqlTextControl : UserControl {
         private readonly Scintilla _scintilla;
 
+        public Scintilla Scintilla => _scintilla;
+
         public string SqlText {
             get {
                 return _scintilla.Text;
@@ -40,6 +42,8 @@ namespace SqlNotebook {
                 _scintilla.ReadOnly = oldReadOnly;
             }
         }
+
+        public event EventHandler SqlTextChanged;
 
         public SqlTextControl(bool readOnly) {
             InitializeComponent();
@@ -57,6 +61,8 @@ namespace SqlNotebook {
                 BorderStyle = BorderStyle.None,
                 ReadOnly = readOnly
             };
+            _scintilla.TextChanged += (sender, e) => SqlTextChanged?.Invoke(this, EventArgs.Empty);
+
             foreach (var style in _scintilla.Styles) {
                 style.Font = "Consolas";
                 style.Size = 10;
