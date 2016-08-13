@@ -27,7 +27,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this._scriptBtn = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this._grid = new System.Windows.Forms.DataGridView();
             this.toolStrip1.SuspendLayout();
@@ -36,38 +35,37 @@
             // 
             // toolStrip1
             // 
-            this.toolStrip1.BackColor = System.Drawing.SystemColors.Window;
+            this.toolStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._scriptBtn,
-            this.toolStripSeparator1,
             this.toolStripLabel1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.toolStrip1.ShowItemToolTips = false;
-            this.toolStrip1.Size = new System.Drawing.Size(745, 29);
+            this.toolStrip1.Size = new System.Drawing.Size(745, 30);
             this.toolStrip1.Stretch = true;
             this.toolStrip1.TabIndex = 3;
             // 
             // _scriptBtn
             // 
+            this._scriptBtn.AutoSize = false;
             this._scriptBtn.Image = ((System.Drawing.Image)(resources.GetObject("_scriptBtn.Image")));
             this._scriptBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._scriptBtn.Margin = new System.Windows.Forms.Padding(2, 1, 0, 2);
             this._scriptBtn.Name = "_scriptBtn";
-            this._scriptBtn.Padding = new System.Windows.Forms.Padding(3);
-            this._scriptBtn.Size = new System.Drawing.Size(121, 26);
+            this._scriptBtn.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this._scriptBtn.Size = new System.Drawing.Size(115, 27);
             this._scriptBtn.Text = "Convert to script";
             this._scriptBtn.Click += new System.EventHandler(this.ScriptBtn_Click);
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 29);
-            // 
             // toolStripLabel1
             // 
+            this.toolStripLabel1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripLabel1.Margin = new System.Windows.Forms.Padding(0, 1, 7, 2);
             this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(129, 26);
+            this.toolStripLabel1.Size = new System.Drawing.Size(129, 27);
             this.toolStripLabel1.Text = "Showing top 1000 rows";
             // 
             // _grid
@@ -82,7 +80,7 @@
             this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._grid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this._grid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(229)))), ((int)(((byte)(229)))));
-            this._grid.Location = new System.Drawing.Point(0, 29);
+            this._grid.Location = new System.Drawing.Point(0, 30);
             this._grid.Name = "_grid";
             this._grid.ReadOnly = true;
             this._grid.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
@@ -95,7 +93,7 @@
             this._grid.ShowCellToolTips = false;
             this._grid.ShowEditingIcon = false;
             this._grid.ShowRowErrors = false;
-            this._grid.Size = new System.Drawing.Size(745, 610);
+            this._grid.Size = new System.Drawing.Size(745, 609);
             this._grid.TabIndex = 4;
             // 
             // TableDocumentControl
@@ -120,7 +118,6 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton _scriptBtn;
         private System.Windows.Forms.DataGridView _grid;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripLabel toolStripLabel1;
     }
 }

@@ -31,6 +31,7 @@ namespace SqlNotebook {
         private readonly NotebookManager _manager;
 
         public int Port => _port;
+        public event EventHandler PasteRequest;
 
         public NoteServer(NotebookManager manager) {
             using (var stream = new MemoryStream(Resources.TinymceZip))
@@ -51,6 +52,16 @@ namespace SqlNotebook {
         }
 
         private void Server_Request(object sender, HttpRequestEventArgs e) {
+            if (e.Url == "/changed") {
+                _manager.SetDirty();
+                e.Result = new byte[] { 79, 75 }; // 'OK'
+                return;
+            } else if (e.Url == "/paste") {
+                PasteRequest?.Invoke(this, EventArgs.Empty);
+                e.Result = new byte[] { 79, 75 }; // 'OK'
+                return;
+            }
+
             var notePrefix = "/note_";
             if (e.Url.StartsWith(notePrefix)) {
                 // the filename suffix is the base64-encoded bytes of the UTF-8 note name

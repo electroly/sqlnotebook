@@ -97,7 +97,13 @@ namespace SqlNotebook {
                 }
             }
             _isNew = isNew;
-            _manager = new NotebookManager(_notebook, _isTransactionOpen);
+            _manager = new NotebookManager(_notebook, _isTransactionOpen,
+                onNoteServerCreate: () => {
+                    _manager.NoteServer.PasteRequest += (sender, e) => {
+                        BeginInvoke(new MethodInvoker(() => SendKeys.Send("^v")));
+                    };
+                });
+            
             _importer = new Importer(_manager, this);
             _dockPanel = new DockPanel {
                 Dock = DockStyle.Fill,
@@ -143,19 +149,27 @@ namespace SqlNotebook {
                     _cancelLnk.Visible = false;
                 }
             };
-
+            
             Slot.Bind(
-                () => _importMnu.Enabled = _saveAsMnu.Enabled = !_operationInProgress && !_isTransactionOpen,
+                () => BeginInvoke(new MethodInvoker(() =>
+                    _importMnu.Enabled = _saveAsMnu.Enabled = !_operationInProgress && !_isTransactionOpen
+                )),
                 _operationInProgress, _isTransactionOpen);
             Slot.Bind(
-                () => _exportMnu.Enabled = !_operationInProgress,
+                () => BeginInvoke(new MethodInvoker(() => 
+                    _exportMnu.Enabled = !_operationInProgress
+                )),
                 _operationInProgress);
             Slot.Bind(
-                () => _saveBtn.Enabled = _saveMnu.Enabled = !_operationInProgress && _isDirty && !_isTransactionOpen,
+                () => BeginInvoke(new MethodInvoker(() => 
+                    _saveBtn.Enabled = _saveMnu.Enabled = !_operationInProgress && _isDirty && !_isTransactionOpen
+                )),
                 _operationInProgress, _isDirty, _isTransactionOpen);
             _isDirty.Change += (a, b) => SetTitle();
             Slot.Bind(
-                () => BeginInvoke(new MethodInvoker(() => _openTransactionLbl.Visible = _isTransactionOpen)),
+                () => BeginInvoke(new MethodInvoker(() =>
+                    _openTransactionLbl.Visible = _isTransactionOpen
+                )),
                 _isTransactionOpen);
 
             if (isNew) {
@@ -238,7 +252,9 @@ namespace SqlNotebook {
                 prefix = Path.GetFileNameWithoutExtension(_filePath);
             }
             var star = _isDirty ? "*" : "";
-            Text = $"{prefix}{star} - SQL Notebook";
+            BeginInvoke(new MethodInvoker(() => {
+                Text = $"{prefix}{star} - SQL Notebook";
+            }));
         }
 
         private void SetDirty() {

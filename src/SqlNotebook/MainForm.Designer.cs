@@ -591,7 +591,7 @@
             this._helpIndexBtn.Name = "_helpIndexBtn";
             this._helpIndexBtn.Size = new System.Drawing.Size(28, 20);
             this._helpIndexBtn.Text = "View documentation";
-            this._helpIndexBtn.ToolTipText = "New Script";
+            this._helpIndexBtn.ToolTipText = "View documentation";
             this._helpIndexBtn.Click += new System.EventHandler(this.ViewDocMnu_Click);
             // 
             // MainForm

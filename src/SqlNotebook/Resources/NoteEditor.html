@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head><meta http-equiv="content-type" content="text/html; charset=UTF-8"></head>
 <body oncontextmenu="return false">
@@ -13,9 +13,8 @@
         statusbar: false,
         theme: 'modern',
         plugins: [ 'lists hr table paste textcolor contextmenu' ],
-        toolbar1: 'fontselect fontsizeselect | bold italic underline forecolor | alignleft aligncenter alignright' +
-            '| outdent indent | bullist numlist table hr',
-        contextmenu: "selectall | inserttable | cell row column deletetable",
+        toolbar1: 'fontselect fontsizeselect | bold italic underline forecolor | alignleft aligncenter alignright | outdent indent | bullist numlist | table hr',
+        contextmenu: "cut copy paste | selectall | inserttable | cell row column deletetable",
         contextmenu_never_use_native: true,
         setup: function(ed) {
             window.setTimeout(function() {
@@ -28,6 +27,12 @@
                     }
                 }
             }, 0);
+
+            ed.on('change', function (e) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', "/changed");
+                xhr.send();
+            });
         }
     });
     

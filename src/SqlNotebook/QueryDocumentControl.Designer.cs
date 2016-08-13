@@ -86,7 +86,7 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this._grid);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(694, 345);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(694, 344);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
@@ -124,7 +124,7 @@
             this._grid.ShowCellToolTips = false;
             this._grid.ShowEditingIcon = false;
             this._grid.ShowRowErrors = false;
-            this._grid.Size = new System.Drawing.Size(694, 345);
+            this._grid.Size = new System.Drawing.Size(694, 344);
             this._grid.TabIndex = 0;
             // 
             // _resultToolStrip
@@ -143,7 +143,7 @@
             this._resultToolStrip.Name = "_resultToolStrip";
             this._resultToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this._resultToolStrip.ShowItemToolTips = false;
-            this._resultToolStrip.Size = new System.Drawing.Size(694, 29);
+            this._resultToolStrip.Size = new System.Drawing.Size(694, 30);
             this._resultToolStrip.Stretch = true;
             this._resultToolStrip.TabIndex = 0;
             // 
@@ -154,36 +154,38 @@
             this._executeBtn.Margin = new System.Windows.Forms.Padding(2, 1, 0, 2);
             this._executeBtn.Name = "_executeBtn";
             this._executeBtn.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
-            this._executeBtn.Size = new System.Drawing.Size(67, 26);
+            this._executeBtn.Size = new System.Drawing.Size(67, 27);
             this._executeBtn.Text = "Execute";
             this._executeBtn.Click += new System.EventHandler(this.ExecuteBtn_Click);
             // 
             // _prevBtn
             // 
+            this._prevBtn.AutoSize = false;
             this._prevBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this._prevBtn.Image = ((System.Drawing.Image)(resources.GetObject("_prevBtn.Image")));
             this._prevBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._prevBtn.Margin = new System.Windows.Forms.Padding(5, 1, 0, 2);
             this._prevBtn.Name = "_prevBtn";
             this._prevBtn.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            this._prevBtn.Size = new System.Drawing.Size(30, 26);
+            this._prevBtn.Size = new System.Drawing.Size(30, 27);
             this._prevBtn.Text = "toolStripButton1";
             this._prevBtn.Click += new System.EventHandler(this.PrevBtn_Click);
             // 
             // _resultSetLbl
             // 
             this._resultSetLbl.Name = "_resultSetLbl";
-            this._resultSetLbl.Size = new System.Drawing.Size(36, 26);
+            this._resultSetLbl.Size = new System.Drawing.Size(36, 27);
             this._resultSetLbl.Text = "1 of 1";
             // 
             // _nextBtn
             // 
+            this._nextBtn.AutoSize = false;
             this._nextBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this._nextBtn.Image = ((System.Drawing.Image)(resources.GetObject("_nextBtn.Image")));
             this._nextBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._nextBtn.Name = "_nextBtn";
             this._nextBtn.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            this._nextBtn.Size = new System.Drawing.Size(30, 26);
+            this._nextBtn.Size = new System.Drawing.Size(30, 27);
             this._nextBtn.Text = "toolStripButton2";
             this._nextBtn.Click += new System.EventHandler(this.NextBtn_Click);
             // 
@@ -199,7 +201,7 @@
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Margin = new System.Windows.Forms.Padding(8, 1, 0, 2);
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(76, 26);
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(76, 27);
             this.toolStripDropDownButton1.Text = "Send to";
             // 
             // _sendTableMnu
@@ -246,7 +248,7 @@
             this._rowCountLbl.Margin = new System.Windows.Forms.Padding(0, 1, 8, 2);
             this._rowCountLbl.Name = "_rowCountLbl";
             this._rowCountLbl.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-            this._rowCountLbl.Size = new System.Drawing.Size(5, 26);
+            this._rowCountLbl.Size = new System.Drawing.Size(5, 27);
             // 
             // QueryDocumentControl
             // 
