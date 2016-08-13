@@ -33,20 +33,23 @@ namespace SqlNotebook {
 
         public string ItemName { get; set; }
 
+        private static object _saveLock = new object();
         public void Save() {
             if (!_mceLoaded) {
                 return;
             }
-            var browser = _browser.GetBrowser();
-            var frame = browser.MainFrame;
-            _consoleMessages.Drain();
-            frame.ExecuteJavaScriptAsync("console.log(tinymce.activeEditor.getContent());");
-            while (!_consoleMessages.Any()) {
-                Cef.DoMessageLoopWork();
-                Thread.Sleep(0);
+            lock (_saveLock) {
+                var browser = _browser.GetBrowser();
+                var frame = browser.MainFrame;
+                _consoleMessages.Drain();
+                frame.ExecuteJavaScriptAsync("console.log(tinymce.activeEditor.getContent());");
+                while (!_consoleMessages.Any()) {
+                    Cef.DoMessageLoopWork();
+                    Thread.Sleep(0);
+                }
+                var text = _consoleMessages.Take();
+                _manager.SetItemData(ItemName, text);
             }
-            var text = _consoleMessages.Take();
-            _manager.SetItemData(ItemName, text);
         }
 
         public void OnClosing() {

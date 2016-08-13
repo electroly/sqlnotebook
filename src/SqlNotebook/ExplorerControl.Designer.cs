@@ -119,14 +119,15 @@
             this._renameMnu,
             this._deleteMnu});
             this._contextMenuStrip.Name = "_contextMenuStrip";
-            this._contextMenuStrip.Size = new System.Drawing.Size(118, 48);
+            this._contextMenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            this._contextMenuStrip.Size = new System.Drawing.Size(153, 70);
             this._contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip_Opening);
             // 
             // _renameMnu
             // 
             this._renameMnu.Image = global::SqlNotebook.Properties.Resources.TextfieldRename;
             this._renameMnu.Name = "_renameMnu";
-            this._renameMnu.Size = new System.Drawing.Size(117, 22);
+            this._renameMnu.Size = new System.Drawing.Size(152, 22);
             this._renameMnu.Text = "&Rename";
             this._renameMnu.Click += new System.EventHandler(this.RenameMnu_Click);
             // 
@@ -134,7 +135,7 @@
             // 
             this._deleteMnu.Image = global::SqlNotebook.Properties.Resources.Delete;
             this._deleteMnu.Name = "_deleteMnu";
-            this._deleteMnu.Size = new System.Drawing.Size(117, 22);
+            this._deleteMnu.Size = new System.Drawing.Size(152, 22);
             this._deleteMnu.Text = "&Delete";
             this._deleteMnu.Click += new System.EventHandler(this.DeleteMnu_Click);
             // 

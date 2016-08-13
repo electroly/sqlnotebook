@@ -47,6 +47,7 @@ namespace SqlNotebook {
             _notebook = manager.Notebook;
             _mainForm = mainForm;
             _operationInProgress = operationInProgress;
+            _resultToolStrip.Renderer = new MenuRenderer();
 
             _grid.EnableDoubleBuffering();
 
@@ -90,6 +91,7 @@ namespace SqlNotebook {
                     throw new Exception("Another operation is already in progress.");
                 }
 
+                _manager.CommitOpenEditors();
                 await ExecuteCore(sql);
                 _manager.SetDirty();
                 _manager.Rescan();

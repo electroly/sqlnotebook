@@ -20,13 +20,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CefSharp;
 using SqlNotebook.Properties;
 using SqlNotebookCore;
-using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -49,20 +46,6 @@ namespace SqlNotebook {
         private readonly Dictionary<NotebookItem, UserControlDockContent> _openItems
             = new Dictionary<NotebookItem, UserControlDockContent>();
 
-        private sealed class MenuColorTable : ProfessionalColorTable {
-            public override Color MenuItemSelected => Color.FromArgb(225, 239, 251);
-            public override Color MenuItemBorder => Color.FromArgb(200, 228, 251);
-            public override Color MenuItemSelectedGradientBegin => Color.FromArgb(225, 239, 251);
-            public override Color MenuItemSelectedGradientEnd => Color.FromArgb(225, 239, 251);
-            public override Color ImageMarginGradientBegin => SystemColors.Window;
-            public override Color ImageMarginGradientMiddle => SystemColors.Window;
-            public override Color ImageMarginGradientEnd => SystemColors.Window;
-        }
-
-        private sealed class MenuRenderer : ToolStripProfessionalRenderer {
-            public MenuRenderer() : base(new MenuColorTable()) { }
-        }
-        
         public MainForm(string filePath, bool isNew) {
             InitializeComponent();
 
@@ -725,6 +708,6 @@ namespace SqlNotebook {
         private void OptionsMnu_Click(object sender, EventArgs e) {
             new OptionsForm().ShowDialogAndDispose(this);
         }
-    }
+   }
 }
  

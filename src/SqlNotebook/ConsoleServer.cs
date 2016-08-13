@@ -93,6 +93,7 @@ namespace SqlNotebook {
 
         private void Execute(string sql) {
             _manager.PushStatus("Running console command...");
+            _manager.CommitOpenEditors();
             string response;
             try {
                Dictionary<string, object> newVars;

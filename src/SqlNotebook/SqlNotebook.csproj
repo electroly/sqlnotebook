@@ -224,6 +224,7 @@
     <Compile Include="LoadingContainerControl.Designer.cs">
       <DependentUpon>LoadingContainerControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="MenuRenderer.cs" />
     <Compile Include="MessageForm.cs" />
     <Compile Include="NotebookManager.cs" />
     <Compile Include="NoteDocumentControl.cs">

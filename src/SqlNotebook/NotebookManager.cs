@@ -111,6 +111,10 @@ namespace SqlNotebook {
             });
         }
 
+        public void CommitOpenEditors() {
+            NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
+        }
+
         public void Save() {
             NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
             Notebook.Invoke(() => {
@@ -252,7 +256,6 @@ namespace SqlNotebook {
 
         public ScriptOutput ExecuteScriptEx(string code, IReadOnlyDictionary<string, object> args,
         bool withTransaction, out Dictionary<string, object> vars) {
-            NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
             var env = new ScriptEnv();
             var output = Invoke(() => {
                 var parser = new ScriptParser(Notebook);

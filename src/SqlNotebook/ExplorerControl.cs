@@ -37,6 +37,7 @@ namespace SqlNotebook {
             _manager = manager;
             _operationInProgress = operationInProgress;
             _manager.NotebookChange += (sender, e) => HandleNotebookChange(e);
+            _contextMenuStrip.Renderer = new MenuRenderer();
 
             _list.SmallImageList = _detailsLst.SmallImageList = _paddedImageList = _imageList.PadListViewIcons();
 
