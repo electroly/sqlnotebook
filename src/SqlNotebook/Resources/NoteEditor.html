@@ -18,7 +18,7 @@
         contextmenu_never_use_native: true,
         setup: function(ed) {
             window.setTimeout(function() {
-                // put regular tooltips on the toolbar buttons
+                // put regular system tooltips on the toolbar buttons
                 var x = document.getElementsByClassName('needs-title');
                 for (var i = 0; i < x.length; i++) {
                     var label = x[i].getAttribute('aria-label');
@@ -43,7 +43,7 @@
         var toolbar = document.getElementsByClassName("mce-toolbar-grp")[0];
         var newHeight = viewportHeight - toolbar.offsetHeight - 2;
         if (lastHeight != newHeight) {
-            tinymce.DOM.setStyle(tinymce.DOM.get("txt" + '_ifr'), 'height', newHeight + 'px');
+            tinymce.DOM.setStyle(tinymce.DOM.get('txt_ifr'), 'height', newHeight + 'px');
             lastHeight = newHeight;
         }
     }
