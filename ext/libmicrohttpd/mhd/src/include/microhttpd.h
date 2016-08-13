@@ -130,7 +130,7 @@ typedef intptr_t ssize_t;
  * Current version of the library.
  * 0x01093001 = 1.9.30-1.
  */
-#define MHD_VERSION 0x00094900
+#define MHD_VERSION 0x00095000
 
 /**
  * MHD-internal return code for "YES".
@@ -1157,6 +1157,11 @@ union MHD_ConnectionInfo
   int /* enum gnutls_protocol */ protocol;
 
   /**
+   * The suspended status of a connection.
+   */
+  int /* MHD_YES or MHD_NO */ suspended;
+
+  /**
    * Connect socket
    */
   MHD_socket connect_fd;
@@ -1255,8 +1260,13 @@ enum MHD_ConnectionInfoType
    * fresh for each HTTP request, while the "socket_context" is fresh
    * for each socket.
    */
-  MHD_CONNECTION_INFO_SOCKET_CONTEXT
+  MHD_CONNECTION_INFO_SOCKET_CONTEXT,
 
+  /**
+   * Check wheter the connection is suspended.
+   * @ingroup request
+   */
+  MHD_CONNECTION_INFO_CONNECTION_SUSPENDED
 };
 
 

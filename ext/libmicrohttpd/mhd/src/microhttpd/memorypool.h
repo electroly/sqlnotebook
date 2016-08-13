@@ -77,7 +77,7 @@ MHD_pool_allocate (struct MemoryPool *pool,
  * Reallocate a block of memory obtained from the pool.
  * This is particularly efficient when growing or
  * shrinking the block that was last (re)allocated.
- * If the given block is not the most recenlty
+ * If the given block is not the most recently
  * (re)allocated block, the memory of the previous
  * allocation may be leaked until the pool is
  * destroyed (and copying the data maybe required).

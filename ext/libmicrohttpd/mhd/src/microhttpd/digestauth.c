@@ -308,7 +308,7 @@ lookup_sub_value (char *dest,
 static int
 check_nonce_nc (struct MHD_Connection *connection,
 		const char *nonce,
-		unsigned long int nc)
+		uint64_t nc)
 {
   uint32_t off;
   uint32_t mod;
@@ -554,7 +554,6 @@ MHD_digest_auth_check (struct MHD_Connection *connection,
 {
   size_t len;
   const char *header;
-  char *end;
   char nonce[MAX_NONCE_LENGTH];
   char cnonce[MAX_NONCE_LENGTH];
   char qop[15]; /* auth,auth-int */
@@ -567,7 +566,7 @@ MHD_digest_auth_check (struct MHD_Connection *connection,
   uint32_t nonce_time;
   uint32_t t;
   size_t left; /* number of characters left in 'header' for 'uri' */
-  unsigned long int nci;
+  uint64_t nci;
 
   header = MHD_lookup_connection_value (connection,
 					MHD_HEADER_KIND,
@@ -619,7 +618,15 @@ MHD_digest_auth_check (struct MHD_Connection *connection,
        header value. */
     return MHD_NO;
   }
-  nonce_time = strtoul (nonce + len - TIMESTAMP_HEX_LEN, (char **)NULL, 16);
+  if (TIMESTAMP_HEX_LEN != MHD_strx_to_uint32_n_ (nonce + len - TIMESTAMP_HEX_LEN,
+                                                  TIMESTAMP_HEX_LEN, &nonce_time))
+    {
+#ifdef HAVE_MESSAGES
+      MHD_DLOG (connection->daemon,
+                "Authentication failed, invalid timestamp format.\n");
+#endif
+      return MHD_NO;
+    }
   t = (uint32_t) MHD_monotonic_sec_counter();
   /*
    * First level vetting for the nonce validity: if the timestamp
@@ -660,7 +667,7 @@ MHD_digest_auth_check (struct MHD_Connection *connection,
        (0 == lookup_sub_value (qop, sizeof (qop), header, "qop")) ||
        ( (0 != strcmp (qop, "auth")) &&
          (0 != strcmp (qop, "")) ) ||
-       (0 == lookup_sub_value (nc, sizeof (nc), header, "nc"))  ||
+       (0 == (len = lookup_sub_value (nc, sizeof (nc), header, "nc")) )  ||
        (0 == lookup_sub_value (response, sizeof (response), header, "response")) )
     {
 #ifdef HAVE_MESSAGES
@@ -669,14 +676,11 @@ MHD_digest_auth_check (struct MHD_Connection *connection,
 #endif
       return MHD_NO;
     }
-  nci = strtoul (nc, &end, 16);
-  if ( ('\0' != *end) ||
-       ( (LONG_MAX == nci) &&
-         (ERANGE == errno) ) )
+  if (len != MHD_strx_to_uint64_n_ (nc, len, &nci))
     {
 #ifdef HAVE_MESSAGES
       MHD_DLOG (connection->daemon,
-		"Authentication failed, invalid format.\n");
+		"Authentication failed, invalid nc format.\n");
 #endif
       return MHD_NO; /* invalid nonce format */
     }

@@ -567,7 +567,7 @@ MHD_create_response_from_buffer (size_t size,
  * Destroy a response object and associated resources.  Note that
  * libmicrohttpd may keep some of the resources around if the response
  * is still in the queue for some clients, so the memory may not
- * necessarily be freed immediatley.
+ * necessarily be freed immediately.
  *
  * @param response response to destroy
  * @ingroup response

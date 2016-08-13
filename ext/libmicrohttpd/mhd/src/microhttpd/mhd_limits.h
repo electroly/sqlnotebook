@@ -44,6 +44,14 @@
 #define INT32_MAX ((int32_t)0x7FFFFFFF)
 #endif /* !INT32_MAX */
 
+#ifndef UINT32_MAX
+#define UINT32_MAX ((int32_t)0xFFFFFFFF)
+#endif /* !INT32_MAX */
+
+#ifndef UINT64_MAX
+#define UINT64_MAX ((uint64_t)0xFFFFFFFFFFFFFFFF)
+#endif /* !INT32_MAX */
+
 #ifndef SIZE_MAX
 #define SIZE_MAX ((size_t) ~((size_t)0))
 #endif /* !SIZE_MAX */

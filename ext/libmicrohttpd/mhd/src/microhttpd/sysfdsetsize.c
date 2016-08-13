@@ -30,7 +30,7 @@
 /* FD_SETSIZE was defined before system headers. */
 /* To get system value of FD_SETSIZE, undefine FD_SETSIZE
    here. */
-#undf FD_SETSIZE
+#undef FD_SETSIZE
 #endif /* FD_SETSIZE */
 
 #include <stdlib.h>
