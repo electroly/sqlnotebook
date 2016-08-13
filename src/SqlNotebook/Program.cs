@@ -33,7 +33,11 @@ namespace SqlNotebook {
         [STAThread]
         public static void Main()
         {
-            Cef.Initialize(new CefSettings(), shutdownOnProcessExit: false, performDependencyCheck: true);
+            var cefSettings = new CefSettings {
+                MultiThreadedMessageLoop = false
+            };
+            Cef.Initialize(cefSettings, shutdownOnProcessExit: true, performDependencyCheck: true);
+            Application.Idle += (sender, e) => Cef.DoMessageLoopWork();
 
             NotebookTempFiles.Init();
 
@@ -69,7 +73,6 @@ namespace SqlNotebook {
                 MessageBox.Show(ex.Message, "SQL Notebook", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } finally {
                 NotebookTempFiles.DeleteFiles();
-                Cef.Shutdown();
             }
         }
     }

@@ -16,9 +16,12 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Web;
 using System.Windows.Forms;
+using CefSharp;
 using CefSharp.WinForms;
 using SqlNotebookCore;
 using SqlNotebookScript.Utils;
@@ -52,6 +55,10 @@ namespace SqlNotebook {
             }
             _consoleMessages.Drain();
             _browser.GetBrowser().MainFrame.ExecuteJavaScriptAsync("dumpToConsole();");
+            while (!_consoleMessages.Any()) {
+                Cef.DoMessageLoopWork();
+                Thread.Sleep(0);
+            }
             var text = _consoleMessages.Take();
             _manager.SetItemData(ItemName, text);
         }
@@ -76,6 +83,7 @@ namespace SqlNotebook {
             _browser = new ChromiumWebBrowser(url) {
                 Dock = DockStyle.Fill
             };
+            _browser.ProcessCefMessagesOnResize();
             _browser.ConsoleMessage += (sender, e) => {
                 if (e.Message == "loaded") {
                     BeginInvoke(new MethodInvoker(() => {

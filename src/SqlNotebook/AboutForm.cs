@@ -43,6 +43,7 @@ namespace SqlNotebook {
 
         public AboutForm() {
             InitializeComponent();
+
             var filePath = Path.GetTempFileName();
             Disposed += (sender, e) => File.Delete(filePath);
             File.WriteAllText(filePath, Resources.ThirdPartyLicensesHtml);
@@ -50,6 +51,7 @@ namespace SqlNotebook {
                 Dock = DockStyle.Fill,
                 LifeSpanHandler = new AboutLifeSpanHandler()
             };
+            _browser.ProcessCefMessagesOnResize();
             Disposed += (sender, e) => _browser.Dispose();
             _browserPanel.Controls.Add(_browser);
             Text += $" {Application.ProductVersion}";

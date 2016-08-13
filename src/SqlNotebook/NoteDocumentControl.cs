@@ -21,6 +21,8 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using CefSharp.WinForms;
 using System.Collections.Concurrent;
+using CefSharp;
+using System.Threading;
 
 namespace SqlNotebook {
     public partial class NoteDocumentControl : UserControl, IDocumentControl, IDocumentWithClosingEvent {
@@ -39,6 +41,10 @@ namespace SqlNotebook {
             var frame = browser.MainFrame;
             _consoleMessages.Drain();
             frame.ExecuteJavaScriptAsync("console.log(tinymce.activeEditor.getContent());");
+            while (!_consoleMessages.Any()) {
+                Cef.DoMessageLoopWork();
+                Thread.Sleep(0);
+            }
             var text = _consoleMessages.Take();
             _manager.SetItemData(ItemName, text);
         }
@@ -59,6 +65,7 @@ namespace SqlNotebook {
                 _browser = new ChromiumWebBrowser(url) {
                     Dock = DockStyle.Fill
                 };
+                _browser.ProcessCefMessagesOnResize();
                 _browser.ConsoleMessage += (sender, e) => {
                     if (e.Message == "loaded") {
                         BeginInvoke(new MethodInvoker(() => {

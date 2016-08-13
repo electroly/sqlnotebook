@@ -22,7 +22,11 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using CefSharp;
+using CefSharp.WinForms;
 using SqlNotebookScript;
 
 namespace SqlNotebook {
@@ -293,6 +297,15 @@ namespace SqlNotebook {
         public static void Drain<T>(this BlockingCollection<T> self) {
             T item;
             while (self.TryTake(out item)) { }
+        }
+
+        public static void ProcessCefMessagesOnResize(this ChromiumWebBrowser browser) {
+            browser.Resize += async (sender, e) => {
+                for (int i = 0; i < 3; i++) {
+                    Cef.DoMessageLoopWork();
+                    await Task.Run(() => Thread.Sleep(5));
+                }
+            };
         }
     }
 }

@@ -23,6 +23,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CefSharp;
 using SqlNotebook.Properties;
 using SqlNotebookCore;
 using SqlNotebookScript.Interpreter;
@@ -103,7 +104,6 @@ namespace SqlNotebook {
                         BeginInvoke(new MethodInvoker(() => SendKeys.Send("^v")));
                     };
                 });
-            
             _importer = new Importer(_manager, this);
             _dockPanel = new DockPanel {
                 Dock = DockStyle.Fill,
@@ -699,7 +699,7 @@ namespace SqlNotebook {
                     helpCtl = (HelpDocumentControl)_helpDoc.Content;
                     helpCtl.Navigate(url);
                 } else {
-                    helpCtl = new HelpDocumentControl(homeUrl, url) { Dock = DockStyle.Fill };
+                    helpCtl = new HelpDocumentControl(_manager, homeUrl, url) { Dock = DockStyle.Fill };
                     _helpDoc = new UserControlDockContent("SQL Notebook Help", helpCtl, DockAreas.Document | DockAreas.Float) {
                         Icon = Resources.HelpIco
                     };

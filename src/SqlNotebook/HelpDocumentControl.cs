@@ -36,12 +36,13 @@ namespace SqlNotebook {
             _browserPanel.Controls.Remove(_browser);
         }
 
-        public HelpDocumentControl(string homeUrl, string initialUrl = "about:blank") {
+        public HelpDocumentControl(NotebookManager manager, string homeUrl, string initialUrl = "about:blank") {
             InitializeComponent();
             _homeUrl = homeUrl;
             _browser = new ChromiumWebBrowser(initialUrl) {
                 Dock = DockStyle.Fill
             };
+            _browser.ProcessCefMessagesOnResize();
             _browser.TitleChanged += (sender, e) => {
                 BeginInvoke(new MethodInvoker(() => {
                     _title = e.Title;
