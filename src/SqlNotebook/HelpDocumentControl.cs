@@ -40,7 +40,7 @@ namespace SqlNotebook {
             _browser.CanGoForwardChanged += (sender, e) => UpdateToolbar();
             _browser.Navigated += (sender, e) => UpdateToolbar();
             _browser.DocumentTitleChanged += (sender, e) => UpdateToolbar();
-            _browser.Navigate(homeUrl);
+            _browser.Navigate(initialUrl);
             _browser.PreviewKeyDown += (sender, e) => {
                 if (e.KeyData == (Keys.Control | Keys.C)) {
                     _browser.Document.ExecCommand("copy", false, null);
