@@ -30,10 +30,12 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this._websiteLnk = new System.Windows.Forms.LinkLabel();
             this._browserPanel = new System.Windows.Forms.Panel();
+            this._browser = new System.Windows.Forms.WebBrowser();
             _okBtn = new System.Windows.Forms.Button();
             pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
+            this._browserPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // _okBtn
@@ -112,10 +114,24 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this._browserPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._browserPanel.Controls.Add(this._browser);
             this._browserPanel.Location = new System.Drawing.Point(-1, 72);
             this._browserPanel.Name = "_browserPanel";
             this._browserPanel.Size = new System.Drawing.Size(670, 369);
             this._browserPanel.TabIndex = 9;
+            // 
+            // _browser
+            // 
+            this._browser.AllowWebBrowserDrop = false;
+            this._browser.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._browser.IsWebBrowserContextMenuEnabled = false;
+            this._browser.Location = new System.Drawing.Point(0, 0);
+            this._browser.MinimumSize = new System.Drawing.Size(20, 20);
+            this._browser.Name = "_browser";
+            this._browser.ScriptErrorsSuppressed = true;
+            this._browser.Size = new System.Drawing.Size(668, 367);
+            this._browser.TabIndex = 0;
+            this._browser.WebBrowserShortcutsEnabled = false;
             // 
             // AboutForm
             // 
@@ -139,6 +155,7 @@
             ((System.ComponentModel.ISupportInitialize)(pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this._browserPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -147,7 +164,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.LinkLabel _githubLnk;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel _browserPanel;
         private System.Windows.Forms.LinkLabel _websiteLnk;
+        private System.Windows.Forms.Panel _browserPanel;
+        private System.Windows.Forms.WebBrowser _browser;
     }
 }

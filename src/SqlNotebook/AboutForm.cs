@@ -16,44 +16,14 @@
 
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Windows.Forms;
-using CefSharp;
-using CefSharp.WinForms;
 using SqlNotebook.Properties;
 
 namespace SqlNotebook {
     public partial class AboutForm : Form {
-        private readonly ChromiumWebBrowser _browser;
-
-        public sealed class AboutLifeSpanHandler : ILifeSpanHandler {
-            public bool DoClose(IWebBrowser browserControl, IBrowser browser) => false;
-            public void OnAfterCreated(IWebBrowser browserControl, IBrowser browser) { }
-            public void OnBeforeClose(IWebBrowser browserControl, IBrowser browser) { }
-
-            public bool OnBeforePopup(IWebBrowser browserControl, IBrowser browser,
-            IFrame frame, string targetUrl, string targetFrameName, WindowOpenDisposition targetDisposition,
-            bool userGesture, IPopupFeatures popupFeatures, IWindowInfo windowInfo,
-            IBrowserSettings browserSettings, ref bool noJavascriptAccess, out IWebBrowser newBrowser) {
-                newBrowser = null;
-                Process.Start(targetUrl);
-                return true;
-            }
-        }
-
         public AboutForm() {
             InitializeComponent();
-
-            var filePath = Path.GetTempFileName();
-            Disposed += (sender, e) => File.Delete(filePath);
-            File.WriteAllText(filePath, Resources.ThirdPartyLicensesHtml);
-            _browser = new ChromiumWebBrowser(filePath) {
-                Dock = DockStyle.Fill,
-                LifeSpanHandler = new AboutLifeSpanHandler()
-            };
-            _browser.ProcessCefMessagesOnResize();
-            Disposed += (sender, e) => _browser.Dispose();
-            _browserPanel.Controls.Add(_browser);
+            _browser.DocumentText = Resources.ThirdPartyLicensesHtml;
             Text += $" {Application.ProductVersion}";
         }
 
