@@ -20,6 +20,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using SqlNotebookCore;
 using SqlNotebookScript;
 using SqlNotebookScript.Interpreter;
@@ -76,6 +77,13 @@ namespace SqlNotebook {
         }
     }
 
+    public sealed class HotkeyEventArgs : EventArgs {
+        public Keys KeyData { get; }
+        public HotkeyEventArgs(Keys keyData) {
+            KeyData = keyData;
+        }
+    }
+
     public sealed class NotebookManager {
         private readonly Stack<string> _statusStack = new Stack<string>();
         public Notebook Notebook { get; }
@@ -87,6 +95,7 @@ namespace SqlNotebook {
         public event EventHandler NotebookDirty;
         public event EventHandler<NotebookItemRenameEventArgs> NotebookItemRename;
         public event EventHandler<StatusUpdateEventArgs> StatusUpdate;
+        public event EventHandler<HotkeyEventArgs> HandleHotkeyRequest;
         private readonly Slot<bool> _isTransactionOpen;
         public object NoteServerLock { get; } = new object();
         public NoteServer NoteServer { get; private set; }
@@ -114,6 +123,10 @@ namespace SqlNotebook {
 
         public void CommitOpenEditors() {
             NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void HandleAppHotkeys(Keys keyData) {
+            HandleHotkeyRequest?.Invoke(this, new HotkeyEventArgs(keyData));
         }
 
         public void Save() {

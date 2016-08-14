@@ -109,6 +109,7 @@ namespace SqlNotebook {
             _manager.NotebookDirty += (sender, e) => SetDirty();
             _manager.NotebookItemRename += Manager_NotebookItemRename;
             _manager.StatusUpdate += Manager_StatusUpdate;
+            _manager.HandleHotkeyRequest += Manager_HandleHotkeyRequest;
 
             // show a progressbar in the taskbar button and the statusbar when a operation is in progress
             _operationInProgress.Change += (oldValue, newValue) => {
@@ -194,6 +195,16 @@ namespace SqlNotebook {
 
             Load += (sender, e) => _manager.Rescan();
             SetTitle();
+        }
+
+        private void Manager_HandleHotkeyRequest(object sender, HotkeyEventArgs e) {
+            switch (e.KeyData) {
+                case (Keys.Control | Keys.N): _newMnu.PerformClick(); break;
+                case (Keys.Control | Keys.O): _openMnu.PerformClick(); break;
+                case (Keys.Control | Keys.S): _saveMnu.PerformClick(); break;
+                case (Keys.Alt | Keys.F4): _exitMnu.PerformClick(); break;
+                case Keys.F1: _helpIndexBtn.PerformClick(); break;
+            }
         }
 
         private void Manager_StatusUpdate(object sender, StatusUpdateEventArgs e) {

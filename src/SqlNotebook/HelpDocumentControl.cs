@@ -19,11 +19,10 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CefSharp.WinForms;
+using mshtml;
 
 namespace SqlNotebook {
-    public partial class HelpDocumentControl : UserControl, IDocumentControl, IDocumentWithClosingEvent {
-        private readonly ChromiumWebBrowser _browser;
-        private string _title = "";
+    public partial class HelpDocumentControl : UserControl, IDocumentControl {
         private readonly string _homeUrl;
 
         string IDocumentControl.ItemName { get; set; }
@@ -31,59 +30,84 @@ namespace SqlNotebook {
 
         public Action<string> SetTitleProc { get; set; } = x => { };
 
-        public void OnClosing() {
-            // CEF will crash if we don't remove the control before closing the form
-            _browserPanel.Controls.Remove(_browser);
-        }
-
         public HelpDocumentControl(NotebookManager manager, string homeUrl, string initialUrl = "about:blank") {
             InitializeComponent();
             _homeUrl = homeUrl;
-            _browser = new ChromiumWebBrowser(initialUrl) {
-                Dock = DockStyle.Fill
+            _contextMenuStrip.Renderer = new MenuRenderer();
+            _browser.DocumentTitleChanged += (sender, e) => UpdateToolbar();
+            _browser.CanGoBackChanged += (sender, e) => UpdateToolbar();
+            _browser.CanGoForwardChanged += (sender, e) => UpdateToolbar();
+            _browser.Navigated += (sender, e) => UpdateToolbar();
+            _browser.DocumentTitleChanged += (sender, e) => UpdateToolbar();
+            _browser.Navigate(homeUrl);
+            _browser.PreviewKeyDown += (sender, e) => {
+                if (e.KeyData == (Keys.Control | Keys.C)) {
+                    _browser.Document.ExecCommand("copy", false, null);
+                } else if (e.KeyData == (Keys.Control | Keys.A)) {
+                    _browser.Document.ExecCommand("selectAll", true, null);
+                } else if (e.KeyData == (Keys.Alt | Keys.Left)) {
+                    _browser.GoBack();
+                } else if (e.KeyData == (Keys.Alt | Keys.Right)) {
+                    _browser.GoForward();
+                } else {
+                    manager.HandleAppHotkeys(e.KeyData);
+                }
             };
-            _browser.ProcessCefMessagesOnResize();
-            _browser.TitleChanged += (sender, e) => {
-                BeginInvoke(new MethodInvoker(() => {
-                    _title = e.Title;
-                    UpdateToolbar();
-                }));
-            };
-            _browser.AddressChanged += (sender, e) => {
-                BeginInvoke(new MethodInvoker(() => {
-                    UpdateToolbar();
-                }));
-            };
-            
-            _browserPanel.Controls.Add(_browser);
-            Disposed += (sender, e) => _browser.Dispose();
         }
 
         public void Navigate(string url) {
-            _browser.Load(url);
+            _browser.Navigate(url);
         }
         
         private void UpdateToolbar() {
-            SetTitleProc(_title);
+            SetTitleProc(_browser.DocumentTitle);
             _backBtn.Enabled = _browser.CanGoBack;
             _forwardBtn.Enabled = _browser.CanGoForward;
-            _progressBar.Visible = false;
         }
 
         private void BackBtn_Click(object sender, EventArgs e) {
-            _browser.GetBrowser().GoBack();
+            _browser.GoBack();
         }
 
         private void ForwardBtn_Click(object sender, EventArgs e) {
-            _browser.GetBrowser().GoForward();
+            _browser.GoForward();
         }
 
         private void HomeBtn_Click(object sender, EventArgs e) {
-            _browser.Load(_homeUrl);
+            _browser.Navigate(_homeUrl);
         }
 
         private void OpenBrowserBtn_Click(object sender, EventArgs e) {
-            Process.Start(_browser.Address);
+            Process.Start(_browser.Url.AbsoluteUri);
+        }
+
+        private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
+            _backMnu.Enabled = _browser.CanGoBack;
+            _forwardMnu.Enabled = _browser.CanGoForward;
+
+            var doc = (IHTMLDocument2)_browser.Document.DomDocument;
+            if (doc.selection != null) {
+                var range = doc.selection.createRange() as IHTMLTxtRange;
+                _copyMnu.Enabled = !string.IsNullOrEmpty(range?.text);
+            } else {
+                _copyMnu.Enabled = false;
+            }
+        }
+
+        private void BackMnu_Click(object sender, EventArgs e) {
+            _browser.GoBack();
+        }
+
+        private void ForwardMnu_Click(object sender, EventArgs e) {
+            _browser.GoForward();
+        }
+
+        private void CopyMnu_Click(object sender, EventArgs e) {
+            _browser.Document.ExecCommand("copy", false, null);
+        }
+
+        private void SelectAllMnu_Click(object sender, EventArgs e) {
+            _browser.Document.ExecCommand("selectAll", false, null);
         }
     }
 }

@@ -45,14 +45,14 @@
             this._statusProgressbar = new System.Windows.Forms.ToolStripProgressBar();
             this._menuStrip = new System.Windows.Forms.MenuStrip();
             this._saveBtn = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._notebookMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._openMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._saveMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._saveAsMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._optionsMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._exitMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this.createToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._createMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newNoteMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newConsoleMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newScriptMnu = new System.Windows.Forms.ToolStripMenuItem();
@@ -255,8 +255,8 @@
             toolStripMenuItem20,
             toolStripMenuItem19,
             toolStripMenuItem18,
-            this.fileToolStripMenuItem,
-            this.createToolStripMenuItem,
+            this._notebookMnu,
+            this._createMnu,
             this._importMnu,
             this._exportMnu,
             this.helpToolStripMenuItem,
@@ -280,9 +280,9 @@
             this._saveBtn.ToolTipText = "Save Notebook";
             this._saveBtn.Click += new System.EventHandler(this.SaveMnu_Click);
             // 
-            // fileToolStripMenuItem
+            // _notebookMnu
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._notebookMnu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._newMnu,
             this._openMnu,
             this._saveMnu,
@@ -291,10 +291,10 @@
             this._optionsMnu,
             toolStripSeparator6,
             this._exitMnu});
-            this.fileToolStripMenuItem.Margin = new System.Windows.Forms.Padding(7, 0, 0, 0);
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
-            this.fileToolStripMenuItem.Text = "&Notebook";
+            this._notebookMnu.Margin = new System.Windows.Forms.Padding(7, 0, 0, 0);
+            this._notebookMnu.Name = "_notebookMnu";
+            this._notebookMnu.Size = new System.Drawing.Size(72, 20);
+            this._notebookMnu.Text = "&Notebook";
             // 
             // _newMnu
             // 
@@ -345,21 +345,21 @@
             this._exitMnu.Text = "E&xit";
             this._exitMnu.Click += new System.EventHandler(this.ExitMnu_Click);
             // 
-            // createToolStripMenuItem
+            // _createMnu
             // 
-            this.createToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._createMnu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._newNoteMnu,
             this._newConsoleMnu,
             this._newScriptMnu});
-            this.createToolStripMenuItem.Name = "createToolStripMenuItem";
-            this.createToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
-            this.createToolStripMenuItem.Text = "&Create";
+            this._createMnu.Name = "_createMnu";
+            this._createMnu.Size = new System.Drawing.Size(53, 20);
+            this._createMnu.Text = "&Create";
             // 
             // _newNoteMnu
             // 
             this._newNoteMnu.Image = global::SqlNotebook.Properties.Resources.NoteAdd;
             this._newNoteMnu.Name = "_newNoteMnu";
-            this._newNoteMnu.Size = new System.Drawing.Size(142, 22);
+            this._newNoteMnu.Size = new System.Drawing.Size(152, 22);
             this._newNoteMnu.Text = "New &note";
             this._newNoteMnu.Click += new System.EventHandler(this.NewNoteBtn_Click);
             // 
@@ -367,7 +367,7 @@
             // 
             this._newConsoleMnu.Image = global::SqlNotebook.Properties.Resources.ApplicationXpTerminalAdd;
             this._newConsoleMnu.Name = "_newConsoleMnu";
-            this._newConsoleMnu.Size = new System.Drawing.Size(142, 22);
+            this._newConsoleMnu.Size = new System.Drawing.Size(152, 22);
             this._newConsoleMnu.Text = "New &console";
             this._newConsoleMnu.Click += new System.EventHandler(this.NewConsoleBtn_Click);
             // 
@@ -375,7 +375,7 @@
             // 
             this._newScriptMnu.Image = global::SqlNotebook.Properties.Resources.ScriptAdd;
             this._newScriptMnu.Name = "_newScriptMnu";
-            this._newScriptMnu.Size = new System.Drawing.Size(142, 22);
+            this._newScriptMnu.Size = new System.Drawing.Size(152, 22);
             this._newScriptMnu.Text = "New &script";
             this._newScriptMnu.Click += new System.EventHandler(this.NewScriptBtn_Click);
             // 
@@ -630,8 +630,8 @@
         private System.Windows.Forms.ToolStripStatusLabel _openTransactionLbl;
         private System.Windows.Forms.ToolStripStatusLabel _cancelLnk;
         private System.Windows.Forms.MenuStrip _menuStrip;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem createToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem _notebookMnu;
+        private System.Windows.Forms.ToolStripMenuItem _createMnu;
         private System.Windows.Forms.ToolStripMenuItem _importMnu;
         private System.Windows.Forms.ToolStripMenuItem _exportMnu;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;

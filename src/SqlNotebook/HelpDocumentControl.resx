@@ -177,4 +177,49 @@
         GLjcaAAAAABJRU5ErkJggg==
 </value>
   </data>
+  <metadata name="_contextMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>121, 17</value>
+  </metadata>
+  <data name="_backMnu.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAABKElEQVQ4T6WST0sCURTF/UjC
+        gLvw/7KWtdNNfY9GJ4qKFulKbJMhpK1mMTNFi0izUByQQCESBW2UahOCG4PTfY8gZ94sZuwHZ3PueYf7
+        Hi8A4F9yNf1INFyIKddI7t2ozizPC4aDtV0dtf4HohmDxvYsk2gsEZZ1VM03qM8ThGWfBRE6XDFHCB3e
+        49K0qECnsT3LJBr8sIHzx+EikW8inmui1JogkvFYwB6scPcyT5e72DjrYL3YQeHJojfwUXB625tvX71i
+        66KHzVIX+cbUewEhsfvn6hbS1QFSlT5OHt59FTCkqKzhuGZhRx3joP5JBRqN7Vkm0fiDNtFw1JpBaXwh
+        tkIBg2+y3/5GPLvCR/pFSigGkllj5szyvGC4I5GCzizPu5nehcAPAJiGH594zX4AAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="_forwardMnu.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAABMklEQVQ4T6WRPUvDUBSG85ME
+        wU2a9GPUUbd20f9h0oii4mA7FV2sCLZOGdooDmJrlRYDRWhBWhTUVNRFCi4Kr/cEiuacDikeeJYn73nv
+        5UYD8C/GykkQIrV66sTtE/VFDs8SQhiWi1r/DbMrVVHCs4QQMdOFcztA2XtGzAyX8CwhBC0deT5mNi5Q
+        8h6h/ynhWUII3aqi2BogkWsimW9i/+rhS1e3ilxgqILCtY+53Tbm99rIHHZQOL/7pIflWUIIKsg3XrBQ
+        7GDxoIul4x52zrqTFWxfviJd6iNTvkeu7o/eYZpnCSEMq4L1+juWnSds1XwYZiVYjvwGcVVgNz6w2Rqq
+        k3+XaXiWECKRdbF28x06eTQ8SwiRyrrDpB38ttAyDc8SUmjalEIs0/BskB8nowPtB1Ashh+Jtes5AAAA
+        AElFTkSuQmCC
+</value>
+  </data>
+  <metadata name="toolStripSeparator1.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <data name="_copyMnu.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAABdElEQVQ4T4WT3U7CQBCFuTPR
+        h5HE55B7ExPFkMhzGaCA/SMk6ivIvdeSCEqhtS20FaFknTMua6sVvuRkl2X27JxtW+r1+75h20I3TXEL
+        GQaPhmUJ07afSvtA4X84jgMjTZYWg5PB83CoBG4aDR5hQp00ZPlf0C54GY3FaPzKI3gcDJRJl2KhUxwm
+        o+lyOxnQn2AycYQzmfI4ny94bUur05Gzb3LRtgYz1xWu57Ewn85mLNBst6mzEc9/RdOVgR8EOb37PgvA
+        4I06A9loiKMMFouoUAAGruup31twf8ogST4KBZqaJsIw5HjZaNirnkKapiJdr/OiNQCDKI5FQCbZaGyA
+        t3AfiLBcfoooinPR2IBuMsRlqNdYqqvrQqPH16LNd/cPYrVaU6RlLhobEMfX9frFVa12Dl1Wq2enlUoF
+        ncVJwo8UmzebzU9MGY0vUXJEOszogDrjol3gEKotxur15jDhrzQTjUVriI0aWV5ImXSyW6XyF8ELzYUw
+        EtkrAAAAAElFTkSuQmCC
+</value>
+  </data>
+  <metadata name="toolStripSeparator2.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
 </root>

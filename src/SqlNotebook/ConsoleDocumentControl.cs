@@ -31,7 +31,6 @@ namespace SqlNotebook {
         private readonly NotebookManager _manager;
         private readonly Notebook _notebook;
         private readonly ConsoleServer _server;
-        private readonly WebBrowser _browser;
 
         private string _itemName;
         public string ItemName {
@@ -63,10 +62,6 @@ namespace SqlNotebook {
             _server = new ConsoleServer(manager, name);
             var url = $"http://127.0.0.1:{_server.Port}/console";
             Debug.WriteLine(url);
-            _browser = new WebBrowser {
-                Dock = DockStyle.Fill, IsWebBrowserContextMenuEnabled = false
-            };
-            Controls.Add(_browser);
             _browser.Navigate(url);
         }
     }
