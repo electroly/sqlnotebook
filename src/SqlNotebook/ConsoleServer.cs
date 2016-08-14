@@ -118,11 +118,15 @@ namespace SqlNotebook {
                     );
                 }
                 var sb = new StringBuilder();
+                // inline the CSS so it gets included when the user copies tables to the clipboard
+                var cellCss = "border: 1px solid rgb(229, 229, 229); padding: 3px; padding-left: 6px; " +
+                    "padding-right: 6px; text-align: left; vertical-align: top; font: 'Segoe UI' 9pt;";
                 foreach (var dt in result.DataTables) {
                     sb.Append("<div style=\"overflow-x: auto; overflow-y: hidden; padding-bottom: 18px;\">");
-                    sb.Append("<table><thead><tr>");
+                    sb.Append("<table style=\"border-collapse: collapse;\"><thead><tr>");
                     foreach (var col in dt.Columns) {
-                        sb.Append($"<td><b>{WebUtility.HtmlEncode(col)}</b></td>");
+                        sb.Append($"<td style=\"{cellCss}\"><font face=\"Segoe UI\" size=\"2\"><b>" +
+                            $"{WebUtility.HtmlEncode(col)}</b></font></td>");
                     }
                     sb.Append("</tr></thead><tbody>");
                     int count = 0;
@@ -132,7 +136,8 @@ namespace SqlNotebook {
                         }
                         sb.Append("<tr>");
                         foreach (var cell in row) {
-                            sb.Append($"<td>{WebUtility.HtmlEncode(cell.ToString())}</td>");
+                            sb.Append($"<td style=\"{cellCss}\"><font face=\"Segoe UI\" size=\"2\">" +
+                                $"{WebUtility.HtmlEncode(cell.ToString())}</font></td>");
                         }
                         sb.Append("</tr>");
                         count++;

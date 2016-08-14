@@ -54,6 +54,7 @@
             this._browser.ScriptErrorsSuppressed = true;
             this._browser.Size = new System.Drawing.Size(724, 732);
             this._browser.TabIndex = 0;
+            this._browser.WebBrowserShortcutsEnabled = false;
             // 
             // _contextMenuStrip
             // 
@@ -64,7 +65,7 @@
             toolStripSeparator1,
             this._selectAllMnu});
             this._contextMenuStrip.Name = "_contextMenuStrip";
-            this._contextMenuStrip.Size = new System.Drawing.Size(163, 120);
+            this._contextMenuStrip.Size = new System.Drawing.Size(163, 98);
             this._contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip_Opening);
             // 
             // _cutMnu

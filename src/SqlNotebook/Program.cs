@@ -21,7 +21,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using CefSharp;
 using SqlNotebookCore;
 
 namespace SqlNotebook {
@@ -33,12 +32,6 @@ namespace SqlNotebook {
         [STAThread]
         public static void Main()
         {
-            var cefSettings = new CefSettings {
-                MultiThreadedMessageLoop = false
-            };
-            Cef.Initialize(cefSettings, shutdownOnProcessExit: false, performDependencyCheck: true);
-            Application.Idle += (sender, e) => Cef.DoMessageLoopWork();
-
             NotebookTempFiles.Init();
 
             Application.EnableVisualStyles();
@@ -72,7 +65,6 @@ namespace SqlNotebook {
             } catch (Exception ex) {
                 MessageBox.Show(ex.Message, "SQL Notebook", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } finally {
-                Cef.Shutdown();
                 NotebookTempFiles.DeleteFiles();
             }
         }

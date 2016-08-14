@@ -18,7 +18,6 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CefSharp.WinForms;
 using mshtml;
 
 namespace SqlNotebook {
@@ -43,13 +42,13 @@ namespace SqlNotebook {
             _browser.Navigate(initialUrl);
             _browser.PreviewKeyDown += (sender, e) => {
                 if (e.KeyData == (Keys.Control | Keys.C)) {
-                    _browser.Document.ExecCommand("copy", false, null);
+                    _copyMnu.PerformClick();
                 } else if (e.KeyData == (Keys.Control | Keys.A)) {
-                    _browser.Document.ExecCommand("selectAll", true, null);
+                    _selectAllMnu.PerformClick();
                 } else if (e.KeyData == (Keys.Alt | Keys.Left)) {
-                    _browser.GoBack();
+                    _backMnu.PerformClick();
                 } else if (e.KeyData == (Keys.Alt | Keys.Right)) {
-                    _browser.GoForward();
+                    _forwardMnu.PerformClick();
                 } else {
                     manager.HandleAppHotkeys(e.KeyData);
                 }

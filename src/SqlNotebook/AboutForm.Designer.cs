@@ -41,7 +41,7 @@
             // _okBtn
             // 
             _okBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            _okBtn.Location = new System.Drawing.Point(568, 447);
+            _okBtn.Location = new System.Drawing.Point(568, 433);
             _okBtn.Name = "_okBtn";
             _okBtn.Size = new System.Drawing.Size(88, 26);
             _okBtn.TabIndex = 0;
@@ -117,7 +117,7 @@
             this._browserPanel.Controls.Add(this._browser);
             this._browserPanel.Location = new System.Drawing.Point(-1, 72);
             this._browserPanel.Name = "_browserPanel";
-            this._browserPanel.Size = new System.Drawing.Size(670, 369);
+            this._browserPanel.Size = new System.Drawing.Size(670, 355);
             this._browserPanel.TabIndex = 9;
             // 
             // _browser
@@ -129,7 +129,7 @@
             this._browser.MinimumSize = new System.Drawing.Size(20, 20);
             this._browser.Name = "_browser";
             this._browser.ScriptErrorsSuppressed = true;
-            this._browser.Size = new System.Drawing.Size(668, 367);
+            this._browser.Size = new System.Drawing.Size(668, 353);
             this._browser.TabIndex = 0;
             this._browser.WebBrowserShortcutsEnabled = false;
             // 
@@ -138,7 +138,7 @@
             this.AcceptButton = _okBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(668, 485);
+            this.ClientSize = new System.Drawing.Size(668, 471);
             this.Controls.Add(this._browserPanel);
             this.Controls.Add(_okBtn);
             this.Controls.Add(this.panel1);

@@ -21,8 +21,4 @@ namespace SqlNotebook {
         string ItemName { get; set; }
         void Save();
     }
-
-    public interface IDocumentWithClosingEvent {
-        void OnClosing();
-    }
 }

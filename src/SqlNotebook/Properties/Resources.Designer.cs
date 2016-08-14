@@ -122,15 +122,12 @@ namespace SqlNotebook.Properties {
         ///            font-family: &apos;Consolas&apos;;
         ///            font-size: 10pt;
         ///        }
-        ///        span.command-history-icon {
-        ///            display: none;
+        ///        div.response, div.response * {
+        ///            font-family: &apos;Segoe UI&apos;;
+        ///            font-size: 9pt;
         ///        }
-        ///    &lt;/style&gt;
-        ///&lt;/head&gt;
-        ///&lt;body&gt;
-        ///&lt;script&gt;
-        ///    function scrollToBottom() {
-        ///       [rest of string was truncated]&quot;;.
+        ///        div.response {
+        ///            ma [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ConsoleHtml {
             get {
@@ -541,29 +538,20 @@ namespace SqlNotebook.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///&lt;html oncontextmenu=&quot;return false&quot;&gt;
         ///&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
         ///&lt;style&gt;
-        ///* { font-family: &quot;Arial&quot;; font-size: 9pt; line-height: 140%; }
-        ///a, a:visited { text-decoration: none; color: blue; }
+        ///* { font-family: &quot;Arial&quot;; font-size: 9pt; line-height: 140%; cursor: default; }
+        ///a, a:visited { text-decoration: none; color: blue; cursor: pointer; }
         ///a:hover { text-decoration: underline; }
         ///&lt;/style&gt;
         ///SQL Notebook&lt;br&gt;
         ///Copyright © 2016 Brian Luft&lt;br&gt;&lt;br&gt;
-        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &amp;quot;Software&amp;quot;), to deal in the Software without rest [rest of string was truncated]&quot;;.
+        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ThirdPartyLicensesHtml {
             get {
                 return ResourceManager.GetString("ThirdPartyLicensesHtml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] TinymceZip {
-            get {
-                object obj = ResourceManager.GetObject("TinymceZip", resourceCulture);
-                return ((byte[])(obj));
             }
         }
         

@@ -97,22 +97,12 @@ namespace SqlNotebook {
         public event EventHandler<StatusUpdateEventArgs> StatusUpdate;
         public event EventHandler<HotkeyEventArgs> HandleHotkeyRequest;
         private readonly Slot<bool> _isTransactionOpen;
-        public object NoteServerLock { get; } = new object();
-        public NoteServer NoteServer { get; private set; }
         public object HelpServerLock { get; } = new object();
         public HelpServer HelpServer { get; private set; }
 
-        public NotebookManager(Notebook notebook, Slot<bool> isTransactionOpen,
-        Action<NotebookManager> onNoteServerCreate) {
+        public NotebookManager(Notebook notebook, Slot<bool> isTransactionOpen) {
             Notebook = notebook;
             _isTransactionOpen = isTransactionOpen;
-
-            Task.Run(() => {
-                lock (NoteServerLock) {
-                    NoteServer = new NoteServer(this);
-                }
-                onNoteServerCreate(this);
-            });
 
             Task.Run(() => {
                 lock (HelpServerLock) {
@@ -207,7 +197,8 @@ namespace SqlNotebook {
         }
 
         public string NewNote(string name = null, string data = null) {
-            return NewItem(NotebookItemType.Note.ToString(), name, data);
+            return NewItem(NotebookItemType.Note.ToString(), name,
+                data ?? "<P><FONT face=Calibri></FONT>&nbsp;</P>");
         }
 
         private string NewItem(string type, string name = null, string data = null) {

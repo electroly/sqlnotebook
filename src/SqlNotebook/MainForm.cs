@@ -81,12 +81,7 @@ namespace SqlNotebook {
                 }
             }
             _isNew = isNew;
-            _manager = new NotebookManager(_notebook, _isTransactionOpen,
-                onNoteServerCreate: (manager) => {
-                    manager.NoteServer.PasteRequest += (sender, e) => {
-                        BeginInvoke(new MethodInvoker(() => SendKeys.Send("^v")));
-                    };
-                });
+            _manager = new NotebookManager(_notebook, _isTransactionOpen);
             _importer = new Importer(_manager, this);
             _dockPanel = new DockPanel {
                 Dock = DockStyle.Fill,

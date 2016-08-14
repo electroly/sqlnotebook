@@ -23,7 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QueryDocumentControl));
             this._splitContainer = new System.Windows.Forms.SplitContainer();
             this._sqlPanel = new System.Windows.Forms.Panel();
@@ -117,8 +117,8 @@
             this._grid.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             this._grid.RowHeadersVisible = false;
             this._grid.RowHeadersWidth = 25;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._grid.RowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._grid.RowsDefaultCellStyle = dataGridViewCellStyle3;
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this._grid.ShowCellErrors = false;
             this._grid.ShowCellToolTips = false;
@@ -192,6 +192,7 @@
             // 
             // _sendToMnu
             // 
+            this._sendToMnu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this._sendToMnu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._sendTableMnu,
             this._sendNoteMnu,
@@ -202,7 +203,7 @@
             this._sendToMnu.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._sendToMnu.Margin = new System.Windows.Forms.Padding(8, 1, 0, 2);
             this._sendToMnu.Name = "_sendToMnu";
-            this._sendToMnu.Size = new System.Drawing.Size(76, 27);
+            this._sendToMnu.Size = new System.Drawing.Size(60, 27);
             this._sendToMnu.Text = "Send to";
             // 
             // _sendTableMnu
@@ -239,8 +240,8 @@
             // 
             this._sendExcelMnu.Image = ((System.Drawing.Image)(resources.GetObject("_sendExcelMnu.Image")));
             this._sendExcelMnu.Name = "_sendExcelMnu";
-            this._sendExcelMnu.Size = new System.Drawing.Size(165, 22);
-            this._sendExcelMnu.Text = "Excel workbook...";
+            this._sendExcelMnu.Size = new System.Drawing.Size(219, 22);
+            this._sendExcelMnu.Text = "Microsoft Excel workbook...";
             this._sendExcelMnu.Visible = false;
             // 
             // _rowCountLbl

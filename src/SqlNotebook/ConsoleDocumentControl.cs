@@ -63,8 +63,22 @@ namespace SqlNotebook {
             
             _server = new ConsoleServer(manager, name);
             var url = $"http://127.0.0.1:{_server.Port}/console";
-            Debug.WriteLine(url);
             _browser.Navigate(url);
+            _browser.PreviewKeyDown += (sender, e) => {
+                if (e.KeyData == (Keys.Control | Keys.C)) {
+                    _copyMnu.PerformClick();
+                } else if (e.KeyData == (Keys.Control | Keys.X)) {
+                    _cutMnu.PerformClick();
+                } else if (e.KeyData == (Keys.Control | Keys.V)) {
+                    _pasteMnu.PerformClick();
+                } else if (e.KeyData == (Keys.Control | Keys.A)) {
+                    _selectAllMnu.PerformClick();
+                } else if (e.KeyData == Keys.Delete) {
+                    _browser.Document.ExecCommand("delete", false, null);
+                } else {
+                    manager.HandleAppHotkeys(e.KeyData);
+                }
+            };
         }
 
         private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
