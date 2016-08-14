@@ -86,12 +86,7 @@ namespace SqlNotebook {
             _forwardMnu.Enabled = _browser.CanGoForward;
 
             var doc = (IHTMLDocument2)_browser.Document.DomDocument;
-            if (doc.selection != null) {
-                var range = doc.selection.createRange() as IHTMLTxtRange;
-                _copyMnu.Enabled = !string.IsNullOrEmpty(range?.text);
-            } else {
-                _copyMnu.Enabled = false;
-            }
+            _copyMnu.Enabled = doc.queryCommandEnabled("copy");
         }
 
         private void BackMnu_Click(object sender, EventArgs e) {

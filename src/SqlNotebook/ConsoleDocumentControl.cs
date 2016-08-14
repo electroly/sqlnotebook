@@ -22,6 +22,7 @@ using System.Text;
 using System.Threading;
 using System.Web;
 using System.Windows.Forms;
+using mshtml;
 using SqlNotebookCore;
 using SqlNotebookScript.Utils;
 
@@ -58,11 +59,35 @@ namespace SqlNotebook {
             _manager = manager;
             _notebook = manager.Notebook;
             _mainForm = mainForm;
+            _contextMenuStrip.Renderer = new MenuRenderer();
             
             _server = new ConsoleServer(manager, name);
             var url = $"http://127.0.0.1:{_server.Port}/console";
             Debug.WriteLine(url);
             _browser.Navigate(url);
+        }
+
+        private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
+            var doc = (IHTMLDocument2)_browser.Document.DomDocument;
+            _cutMnu.Enabled = doc.queryCommandEnabled("cut");
+            _copyMnu.Enabled = doc.queryCommandEnabled("copy");
+            _pasteMnu.Enabled = doc.queryCommandEnabled("paste");
+        }
+
+        private void CutMnu_Click(object sender, EventArgs e) {
+            _browser.Document.ExecCommand("cut", false, null);
+        }
+
+        private void CopyMnu_Click(object sender, EventArgs e) {
+            _browser.Document.ExecCommand("copy", false, null);
+        }
+
+        private void PasteMnu_Click(object sender, EventArgs e) {
+            _browser.Document.ExecCommand("paste", false, null);
+        }
+
+        private void SelectAllMnu_Click(object sender, EventArgs e) {
+            _browser.Document.ExecCommand("selectAll", false, null);
         }
     }
 }
