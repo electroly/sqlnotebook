@@ -25,28 +25,28 @@
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TableDocumentControl));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this._toolStrip = new System.Windows.Forms.ToolStrip();
             this._scriptBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this._grid = new System.Windows.Forms.DataGridView();
-            this.toolStrip1.SuspendLayout();
+            this._toolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._grid)).BeginInit();
             this.SuspendLayout();
             // 
-            // toolStrip1
+            // _toolStrip
             // 
-            this.toolStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
-            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._toolStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
+            this._toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this._toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._scriptBtn,
             this.toolStripLabel1});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStrip1.ShowItemToolTips = false;
-            this.toolStrip1.Size = new System.Drawing.Size(745, 30);
-            this.toolStrip1.Stretch = true;
-            this.toolStrip1.TabIndex = 3;
+            this._toolStrip.Location = new System.Drawing.Point(0, 0);
+            this._toolStrip.Name = "_toolStrip";
+            this._toolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this._toolStrip.ShowItemToolTips = false;
+            this._toolStrip.Size = new System.Drawing.Size(745, 30);
+            this._toolStrip.Stretch = true;
+            this._toolStrip.TabIndex = 3;
             // 
             // _scriptBtn
             // 
@@ -101,12 +101,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this._grid);
-            this.Controls.Add(this.toolStrip1);
+            this.Controls.Add(this._toolStrip);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TableDocumentControl";
             this.Size = new System.Drawing.Size(745, 639);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
+            this._toolStrip.ResumeLayout(false);
+            this._toolStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this._grid)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -115,7 +115,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStrip _toolStrip;
         private System.Windows.Forms.ToolStripButton _scriptBtn;
         private System.Windows.Forms.DataGridView _grid;
         private System.Windows.Forms.ToolStripLabel toolStripLabel1;

@@ -62,6 +62,9 @@ namespace SqlNotebook {
                 ReadOnly = readOnly
             };
             _scintilla.TextChanged += (sender, e) => SqlTextChanged?.Invoke(this, EventArgs.Empty);
+            _contextMenuStrip.Renderer = new MenuRenderer();
+            _scintilla.ContextMenuStrip = _contextMenuStrip;
+            _pasteMnu.Visible = _cutMnu.Visible = !readOnly;
 
             foreach (var style in _scintilla.Styles) {
                 style.Font = "Consolas";
@@ -176,6 +179,28 @@ namespace SqlNotebook {
             _scintilla.Styles[ScintillaNET.Style.Sql.Number].ForeColor = Color.Gray;
 
             Controls.Add(_scintilla);
+        }
+
+        private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
+            _copyMnu.Enabled = _scintilla.SelectedText.Length > 0;
+            _cutMnu.Enabled = !_scintilla.ReadOnly && _scintilla.SelectedText.Length > 0;
+            _pasteMnu.Enabled = !_scintilla.ReadOnly && Clipboard.ContainsText();
+        }
+
+        private void CutMnu_Click(object sender, EventArgs e) {
+            _scintilla.Cut();
+        }
+
+        private void CopyMnu_Click(object sender, EventArgs e) {
+            _scintilla.Copy();
+        }
+
+        private void PasteMnu_Click(object sender, EventArgs e) {
+            _scintilla.Paste();
+        }
+
+        private void SelectAllMnu_Click(object sender, EventArgs e) {
+            _scintilla.SelectAll();
         }
     }
 }

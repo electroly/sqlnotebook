@@ -34,7 +34,7 @@
             this._prevBtn = new System.Windows.Forms.ToolStripButton();
             this._resultSetLbl = new System.Windows.Forms.ToolStripLabel();
             this._nextBtn = new System.Windows.Forms.ToolStripButton();
-            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
+            this._sendToMnu = new System.Windows.Forms.ToolStripDropDownButton();
             this._sendTableMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._sendNoteMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
@@ -137,7 +137,7 @@
             this._prevBtn,
             this._resultSetLbl,
             this._nextBtn,
-            this.toolStripDropDownButton1,
+            this._sendToMnu,
             this._rowCountLbl});
             this._resultToolStrip.Location = new System.Drawing.Point(0, 0);
             this._resultToolStrip.Name = "_resultToolStrip";
@@ -149,6 +149,7 @@
             // 
             // _executeBtn
             // 
+            this._executeBtn.AutoSize = false;
             this._executeBtn.Image = global::SqlNotebook.Properties.Resources.ControlPlayBlue;
             this._executeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._executeBtn.Margin = new System.Windows.Forms.Padding(2, 1, 0, 2);
@@ -189,20 +190,20 @@
             this._nextBtn.Text = "toolStripButton2";
             this._nextBtn.Click += new System.EventHandler(this.NextBtn_Click);
             // 
-            // toolStripDropDownButton1
+            // _sendToMnu
             // 
-            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._sendToMnu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._sendTableMnu,
             this._sendNoteMnu,
             this.toolStripSeparator4,
             this._sendCsvMnu,
             this._sendExcelMnu});
-            this.toolStripDropDownButton1.Image = global::SqlNotebook.Properties.Resources.TextExports;
-            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton1.Margin = new System.Windows.Forms.Padding(8, 1, 0, 2);
-            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(76, 27);
-            this.toolStripDropDownButton1.Text = "Send to";
+            this._sendToMnu.Image = global::SqlNotebook.Properties.Resources.TextExports;
+            this._sendToMnu.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._sendToMnu.Margin = new System.Windows.Forms.Padding(8, 1, 0, 2);
+            this._sendToMnu.Name = "_sendToMnu";
+            this._sendToMnu.Size = new System.Drawing.Size(76, 27);
+            this._sendToMnu.Text = "Send to";
             // 
             // _sendTableMnu
             // 
@@ -286,7 +287,7 @@
         private System.Windows.Forms.ToolStripButton _nextBtn;
         private System.Windows.Forms.ToolStripLabel _resultSetLbl;
         private System.Windows.Forms.ToolStripLabel _rowCountLbl;
-        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
+        private System.Windows.Forms.ToolStripDropDownButton _sendToMnu;
         private System.Windows.Forms.ToolStripMenuItem _sendCsvMnu;
         private System.Windows.Forms.ToolStripMenuItem _sendTableMnu;
         private System.Windows.Forms.ToolStripMenuItem _sendNoteMnu;
