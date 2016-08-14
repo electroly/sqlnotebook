@@ -473,7 +473,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -ExecutionPolicy RemoteSigned -NonInteractive -Command .'$(ProjectDir)Resources\generate-sqlite-doc-zip.ps1'

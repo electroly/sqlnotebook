@@ -82,8 +82,8 @@ namespace SqlNotebook {
             }
             _isNew = isNew;
             _manager = new NotebookManager(_notebook, _isTransactionOpen,
-                onNoteServerCreate: () => {
-                    _manager.NoteServer.PasteRequest += (sender, e) => {
+                onNoteServerCreate: (manager) => {
+                    manager.NoteServer.PasteRequest += (sender, e) => {
                         BeginInvoke(new MethodInvoker(() => SendKeys.Send("^v")));
                     };
                 });
@@ -264,7 +264,7 @@ namespace SqlNotebook {
             Func<string> getName = null;
             var dockAreas = DockAreas.Document | DockAreas.Float;
             if (item.Type == NotebookItemType.Console) {
-                var doc = new ConsoleDocumentControl(item.Name, _manager, this, _operationInProgress);
+                var doc = new ConsoleDocumentControl(item.Name, _manager, this);
                 f = new UserControlDockContent(item.Name, doc, dockAreas) {
                     Icon = Resources.ApplicationXpTerminalIco
                 };

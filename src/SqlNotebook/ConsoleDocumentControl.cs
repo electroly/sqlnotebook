@@ -16,25 +16,22 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web;
 using System.Windows.Forms;
-using CefSharp;
-using CefSharp.WinForms;
 using SqlNotebookCore;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {
-    public partial class ConsoleDocumentControl : UserControl, IDocumentControl, IDocumentWithClosingEvent {
+    public partial class ConsoleDocumentControl : UserControl, IDocumentControl { //, IDocumentWithClosingEvent {
         private readonly IWin32Window _mainForm;
         private readonly NotebookManager _manager;
         private readonly Notebook _notebook;
         private readonly ConsoleServer _server;
-        private readonly ChromiumWebBrowser _browser;
-        private BlockingCollection<string> _consoleMessages = new BlockingCollection<string>();
-        private bool _loaded;
+        private readonly WebBrowser _browser;
 
         private string _itemName;
         public string ItemName {
@@ -50,55 +47,27 @@ namespace SqlNotebook {
         }
 
         public void Save() {
-            if (!_loaded) {
-                return;
-            }
-            _consoleMessages.Drain();
-            _browser.GetBrowser().MainFrame.ExecuteJavaScriptAsync("dumpToConsole();");
-            while (!_consoleMessages.Any()) {
-                Cef.DoMessageLoopWork();
-                Thread.Sleep(0);
-            }
-            var text = _consoleMessages.Take();
-            _manager.SetItemData(ItemName, text);
+            try {
+                var html = _browser.Document.GetElementById("simple-console-output").InnerHtml;
+                _manager.SetItemData(ItemName, html);
+            } catch (Exception) { }
         }
 
-        public void OnClosing() {
-            Controls.Remove(_browser); // CEF will crash if we don't remove the control before closing the form
-        }
-
-        public ConsoleDocumentControl(string name, NotebookManager manager, IWin32Window mainForm, Slot<bool> operationInProgress) {
+        public ConsoleDocumentControl(string name, NotebookManager manager, IWin32Window mainForm) {
             InitializeComponent();
             ItemName = name;
             _manager = manager;
             _notebook = manager.Notebook;
             _mainForm = mainForm;
-            _server = new ConsoleServer(manager, response => {
-                _browser.GetBrowser().MainFrame.ExecuteJavaScriptAsync(
-                    $"receiveCommandResponse(\"{HttpUtility.JavaScriptStringEncode(response)}\");"
-                );
-            }, name);
-            var encodedName = Convert.ToBase64String(Encoding.UTF8.GetBytes(name));
-            var url = $"http://127.0.0.1:{_server.Port}/console_{encodedName}";
-            _browser = new ChromiumWebBrowser(url) {
-                Dock = DockStyle.Fill
+            
+            _server = new ConsoleServer(manager, name);
+            var url = $"http://127.0.0.1:{_server.Port}/console";
+            Debug.WriteLine(url);
+            _browser = new WebBrowser {
+                Dock = DockStyle.Fill, IsWebBrowserContextMenuEnabled = false
             };
-            _browser.ProcessCefMessagesOnResize();
-            _browser.ConsoleMessage += (sender, e) => {
-                if (e.Message == "loaded") {
-                    BeginInvoke(new MethodInvoker(() => {
-                        _progressBar.Visible = false;
-                        _loaded = true;
-                        _browser.Focus();
-                    }));
-                } else {
-                    _consoleMessages.Add(e.Message);
-                    Console.WriteLine(e.Message);
-                }
-            };
-
             Controls.Add(_browser);
-            Disposed += (sender, e) => _browser.Dispose();
+            _browser.Navigate(url);
         }
     }
 }

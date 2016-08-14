@@ -93,7 +93,8 @@ namespace SqlNotebook {
         public object HelpServerLock { get; } = new object();
         public HelpServer HelpServer { get; private set; }
 
-        public NotebookManager(Notebook notebook, Slot<bool> isTransactionOpen, Action onNoteServerCreate) {
+        public NotebookManager(Notebook notebook, Slot<bool> isTransactionOpen,
+        Action<NotebookManager> onNoteServerCreate) {
             Notebook = notebook;
             _isTransactionOpen = isTransactionOpen;
 
@@ -101,7 +102,7 @@ namespace SqlNotebook {
                 lock (NoteServerLock) {
                     NoteServer = new NoteServer(this);
                 }
-                onNoteServerCreate();
+                onNoteServerCreate(this);
             });
 
             Task.Run(() => {

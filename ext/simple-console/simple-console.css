@@ -16,17 +16,19 @@
 	flex-basis: auto;
 }
 .simple-console-input-wrapper {
-	display: flex;
+	display: block;
 	flex-shrink: 0;
 }
 .simple-console-input {
 	flex: 1;
 	font-size: inherit;
-	height: 1em;
+	width: 98%;
 	color: inherit;
 	background: transparent;
 	border: 0;
-	box-shadow: 0 1px 0 transparent;
+	border-bottom: 1px solid rgb(229, 229, 229);
+	position: absolute;
+	left: 14px;
 }
 .simple-console-input:focus {
 	outline: 0;
@@ -111,21 +113,21 @@
 	color: white;
 	outline: 0;
 }
-.simple-console-input-wrapper,
-.entry {
+.simple-console-input-wrapper, .entry {
 	padding: 0.25rem 0.5rem;
-	padding-left: 1rem; /* = A */
+	padding-left: 16px;
 	position: relative;
+}
+.simple-console-input-wrapper {
+	padding-bottom: 10px;
 }
 .input-chevron {
 	position: absolute;
 	left: 0;
 	top: 0;
 	bottom: 0;
-	width: 1rem; /* = A */
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	display: block;
+	padding-right: 8px;
 }
 .entry.input {
 	color: gray;

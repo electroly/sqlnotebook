@@ -31,16 +31,14 @@ namespace SqlNotebook {
         private readonly HttpServer _server;
         private readonly ushort _port;
         private readonly NotebookManager _manager;
-        private readonly Action<string> _responseFunc;
         private Dictionary<string, object> _variables = new Dictionary<string, object>();
 
         public string ConsoleName { get; set; }
 
         public int Port => _port;
 
-        public ConsoleServer(NotebookManager manager, Action<string> responseFunc, string consoleName) {
+        public ConsoleServer(NotebookManager manager, string consoleName) {
             _manager = manager;
-            _responseFunc = responseFunc;
             ConsoleName = consoleName;
             _server = new HttpServer(0);
             _port = _server.Port;
@@ -64,8 +62,8 @@ namespace SqlNotebook {
                 e.Result = Encoding.UTF8.GetBytes(html);
             } else if (e.Url.StartsWith(executePrefix)) {
                 var sql = e.Url.Substring(executePrefix.Length);
-                Task.Run(() => Execute(sql));
-                e.Result = new byte[] { 79, 75 }; // 'OK'
+                var html = Execute(sql);
+                e.Result = Encoding.UTF8.GetBytes(html);
                 return;
             } else if (e.Url == "/simple-console.js") {
                 e.ContentType = HttpContentType.JavaScript;
@@ -91,7 +89,7 @@ namespace SqlNotebook {
             });
         }
 
-        private void Execute(string sql) {
+        private string Execute(string sql) {
             _manager.PushStatus("Running console command...");
             _manager.CommitOpenEditors();
             string response;
@@ -102,15 +100,26 @@ namespace SqlNotebook {
                 UpdateConsoleState();
                 _manager.SetDirty();
                 var parts = new List<string>();
+                if (result.ScalarResult == null && !result.TextOutput.Any() && !result.DataTables.Any()) {
+                    parts.Add("<div style=\"overflow: hidden;\">&nbsp;</div>");
+                }
                 if (result.ScalarResult != null) {
-                    parts.Add($"Returned: {WebUtility.HtmlEncode(result.ScalarResult.ToString())}");
+                    parts.Add(
+                        "<div style=\"overflow: hidden;\">" +
+                        $"Returned: {WebUtility.HtmlEncode(result.ScalarResult.ToString())}" +
+                        "</div>"
+                    );
                 }
                 if (result.TextOutput.Any()) {
-                    parts.Add(string.Join("<br>", result.TextOutput.Select(WebUtility.HtmlEncode)));
+                    parts.Add(
+                        "<div style=\"overflow: hidden;\">" +
+                        string.Join("<br>", result.TextOutput.Select(WebUtility.HtmlEncode)) +
+                        "</div>"
+                    );
                 }
                 var sb = new StringBuilder();
                 foreach (var dt in result.DataTables) {
-                    sb.Append("<div style=\"overflow-x: auto;\">");
+                    sb.Append("<div style=\"overflow-x: auto; overflow-y: hidden; padding-bottom: 18px;\">");
                     sb.Append("<table><thead><tr>");
                     foreach (var col in dt.Columns) {
                         sb.Append($"<td><b>{WebUtility.HtmlEncode(col)}</b></td>");
@@ -130,18 +139,18 @@ namespace SqlNotebook {
                     }
                     sb.Append("</tbody></table></div>");
                     if (dt.Rows.Count > 100) {
-                        sb.Append($"Table has {dt.Rows.Count} rows, showing 100.");
+                        sb.Append($"<div>Table has {dt.Rows.Count} rows, showing 100.</div>");
                     }
                 }
                 parts.Add(sb.ToString());
-                var html = string.Join("<br><br>", parts);
+                var html = string.Join("", parts);
                 response = html;
             } catch (Exception ex) {
-                response = $"<span style=\"color: red\">{WebUtility.HtmlEncode(ex.Message)}</span>";
+                response = $"<div style=\"overflow: hidden; color: red;\">{WebUtility.HtmlEncode(ex.Message)}</div>";
             }
 
-            _responseFunc($"<div class=\"response\">{response}</div>");
             _manager.PopStatus();
+            return $"<div class=\"response\">{response}</div>";
         }
 
         #region IDisposable Support
