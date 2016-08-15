@@ -7,10 +7,10 @@
 # - Bump publish version in project properties under Publish
 # - Rebuild
 # - Verify version, signature, and signature timestamp in Release\SqlNotebook.exe
-# - Run Release\SqlNotebook.exe to test
 # - Publish
 # - Run src\generate-release.ps1
-# - Update web\download.md with new version and date
+# - Unzip publish\SqlNotebook_X_X_X_X.zip to test
+# - Update web\download.md with new version and date, also update portable zip link
 # - Delete web\site\
 # - Run web\generate-site.ps1
 # - Open S3 Management Console in sqlnotebook.com bucket

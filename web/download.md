@@ -8,7 +8,7 @@ The current version is **0.6** and was released on **August 14, 2016**.  SQL Not
 This is a [ClickOnce](https://en.wikipedia.org/wiki/ClickOnce) installer.  It will install all necessary prerequisites, and SQL Notebook will automatically check for updates.
 <br><br>
 
-### [Download Portable .ZIP](https://sqlnotebook.com/install/SqlNotebook_0_5_0_0.zip)
+### [Download Portable .ZIP](https://sqlnotebook.com/install/SqlNotebook_0_6_0_0.zip)
 
 This portable app does not require installation.  You must already have [.NET Framework 4.6](https://www.microsoft.com/en-us/download/details.aspx?id=53345) installed.  This version of SQL Notebook will *not* check for updates.  Come back to this page to download new versions.
 <br><br>
