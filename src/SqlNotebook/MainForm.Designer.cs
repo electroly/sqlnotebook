@@ -39,17 +39,21 @@
             this._cancelLnk = new System.Windows.Forms.ToolStripStatusLabel();
             this._statusProgressbar = new System.Windows.Forms.ToolStripProgressBar();
             this._menuStrip = new System.Windows.Forms.MenuStrip();
+            this._saveBtn = new System.Windows.Forms.ToolStripButton();
+            this._newNoteBtn = new System.Windows.Forms.ToolStripButton();
+            this._newConsoleBtn = new System.Windows.Forms.ToolStripButton();
+            this._newScriptBtn = new System.Windows.Forms.ToolStripButton();
             this._notebookMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._openMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._saveMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._saveAsMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this._optionsMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this._exitMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this._createMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newNoteMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newConsoleMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newScriptMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this._optionsMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._exitMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._importMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,16 +77,11 @@
             this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem14 = new System.Windows.Forms.ToolStripMenuItem();
+            this._viewDocMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._searchDocMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripMenuItem();
-            this._newBtn = new System.Windows.Forms.ToolStripButton();
-            this._openBtn = new System.Windows.Forms.ToolStripButton();
-            this._saveBtn = new System.Windows.Forms.ToolStripButton();
-            this._newNoteBtn = new System.Windows.Forms.ToolStripButton();
-            this._newConsoleBtn = new System.Windows.Forms.ToolStripButton();
-            this._newScriptBtn = new System.Windows.Forms.ToolStripButton();
-            this._helpIndexBtn = new System.Windows.Forms.ToolStripButton();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
@@ -101,12 +100,12 @@
             // toolStripSeparator3
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new System.Drawing.Size(152, 6);
+            toolStripSeparator3.Size = new System.Drawing.Size(211, 6);
             // 
             // toolStripSeparator6
             // 
             toolStripSeparator6.Name = "toolStripSeparator6";
-            toolStripSeparator6.Size = new System.Drawing.Size(152, 6);
+            toolStripSeparator6.Size = new System.Drawing.Size(211, 6);
             // 
             // _toolStripContainer
             // 
@@ -192,18 +191,14 @@
             this._menuStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
             this._menuStrip.Dock = System.Windows.Forms.DockStyle.None;
             this._menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._newBtn,
-            this._openBtn,
             this._saveBtn,
             this._newNoteBtn,
             this._newConsoleBtn,
             this._newScriptBtn,
             this._notebookMnu,
-            this._createMnu,
             this._importMnu,
             this._exportMnu,
-            this.helpToolStripMenuItem,
-            this._helpIndexBtn});
+            this.helpToolStripMenuItem});
             this._menuStrip.Location = new System.Drawing.Point(0, 0);
             this._menuStrip.Name = "_menuStrip";
             this._menuStrip.Padding = new System.Windows.Forms.Padding(2, 2, 0, 2);
@@ -213,6 +208,58 @@
             this._menuStrip.TabIndex = 2;
             this._menuStrip.Text = "menuStrip1";
             // 
+            // _saveBtn
+            // 
+            this._saveBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this._saveBtn.Image = global::SqlNotebook.Properties.Resources.Diskette;
+            this._saveBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._saveBtn.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
+            this._saveBtn.Name = "_saveBtn";
+            this._saveBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._saveBtn.Size = new System.Drawing.Size(28, 20);
+            this._saveBtn.Text = "toolStripButton1";
+            this._saveBtn.ToolTipText = "Save notebook (Ctrl+S)";
+            this._saveBtn.Click += new System.EventHandler(this.SaveMnu_Click);
+            // 
+            // _newNoteBtn
+            // 
+            this._newNoteBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this._newNoteBtn.Image = global::SqlNotebook.Properties.Resources.NoteAdd;
+            this._newNoteBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._newNoteBtn.Margin = new System.Windows.Forms.Padding(7, 0, 0, 0);
+            this._newNoteBtn.Name = "_newNoteBtn";
+            this._newNoteBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._newNoteBtn.Size = new System.Drawing.Size(28, 20);
+            this._newNoteBtn.Text = "toolStripButton1";
+            this._newNoteBtn.ToolTipText = "Add new note (Ctrl+Shift+N)";
+            this._newNoteBtn.Click += new System.EventHandler(this.NewNoteBtn_Click);
+            // 
+            // _newConsoleBtn
+            // 
+            this._newConsoleBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this._newConsoleBtn.Image = global::SqlNotebook.Properties.Resources.ApplicationXpTerminalAdd;
+            this._newConsoleBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._newConsoleBtn.Margin = new System.Windows.Forms.Padding(0);
+            this._newConsoleBtn.Name = "_newConsoleBtn";
+            this._newConsoleBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._newConsoleBtn.Size = new System.Drawing.Size(28, 20);
+            this._newConsoleBtn.Text = "toolStripButton1";
+            this._newConsoleBtn.ToolTipText = "Add new console (Ctrl+Shift+C)";
+            this._newConsoleBtn.Click += new System.EventHandler(this.NewConsoleBtn_Click);
+            // 
+            // _newScriptBtn
+            // 
+            this._newScriptBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this._newScriptBtn.Image = global::SqlNotebook.Properties.Resources.ScriptAdd;
+            this._newScriptBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._newScriptBtn.Margin = new System.Windows.Forms.Padding(0);
+            this._newScriptBtn.Name = "_newScriptBtn";
+            this._newScriptBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._newScriptBtn.Size = new System.Drawing.Size(28, 20);
+            this._newScriptBtn.Text = "toolStripButton1";
+            this._newScriptBtn.ToolTipText = "Add new script (Ctrl+Shift+S)";
+            this._newScriptBtn.Click += new System.EventHandler(this.NewScriptBtn_Click);
+            // 
             // _notebookMnu
             // 
             this._notebookMnu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -221,6 +268,10 @@
             this._saveMnu,
             this._saveAsMnu,
             toolStripSeparator3,
+            this._newNoteMnu,
+            this._newConsoleMnu,
+            this._newScriptMnu,
+            this.toolStripSeparator4,
             this._optionsMnu,
             toolStripSeparator6,
             this._exitMnu});
@@ -234,7 +285,7 @@
             this._newMnu.Image = global::SqlNotebook.Properties.Resources.PageWhite;
             this._newMnu.Name = "_newMnu";
             this._newMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this._newMnu.Size = new System.Drawing.Size(155, 22);
+            this._newMnu.Size = new System.Drawing.Size(214, 22);
             this._newMnu.Text = "&New";
             this._newMnu.Click += new System.EventHandler(this.NewMnu_Click);
             // 
@@ -243,7 +294,7 @@
             this._openMnu.Image = global::SqlNotebook.Properties.Resources.Folder;
             this._openMnu.Name = "_openMnu";
             this._openMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this._openMnu.Size = new System.Drawing.Size(155, 22);
+            this._openMnu.Size = new System.Drawing.Size(214, 22);
             this._openMnu.Text = "&Open...";
             this._openMnu.Click += new System.EventHandler(this.OpenMnu_Click);
             // 
@@ -252,21 +303,56 @@
             this._saveMnu.Image = global::SqlNotebook.Properties.Resources.Diskette;
             this._saveMnu.Name = "_saveMnu";
             this._saveMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this._saveMnu.Size = new System.Drawing.Size(155, 22);
+            this._saveMnu.Size = new System.Drawing.Size(214, 22);
             this._saveMnu.Text = "&Save";
             this._saveMnu.Click += new System.EventHandler(this.SaveMnu_Click);
             // 
             // _saveAsMnu
             // 
             this._saveAsMnu.Name = "_saveAsMnu";
-            this._saveAsMnu.Size = new System.Drawing.Size(155, 22);
+            this._saveAsMnu.Size = new System.Drawing.Size(214, 22);
             this._saveAsMnu.Text = "Save &as";
             this._saveAsMnu.Click += new System.EventHandler(this.SaveAsMnu_Click);
+            // 
+            // _newNoteMnu
+            // 
+            this._newNoteMnu.Image = global::SqlNotebook.Properties.Resources.NoteAdd;
+            this._newNoteMnu.Name = "_newNoteMnu";
+            this._newNoteMnu.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.N)));
+            this._newNoteMnu.Size = new System.Drawing.Size(214, 22);
+            this._newNoteMnu.Text = "Add &note";
+            this._newNoteMnu.Click += new System.EventHandler(this.NewNoteBtn_Click);
+            // 
+            // _newConsoleMnu
+            // 
+            this._newConsoleMnu.Image = global::SqlNotebook.Properties.Resources.ApplicationXpTerminalAdd;
+            this._newConsoleMnu.Name = "_newConsoleMnu";
+            this._newConsoleMnu.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.C)));
+            this._newConsoleMnu.Size = new System.Drawing.Size(214, 22);
+            this._newConsoleMnu.Text = "Add &console";
+            this._newConsoleMnu.Click += new System.EventHandler(this.NewConsoleBtn_Click);
+            // 
+            // _newScriptMnu
+            // 
+            this._newScriptMnu.Image = global::SqlNotebook.Properties.Resources.ScriptAdd;
+            this._newScriptMnu.Name = "_newScriptMnu";
+            this._newScriptMnu.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+            this._newScriptMnu.Size = new System.Drawing.Size(214, 22);
+            this._newScriptMnu.Text = "Add &script";
+            this._newScriptMnu.Click += new System.EventHandler(this.NewScriptBtn_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(211, 6);
             // 
             // _optionsMnu
             // 
             this._optionsMnu.Name = "_optionsMnu";
-            this._optionsMnu.Size = new System.Drawing.Size(155, 22);
+            this._optionsMnu.Size = new System.Drawing.Size(214, 22);
             this._optionsMnu.Text = "Options...";
             this._optionsMnu.Click += new System.EventHandler(this.OptionsMnu_Click);
             // 
@@ -274,43 +360,9 @@
             // 
             this._exitMnu.Name = "_exitMnu";
             this._exitMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this._exitMnu.Size = new System.Drawing.Size(155, 22);
+            this._exitMnu.Size = new System.Drawing.Size(214, 22);
             this._exitMnu.Text = "E&xit";
             this._exitMnu.Click += new System.EventHandler(this.ExitMnu_Click);
-            // 
-            // _createMnu
-            // 
-            this._createMnu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._newNoteMnu,
-            this._newConsoleMnu,
-            this._newScriptMnu});
-            this._createMnu.Name = "_createMnu";
-            this._createMnu.Size = new System.Drawing.Size(53, 20);
-            this._createMnu.Text = "&Create";
-            // 
-            // _newNoteMnu
-            // 
-            this._newNoteMnu.Image = global::SqlNotebook.Properties.Resources.NoteAdd;
-            this._newNoteMnu.Name = "_newNoteMnu";
-            this._newNoteMnu.Size = new System.Drawing.Size(142, 22);
-            this._newNoteMnu.Text = "New &note";
-            this._newNoteMnu.Click += new System.EventHandler(this.NewNoteBtn_Click);
-            // 
-            // _newConsoleMnu
-            // 
-            this._newConsoleMnu.Image = global::SqlNotebook.Properties.Resources.ApplicationXpTerminalAdd;
-            this._newConsoleMnu.Name = "_newConsoleMnu";
-            this._newConsoleMnu.Size = new System.Drawing.Size(142, 22);
-            this._newConsoleMnu.Text = "New &console";
-            this._newConsoleMnu.Click += new System.EventHandler(this.NewConsoleBtn_Click);
-            // 
-            // _newScriptMnu
-            // 
-            this._newScriptMnu.Image = global::SqlNotebook.Properties.Resources.ScriptAdd;
-            this._newScriptMnu.Name = "_newScriptMnu";
-            this._newScriptMnu.Size = new System.Drawing.Size(142, 22);
-            this._newScriptMnu.Text = "New &script";
-            this._newScriptMnu.Click += new System.EventHandler(this.NewScriptBtn_Click);
             // 
             // _importMnu
             // 
@@ -485,22 +537,32 @@
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem14,
-            this.toolStripMenuItem15,
+            this._viewDocMnu,
+            this._searchDocMnu,
             toolStripSeparator1,
+            this.toolStripMenuItem15,
+            this.toolStripSeparator5,
             this.toolStripMenuItem16});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
-            // toolStripMenuItem14
+            // _viewDocMnu
             // 
-            this.toolStripMenuItem14.Image = global::SqlNotebook.Properties.Resources.Help;
-            this.toolStripMenuItem14.Name = "toolStripMenuItem14";
-            this.toolStripMenuItem14.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.toolStripMenuItem14.Size = new System.Drawing.Size(203, 22);
-            this.toolStripMenuItem14.Text = "View documentation";
-            this.toolStripMenuItem14.Click += new System.EventHandler(this.ViewDocMnu_Click);
+            this._viewDocMnu.Image = global::SqlNotebook.Properties.Resources.Help;
+            this._viewDocMnu.Name = "_viewDocMnu";
+            this._viewDocMnu.ShortcutKeys = System.Windows.Forms.Keys.F1;
+            this._viewDocMnu.Size = new System.Drawing.Size(203, 22);
+            this._viewDocMnu.Text = "View documentation";
+            this._viewDocMnu.Click += new System.EventHandler(this.ViewDocMnu_Click);
+            // 
+            // _searchDocMnu
+            // 
+            this._searchDocMnu.Name = "_searchDocMnu";
+            this._searchDocMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
+            this._searchDocMnu.Size = new System.Drawing.Size(203, 22);
+            this._searchDocMnu.Text = "Search";
+            this._searchDocMnu.Click += new System.EventHandler(this.SearchDocMnu_Click);
             // 
             // toolStripMenuItem15
             // 
@@ -509,104 +571,17 @@
             this.toolStripMenuItem15.Text = "Report an issue";
             this.toolStripMenuItem15.Click += new System.EventHandler(this.ReportIssueMnu_Click);
             // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(200, 6);
+            // 
             // toolStripMenuItem16
             // 
             this.toolStripMenuItem16.Name = "toolStripMenuItem16";
             this.toolStripMenuItem16.Size = new System.Drawing.Size(203, 22);
             this.toolStripMenuItem16.Text = "About SQL Notebook";
             this.toolStripMenuItem16.Click += new System.EventHandler(this.AboutMnu_Click);
-            // 
-            // _newBtn
-            // 
-            this._newBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._newBtn.Image = global::SqlNotebook.Properties.Resources.PageWhite;
-            this._newBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._newBtn.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
-            this._newBtn.Name = "_newBtn";
-            this._newBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this._newBtn.Size = new System.Drawing.Size(28, 20);
-            this._newBtn.Text = "toolStripButton1";
-            this._newBtn.ToolTipText = "New Notebook";
-            this._newBtn.Click += new System.EventHandler(this.NewMnu_Click);
-            // 
-            // _openBtn
-            // 
-            this._openBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._openBtn.Image = global::SqlNotebook.Properties.Resources.Folder;
-            this._openBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._openBtn.Margin = new System.Windows.Forms.Padding(0);
-            this._openBtn.Name = "_openBtn";
-            this._openBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this._openBtn.Size = new System.Drawing.Size(28, 20);
-            this._openBtn.Text = "toolStripButton1";
-            this._openBtn.ToolTipText = "Open Notebook";
-            this._openBtn.Click += new System.EventHandler(this.OpenMnu_Click);
-            // 
-            // _saveBtn
-            // 
-            this._saveBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._saveBtn.Image = global::SqlNotebook.Properties.Resources.Diskette;
-            this._saveBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._saveBtn.Margin = new System.Windows.Forms.Padding(0);
-            this._saveBtn.Name = "_saveBtn";
-            this._saveBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this._saveBtn.Size = new System.Drawing.Size(28, 20);
-            this._saveBtn.Text = "toolStripButton1";
-            this._saveBtn.ToolTipText = "Save Notebook";
-            this._saveBtn.Click += new System.EventHandler(this.SaveMnu_Click);
-            // 
-            // _newNoteBtn
-            // 
-            this._newNoteBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._newNoteBtn.Image = global::SqlNotebook.Properties.Resources.NoteAdd;
-            this._newNoteBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._newNoteBtn.Margin = new System.Windows.Forms.Padding(7, 0, 0, 0);
-            this._newNoteBtn.Name = "_newNoteBtn";
-            this._newNoteBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this._newNoteBtn.Size = new System.Drawing.Size(28, 20);
-            this._newNoteBtn.Text = "toolStripButton1";
-            this._newNoteBtn.ToolTipText = "New Note";
-            this._newNoteBtn.Click += new System.EventHandler(this.NewNoteBtn_Click);
-            // 
-            // _newConsoleBtn
-            // 
-            this._newConsoleBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._newConsoleBtn.Image = global::SqlNotebook.Properties.Resources.ApplicationXpTerminalAdd;
-            this._newConsoleBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._newConsoleBtn.Margin = new System.Windows.Forms.Padding(0);
-            this._newConsoleBtn.Name = "_newConsoleBtn";
-            this._newConsoleBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this._newConsoleBtn.Size = new System.Drawing.Size(28, 20);
-            this._newConsoleBtn.Text = "toolStripButton1";
-            this._newConsoleBtn.ToolTipText = "New Console";
-            this._newConsoleBtn.Click += new System.EventHandler(this.NewConsoleBtn_Click);
-            // 
-            // _newScriptBtn
-            // 
-            this._newScriptBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._newScriptBtn.Image = global::SqlNotebook.Properties.Resources.ScriptAdd;
-            this._newScriptBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._newScriptBtn.Margin = new System.Windows.Forms.Padding(0);
-            this._newScriptBtn.Name = "_newScriptBtn";
-            this._newScriptBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this._newScriptBtn.Size = new System.Drawing.Size(28, 20);
-            this._newScriptBtn.Text = "toolStripButton1";
-            this._newScriptBtn.ToolTipText = "New Script";
-            this._newScriptBtn.Click += new System.EventHandler(this.NewScriptBtn_Click);
-            // 
-            // _helpIndexBtn
-            // 
-            this._helpIndexBtn.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this._helpIndexBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._helpIndexBtn.Image = global::SqlNotebook.Properties.Resources.Help;
-            this._helpIndexBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._helpIndexBtn.Margin = new System.Windows.Forms.Padding(0);
-            this._helpIndexBtn.Name = "_helpIndexBtn";
-            this._helpIndexBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this._helpIndexBtn.Size = new System.Drawing.Size(28, 20);
-            this._helpIndexBtn.Text = "toolStripButton1";
-            this._helpIndexBtn.ToolTipText = "New Script";
-            this._helpIndexBtn.Click += new System.EventHandler(this.ViewDocMnu_Click);
             // 
             // MainForm
             // 
@@ -645,13 +620,9 @@
         private System.Windows.Forms.ToolStripStatusLabel _cancelLnk;
         private System.Windows.Forms.MenuStrip _menuStrip;
         private System.Windows.Forms.ToolStripMenuItem _notebookMnu;
-        private System.Windows.Forms.ToolStripMenuItem _createMnu;
         private System.Windows.Forms.ToolStripMenuItem _importMnu;
         private System.Windows.Forms.ToolStripMenuItem _exportMnu;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem _newScriptMnu;
-        private System.Windows.Forms.ToolStripMenuItem _newConsoleMnu;
-        private System.Windows.Forms.ToolStripMenuItem _newNoteMnu;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
@@ -672,7 +643,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem12;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem13;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem14;
+        private System.Windows.Forms.ToolStripMenuItem _viewDocMnu;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem15;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem16;
         private System.Windows.Forms.ToolStripMenuItem _newMnu;
@@ -681,13 +652,16 @@
         private System.Windows.Forms.ToolStripMenuItem _saveAsMnu;
         private System.Windows.Forms.ToolStripMenuItem _optionsMnu;
         private System.Windows.Forms.ToolStripMenuItem _exitMnu;
-        private System.Windows.Forms.ToolStripButton _newBtn;
-        private System.Windows.Forms.ToolStripButton _openBtn;
         private System.Windows.Forms.ToolStripButton _saveBtn;
         private System.Windows.Forms.ToolStripButton _newNoteBtn;
         private System.Windows.Forms.ToolStripButton _newConsoleBtn;
         private System.Windows.Forms.ToolStripButton _newScriptBtn;
-        private System.Windows.Forms.ToolStripButton _helpIndexBtn;
+        private System.Windows.Forms.ToolStripMenuItem _newNoteMnu;
+        private System.Windows.Forms.ToolStripMenuItem _newConsoleMnu;
+        private System.Windows.Forms.ToolStripMenuItem _newScriptMnu;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem _searchDocMnu;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
     }
 }
 

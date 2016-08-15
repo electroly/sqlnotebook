@@ -21,8 +21,15 @@ namespace SqlNotebook {
     public sealed class MenuRenderer : ToolStripSystemRenderer {
         private Font _font = new Font("Segoe UI", 9);
         protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e) {
-            e.TextColor = e.Item.Enabled ? Color.Black : Color.FromArgb(109, 109, 109);
-            base.OnRenderItemText(e);
+            var color = e.Item.Enabled ? Color.Black : Color.FromArgb(109, 109, 109);
+
+            var rect = e.TextRectangle;
+            var menuItem = e.Item as ToolStripMenuItem;
+            if (menuItem != null && e.Text != e.Item.Text) {
+                rect.Offset(10, 0);
+            }
+
+            TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, rect, color, e.TextFormat);
         }
 
         private static Pen _menuBorderPen = new Pen(Color.FromArgb(204, 204, 204));
@@ -80,8 +87,8 @@ namespace SqlNotebook {
             var rect = e.Item.ContentRectangle;
             rect.Height = 1;
             rect.Y++;
-            rect.X += 30;
-            rect.Width -= 30;
+            rect.X += 28;
+            rect.Width -= 27;
             e.Graphics.FillRectangle(_separatorBrush, rect);
         }
 
@@ -90,9 +97,22 @@ namespace SqlNotebook {
             if (dd != null) {
                 var rect = new Rectangle(0, 0, dd.Size.Width - 1, dd.Size.Height - 1);
                 e.Graphics.DrawRectangle(_menuBorderPen, rect);
-            } else {
-                //base.OnRenderToolStripBorder(e);
             }
+        }
+        
+        protected override void OnRenderOverflowButtonBackground(ToolStripItemRenderEventArgs e) {
+            var rect = new Rectangle(0, 0, e.Item.Size.Width - 1, e.Item.Size.Height - 2);
+            if (e.Item.Pressed) {
+                e.Graphics.FillRectangle(_menuOpenBgBrush, rect);
+                e.Graphics.DrawRectangle(_menuOpenBorderPen, rect);
+            } else if (e.Item.Selected) {
+                e.Graphics.FillRectangle(_menuHoverBgBrush, rect);
+                e.Graphics.DrawRectangle(_menuHoverBorderPen, rect);
+            } else {
+                e.Graphics.FillRectangle(_topMenuBrush, rect);
+            }
+
+            DrawArrow(new ToolStripArrowRenderEventArgs(e.Graphics, e.Item, rect, Color.Black, ArrowDirection.Down));
         }
     }
 }

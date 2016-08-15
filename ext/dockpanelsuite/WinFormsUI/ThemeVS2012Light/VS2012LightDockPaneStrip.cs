@@ -579,6 +579,13 @@ namespace WeifenLuo.WinFormsUI.Docking
             m_toolTip = new ToolTip(Components);
             m_selectMenu = new ContextMenuStrip(Components);
 
+            //CHANGED: Use custom ToolStripRenderer
+            var theme = (VS2012LightTheme)pane.DockPanel.Theme;
+            if (theme.ToolStripRenderer != null) {
+                m_selectMenu.Renderer = theme.ToolStripRenderer;
+            }
+            //CHANGED: End of inserted code
+
             ResumeLayout();
         }
 

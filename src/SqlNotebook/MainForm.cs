@@ -53,6 +53,7 @@ namespace SqlNotebook {
             _menuStrip.Items.Insert(0, _searchTxt = new CueToolStripTextBox {
                 Alignment = ToolStripItemAlignment.Right,
                 CueText = "Search Help",
+                ToolTipText = "Search the built-in documentation (Ctrl+H)",
                 AutoSize = false,
                 Margin = new Padding(0, 0, 5, 0)
             });
@@ -85,7 +86,9 @@ namespace SqlNotebook {
             _importer = new Importer(_manager, this);
             _dockPanel = new DockPanel {
                 Dock = DockStyle.Fill,
-                Theme = new VS2012LightTheme(),
+                Theme = new VS2012LightTheme {
+                    ToolStripRenderer = new MenuRenderer()
+                },
                 DocumentStyle = DocumentStyle.DockingWindow,
                 DefaultFloatWindowSize = new Size(700, 700),
                 ShowDocumentIcon = true
@@ -198,7 +201,10 @@ namespace SqlNotebook {
                 case (Keys.Control | Keys.O): _openMnu.PerformClick(); break;
                 case (Keys.Control | Keys.S): _saveMnu.PerformClick(); break;
                 case (Keys.Alt | Keys.F4): _exitMnu.PerformClick(); break;
-                case Keys.F1: _helpIndexBtn.PerformClick(); break;
+                case (Keys.Control | Keys.Shift | Keys.N): _newNoteMnu.PerformClick(); break;
+                case (Keys.Control | Keys.Shift | Keys.C): _newConsoleMnu.PerformClick(); break;
+                case (Keys.Control | Keys.Shift | Keys.S): _newScriptMnu.PerformClick(); break;
+                case Keys.F1: _viewDocMnu.PerformClick(); break;
             }
         }
 
@@ -714,6 +720,11 @@ namespace SqlNotebook {
         private void OptionsMnu_Click(object sender, EventArgs e) {
             new OptionsForm().ShowDialogAndDispose(this);
         }
-   }
+
+        private void SearchDocMnu_Click(object sender, EventArgs e) {
+            _searchTxt.Select();
+            _searchTxt.Focus();
+        }
+    }
 }
  

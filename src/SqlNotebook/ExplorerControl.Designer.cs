@@ -26,7 +26,6 @@
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ColumnHeader _nameColumn;
             System.Windows.Forms.ColumnHeader columnHeader1;
-            System.Windows.Forms.ColumnHeader columnHeader2;
             System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Notes", System.Windows.Forms.HorizontalAlignment.Center);
             System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Consoles", System.Windows.Forms.HorizontalAlignment.Center);
             System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Scripts", System.Windows.Forms.HorizontalAlignment.Center);
@@ -36,15 +35,16 @@
             System.Windows.Forms.ListViewGroup listViewGroup6 = new System.Windows.Forms.ListViewGroup("Group", System.Windows.Forms.HorizontalAlignment.Center);
             this._list = new System.Windows.Forms.ListView();
             this._contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this._renameMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._openMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this._deleteMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._renameMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._imageList = new System.Windows.Forms.ImageList(this.components);
             this._splitContainer = new System.Windows.Forms.SplitContainer();
             this._detailsLst = new System.Windows.Forms.ListView();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             _nameColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this._contextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._splitContainer)).BeginInit();
             this._splitContainer.Panel1.SuspendLayout();
@@ -62,11 +62,6 @@
             // 
             columnHeader1.Text = "Name";
             columnHeader1.Width = 157;
-            // 
-            // columnHeader2
-            // 
-            columnHeader2.Text = "Info";
-            columnHeader2.Width = 163;
             // 
             // _list
             // 
@@ -116,28 +111,40 @@
             // _contextMenuStrip
             // 
             this._contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._renameMnu,
-            this._deleteMnu});
+            this._openMnu,
+            this.toolStripSeparator1,
+            this._deleteMnu,
+            this._renameMnu});
             this._contextMenuStrip.Name = "_contextMenuStrip";
             this._contextMenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this._contextMenuStrip.Size = new System.Drawing.Size(153, 70);
+            this._contextMenuStrip.Size = new System.Drawing.Size(118, 76);
             this._contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip_Opening);
             // 
-            // _renameMnu
+            // _openMnu
             // 
-            this._renameMnu.Image = global::SqlNotebook.Properties.Resources.TextfieldRename;
-            this._renameMnu.Name = "_renameMnu";
-            this._renameMnu.Size = new System.Drawing.Size(152, 22);
-            this._renameMnu.Text = "&Rename";
-            this._renameMnu.Click += new System.EventHandler(this.RenameMnu_Click);
+            this._openMnu.Name = "_openMnu";
+            this._openMnu.Size = new System.Drawing.Size(117, 22);
+            this._openMnu.Text = "&Open";
+            this._openMnu.Click += new System.EventHandler(this.List_ItemActivate);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(114, 6);
             // 
             // _deleteMnu
             // 
-            this._deleteMnu.Image = global::SqlNotebook.Properties.Resources.Delete;
             this._deleteMnu.Name = "_deleteMnu";
-            this._deleteMnu.Size = new System.Drawing.Size(152, 22);
+            this._deleteMnu.Size = new System.Drawing.Size(117, 22);
             this._deleteMnu.Text = "&Delete";
             this._deleteMnu.Click += new System.EventHandler(this.DeleteMnu_Click);
+            // 
+            // _renameMnu
+            // 
+            this._renameMnu.Name = "_renameMnu";
+            this._renameMnu.Size = new System.Drawing.Size(117, 22);
+            this._renameMnu.Text = "&Rename";
+            this._renameMnu.Click += new System.EventHandler(this.RenameMnu_Click);
             // 
             // _imageList
             // 
@@ -174,8 +181,7 @@
             // 
             this._detailsLst.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._detailsLst.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            columnHeader1,
-            columnHeader2});
+            columnHeader1});
             this._detailsLst.Dock = System.Windows.Forms.DockStyle.Fill;
             listViewGroup6.Header = "Group";
             listViewGroup6.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
@@ -237,5 +243,7 @@
         private System.Windows.Forms.ToolStripMenuItem _deleteMnu;
         private System.Windows.Forms.ToolStripMenuItem _renameMnu;
         private System.Windows.Forms.ToolStripContainer toolStripContainer1;
+        private System.Windows.Forms.ToolStripMenuItem _openMnu;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }

@@ -99,6 +99,7 @@ namespace SqlNotebook {
                 _variables = newVars;
                 UpdateConsoleState();
                 _manager.SetDirty();
+                _manager.Rescan();
                 var parts = new List<string>();
                 if (result.ScalarResult == null && !result.TextOutput.Any() && !result.DataTables.Any()) {
                     parts.Add("<div style=\"overflow: hidden;\">&nbsp;</div>");

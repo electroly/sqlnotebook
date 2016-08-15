@@ -46,6 +46,11 @@ namespace SqlNotebook {
                     List_SelectedIndexChanged(null, EventArgs.Empty);
                 }
             };
+
+            _list.GotFocus += (sender, e) => {
+                _manager.CommitOpenEditors();
+                _manager.Rescan();
+            };
         }
 
         private void HandleNotebookChange(NotebookChangeEventArgs e) {
@@ -73,11 +78,8 @@ namespace SqlNotebook {
 
         protected override void OnResize(EventArgs e) {
             base.OnResize(e);
-            _list.Columns[0].Width = _list.Width - SystemInformation.VerticalScrollBarWidth - 5;
-
-            var detailsColWidth = (_list.Width - SystemInformation.VerticalScrollBarWidth - 5) / 3;
-            _detailsLst.Columns[0].Width = detailsColWidth * 2;
-            _detailsLst.Columns[1].Width = detailsColWidth;
+            _list.Columns[0].Width = _detailsLst.Columns[0].Width =
+                _list.Width - SystemInformation.VerticalScrollBarWidth - 5;
         }
 
         private void List_ItemActivate(object sender, EventArgs e) {
@@ -134,7 +136,7 @@ namespace SqlNotebook {
 
         private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
             var isSelection = _list.SelectedItems.Count == 1;
-            _deleteMnu.Enabled = isSelection;
+            _openMnu.Enabled = _deleteMnu.Enabled = _renameMnu.Enabled = isSelection;
         }
 
         private void List_SelectedIndexChanged(object sender, EventArgs e) {
@@ -172,8 +174,12 @@ namespace SqlNotebook {
 
             foreach (var detail in details) {
                 var detailLvi = new ListViewItem(_detailsLst.Groups[0]);
-                detailLvi.Text = detail.Item1;
-                detailLvi.SubItems.Add(detail.Item2.Replace(" PRIMARY KEY", ""));
+                var text = detail.Item1;
+                var extra = detail.Item2.Replace(" PRIMARY KEY", "");
+                if (extra.Any()) {
+                    text += $" ({extra})";
+                }
+                detailLvi.Text = text;
                 if (detail.Item2.Contains(" PRIMARY KEY")) {
                     detailLvi.ImageIndex = 6;
                 }
