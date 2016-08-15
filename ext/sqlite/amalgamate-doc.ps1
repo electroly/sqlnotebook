@@ -128,6 +128,9 @@ DeleteIfExists "sqlite-doc/releaselog"
 DeleteIfExists "sqlite-doc/c3ref"
 DeleteIfExists "sqlite-doc/images"
 DeleteIfExists "sqlite-doc/session"
+DeleteIfExists "sqlite-doc/carray.html"
+DeleteIfExists "sqlite-doc/csv.html"
+DeleteIfExists "sqlite-doc/dbhash.html"
 
 # Create sqlite-doc.txt
 function ReadDocFile($filePath) {

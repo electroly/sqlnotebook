@@ -1844,8 +1844,8 @@ proleptic Gregorian calendar.
 </ul>
 
 <p>Applications can chose to store dates and times in any of these
-formats and freely convert between formats using the built-in date
-and time functions.</p>
+formats and freely convert between formats using the built-in
+<a href="lang_datefunc.html">date and time functions</a>.</p>
 
 
 <a name="affinity"></a>
@@ -2429,7 +2429,27 @@ SELECT x FROM t1 ORDER BY c COLLATE NOCASE, x;
   
 
 
-<h2>The DBSTAT Virtual Table</h2>
+
+    <div class=fancy>
+    <div style="font-size:2em;text-align:center;color:#044a64">
+      The DBSTAT Virtual Table
+    </div>
+    <div class=startsearch></div>
+  
+
+<p>
+The DBSTAT virtual tables is a read-only <a href="vtab.html#epovtab">eponymous virtual table</a> that returns
+information about which pages of the database files are used by which
+tables and indexes in the schema.
+The the DBSTAT virtual table is used to implement <a href="sqlanalyze.html">sqlite3_analyzer.exe</a>
+utility program, and to help compute the 
+<a href="https://www.sqlite.org/src/repo-tabsize">table size pie-chart</a> in
+the <a href="https://www.fossil-scm.org/">Fossil-implemented</a> version control system
+for SQLite.
+</p>
+
+
+<h1 id="section_1">1. Overview</h1>
 
 <p>
 The <b>dbstat</b> virtual table is available on all 
@@ -2497,7 +2517,7 @@ database file.  Freelist pages, the lock page, and
 pointer-map pages of the database file do not appear in the
 dbstat virtual table.
 
-<h3>The "path" column of the dbstat virtual table</h3>
+<h1 id="section_2">2. The "path" column of the dbstat virtual table</h1>
 
 <p>
 The "path" column describes the path taken from the 
@@ -2524,6 +2544,7 @@ by the paths:
 '/1c2/000+000002'         // Third page in overflow chain
 </pre></blockquote>
 
+<p>
 If the paths are sorted using the BINARY collation sequence, then
 the overflow pages associated with a cell will appear earlier in the
 sort-order than its child page:
@@ -2532,7 +2553,7 @@ sort-order than its child page:
 '/1c2/000/'               // Left-most child of 451st child of root
 </pre></blockquote>
 
-<h3>Example uses of the dbstat virtual table</h3>
+<h1 id="section_3">3. Example uses of the dbstat virtual table</h1>
 
 <p>
 To find the total number of pages used to store table "xyz" in schema "aux1",
@@ -2916,8 +2937,8 @@ CREATE INDEX acctchng_magnitude ON account_change(acct_no, abs(amt));
 </pre></blockquote>
 
 <p>
-Each entry in the account_change table records a deposit or a withdrawl
-into an account.  Deposits have a positive "amt" and withdrawls have
+Each entry in the account_change table records a deposit or a withdrawal
+into an account.  Deposits have a positive "amt" and withdrawals have
 a negative "amt".
 
 <p>
@@ -3007,7 +3028,7 @@ may only refer to columns of the table being indexed, not to
 columns in other tables.
 
 <li><p>
-Expressions in CREATE INDEX statmeent
+Expressions in CREATE INDEX statements
 may contain function calls, but only to functions whose output
 is always determined completely by its input parameters (a.k.a.:
 "deterministic" functions).  Obviously, functions like <a href="lang_corefunc.html#random">random()</a> will not
@@ -4699,8 +4720,8 @@ A detailed explanation follows.
 <div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">&lt;phrase&gt;    := string &#91;*]
 &lt;phrase&gt;    := &lt;phrase&gt; + &lt;phrase&gt;
 &lt;neargroup&gt; := NEAR ( &lt;phrase&gt; &lt;phrase&gt; ... &#91;, N] )
-&lt;query&gt;     := &#91;&lt;colspec&gt; :] &lt;phrase&gt;
-&lt;query&gt;     := &#91;&lt;colspec&gt; :] &lt;neargroup&gt;
+&lt;query&gt;     := &#91; &#91;-] &lt;colspec&gt; :] &lt;phrase&gt;
+&lt;query&gt;     := &#91; &#91;-] &lt;colspec&gt; :] &lt;neargroup&gt;
 &lt;query&gt;     := ( &lt;query&gt; )
 &lt;query&gt;     := &lt;query&gt; AND &lt;query&gt;
 &lt;query&gt;     := &lt;query&gt; OR &lt;query&gt;
@@ -4830,6 +4851,17 @@ upper/lower case equivalence is understood for ASCII-range characters only.
 
 ... MATCH '{col1 col2} : NEAR("one two" "three four", 10)'
 ... MATCH '{col2 col1 col3} : one + two + three'
+</pre></table></div>
+
+<p>
+If a column filter specification is preceded by a "-" character, then
+it is interpreted as a list of column not to match against. For example:
+
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em"><i>-- Search for matches in all columns except "colname"</i>
+... MATCH '- colname : NEAR("one two" "three four", 10)'
+
+<i>-- Search for matches in all columns except "col1", "col2" and "col3"</i>
+... MATCH '- {col2 col1 col3} : one + two + three'
 </pre></table></div>
 
 <p>
@@ -5975,7 +6007,7 @@ specifically:
 
 <dl>
 <dt><b>xCreate:</b></dt><dd><p style="margin-top:0">
-   This function is used to allocate and inititalize a tokenizer instance.
+   This function is used to allocate and initialize a tokenizer instance.
    A tokenizer instance is required to actually tokenize text.
 <p>
    The first argument passed to this function is a copy of the (void*)
@@ -6584,6 +6616,7 @@ See xPhraseFirstColumn above.
 </dl>
 
 
+<a name="section_8"></a>
 <h1 id="section_8">8. The fts5vocab Virtual Table Module</h1>
 
 <p> The fts5vocab virtual table module allows users to extract information from
@@ -6774,7 +6807,8 @@ improved upon in the future.
 <h3 id="notoc5">  Other Issues</h3>
 
 <ol>
-  <li><p> FTS5 does not currently provide an equivalent to the fts4aux table.
+  <li><p> The functionality provided by the fts4aux module is now provided
+          by <a href="fts5.html#section_8">fts5vocab</a>. The schema of these two tables is slightly different.
 
   <li><p> The FTS3/4 "merge=X,Y" command has been replaced by the 
           <a href="fts5.html#section_6_6">FTS5 merge command</a>.
@@ -7248,7 +7282,7 @@ on older linux systems that make use of LinuxThreads.</p>
 <h3>6.2 Failures of mmap() on QNX</h3>
 
 <p>There exists some subtle problem with mmap() on QNX such that making
-a second mmap() call against the a single file descriptor can cause
+a second mmap() call against a single file descriptor can cause
 the memory obtained from the first mmap() call to be zeroed.  SQLite on
 unix uses mmap() to create a shared memory region for transaction 
 coordination in <a href="wal.html">WAL mode</a>, and it will call mmap() multiple times
@@ -7348,7 +7382,7 @@ harness that simulates I/O errors.</p>
 
 <p>When content is deleted from an SQLite database, pages that are no
 longer used are added to a free list and are reused to hold content
-added but subsequent inserts.  A bug in SQLite that was present in
+added by subsequent inserts.  A bug in SQLite that was present in
 version 3.6.16 through 3.7.2 might cause pages to go missing out of
 the free list when <a href="pragma.html#pragma_incremental_vacuum">incremental_vacuum</a> was used.  This would not cause
 data loss.  But it would result in the database file being larger than
@@ -7747,8 +7781,20 @@ connections.
   
 
 
-<h2>The JSON1 Extension</h2>
 
+
+    <div class=fancy>
+    <div style="font-size:2em;text-align:center;color:#044a64">
+      The JSON1 Extension
+    </div>
+    <div style="font-size:1.5em;margin:1em;color:#044a64">
+      Table Of Contents</div>
+    <div id=toc> <div style="margin-left:6ex"><a href="#section_1">1. Overview</a></div><div style="margin-left:6ex"><a href="#section_2">2. Compiling the JSON1 Extension</a></div><div style="margin-left:6ex"><a href="#section_3">3. Interface Overview</a></div><div style="margin-left:12ex"><a href="#section_3_1">3.1. JSON arguments</a></div><div style="margin-left:12ex"><a href="#section_3_2">3.2. PATH arguments</a></div><div style="margin-left:12ex"><a href="#section_3_3">3.3. VALUE arguments</a></div><div style="margin-left:12ex"><a href="#section_3_4">3.4. Compatibility</a></div><div style="margin-left:6ex"><a href="#section_4">4. Function Details</a></div><div style="margin-left:12ex"><a href="#section_4_1">4.1. The json() function</a></div><div style="margin-left:12ex"><a href="#section_4_2">4.2. The json_array() function</a></div><div style="margin-left:12ex"><a href="#section_4_3">4.3. The json_array_length() function</a></div><div style="margin-left:12ex"><a href="#section_4_4">4.4. The json_extract() function</a></div><div style="margin-left:12ex"><a href="#section_4_5">4.5. The json_insert(), json_replace, and json_set() functions</a></div><div style="margin-left:12ex"><a href="#section_4_6">4.6. The json_object() function</a></div><div style="margin-left:12ex"><a href="#section_4_7">4.7. The json_remove() function</a></div><div style="margin-left:12ex"><a href="#section_4_8">4.8. The json_type() function</a></div><div style="margin-left:12ex"><a href="#section_4_9">4.9. The json_valid() function</a></div><div style="margin-left:12ex"><a href="#section_4_10">4.10. The json_quote() function</a></div><div style="margin-left:12ex"><a href="#section_4_11">4.11. The json_group_array() and json_group_object()
+aggregate SQL functions</a></div><div style="margin-left:12ex"><a href="#section_4_12">4.12. The json_each() and json_tree() table-valued functions</a></div><div style="margin-left:18ex"><a href="#section_4_12_1">4.12.1. Examples using json_each() and json_tree()</a></div> </div>
+    <div class=startsearch></div>
+  
+
+<h1 id="section_1">1. Overview</h1>
 <p>
 The <b>json1</b> extension is a <a href="loadext.html">loadable extension</a> that
 implements thirteen <a href="c3ref/create_function.html">application-defined SQL functions</a> and
@@ -7757,7 +7803,7 @@ managing <a href="http://json.org/">JSON</a> content stored in an SQLite databas
 These are the scalar SQL functions implemented by json1:
 
 <blockquote>
-<center><table border=0 cellpadding=5>
+<center><table border="0" cellpadding="5">
 <tr><td width=30 valign='top'>1.</td><td valign='top' width='30%'>
 <a href='#jmini'>json</a>(<i>json</i>)
 </td><td valign='top'>
@@ -7827,20 +7873,27 @@ Return the type of a JSON string or subcomponent.
 Return true (1) if the input text is a valid JSON string
 </td></tr>
 
+<tr><td width=30 valign='top'>12.</td><td valign='top' width='30%'>
+<a href='#jvalid'>json_quote</a>(<i>value</i>)
+</td><td valign='top'>
+Convert an SQL value (a number or a string) into its corresponding JSON
+  representation.
+</td></tr>
+
 
 </table></center></blockquote>
 
 <p>There are two aggregate SQL functions:
 
-<blockquote><center><table border=0 cellpadding=5>
-<tr><td width=30 valign='top'>12.</td><td valign='top' width='30%'>
+<blockquote><center><table border="0" cellpadding="5">
+<tr><td width=30 valign='top'>13.</td><td valign='top' width='30%'>
 <a href='#jgrouparray'>json_group_array</a>(<i>value</i>)
 </td><td valign='top'>
 Return a JSON array composed of all <i>value</i> elements 
   in the aggregation.
 </td></tr>
 
-<tr><td width=30 valign='top'>13.</td><td valign='top' width='30%'>
+<tr><td width=30 valign='top'>14.</td><td valign='top' width='30%'>
 <a href='#jgroupobject'>json_group_object</a>(name,<i>value</i>)
 </td><td valign='top'>
 Return a JSON object composed of all <i>name</i> and <i>value</i> pairs
@@ -7852,15 +7905,15 @@ Return a JSON object composed of all <i>name</i> and <i>value</i> pairs
 
 <p>The <a href="vtab.html#tabfunc2">table-valued functions</a> implemented by this routine are:
 
-<blockquote><center><table border=0 cellpadding=5>
-<tr><td width=30 valign='top'>14.</td><td valign='top' width='30%'>
+<blockquote><center><table border="0" cellpadding="5">
+<tr><td width=30 valign='top'>15.</td><td valign='top' width='30%'>
 <a href='#jeach'>json_each</a>(<i>json</i>)<br><a href='#jeach'>json_each</a>(<i>json</i>,<i>path</i>)
 </td><td valign='top'>
 Return one row describing each element in an array or object
   at the top-level or at "path" within the input JSON.
 </td></tr>
 
-<tr><td width=30 valign='top'>15.</td><td valign='top' width='30%'>
+<tr><td width=30 valign='top'>16.</td><td valign='top' width='30%'>
 <a href='#jtree'>json_tree</a>(<i>json</i>)<br><a href='#jtree'>json_tree</a>(<i>json</i>,<i>path</i>)
 </td><td valign='top'>
 Walk the JSON recursively starting at the top-level or at the
@@ -7872,19 +7925,19 @@ Walk the JSON recursively starting at the top-level or at the
 
 <a name="howtocompile"></a>
 
-<h2>1.0 Compiling the JSON1 Extension</h2>
+<h1 id="section_2">2. Compiling the JSON1 Extension</h1>
 
 <p>
-The <a href="loadext.html">loadable extensions</a> documentation contains instructions on 
+The <a href="loadext.html">loadable extensions</a> documentation describes
 how to <a href="loadext.html#build">compile loadable extensions</a> as shared libraries.  The
 techniques described there work fine for the json1 module.
 
 <p>
 The json1 source code is included with the SQLite <a href="amalgamation.html">amalgamation</a>, though
-it is turned off by default.  Add the <a href="compile.html#enable_json1">-DSQLITE_ENABLE_JSON1</a> compile-time
+it is disabled by default.  Add the <a href="compile.html#enable_json1">-DSQLITE_ENABLE_JSON1</a> compile-time
 option to enable the json1 extension that is built into the <a href="amalgamation.html">amalgamation</a>.
 
-<h2>2.0 Interface Overview</h2>
+<h1 id="section_3">3. Interface Overview</h1>
 
 <p>
 The json1 extension (currently) stores JSON as ordinary text.
@@ -7896,7 +7949,7 @@ and BLOBs.  It is not possible to add a sixth "JSON" type.
 
 <p>
 The json1 extension does not (currently) support a binary encoding
-of JSON.  Experiments have so far been unable to find a binary encoding
+of JSON.  Experiments have been unable to find a binary encoding
 that is significantly smaller or faster than a plain text encoding.
 (The present implementation parses JSON text at over 300 MB/s.)
 All json1 functions currently throw an error if any of their
@@ -7912,7 +7965,7 @@ Once sufficient experience is gained, some kind of
 JSON extension might be folded into the SQLite core.  For now,
 JSON support remains an extension.
 
-<h3>2.1 JSON arguments</h3>
+<h2 id="section_3_1">3.1. JSON arguments</h2>
 
 <p>
 For functions that accept JSON as their first argument, that argument
@@ -7921,8 +7974,8 @@ values and NULL values are interpreted as JSON numbers and nulls, respectively.
 SQLite text values can be understood as JSON objects, arrays, or strings.
 If an SQLite text value that is not a well-formed JSON object, array, or
 string is passed into json1 function, that function will usually throw
-an error.  (An exception is the json_valid(X) 
-function which returns 1 if X is well-formed JSON and 0 if it is not.)
+an error.  (Exceptions to this rule are <a href="json1.html#jvalid">json_valid()</a> and
+<a href="json1.html#jquote">json_quote()</a>.)
 
 <p>
 For the purposes of determining validity, leading and trailing whitespace
@@ -7931,7 +7984,7 @@ with the JSON spec.  These routines accept exactly the
 <a href="http://www.rfc-editor.org/rfc/rfc7159.txt">rfc-7159 JSON syntax</a>
 &mdash; no more and no less.
 
-<h3>2.2 PATH arguments</h3>
+<h2 id="section_3_2">3.2. PATH arguments</h2>
 
 <p>
 For functions that accept PATH arguments, that PATH must be well-formed or
@@ -7940,7 +7993,7 @@ A well-formed PATH is a text value that begins with exactly one
 '$' character followed by zero or more instances
 of ".<i>objectlabel</i>" or "&#91<i>arrayindex</i>&#93".
 
-<h3>2.3 VALUE arguments</h3>
+<h2 id="section_3_3">3.3. VALUE arguments</h2>
 
 <p>
 For functions that accept "<i>value</i>" arguments (also shown as
@@ -7990,7 +8043,7 @@ regardless of where the value for that argument comes from.  But
 "<i>value</i>" arguments are only interpreted as JSON if those arguments
 come directly from another json1 function.
 
-<h3>2.4 Compatibility</h3>
+<h2 id="section_3_4">3.4. Compatibility</h2>
 
 <p>
 The json1 extension uses the <a href="c3ref/value_subtype.html">sqlite3_value_subtype()</a> and
@@ -7998,14 +8051,14 @@ The json1 extension uses the <a href="c3ref/value_subtype.html">sqlite3_value_su
 SQLite version 3.9.0.  Therefore the json1 extension will not work
 in earlier versions of SQLite.
 
-<h2>3.0 Function Details</h2>
+<h1 id="section_4">4. Function Details</h1>
 
 <p>The following sections provide additional detail on the operation of
 the various functions that are part of the json1 extension.
 
 <a name="jmini"></a>
 
-<h3>3.1 The json() function</h3>
+<h2 id="section_4_1">4.1. The json() function</h2>
 
 <p>The json(X) function verifies that its argument X is a valid
 JSON string and returns a minified version of that JSON string
@@ -8030,7 +8083,7 @@ Example:
 
 <a name="jarray"></a>
 
-<h3>3.2 The json_array() function</h3>
+<h2 id="section_4_2">4.2. The json_array() function</h2>
 
 <p>The json_array() SQL function accepts zero or more arguments and
 returns a well-formed JSON array that is composed from those arguments.
@@ -8066,7 +8119,7 @@ be used to force strings to be recognized as JSON.
 
 <a name="jarraylen"></a>
 
-<h3>3.3 The json_array_length() function</h3>
+<h2 id="section_4_3">4.3. The json_array_length() function</h2>
 
 <p>The json_array_length(X) function returns the number of elements
 in the JSON array X, or 0 if X is some kind of JSON value other
@@ -8103,7 +8156,7 @@ well-formed JSON or if P is not a well-formed path.
 
 <a name="jex"></a>
 
-<h3>3.4 The json_extract() function</h3>
+<h2 id="section_4_4">4.4. The json_extract() function</h2>
 
 <p>The json_extract(X,P1,P2,...) extracts and returns one or more 
 values from the
@@ -8149,7 +8202,7 @@ the various values.
 
 <a name="jset"></a>
 
-<h3>3.5 The json_insert(), json_replace, and json_set() functions</h3>
+<h2 id="section_4_5">4.5. The json_insert(), json_replace, and json_set() functions</h2>
 
 <p>The json_insert(), json_replace, and json_set() functions all take
 a single JSON value as their first argument followed by zero or more
@@ -8159,15 +8212,15 @@ differ only in how they deal with creating new values and overwriting
 preexisting values.
 
 <center>
-<table border=1 cellpadding=3>
+<table border="1" cellpadding="3">
 <tr>
 <th>Function<th>Overwrite if already exists?<th>Create if does not exist?
 <tr>
-<td>json_insert()<td align='center'>No<td align='center'>Yes
+<td>json_insert()<td align="'center'">No<td align="'center'">Yes
 <tr>
-<td>json_replace()<td align='center'>Yes<td align='center'>No
+<td>json_replace()<td align="'center'">Yes<td align="'center'">No
 <tr>
-<td>json_set()<td align='center'>Yes<td align='center'>Yes
+<td>json_set()<td align="'center'">Yes<td align="'center'">Yes
 </table></center>
 
 <p>The json_insert(), json_replace(), and json_set() functions always
@@ -8225,7 +8278,7 @@ argument is a BLOB.
 
 <a name="jobj"></a>
 
-<h3>3.6 The json_object() function</h3>
+<h2 id="section_4_6">4.6. The json_object() function</h2>
 
 <p>The json_object() SQL function accepts zero or more pairs of arguments
 and returns a well-formed JSON object that is composed from those arguments.
@@ -8262,7 +8315,7 @@ be used to force strings to be recognized as JSON.
 
 <a name="jrm"></a>
 
-<h3>3.7 The json_remove() function</h3>
+<h2 id="section_4_7">4.7. The json_remove() function</h2>
 
 <p>The json_remove(X,P,...) function takes a single JSON value as its
 first argument followed by zero or more path arguments.
@@ -8311,7 +8364,7 @@ path, or if any argument is a BLOB.
 
 <a name="jtype"></a>
 
-<h3>3.7 The json_type() function</h3>
+<h2 id="section_4_8">4.8. The json_type() function</h2>
 
 <p>The json_type(X) function returns the "type" of the outermost element
 of X.  The json_type(X,P) function returns the "type" of the element
@@ -8362,7 +8415,7 @@ not well-formed or is a BLOB.
 
 <a name="jvalid"></a>
 
-<h3>3.9 The json_valid() function</h3>
+<h2 id="section_4_9">4.9. The json_valid() function</h2>
 
 <p>The json_valid(X) function return 1 if the argument X is well-formed
 JSON and return 0 if the argument X is not well-formed JSON.
@@ -8379,11 +8432,30 @@ JSON and return 0 if the argument X is not well-formed JSON.
 </table></blockquote>
 
 
+<a name="jquote"></a>
+
+<h2 id="section_4_10">4.10. The json_quote() function</h2>
+
+<p>The json_quote(X) function converts the SQL value X (a number or a
+string) into its corresponding JSON representation. 
+
+<p>Examples:
+
+<blockquote><table border=0 cellpadding=0>
+<tr><td>json_quote(3.14159)</td>
+<td width='50' align='center'><b>&rarr;</b></td>
+<td>3.14159</td></tr>
+<tr><td>json_quote('verdant')</td>
+<td width='50' align='center'><b>&rarr;</b></td>
+<td>"verdant"</td></tr>
+</table></blockquote>
+
+
 <a name="jgrouparray"></a>
 <a name="jgroupobject"></a>
 
-<h3>3.10 The json_group_array() and json_group_object()
-aggregate SQL functions</h3>
+<h2 id="section_4_11">4.11. The json_group_array() and json_group_object()
+aggregate SQL functions</h2>
 
 <p>The json_group_array(X) function is an 
 <a href="lang_aggfunc.html">aggregate SQL function</a> that returns a JSON array
@@ -8396,7 +8468,7 @@ comprised of all NAME/VALUE pairs in the aggregation.
 
 <a name="jtree"></a>
 
-<h3>3.11 The json_each() and json_tree() table-valued functions</h3>
+<h2 id="section_4_12">4.12. The json_each() and json_tree() table-valued functions</h2>
 
 <p>The json_each(X) and json_tree(X) <a href="vtab.html#tabfunc2">table-valued functions</a> walk the
 JSON value provided as their first argument and return one row for each
@@ -8471,7 +8543,7 @@ the current row, or the path to the current row in the case where the
 iteration starts on a primitive type and thus only provides a single
 row of output.
 
-<h4>3.11.1 Examples using json_each() and json_tree()</h4>
+<h3 id="section_4_12_1">4.12.1. Examples using json_each() and json_tree()</h3>
 
 <p>Suppose the table "CREATE TABLE user(name,phone)" stores zero or
 more phone numbers as a JSON array object in the user.phone field.
@@ -11062,7 +11134,7 @@ behavior is undefined.
 Due to precision limitations imposed by the implementations use
 of 64-bit integers, the "unixepoch" modifier only works for
 dates between 0000-01-01 00:00:00 and 5352-11-01 10:52:47 (unix times
-of -62167219200 through 10675199167).</p>
+of -62167219200 through 106751991167).</p>
 
 <a name="localtime"></a>
 
@@ -11998,10 +12070,13 @@ formed by an explicit list of zero or more scalars or by a
 single subquery.
 When the right operand of an IN or NOT IN operator is a subquery, the
 subquery must have a single result column.
+The "subquery" on the right-hand side of an IN operator can be a
+table name or <a href="vtab.html#tabfunc2">table-valued function</a> name in which case the
+subquery is understood to be "(SELECT * FROM <i>name</i>)".
 When the right operand is an empty set, the result of IN is false and the
 result of NOT IN is true, regardless of the left operand and even if the
 left operand is NULL.
-The result of an IN or NOT IN operator is determined by the following
+<p>The result of an IN or NOT IN operator is determined by the following
 matrix:
 
 <center>
@@ -19009,12 +19084,17 @@ PRAGMA <b>main.</b>locking_mode=EXCLUSIVE;
        applications for any purpose.</p>
 <a name="pragma_secure_delete"></a>
 <hr>
-    <p>PRAGMA </b><i>schema.</i><b>secure_delete;
+    <p><b>PRAGMA </b><i>schema.</i><b>secure_delete;
      <br>PRAGMA </b><i>schema.</i><b>secure_delete = </b><i>boolean</i></p>
-    <p>Query or change the secure-delete setting. When secure-delete
+    <p>Query or change the secure-delete setting. When secure_delete is
     on, SQLite overwrites deleted content with zeros.  The default
-    setting is determined by the <a href="compile.html#secure_delete">SQLITE_SECURE_DELETE</a>
-    compile-time option.
+    setting for secure_delete is determined by the <a href="compile.html#secure_delete">SQLITE_SECURE_DELETE</a>
+    compile-time option and is normally off.  The off setting for
+    secure_delete improves performance by reducing the
+    amount of disk I/O.  Applications that wish to avoid leaving
+    forensic traces after content is deleted or updated should enable the
+    secure_delete pragma prior to performing the delete or update, or else
+    run <a href="lang_vacuum.html">VACUUM</a> after the delete or update.
 
     <p>
     When there are <a href="lang_attach.html">attached databases</a> and no database
@@ -21211,7 +21291,7 @@ a little faster and which requires no new developer thought or action.</p>
 </ul>
 Most tables in a typical SQLite database schema are rowid tables.
 
-<p>Rowid tables are distingished by the fact that they all have
+<p>Rowid tables are distinguished by the fact that they all have
 a unique, non-NULL, signed 64-bit integer <a href="lang_createtable.html#rowid">rowid</a> that is used as
 the access key for the data in the underlying <a href="fileformat2.html#btree">B-tree</a> storage engine.
 
@@ -21297,7 +21377,7 @@ The details of the interface are in the separate
 
 <h3>1.1 Typical Use Case</h3>
 
-<p>Suppose SQLite is used as the the <a href="appfileformat.html">application file format</a> for a
+<p>Suppose SQLite is used as the <a href="appfileformat.html">application file format</a> for a
 particular design application.  Two users, Alice and Bob, each start
 with a baseline design that is about a gigabyte in size.  They work
 all day, in parallel, each making their own customizations and tweaks
