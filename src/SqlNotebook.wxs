@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<!--
+SQL Notebook
+Copyright (C) 2016 Brian Luft
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<?define ProductVersion = "0.6.0"?>
+<?define ProductUpgradeCode = "1E7BF0C5-FEDF-4702-A504-6E32A7C86BA4"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+   <Product Id="*"
+            UpgradeCode="$(var.ProductUpgradeCode)"
+            Name="SQL Notebook"
+            Version="$(var.ProductVersion)"
+            Manufacturer="Brian Luft"
+            Language="1033">
+      <Package InstallerVersion="301"
+               Compressed="yes"
+               Platform="x64"
+               Description="SQL Notebook"
+               Comments="Environment for ad-hoc exploration and manipulation of tabular data."
+               />
+      <Media Id="1"
+             Cabinet="product.cab"
+             EmbedCab="yes"/>
+      <Icon Id="ProductIcon" SourceFile="SqlNotebookIcon.ico"/>
+      <Property Id="ARPPRODUCTICON" Value="ProductIcon"/>
+      <Property Id="ARPHELPLINK" Value="https://sqlnotebook.com"/>
+      <Property Id="ARPURLINFOABOUT" Value="https://sqlnotebook.com"/>
+      <Property Id="ARPNOREPAIR" Value="1"/>
+      <Property Id="ARPNOMODIFY" Value="1"/>
+      <Upgrade Id="$(var.ProductUpgradeCode)">
+         <UpgradeVersion Minimum="$(var.ProductVersion)"
+                         OnlyDetect="yes"
+                         Property="NEWERVERSIONDETECTED"/>
+         <UpgradeVersion Minimum="0.0.0"
+                         Maximum="$(var.ProductVersion)"
+                         IncludeMinimum="yes"
+                         IncludeMaximum="no"
+                         Property="OLDERVERSIONBEINGUPGRADED"/>
+      </Upgrade>
+      <Condition Message="A newer version of this software is already installed.">
+         NOT NEWERVERSIONDETECTED
+      </Condition>
+
+      <Directory Id="TARGETDIR" Name="SourceDir">
+         <Directory Id="ProgramFiles64Folder">
+            <Directory Id="INSTALLDIR" Name="SQL Notebook">
+               <Component Id="ApplicationFiles" Guid="B29C9C0A-A8ED-4328-9C0F-F62759EA9408" Win64="yes">
+                  <RegistryValue Root="HKLM"
+                                 Key="Software\SqlNotebook"
+                                 Name="ApplicationFiles_Installed"
+                                 Type="integer"
+                                 Value="1"
+                                 KeyPath="yes"/>
+
+                  <File Id="HtmlAgilityPack.dll" Source="HtmlAgilityPack.dll"/>
+                  <File Id="ICSharpCode.SharpZipLib.dll" Source="ICSharpCode.SharpZipLib.dll"/>
+                  <File Id="MySql.Data.dll" Source="MySql.Data.dll"/>
+                  <File Id="Newtonsoft.Json.dll" Source="Newtonsoft.Json.dll"/>
+                  <File Id="Npgsql.dll" Source="Npgsql.dll"/>
+                  <File Id="NPOI.dll" Source="NPOI.dll"/>
+                  <File Id="NPOI.OOXML.dll" Source="NPOI.OOXML.dll"/>
+                  <File Id="NPOI.OpenXml4Net.dll" Source="NPOI.OpenXml4Net.dll"/>
+                  <File Id="NPOI.OpenXmlFormats.dll" Source="NPOI.OpenXmlFormats.dll"/>
+                  <File Id="ScintillaNET.dll" Source="ScintillaNET.dll"/>
+                  <File Id="SqlNotebook.exe" Source="SqlNotebook.exe"/>
+                  <File Id="SqlNotebook.exe.config" Source="SqlNotebook.exe.config"/>
+                  <File Id="SqlNotebook.exe.manifest" Source="SqlNotebook.exe.manifest"/>
+                  <File Id="SqlNotebookCore.dll" Source="SqlNotebookCore.dll"/>
+                  <File Id="SqlNotebookScript.dll" Source="SqlNotebookScript.dll"/>
+                  <File Id="WeifenLuo.WinFormsUI.Docking.dll" Source="WeifenLuo.WinFormsUI.Docking.dll"/>
+                  <File Id="WeifenLuo.WinFormsUI.Docking.ThemeVS2012Light.dll" Source="WeifenLuo.WinFormsUI.Docking.ThemeVS2012Light.dll"/>
+
+                  <!--UCRT_FILES-->
+
+                  <ProgId Id="SqlNotebook.File" Description="SQL Notebook file">
+                     <Extension Id="sqlnb" ContentType="application/x-vnd.sqlnotebook-file">
+                        <Verb Id="open" Command="open" TargetFile="SqlNotebook.exe" Argument="&quot;%1&quot;"/>
+                     </Extension>
+                  </ProgId>
+
+               </Component>
+            </Directory>
+         </Directory>
+
+         <Directory Id="ProgramMenuFolder">
+            <Directory Id="ProgramMenuSubfolder" Name="SQL Notebook">
+               <Component Id="ApplicationShortcuts" Guid="83DB8BD9-1925-4C70-8F0C-75DBF4345EDE">
+                  <RegistryValue Root="HKCU"
+                                 Key="Software\SqlNotebook"
+                                 Name="ApplicationShortcuts_Installed"
+                                 Type="integer"
+                                 Value="1"
+                                 KeyPath="yes"/>
+                  <Shortcut Id="ApplicationShortcut1"
+                            Name="SQL Notebook"
+                            Description="Tool for exploring and manipulating tabular data."
+                            Target="[INSTALLDIR]SqlNotebook.exe"
+                            WorkingDirectory="INSTALLDIR"/>
+                  <RemoveFolder Id="ProgramMenuSubfolder" On="uninstall"/>
+               </Component>
+            </Directory>
+         </Directory>
+      </Directory>
+
+      <InstallExecuteSequence>
+         <RemoveExistingProducts After="InstallValidate"/>
+      </InstallExecuteSequence>
+
+      <Feature Id="DefaultFeature" Level="1">
+         <ComponentRef Id="ApplicationFiles"/>
+         <ComponentRef Id="ApplicationShortcuts"/>
+      </Feature>
+   </Product>
+</Wix>

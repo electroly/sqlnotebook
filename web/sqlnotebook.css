@@ -40,12 +40,6 @@ hr {
     color: black;
     background-color: black;
 }
-img.diagram {
-    border: 1px solid white;
-}
-a img.diagram:hover {
-    border: 1px solid #4078c0;
-}
 div.figure {
     text-align: center;
 }
@@ -88,4 +82,7 @@ h2 {
 }
 h3 {
     font-size: 18px;
+}
+img, a img {
+    border: 0;
 }
