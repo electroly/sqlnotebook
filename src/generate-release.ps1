@@ -16,6 +16,8 @@ copy "$absFolder\*.*" ..\publish-portable\
 dir ..\publish-portable\*.deploy | ForEach {Rename-Item $_.FullName $_.FullName.Replace(".deploy", "")}
 del ..\publish-portable\SqlNotebook.application
 
+copy "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\redist\x64\Microsoft.VC140.CRT\*.dll" ..\publish-portable\
+
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $inFolder = (Resolve-Path ..\publish-portable)
