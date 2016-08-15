@@ -34,7 +34,7 @@
     <WebPage>publish.html</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>0.5.0.0</ApplicationVersion>
+    <ApplicationVersion>0.6.0.0</ApplicationVersion>
     <UseApplicationTrust>true</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -458,8 +458,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -ExecutionPolicy RemoteSigned -NonInteractive -Command .'$(ProjectDir)Resources\generate-sqlite-doc-zip.ps1'
-
-
 </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
