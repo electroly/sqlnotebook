@@ -246,7 +246,10 @@ namespace SqlNotebook {
                 if (isCombo) {
                     self.BeginEdit(true);
                     self.BeginInvoke(new MethodInvoker(() => {
-                        ((ComboBox)self.EditingControl).DroppedDown = true;
+                        var editingControl = self.EditingControl as ComboBox;
+                        if (editingControl != null) {
+                            editingControl.DroppedDown = true;
+                        }
                     }));
                 }
             };
