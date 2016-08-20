@@ -19,19 +19,19 @@ article {
     margin-top: 20px;
     padding-bottom: 75px;
 }
-nav ul {
+ul#nav {
     padding-left: 0px;
     padding-top: 0px;
     margin: 0px;
 }
-nav ul li {
+ul#nav li {
     display: inline-block;
     padding-right: 15px;
 }
-nav ul li:before {
+ul#nav li:before {
     content: "➔ ";
 }
-nav ul li a {
+ul#nav li a {
     font-weight: bold;
 }
 hr {
