@@ -66,10 +66,13 @@ namespace SqlNotebook {
             _browser.Navigate(url);
             _browser.PreviewKeyDown += (sender, e) => {
                 if (e.KeyData == (Keys.Control | Keys.C)) {
+                    EnableDisableContextMenu();
                     _copyMnu.PerformClick();
                 } else if (e.KeyData == (Keys.Control | Keys.X)) {
+                    EnableDisableContextMenu();
                     _cutMnu.PerformClick();
                 } else if (e.KeyData == (Keys.Control | Keys.V)) {
+                    EnableDisableContextMenu();
                     _pasteMnu.PerformClick();
                 } else if (e.KeyData == (Keys.Control | Keys.A)) {
                     _selectAllMnu.PerformClick();
@@ -82,6 +85,10 @@ namespace SqlNotebook {
         }
 
         private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
+            EnableDisableContextMenu();
+        }
+
+        private void EnableDisableContextMenu() {
             var doc = (IHTMLDocument2)_browser.Document.DomDocument;
             _cutMnu.Enabled = doc.queryCommandEnabled("cut");
             _copyMnu.Enabled = doc.queryCommandEnabled("copy");

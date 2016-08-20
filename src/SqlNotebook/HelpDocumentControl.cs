@@ -42,12 +42,15 @@ namespace SqlNotebook {
             _browser.Navigate(initialUrl);
             _browser.PreviewKeyDown += (sender, e) => {
                 if (e.KeyData == (Keys.Control | Keys.C)) {
+                    EnableDisableContextMenu();
                     _copyMnu.PerformClick();
                 } else if (e.KeyData == (Keys.Control | Keys.A)) {
                     _selectAllMnu.PerformClick();
                 } else if (e.KeyData == (Keys.Alt | Keys.Left)) {
+                    EnableDisableContextMenu();
                     _backMnu.PerformClick();
                 } else if (e.KeyData == (Keys.Alt | Keys.Right)) {
+                    EnableDisableContextMenu();
                     _forwardMnu.PerformClick();
                 } else {
                     manager.HandleAppHotkeys(e.KeyData);
@@ -82,6 +85,10 @@ namespace SqlNotebook {
         }
 
         private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
+            EnableDisableContextMenu();
+        }
+
+        private void EnableDisableContextMenu() {
             _backMnu.Enabled = _browser.CanGoBack;
             _forwardMnu.Enabled = _browser.CanGoForward;
 

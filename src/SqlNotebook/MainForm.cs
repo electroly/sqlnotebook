@@ -197,6 +197,7 @@ namespace SqlNotebook {
                 case (Keys.Control | Keys.Shift | Keys.C): _newConsoleMnu.PerformClick(); break;
                 case (Keys.Control | Keys.Shift | Keys.S): _newScriptMnu.PerformClick(); break;
                 case Keys.F1: _viewDocMnu.PerformClick(); break;
+                case (Keys.Control | Keys.H): _searchDocMnu.PerformClick(); break;
             }
         }
 
