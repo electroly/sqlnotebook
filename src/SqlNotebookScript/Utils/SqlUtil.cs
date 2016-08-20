@@ -244,8 +244,10 @@ namespace SqlNotebookScript.Utils {
                     object converted;
                     bool error = !TryParseValue(originalValue, typeConversion, out converted);
 
-                    if (!error || ifConversionFails == IfConversionFails.ImportAsText) {
+                    if (!error) {
                         insertArgs.Add(converted);
+                    } else if (ifConversionFails == IfConversionFails.ImportAsText) {
+                        insertArgs.Add(originalValue.ToString());
                     } else if (ifConversionFails == IfConversionFails.SkipRow) {
                         skipRow = true;
                     } else if (ifConversionFails == IfConversionFails.Abort) {
