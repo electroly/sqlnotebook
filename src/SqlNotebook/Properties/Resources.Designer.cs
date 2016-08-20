@@ -246,16 +246,6 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;p&gt;&lt;span style=&quot;color: #000000;&quot;&gt;&lt;strong&gt;&lt;span style=&quot;font-family: &apos;trebuchet ms&apos;, geneva, sans-serif; font-size: 18pt;&quot;&gt;Getting Started with SQL Notebook&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
-        ///&lt;p&gt;&lt;span style=&quot;font-family: &apos;trebuchet ms&apos;, geneva, sans-serif; font-size: 10pt; color: #000000;&quot;&gt;This notebook is an SQLite database. Use the &lt;span style=&quot;color: #3366ff;&quot;&gt;CREATE&lt;/span&gt;&amp;nbsp;menu to begin adding new data and queries to the notebook. Existing files and databases can be accessed using the &lt;span style=&quot;color: #3 [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string GettingStartedHtml {
-            get {
-                return ResourceManager.GetString("GettingStartedHtml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Help {
@@ -538,7 +528,7 @@ namespace SqlNotebook.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///&lt;html oncontextmenu=&quot;return false&quot;&gt;
+        ///&lt;html&gt;
         ///&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
         ///&lt;style&gt;
         ///* { font-family: &quot;Segoe UI&quot;; font-size: 9pt; line-height: 130%; cursor: default; }
@@ -547,7 +537,7 @@ namespace SqlNotebook.Properties {
         ///&lt;/style&gt;
         ///SQL Notebook&lt;br&gt;
         ///Copyright © 2016 Brian Luft&lt;br&gt;&lt;br&gt;
-        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentat [rest of string was truncated]&quot;;.
+        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &amp;quot;Software [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ThirdPartyLicensesHtml {
             get {

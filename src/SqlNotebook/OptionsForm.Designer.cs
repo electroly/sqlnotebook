@@ -68,7 +68,6 @@
             this._autoCreateCmb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._autoCreateCmb.FormattingEnabled = true;
             this._autoCreateCmb.Items.AddRange(new object[] {
-            "\"Getting Started\" note",
             "New note",
             "New console",
             "New script"});

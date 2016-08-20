@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="AutoCreateInNewNotebooks" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">2</Value>
     </Setting>
     <Setting Name="UseExternalHelpBrowser" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

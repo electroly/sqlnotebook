@@ -238,9 +238,6 @@
   <data name="NoteEditorHtml" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\NoteEditor.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="GettingStartedHtml" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\GettingStarted.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="SimpleConsoleCss" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\simple-console\simple-console.css;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

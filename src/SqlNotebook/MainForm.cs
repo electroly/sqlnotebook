@@ -156,14 +156,6 @@ namespace SqlNotebook {
 
             if (isNew) {
                 switch (Settings.Default.AutoCreateInNewNotebooks) {
-                    case 0: // "Getting Started" note
-                        Load += (sender, e) => {
-                            var name = _manager.NewNote("Getting Started", Resources.GettingStartedHtml);
-                            OpenItem(new NotebookItem(NotebookItemType.Note, name));
-                            _isDirty.Value = false;
-                        };
-                        break;
-
                     case 1: // New note
                         Load += (sender, e) => {
                             var name = _manager.NewNote();

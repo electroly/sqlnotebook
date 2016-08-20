@@ -442,7 +442,6 @@
     <None Include="Resources\Help.css" />
     <None Include="Resources\ThirdPartyLicenses.html" />
     <None Include="Resources\NoteEditor.html" />
-    <None Include="Resources\GettingStarted.html" />
     <None Include="Resources\SqliteSiteErrorPlaceholder.png" />
     <None Include="Resources\Console.html" />
     <Content Include="SqlNotebookIcon.ico" />
