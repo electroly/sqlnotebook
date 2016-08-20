@@ -380,6 +380,7 @@
             // 
             // toolStripMenuItem1
             // 
+            this.toolStripMenuItem1.Image = global::SqlNotebook.Properties.Resources.TextImports;
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(224, 22);
             this.toolStripMenuItem1.Text = "From &file...";
@@ -592,7 +593,7 @@
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this._menuStrip;
-            this.MinimumSize = new System.Drawing.Size(523, 359);
+            this.MinimumSize = new System.Drawing.Size(540, 359);
             this.Name = "MainForm";
             this.Text = "Untitled - SQL Notebook";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);

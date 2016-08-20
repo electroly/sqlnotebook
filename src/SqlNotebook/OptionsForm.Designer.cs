@@ -73,7 +73,7 @@
             "New script"});
             this._autoCreateCmb.Location = new System.Drawing.Point(253, 10);
             this._autoCreateCmb.Name = "_autoCreateCmb";
-            this._autoCreateCmb.Size = new System.Drawing.Size(155, 23);
+            this._autoCreateCmb.Size = new System.Drawing.Size(108, 23);
             this._autoCreateCmb.TabIndex = 3;
             // 
             // _helpExternalBrowserChk
