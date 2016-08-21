@@ -10,12 +10,18 @@ $ErrorActionPreference = "Stop"
 # - Run src\generate-release.ps1
 # - Verify version, signature, and timestamp in Release\SqlNotebook.exe and .msi
 # - Update web\download.md with new version and date, also update two download links
+# - Update web\appversion.txt with new version and MSI URL
 # - Delete web\site\
 # - Run web\generate-site.ps1
 # - Open S3 Management Console in sqlnotebook.com bucket
-# - Upload Release\SqlNotebook_X_X_X_X.zip and .msi to sqlnotebook.com/install.  Make public.
-# - Upload web\site. Make public.
-# - Commit changes using commit message "Version X.X"
+# - Upload Release\SqlNotebook_X_X_X.zip and .msi to sqlnotebook.com/install.  Make public.
+# - Upload web\site to sqlnotebook.com/. Make public.
+# - Update src\chocolatey\sqlnotebook.nuspec with version
+# - Update src\chocolatey\tools\chocolateyInstall.ps1 with MSI URL
+# - Run choco pack
+# - Run choco apikey -k <chocolatey api key> -source https://chocolatey.org/
+# - Run choco push .\sqlnotebook.X.X.X.nupkg -s https://chocolatey.org/
+# - Commit changes using commit message "Version X.X.X"
 # - Push origin master
 # - Make release on GitHub
 
@@ -65,15 +71,17 @@ Set-Content "$reldir\SqlNotebook.wxs" $wxs
 
 copy -force "$srcdir\SqlNotebook\SqlNotebookIcon.ico" "$reldir\SqlNotebookIcon.ico"
 
-& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 "$reldir\SqlNotebook.exe"
+& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 "$reldir\SqlNotebook.exe" | Write-Output
 
-& "$wixdir\candle.exe" -nologo -pedantic "$reldir\SqlNotebook.wxs"
+& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 "$reldir\SqlNotebookUpdater.exe" | Write-Output
+
+& "$wixdir\candle.exe" -nologo -pedantic "$reldir\SqlNotebook.wxs" | Write-Output
 
 if (-not (Test-Path "$reldir\SqlNotebook.wixobj")) {
     throw "candle failed to produce SqlNotebook.wixobj"
 }
 
-& "$wixdir\light.exe" -nologo -pedantic "$reldir\SqlNotebook.wixobj"
+& "$wixdir\light.exe" -nologo -pedantic "$reldir\SqlNotebook.wixobj" | Write-Output
 
 if (-not (Test-Path "$reldir\SqlNotebook.msi")) {
     throw "light failed to produce SqlNotebook.msi"
@@ -82,7 +90,7 @@ if (-not (Test-Path "$reldir\SqlNotebook.msi")) {
 $msiFilePath = "$reldir\$msiFilename"
 mv "$reldir\SqlNotebook.msi" $msiFilePath
 
-& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 /d $msiFilename $msiFilePath
+& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 /d $msiFilename $msiFilePath | Write-Output
 
 #
 # Part 2: Generate ZIP

@@ -1,0 +1,2 @@
+0.6.0
+https://sqlnotebook.com/install/SQLNotebook_0_6_0.msi

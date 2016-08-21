@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlNotebookTest", "SqlNoteb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlNotebookScript", "SqlNotebookScript\SqlNotebookScript.csproj", "{2255C461-80D4-419C-AA57-60AF7D2C6305}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlNotebookUpdater", "SqlNotebookUpdater\SqlNotebookUpdater.csproj", "{D5F9A034-B7A9-444D-8D4E-8F8E55BAEEF1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -57,6 +59,10 @@ Global
 		{2255C461-80D4-419C-AA57-60AF7D2C6305}.Debug|x64.Build.0 = Debug|x64
 		{2255C461-80D4-419C-AA57-60AF7D2C6305}.Release|x64.ActiveCfg = Release|x64
 		{2255C461-80D4-419C-AA57-60AF7D2C6305}.Release|x64.Build.0 = Release|x64
+		{D5F9A034-B7A9-444D-8D4E-8F8E55BAEEF1}.Debug|x64.ActiveCfg = Debug|x64
+		{D5F9A034-B7A9-444D-8D4E-8F8E55BAEEF1}.Debug|x64.Build.0 = Debug|x64
+		{D5F9A034-B7A9-444D-8D4E-8F8E55BAEEF1}.Release|x64.ActiveCfg = Release|x64
+		{D5F9A034-B7A9-444D-8D4E-8F8E55BAEEF1}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

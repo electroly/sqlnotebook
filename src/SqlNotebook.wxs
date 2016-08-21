@@ -75,6 +75,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
                   <File Id="NPOI.OpenXml4Net.dll" Source="NPOI.OpenXml4Net.dll"/>
                   <File Id="NPOI.OpenXmlFormats.dll" Source="NPOI.OpenXmlFormats.dll"/>
                   <File Id="ScintillaNET.dll" Source="ScintillaNET.dll"/>
+                  <File Id="SqlNotebookUpdater.exe" Source="SqlNotebookUpdater.exe"/>
                   <File Id="SqlNotebook.exe" Source="SqlNotebook.exe"/>
                   <File Id="SqlNotebook.exe.config" Source="SqlNotebook.exe.config"/>
                   <File Id="SqlNotebook.exe.manifest" Source="SqlNotebook.exe.manifest"/>

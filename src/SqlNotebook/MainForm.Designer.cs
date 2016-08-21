@@ -34,6 +34,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this._statusStrip = new System.Windows.Forms.StatusStrip();
+            this._appUpdateLbl = new System.Windows.Forms.ToolStripStatusLabel();
+            this._appUpdateAcceptedLbl = new System.Windows.Forms.ToolStripStatusLabel();
             this._openTransactionLbl = new System.Windows.Forms.ToolStripStatusLabel();
             this._statusLbl = new System.Windows.Forms.ToolStripStatusLabel();
             this._cancelLnk = new System.Windows.Forms.ToolStripStatusLabel();
@@ -135,6 +137,8 @@
             this._statusStrip.BackColor = System.Drawing.SystemColors.Control;
             this._statusStrip.Dock = System.Windows.Forms.DockStyle.None;
             this._statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._appUpdateLbl,
+            this._appUpdateAcceptedLbl,
             this._openTransactionLbl,
             this._statusLbl,
             this._cancelLnk,
@@ -143,6 +147,29 @@
             this._statusStrip.Name = "_statusStrip";
             this._statusStrip.Size = new System.Drawing.Size(931, 22);
             this._statusStrip.TabIndex = 0;
+            // 
+            // _appUpdateLbl
+            // 
+            this._appUpdateLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._appUpdateLbl.IsLink = true;
+            this._appUpdateLbl.Name = "_appUpdateLbl";
+            this._appUpdateLbl.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
+            this._appUpdateLbl.Size = new System.Drawing.Size(351, 17);
+            this._appUpdateLbl.Text = "A new app version is available. Click here to install after exit.";
+            this._appUpdateLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._appUpdateLbl.Visible = false;
+            this._appUpdateLbl.Click += new System.EventHandler(this.AppUpdateLbl_Click);
+            // 
+            // _appUpdateAcceptedLbl
+            // 
+            this._appUpdateAcceptedLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._appUpdateAcceptedLbl.ForeColor = System.Drawing.Color.Gray;
+            this._appUpdateAcceptedLbl.Name = "_appUpdateAcceptedLbl";
+            this._appUpdateAcceptedLbl.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
+            this._appUpdateAcceptedLbl.Size = new System.Drawing.Size(331, 17);
+            this._appUpdateAcceptedLbl.Text = "Cool! The update will start when you exit SQL Notebook.";
+            this._appUpdateAcceptedLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._appUpdateAcceptedLbl.Visible = false;
             // 
             // _openTransactionLbl
             // 
@@ -161,7 +188,7 @@
             this._statusLbl.Image = global::SqlNotebook.Properties.Resources.Hourglass;
             this._statusLbl.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Name = "_statusLbl";
-            this._statusLbl.Size = new System.Drawing.Size(762, 17);
+            this._statusLbl.Size = new System.Drawing.Size(1, 17);
             this._statusLbl.Spring = true;
             this._statusLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Visible = false;
@@ -597,6 +624,7 @@
             this.Name = "MainForm";
             this.Text = "Untitled - SQL Notebook";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this._toolStripContainer.BottomToolStripPanel.ResumeLayout(false);
             this._toolStripContainer.BottomToolStripPanel.PerformLayout();
             this._toolStripContainer.TopToolStripPanel.ResumeLayout(false);
@@ -663,6 +691,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem _searchDocMnu;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripStatusLabel _appUpdateLbl;
+        private System.Windows.Forms.ToolStripStatusLabel _appUpdateAcceptedLbl;
     }
 }
 

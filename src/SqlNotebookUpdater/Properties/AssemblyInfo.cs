@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SQL Notebook")]
+[assembly: AssemblyTitle("SQL Notebook Updater")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SQL Notebook")]
+[assembly: AssemblyProduct("SQL Notebook Updater")]
 [assembly: AssemblyCopyright("Copyright © 2016 Brian Luft")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("4766090d-0e56-4a24-bde7-3f9fb8d37c80")]
+[assembly: Guid("d5f9a034-b7a9-444d-8d4e-8f8e55baeef1")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -33,6 +33,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
-
-// this is Application.ProductVersion
-[assembly: AssemblyFileVersion("0.6.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

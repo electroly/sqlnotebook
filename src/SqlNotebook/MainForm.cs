@@ -20,8 +20,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 using SqlNotebook.Properties;
 using SqlNotebookCore;
 using SqlNotebookScript.Utils;
@@ -42,6 +45,7 @@ namespace SqlNotebook {
         private Slot<bool> _isDirty = new Slot<bool>();
         private Slot<bool> _operationInProgress = new Slot<bool>();
         private Slot<bool> _isTransactionOpen = new Slot<bool>();
+        private bool _launchUpdaterAtExit = false;
 
         private readonly Dictionary<NotebookItem, UserControlDockContent> _openItems
             = new Dictionary<NotebookItem, UserControlDockContent>();
@@ -183,7 +187,14 @@ namespace SqlNotebook {
 
             }
 
-            Load += (sender, e) => _manager.Rescan();
+            Load += async (sender, e) => {
+                _manager.Rescan();
+
+                var updateAvailable = await IsUpdateAvailable();
+                if (updateAvailable) {
+                    _appUpdateLbl.Visible = true;
+                }
+            };
             SetTitle();
         }
 
@@ -717,6 +728,53 @@ namespace SqlNotebook {
         private void SearchDocMnu_Click(object sender, EventArgs e) {
             _searchTxt.Select();
             _searchTxt.Focus();
+        }
+
+        public async Task<bool> IsUpdateAvailable() {
+            try {
+                using (var client = new WebClient()) {
+                    var appversion = await client.DownloadStringTaskAsync(
+                        "https://sqlnotebook.com/appversion.txt?" + DateTime.Now.Date);
+                    var data = appversion.Split('\n').Select(x => x.Trim()).ToList();
+                    var version = data[0];
+                    if (Application.ProductVersion != version) {
+                        return true;
+                    }
+                }
+            } catch {
+                // bummer
+            }
+
+            return false;
+        }
+
+        public void LaunchUpdater() {
+            var exePath = Path.GetDirectoryName(Application.ExecutablePath);
+            var tempPath = Path.Combine(Path.GetTempPath(), "SqlNotebookTemp");
+            var deleteLstFilePath = Path.Combine(tempPath, "delete.lst");
+            var filename = "SqlNotebookUpdater.exe";
+            var exeFilePath = Path.Combine(exePath, filename);
+            var tempExeFilePath = Path.Combine(tempPath, filename);
+            File.AppendAllText(deleteLstFilePath, $"{tempExeFilePath}\r\n");
+            File.Copy(exeFilePath, tempExeFilePath, true);
+            var process = Process.Start(tempExeFilePath);
+            Thread.Sleep(100); // make sure the process is running so the exe won't be deleted by temp files cleanup
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e) {
+            if (_launchUpdaterAtExit) {
+                LaunchUpdater();
+            }
+        }
+
+        private async void AppUpdateLbl_Click(object sender, EventArgs e) {
+            _launchUpdaterAtExit = true;
+            _appUpdateLbl.Visible = false;
+            _appUpdateAcceptedLbl.Visible = true;
+            await Task.Run(() => Thread.Sleep(5000));
+            if (!IsDisposed) {
+                _appUpdateAcceptedLbl.Visible = false;
+            }
         }
     }
 }

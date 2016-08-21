@@ -410,6 +410,10 @@
       <Project>{2255c461-80d4-419c-aa57-60af7d2c6305}</Project>
       <Name>SqlNotebookScript</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SqlNotebookUpdater\SqlNotebookUpdater.csproj">
+      <Project>{d5f9a034-b7a9-444d-8d4e-8f8e55baeef1}</Project>
+      <Name>SqlNotebookUpdater</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6">

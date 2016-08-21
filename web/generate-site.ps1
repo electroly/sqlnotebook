@@ -168,6 +168,7 @@ New-Item site -Type Directory -ErrorAction SilentlyContinue
 New-Item site/art -Type Directory -ErrorAction SilentlyContinue
 New-Item temp -Type Directory -ErrorAction SilentlyContinue
 
+copy .\appversion.txt .\site\
 copy .\sqlnotebook.css .\site\
 copy .\art\*.* .\site\art\
 copy ..\doc\art\*.png .\site\art\
