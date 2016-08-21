@@ -23,7 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QueryDocumentControl));
             this._splitContainer = new System.Windows.Forms.SplitContainer();
             this._sqlPanel = new System.Windows.Forms.Panel();
@@ -117,8 +117,8 @@
             this._grid.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             this._grid.RowHeadersVisible = false;
             this._grid.RowHeadersWidth = 25;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._grid.RowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._grid.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this._grid.ShowCellErrors = false;
             this._grid.ShowCellToolTips = false;
@@ -210,7 +210,7 @@
             // 
             this._sendTableMnu.Image = ((System.Drawing.Image)(resources.GetObject("_sendTableMnu.Image")));
             this._sendTableMnu.Name = "_sendTableMnu";
-            this._sendTableMnu.Size = new System.Drawing.Size(165, 22);
+            this._sendTableMnu.Size = new System.Drawing.Size(219, 22);
             this._sendTableMnu.Text = "Table...";
             this._sendTableMnu.Click += new System.EventHandler(this.SendTableMnu_Click);
             // 
@@ -218,21 +218,21 @@
             // 
             this._sendNoteMnu.Image = ((System.Drawing.Image)(resources.GetObject("_sendNoteMnu.Image")));
             this._sendNoteMnu.Name = "_sendNoteMnu";
-            this._sendNoteMnu.Size = new System.Drawing.Size(165, 22);
+            this._sendNoteMnu.Size = new System.Drawing.Size(219, 22);
             this._sendNoteMnu.Text = "Note...";
             this._sendNoteMnu.Visible = false;
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(162, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(216, 6);
             this.toolStripSeparator4.Visible = false;
             // 
             // _sendCsvMnu
             // 
             this._sendCsvMnu.Image = ((System.Drawing.Image)(resources.GetObject("_sendCsvMnu.Image")));
             this._sendCsvMnu.Name = "_sendCsvMnu";
-            this._sendCsvMnu.Size = new System.Drawing.Size(165, 22);
+            this._sendCsvMnu.Size = new System.Drawing.Size(219, 22);
             this._sendCsvMnu.Text = "CSV text file...";
             this._sendCsvMnu.Visible = false;
             // 

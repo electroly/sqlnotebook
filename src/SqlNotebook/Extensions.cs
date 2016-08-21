@@ -26,6 +26,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SqlNotebookScript;
+using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {
     public static class Extensions {
@@ -289,7 +290,18 @@ namespace SqlNotebook {
             }
             foreach (var row in self.Rows) {
                 var dtRow = dt.NewRow();
-                dtRow.ItemArray = row;
+                var objs = new object[row.Length];
+                for (int i = 0; i < row.Length; i++) {
+                    objs[i] = row[i];
+
+                    var bytes = row[i] as byte[];
+                    if (bytes != null) {
+                        if (ArrayUtil.IsSqlArray(bytes)) {
+                            objs[i] = "[" + string.Join(", ", ArrayUtil.GetArrayElements(bytes)) + "]";
+                        }
+                    }
+                }
+                dtRow.ItemArray = objs;
                 dt.Rows.Add(dtRow);
             }
             return dt;

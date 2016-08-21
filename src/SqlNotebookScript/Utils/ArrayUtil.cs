@@ -22,6 +22,7 @@ using System.Text;
 namespace SqlNotebookScript.Utils {
     public static class ArrayUtil {
         // the blob format for arrays is:
+        // - 8 bytes: chars "SNB~arr~"
         // - 32-bit integer: number of elements
         // - for each element:
         //    - 32-bit integer: length of the element record to follow (excluding this size integer itself)
@@ -38,7 +39,17 @@ namespace SqlNotebookScript.Utils {
         public const byte SQLITE_BLOB = 4;
         public const byte SQLITE_NULL = 5;
 
-        // write the element records (but not the initial count)
+        private const string SENTINEL_TEXT = "SNB~arr~";
+        private static readonly byte[] _sentinel = Encoding.ASCII.GetBytes(SENTINEL_TEXT);
+        private const int SENTINEL_OFFSET = 0;
+        private static readonly int COUNT_OFFSET = SENTINEL_TEXT.Length;
+        private static readonly int DATA_OFFSET = COUNT_OFFSET + sizeof(int);
+
+        public static bool IsSqlArray(byte[] blob) {
+            return HasSentinel(blob);
+        }
+
+        // write the element records (but not the initial sentinel nor count)
         public static void ConvertToSqlArray(IReadOnlyList<object> objects, BinaryWriter writer) {
             var cbByte = sizeof(byte);
             var cbInt32 = sizeof(int);
@@ -81,10 +92,29 @@ namespace SqlNotebookScript.Utils {
         public static byte[] ConvertToSqlArray(IReadOnlyList<object> objects) {
             using (var memoryStream = new MemoryStream())
             using (var writer = new BinaryWriter(memoryStream)) {
+                writer.Write(_sentinel);
                 writer.Write((int)objects.Count);
                 ConvertToSqlArray(objects, writer);
                 return memoryStream.ToArray();
             }
+        }
+
+        private static void VerifySentinel(byte[] blob) {
+            if (!HasSentinel(blob)) {
+                throw new Exception("This blob is not an array.");
+            }
+        }
+
+        private static bool HasSentinel(byte[] blob) {
+            if (blob.Length < _sentinel.Length) {
+                return false;
+            }
+            for (int i = 0; i < _sentinel.Length; i++) {
+                if (_sentinel[i] != blob[i]) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private static int ReadInt32(byte[] blob, int offset) {
@@ -120,10 +150,11 @@ namespace SqlNotebookScript.Utils {
         }
 
         public static int GetArrayCount(byte[] arrayBlob) {
+            VerifySentinel(arrayBlob);
             if (arrayBlob.Length < sizeof(int)) {
                 throw new Exception("This blob is not an array.");
             } else {
-                return ReadInt32(arrayBlob, 0);
+                return ReadInt32(arrayBlob, COUNT_OFFSET);
             }
         }
 
@@ -171,13 +202,14 @@ namespace SqlNotebookScript.Utils {
         }
 
         public static object GetArrayElement(byte[] arrayBlob, int elementIndex) {
+            VerifySentinel(arrayBlob);
             var count = GetArrayCount(arrayBlob);
-            if (elementIndex< 0 || elementIndex >= count) {
+            if (elementIndex < 0 || elementIndex >= count) {
                 throw new Exception(
                     $"The index {elementIndex} is out of bounds for the array, which has {count} elements.");
             }
 
-            int position = sizeof(int);
+            int position = DATA_OFFSET;
             for (int i = 0; i < elementIndex; i++) {
                 // skip this element
                 var skipElementLength = ReadInt32(arrayBlob, position);
@@ -188,9 +220,10 @@ namespace SqlNotebookScript.Utils {
         }
 
         public static object[] GetArrayElements(byte[] arrayBlob) {
+            VerifySentinel(arrayBlob);
             var count = GetArrayCount(arrayBlob);
             var array = new object[count];
-            int position = sizeof(int);
+            int position = DATA_OFFSET;
             for (int i = 0; i < count; i++) {
                 array[i] = ReadArrayElement(arrayBlob, ref position);
             }
@@ -199,6 +232,7 @@ namespace SqlNotebookScript.Utils {
 
         public static byte[] SliceArrayElements(byte[] originalArrayBlob, int index, int removeElements,
         IReadOnlyList<object> insertElements) {
+            VerifySentinel(originalArrayBlob);
             var oldCount = GetArrayCount(originalArrayBlob);
             if (index < 0 || index > oldCount) {
                 throw new Exception(
@@ -213,10 +247,11 @@ namespace SqlNotebookScript.Utils {
 
             using (var memoryStream = new MemoryStream())
             using (var writer = new BinaryWriter(memoryStream)) {
+                writer.Write(_sentinel);
                 writer.Write((int)newCount);
 
                 // copy the elements up to the edit point as-is
-                int position = sizeof(int);
+                int position = DATA_OFFSET;
                 for (int i = 0; i < index; i++) {
                     var skipLength = ReadInt32(originalArrayBlob, position);
                     writer.Write(originalArrayBlob, position, sizeof(int) + skipLength);

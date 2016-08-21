@@ -20,6 +20,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using SqlNotebookScript;
+using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.Interpreter {
     public sealed class ScriptOutput {
@@ -336,8 +337,19 @@ namespace SqlNotebookScript.Interpreter {
         }
 
         private void ExecutePrintStmt(Ast.PrintStmt stmt, ScriptEnv env) {
-            var value = EvaluateExpr(stmt.Value, env).ToString();
-            env.Output.TextOutput.Add(value);
+            var value = EvaluateExpr(stmt.Value, env);
+
+            var byteArray = value as byte[];
+            if (byteArray != null) {
+                if (ArrayUtil.IsSqlArray(byteArray)) {
+                    env.Output.TextOutput.Add(
+                        "[" + string.Join(", ", ArrayUtil.GetArrayElements(byteArray)) + "]"
+                    );
+                    return;
+                }
+            }
+
+            env.Output.TextOutput.Add(value.ToString());
         }
 
         private void ExecuteExecuteStmt(Ast.ExecuteStmt stmt, ScriptEnv env) {

@@ -137,8 +137,15 @@ namespace SqlNotebook {
                         }
                         sb.Append("<tr>");
                         foreach (var cell in row) {
+                            string cellText = cell.ToString();
+                            var cellBytes = cell as byte[];
+                            if (cellBytes != null) {
+                                if (ArrayUtil.IsSqlArray(cellBytes)) {
+                                    cellText = "[" + string.Join(", ", ArrayUtil.GetArrayElements(cellBytes)) + "]";
+                                }
+                            }
                             sb.Append($"<td style=\"{cellCss}\"><font face=\"Segoe UI\" size=\"2\">" +
-                                $"{WebUtility.HtmlEncode(cell.ToString())}</font></td>");
+                                $"{WebUtility.HtmlEncode(cellText)}</font></td>");
                         }
                         sb.Append("</tr>");
                         count++;
