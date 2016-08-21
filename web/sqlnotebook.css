@@ -2,11 +2,14 @@ html {
     overflow-y: scroll;
 }
 body {
-    font-family: sans-serif;
+    font-family: 'Arimo', 'Arial', sans-serif;
     margin: 0 auto;
     width: 800px;
     line-height: 150%;
     padding-top: 15px;
+}
+pre, code, tt {
+    font-family: 'Cousine', monospace;
 }
 a, a:visited {
     color: #4078c0;
@@ -15,9 +18,12 @@ a, a:visited {
 a:hover {
     text-decoration: underline;
 }
-article {
+div#article {
     margin-top: 20px;
-    padding-bottom: 75px;
+    margin-bottom: 40px;
+}
+div#footer {
+    margin-bottom: 75px;
 }
 ul#nav {
     padding-left: 0px;
@@ -27,6 +33,7 @@ ul#nav {
 ul#nav li {
     display: inline-block;
     padding-right: 15px;
+    font-size: 16px;
 }
 ul#nav li:before {
     content: "➔ ";
@@ -37,8 +44,10 @@ ul#nav li a {
 hr {
     height: 2px;
     border-width: 0;
-    color: black;
-    background-color: black;
+    margin-left: -24px;
+    margin-right: -24px;
+    color: gray;
+    background-color: gray;
 }
 div.figure {
     text-align: center;
@@ -74,8 +83,13 @@ table {
 code {
     font-size: 11pt;
 }
-h1, h1 code {
+h1 {
     font-size: 24px;
+}
+h1 code {
+    font-size: 22px;
+    position: relative;
+    top: -1px;
 }
 h2 {
     font-size: 20px;
