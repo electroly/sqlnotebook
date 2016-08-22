@@ -36,7 +36,8 @@ ul#nav li {
     font-size: 16px;
 }
 ul#nav li:before {
-    content: "➔ ";
+    content: "✽ ";
+    color: #E0E0E0;
 }
 ul#nav li a {
     font-weight: bold;

@@ -1,11 +1,13 @@
 <style>
     h2 {
-        padding-top: 20px;
-        margin-left: -24px;
+        padding-top: 40px;
+        margin-left: -28px;
+        font-size: 24px;
     }
     h2:before {
         content: "✽ ";
         color: #2ca089;
+        font-weight: normal;
     }
     table {
         width: 100%;
@@ -40,8 +42,11 @@
         margin-right: 20px;
     }
 </style>
-<a href="art/screenshot.png" target="_blank"><img src="art/screenshot-thumb.png" align="right" style="margin-left: 10px; margin-bottom: 10px;"></a>
 SQL Notebook is a free Windows app for **exploring and manipulating tabular data**.  It is powered by a supercharged [SQLite](https://www.sqlite.org/) engine, supporting both [standard SQL](https://en.wikipedia.org/wiki/SQL-92) queries and SQL Notebook-specific commands.  Everything you need to answer analysis questions about your data, regardless of its format or origin, is built into SQL Notebook.
+
+<p style="text-align: center;">
+<img src="art/annotated-screenshot.png" alt="Annotated screenshot of SQL Notebook" style="padding-top: 20px;">
+</p>
 
 ## Easily import and export data
 - **CSV**, **JSON**, and **Excel** files can be imported into the notebook as local SQLite tables.  A graphical import wizard and `IMPORT` script commands are both available.
@@ -49,6 +54,10 @@ SQL Notebook is a free Windows app for **exploring and manipulating tabular data
 - **Microsoft SQL Server**, **PostgreSQL**, and **MySQL** tables can be linked into the notebook and queried interchangeably with local tables.  Remote data is not physically copied into the notebook file unless requested; instead, the data source is queried on-the-fly.
 
 - Tables and scripts can be exported in **CSV** format.
+
+<p style="text-align: center;">
+<img src="art/annotated-import-screenshot.png" alt="Annotated screenshot of SQL Notebook's CSV import wizard" style="padding-top: 20px;">
+</p>
 
 ## Run quick queries or write sophisticated scripts
 SQL Notebook offers two standard user interfaces for entering SQL queries:
@@ -59,11 +68,22 @@ SQL Notebook offers two standard user interfaces for entering SQL queries:
 
 Any combination of data sources can be used together in the same SQL query, including cross-file, cross-database, and cross-server queries.
 
+<p style="text-align: center;">
+<img src="art/annotated-console-script-screenshot.png" alt="Annotated screenshot of SQL Notebook's console and script interfaces">
+</p>
+
+## Document your work directly in the notebook
+User-written documents are stored directly in notebook files alongside your SQL code and data.  Standard word processing features are available: fonts, lists, text alignment, and tables.  Console and script output can be copied into a note for annotation.  By keeping your notes with your code, everything you need will be in one place should you need to revisit some work done in SQL Notebook.
+
+<p style="text-align: center;">
+<img src="art/annotated-note-screenshot.png" alt="Annotated screenshot of SQL Notebook's note interface" style="padding-top: 20px;">
+</p>
+
 ## Use familiar programming constructs
 Users with prior SQL or other programming language experience will feel right at home in SQL Notebook.  All common programming constructs from other programming languages are available, in addition to standard SQLite queries and commands.
 
 <blockquote>
-<div class="code-block">
+<div class="code-block" style="border-right: 1px solid #F0F0F0; padding-right: 10px;">
 <pre><span class="c-keyword">for</span> <em>:i</em> <span class="c-number">= 1</span> <span class="c-keyword">to</span> <span class="c-number">100</span> <span class="c-keyword">begin</span>
     <span class="c-keyword">if</span> <em>:i</em> <span class="c-keyword">%</span> 3 <span class="c-number">= 0</span> <span class="c-keyword">and</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
         <span class="c-keyword">print</span> <span class="c-string">'FizzBuzz'</span>
@@ -76,7 +96,7 @@ Users with prior SQL or other programming language experience will feel right at
 <span class="c-keyword">end</span></pre>
 </div>
 
-<div class="code-block" style="border-left: 1px solid #F0F0F0; padding-left: 20px;">
+<div class="code-block" style="padding-left: 20px;">
 <pre><span class="c-keyword">select</span>
     <span class="c-number">(</span><span class="c-keyword">case</span>
         <span class="c-keyword">when</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0</span> <span class="c-keyword">and</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
@@ -116,9 +136,6 @@ Learn more in the [documentation](doc.html):
 - Quick functions for reading files ([`LIST_FILES`](list-files-func.html), [`READ_CSV`](read-csv-func.html), [`READ_FILE`](read-file-func.html), [`DOWNLOAD`](download-func.html))
 - Date and time handling ([`DATEPART`](date-part-func.html), [`DATEADD`](date-add-func.html), [`DATEDIFF`](date-diff-func.html), [`GETDATE`](get-date-func.html))
 - Array values ([`ARRAY`](array-func.html), [`ARRAY_COUNT`](array-count-func.html), [`ARRAY_GET`](array-get-func.html), [`ARRAY_SET`](array-set-func.html))
-
-## Document your analysis findings in the notebook
-User-written documents are stored directly in notebook files alongside your SQL code and data.  Standard word processing features are available: fonts, lists, text alignment, and tables.  Console and script output can be copied into a note for annotation.  By keeping your notes with your code, everything you need will be in one place should you need to revisit some work done in SQL Notebook.
 
 ## Extensive application help is just an "F1" away
 A fully searchable in-application help system is ready to answer your questions.  Press F1 to view the index of help documents, or enter a keyword into the "Search Help" box in the upper-right corner of the SQL Notebook window.  Both SQLite and SQL Notebook documentation is included.  Every available statement and function is documented.  [The documentation is also available online](doc.html).

@@ -18,14 +18,13 @@ function MdToHtml($markdownPath) {
 }
 
 function FormatPage($title, $content, $metaDesc) {
-    $header = (ReadFile .\header.template.html)
     $tmpl = (ReadFile .\page.template.html)
     if ($title -eq "") {
         $title = "SQL Notebook"
     } else {
         $title = $title + " - SQL Notebook"
     }
-    $result = $tmpl.Replace("<!--TITLE-->", $title).Replace("<!--CONTENT-->", $content).Replace("<!--HEADER-->", $header).Replace("<!--METADESC-->", $metaDesc)
+    $result = $tmpl.Replace("<!--TITLE-->", $title).Replace("<!--CONTENT-->", $content).Replace("<!--METADESC-->", $metaDesc)
 
     if ($metaDesc -eq "") {
         $result = $result -replace "<meta name=[^<]*>",""
