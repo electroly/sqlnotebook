@@ -1,4 +1,4 @@
-Group#SQL Notebook Help#Structured Programming#^(BREAK|CONTINUE|DECLARE|EXECUTE|IF|PRINT|RETURN|SET|THROW|TRY/CATCH|WHILE) Statement$|^ERROR_.*Function$
+Group#SQL Notebook Help#Structured Programming#^(BREAK|CONTINUE|DECLARE|EXECUTE|IF|PRINT|RETURN|SET|THROW|TRY/CATCH|WHILE|FOR) Statement$|^ERROR_.*Function$
 Group#SQL Notebook Help#Import and Export Statements#^(IMPORT|EXPORT).*Statement$
 Group#SQL Notebook Help#File I/O Functions#^(READ_|LIST_FILES|LIST_XLS|DOWNLOAD).*Function$
 Group#SQL Notebook Help#Array Access Functions#^ARRAY.*Function$
