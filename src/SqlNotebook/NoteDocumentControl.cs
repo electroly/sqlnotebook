@@ -15,6 +15,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Drawing.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -69,6 +70,12 @@ namespace SqlNotebook {
                     manager.HandleAppHotkeys(e.KeyData);
                 }
             };
+
+            using (var fonts = new InstalledFontCollection()) {
+                foreach (var family in fonts.Families.OrderBy(x => x.Name)) {
+                    _fontNameCmb.Items.Add(family.Name);
+                }
+            }
 
             _browser.DocumentText = "<html><body></body></html>";
             ((IHTMLDocument2)_browser.Document.DomDocument).designMode = "On";
