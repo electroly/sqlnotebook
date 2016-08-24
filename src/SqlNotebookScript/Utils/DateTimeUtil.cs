@@ -88,5 +88,30 @@ namespace SqlNotebookScript.Utils {
                 default: throw new Exception("Internal error: unrecognized day of week number.");
             }
         }
+
+        public static DateTimeOffset TruncateDate(DatePart datePart, DateTimeOffset date) {
+            switch (datePart) {
+                case DatePart.Year: return new DateTimeOffset(date.Year, 1, 1, 0, 0, 0, date.Offset);
+                case DatePart.Quarter: return new DateTimeOffset(date.Year,
+                    (DateTimeUtil.GetQuarter(date) - 1) * 3 + 1, 1, 0, 0, 0, date.Offset);
+                case DatePart.Month: return new DateTimeOffset(date.Year, date.Month, 1, 0, 0, 0, date.Offset);
+                case DatePart.DayOfYear: case DatePart.Day: case DatePart.DayOfWeek:
+                    return new DateTimeOffset(date.Year, date.Month, date.Day, 0, 0, 0, date.Offset);
+                case DatePart.Week:
+                    while (date.DayOfWeek != CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek) {
+                        date = date.AddDays(-1);
+                    }
+                    return new DateTimeOffset(date.Year, date.Month, date.Day, 0, 0, 0, date.Offset);
+                case DatePart.Hour:
+                    return new DateTimeOffset(date.Year, date.Month, date.Day, date.Hour, 0, 0, date.Offset);
+                case DatePart.Minute:
+                    return new DateTimeOffset(date.Year, date.Month, date.Day, date.Hour, date.Minute, 0, date.Offset);
+                case DatePart.Second:
+                    return new DateTimeOffset(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second,
+                        date.Offset);
+                default:
+                    return date;
+            }
+        }
     }
 }

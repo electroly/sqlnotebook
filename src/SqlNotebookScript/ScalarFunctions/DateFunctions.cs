@@ -69,8 +69,8 @@ namespace SqlNotebookScript.ScalarFunctions {
                 return 0;
             }
 
-            startDate = TruncateDate(datePart, startDate);
-            endDate = TruncateDate(datePart, endDate);
+            startDate = DateTimeUtil.TruncateDate(datePart, startDate);
+            endDate = DateTimeUtil.TruncateDate(datePart, endDate);
 
             var span = endDate - startDate;
             var totalMonths = (endDate.Year * 12L + endDate.Month) - (startDate.Year * 12L + startDate.Month);
@@ -92,30 +92,7 @@ namespace SqlNotebookScript.ScalarFunctions {
             }
         }
 
-        private static DateTimeOffset TruncateDate(DatePart datePart, DateTimeOffset date) {
-            switch (datePart) {
-                case DatePart.Year: return new DateTimeOffset(date.Year, 1, 1, 0, 0, 0, date.Offset);
-                case DatePart.Quarter: return new DateTimeOffset(date.Year,
-                    (DateTimeUtil.GetQuarter(date) - 1) * 3 + 1, 1, 0, 0, 0, date.Offset);
-                case DatePart.Month: return new DateTimeOffset(date.Year, date.Month, 1, 0, 0, 0, date.Offset);
-                case DatePart.DayOfYear: case DatePart.Day: case DatePart.DayOfWeek:
-                    return new DateTimeOffset(date.Year, date.Month, date.Day, 0, 0, 0, date.Offset);
-                case DatePart.Week:
-                    while (date.DayOfWeek != CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek) {
-                        date = date.AddDays(-1);
-                    }
-                    return new DateTimeOffset(date.Year, date.Month, date.Day, 0, 0, 0, date.Offset);
-                case DatePart.Hour:
-                    return new DateTimeOffset(date.Year, date.Month, date.Day, date.Hour, 0, 0, date.Offset);
-                case DatePart.Minute:
-                    return new DateTimeOffset(date.Year, date.Month, date.Day, date.Hour, date.Minute, 0, date.Offset);
-                case DatePart.Second:
-                    return new DateTimeOffset(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second,
-                        date.Offset);
-                default:
-                    return date;
-            }
-        }
+
     }
 
     public sealed class DateFromPartsFunction : CustomScalarFunction {
@@ -165,6 +142,17 @@ namespace SqlNotebookScript.ScalarFunctions {
             var datePart = ArgUtil.GetDatePartArg(args[0], "date-part", Name);
             var date = ArgUtil.GetDateArg(args[1], "date", Name);
             return DateTimeUtil.GetDatePart(date, datePart);
+        }
+    }
+
+    public sealed class DateTruncFunction : CustomScalarFunction {
+        public override bool IsDeterministic => true;
+        public override string Name => "date_trunc";
+        public override int ParamCount => 2;
+        public override object Execute(IReadOnlyList<object> args) {
+            var datePart = ArgUtil.GetDatePartArg(args[0], "date-part", Name);
+            var date = ArgUtil.GetDateArg(args[1], "date", Name);
+            return DateTimeUtil.FormatDateTimeOffset(DateTimeUtil.TruncateDate(datePart, date));
         }
     }
 
