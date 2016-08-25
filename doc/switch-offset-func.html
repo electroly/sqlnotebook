@@ -1,44 +1,43 @@
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 <title>SWITCHOFFSET Function</title>
+</head>
+
+<body>
 
 <h1><code>SWITCHOFFSET</code> Function</h1>
-<p>
-Changes the time zone offset of a date/time string without affecting the date and time parts.  For instance, the string "2016-07-23 22:21:35.870 -04:00" can be converted to "2016-07-23 22:21:35.870 +05:30", using a new time zone offset of "+05:30".  This function is intended for use when a date/time was wrongly imported with an incorrect time zone, and the user wishes to change the time zone offset without changing the date and time part of the string.
-</p>
-
+<p>Changes the time zone offset of a date/time string without affecting the date and time parts. For instance, the string 
+"2016-07-23 22:21:35.870 -04:00" can be converted to "2016-07-23 22:21:35.870 +05:30", using a new time zone offset of "+05:30". 
+This function is intended for use when a date/time was wrongly imported with an incorrect time zone, and the user wishes 
+to change the time zone offset without changing the date and time part of the string. </p>
 <h2>Syntax</h2>
 <blockquote>
-<code>SWITCHOFFSET(<i>date</i>, <i>time-zone</i>)</code>
+    <code>SWITCHOFFSET(<i>date</i>, <i>time-zone</i>)</code>
 </blockquote>
-
 <h2>Arguments</h2>
 <ul class="args">
-    <li>
-        <b>date</b> (date/time expression)<br>
-        A text value that can be parsed into a date/time with time zone offset.  If no time zone is specified in the string, then the system's local time zone is assumed.
-    </li>
-    <li>
-        <b>time-zone</b> (integer or text expression)<br>
-        The new time zone offset.  If <i>time-zone</i> is an integer, then it is the total number of minutes in the offset (i.e. a time zone of "-04:00" is represented as -240).  If <i>time-zone</i> is a string, then it is a time zone offset formatted like "-04:30" or "+05:15".
-    </li>
+    <li><b>date</b> (date/time expression)<br>A text value that can be parsed into a date/time with time zone offset. If 
+    no time zone is specified in the string, then the system's local time zone is assumed. </li>
+    <li><b>time-zone</b> (integer or text expression)<br>The new time zone offset. If <i>time-zone</i> is an integer, then 
+    it is the total number of minutes in the offset (i.e. a time zone of "-04:00" is represented as -240). If <i>time-zone</i> 
+    is a string, then it is a time zone offset formatted like "-04:30" or "+05:15". </li>
 </ul>
-
 <h2>Return Value</h2>
 <blockquote>
-Returns a date/time string containing the original date and time with the new time zone offset.
+    Returns a date/time string containing the original date and time with the new time zone offset.
 </blockquote>
-
 <h2>Examples</h2>
 <ul class="examples">
-    <li>
-        <code>PRINT SWITCHOFFSET('2016-07-23 22:27:29.940 -06:00', '+04:00');</code><br>
-        Prints "2016-07-23 22:27:29.940 +04:00".
-    </li>
-    <li>
-        <code>PRINT SWITCHOFFSET('2016-07-23 22:27:29.940 -06:00', -240);</code><br>
-        Prints "2016-07-23 22:27:29.940 -04:00".
+    <li><code>PRINT SWITCHOFFSET('2016-07-23 22:27:29.940 -06:00', '+04:00');</code><br>Prints "2016-07-23 22:27:29.940 
+    +04:00". </li>
+    <li><code>PRINT SWITCHOFFSET('2016-07-23 22:27:29.940 -06:00', -240);</code><br>Prints "2016-07-23 22:27:29.940 -04:00".
     </li>
 </ul>
-
 <br>
 
+</body>
+
+</html>

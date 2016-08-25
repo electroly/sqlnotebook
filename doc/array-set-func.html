@@ -1,48 +1,40 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>ARRAY_SET Function</title></head>
+<!DOCTYPE html>
+<html>
 
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<title>ARRAY_SET Function</title>
+</head>
 
-<body><h1><code>ARRAY_SET</code> Function</h1>
-<p>
-Creates a new array by copying an existing array and replacing one of the elements.  The existing array is not modified.
+<body>
+
+<h1><code>ARRAY_SET</code> Function</h1>
+<p>Creates a new array by copying an existing array and replacing one of the elements. The existing array is not modified.
 </p>
-
 <h2>Syntax</h2>
 <blockquote>
-<code>ARRAY_SET(<i>array</i>, <i>element-index</i>, <i>value</i>)</code>
+    <code>ARRAY_SET(<i>array</i>, <i>element-index</i>, <i>value</i>)</code>
 </blockquote>
-
 <h2>Arguments</h2>
 <ul class="args">
-    <li>
-        <b>array</b> (blob expression)<br>
-        The existing array to copy.
+    <li><b>array</b> (blob expression)<br>The existing array to copy. </li>
+    <li><b>element-index</b> (integer expression)<br>Zero-based index into the array, specifying which element to replace.
     </li>
-    <li>
-        <b>element-index</b> (integer expression)<br>
-        Zero-based index into the array, specifying which element to replace.
-    </li>
-    <li>
-        <b>value</b> (expression)<br>
-        The replacement value.
-    </li>
+    <li><b>value</b> (expression)<br>The replacement value. </li>
 </ul>
-
 <h2>Return Value</h2>
 <blockquote>
-The new array, with the element at index <i>element-index</i> replaced with <i>value</i>.
+    The new array, with the element at index <i>element-index</i> replaced with <i>value</i>.
 </blockquote>
-
 <h2>Examples</h2>
 <ul class="examples">
-    <li>
-        <code>DECLARE @x = ARRAY_SET(</code><code><a href="array-func.html">ARRAY</a></code><code>(1, 2, 3), 2, 5)</code><br>
-        Assigns a 3-element array containing 1, 2, 5 to <code>@x</code>.
-    </li>
-    <li>
-        <code>DECLARE @x = ARRAY_SET(</code><code><a href="array-func.html">ARRAY</a></code><code>(1, 2, 3), 10, 5)</code><br>
-        Raises an error because the <i>element-index</i> is out of the array's bounds.
-    </li>
+    <li><code>DECLARE @x = ARRAY_SET(</code><code><a href="array-func.html">ARRAY</a></code><code>(1, 2, 3), 2, 5)</code><br>
+    Assigns a 3-element array containing 1, 2, 5 to <code>@x</code>. </li>
+    <li><code>DECLARE @x = ARRAY_SET(</code><code><a href="array-func.html">ARRAY</a></code><code>(1, 2, 3), 10, 5)</code><br>
+    Raises an error because the <i>element-index</i> is out of the array's bounds. </li>
 </ul>
+<br>
 
-<br></body></html>
+</body>
+
+</html>

@@ -1,29 +1,29 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>ERROR_STATE Function</title></head>
+<!DOCTYPE html>
+<html>
 
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<title>ERROR_STATE Function</title>
+</head>
 
-<body><h1><code>ERROR_STATE</code> Function</h1>
-<p>
-Returns the error state set by the last&nbsp;<a href="throw-stmt.html"><code>THROW</code></a> statement.
-</p>
+<body>
 
+<h1><code>ERROR_STATE</code> Function</h1>
+<p>Returns the error state set by the last&nbsp;<a href="throw-stmt.html"><code>THROW</code></a> statement. </p>
 <h2>Syntax</h2>
 <blockquote>
-<code>ERROR_STATE()</code>
+    <code>ERROR_STATE()</code>
 </blockquote>
-
 <h2>Return Value</h2>
-<p>
-The last error state.  This value may be of any type (not just numeric).
-</p>
-
+<p>The last error state. This value may be of any type (not just numeric). </p>
 <h2>Examples</h2>
- <ul class="examples">
+<ul class="examples">
     <li>
-<pre>BEGIN TRY  <br>    THROW 123, 'Message', 0;<br>END TRY  <br>BEGIN CATCH  <br>    PRINT ERROR_STATE();<br>END CATCH;</pre>
-        Prints 0.
-    </li>
+    <pre>BEGIN TRY  <br>    THROW 123, 'Message', 0;<br>END TRY  <br>BEGIN CATCH  <br>    PRINT ERROR_STATE();<br>END CATCH;</pre>
+    Prints 0. </li>
 </ul>
-
 <br>
-</body></html>
+
+</body>
+
+</html>

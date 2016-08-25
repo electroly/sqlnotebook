@@ -1,10 +1,38 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>THROW Statement</title></head>
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<title>THROW Statement</title>
+</head>
+
 <body>
-<h1><code>THROW</code> Statement
-</h1>Throws an error, causing code execution to jump to an enclosing <a href="try-catch-stmt.html"><code>CATCH</code></a> block. There are no restrictions on what the three parameters must be. They are returned as-is from the <a href="error-number-func.html"><code>ERROR_NUMBER</code></a>, <a href="error-message-func.html"><code>ERROR_MESSAGE</code></a>, and <a href="error-state-func.html"><code>ERROR_STATE</code></a> functions.&nbsp;The parameterless version of <code>THROW</code> causes an error to be raised without changing the existing values of&nbsp;<a href="error-number-func.html"><code>ERROR_NUMBER</code></a>, <a href="error-message-func.html"><code>ERROR_MESSAGE</code></a>, and <a href="error-state-func.html"><code>ERROR_STATE</code></a>. This allows a <code>CATCH</code> block to re-throw an error without changing it.<h2>Syntax</h2>
-<p>
-<span style="font-family: monospace;"><img style="width: 498px; height: 54px;" alt="Syntax for the THROW statement" src="art/doc-throw-stmt.png"></span><br></p>
+
+<h1><code>THROW</code> Statement </h1>
+Throws an error, causing code execution to jump to an enclosing <a href="try-catch-stmt.html"><code>CATCH</code></a> block. 
+There are no restrictions on what the three parameters must be. They are returned as-is from the
+<a href="error-number-func.html"><code>ERROR_NUMBER</code></a>, <a href="error-message-func.html"><code>ERROR_MESSAGE</code></a>, 
+and <a href="error-state-func.html"><code>ERROR_STATE</code></a> functions.&nbsp;The parameterless version of <code>THROW</code> 
+causes an error to be raised without changing the existing values of&nbsp;<a href="error-number-func.html"><code>ERROR_NUMBER</code></a>,
+<a href="error-message-func.html"><code>ERROR_MESSAGE</code></a>, and <a href="error-state-func.html"><code>ERROR_STATE</code></a>. 
+This allows a <code>CATCH</code> block to re-throw an error without changing it.<h2>Syntax</h2>
+<p><span style="font-family: monospace;">
+<img alt="Syntax for the THROW statement" src="art/doc-throw-stmt.png" style="width: 498px; height: 54px;"></span><br>
+</p>
 <h2>Arguments</h2>
-<ul class="args"><li><span style="font-weight: bold;">error-number</span>, <span style="font-weight: bold;">error-message</span>, <span style="font-weight: bold;">error-state </span>(any expression, optional)<br>The values to be returned from the&nbsp;<a href="error-number-func.html"><code>ERROR_NUMBER</code></a>, <a href="error-message-func.html"><code>ERROR_MESSAGE</code></a>, and <a href="error-state-func.html"><code>ERROR_STATE</code></a> functions. If not provided, then the values from the last thrown error are retained.</li></ul><h2>Examples</h2><ul class="examples"><li><code>THROW 1, 'Oops', 0</code><br>Throws an error such that <code>ERROR_NUMBER()</code> returns 1, <code>ERROR_MESSAGE()</code> returns "Oops", and <code>ERROR_STATE()</code> returns 0.</li><li><code>THROW;</code><br>Re-throws the last thrown error without changing it.</li></ul></body></html>
+<ul class="args">
+    <li><span style="font-weight: bold;">error-number</span>, <span style="font-weight: bold;">error-message</span>,
+    <span style="font-weight: bold;">error-state </span>(any expression, optional)<br>The values to be returned from the&nbsp;<a href="error-number-func.html"><code>ERROR_NUMBER</code></a>,
+    <a href="error-message-func.html"><code>ERROR_MESSAGE</code></a>, and <a href="error-state-func.html"><code>ERROR_STATE</code></a> 
+    functions. If not provided, then the values from the last thrown error are retained.</li>
+</ul>
+<h2>Examples</h2>
+<ul class="examples">
+    <li><code>THROW 1, 'Oops', 0</code><br>Throws an error such that <code>ERROR_NUMBER()</code> returns 1, <code>ERROR_MESSAGE()</code> 
+    returns "Oops", and <code>ERROR_STATE()</code> returns 0.</li>
+    <li><code>THROW;</code><br>Re-throws the last thrown error without changing it.</li>
+</ul>
+
+</body>
+
+</html>

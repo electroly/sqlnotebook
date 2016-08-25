@@ -1,39 +1,60 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>DECLARE Statement</title></head>
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<title>DECLARE Statement</title>
+</head>
+
 <body>
-<h1><code>DECLARE</code> Statement
-</h1>
-<p>Creates a new variable. Variables must be declared before use.
-Variables have script scope. That is, the variable can be used anywhere
-else in the script, but it will not be visible to other scripts called
-using <a href="execute-stmt.html"><code>EXECUTE</code></a>, nor to the parent script if this
-script was itself called with <code>EXECUTE</code>. Variable
-names must begin with an at sign (<code>@</code>), dollar sign (<code>$</code>),
-or colon (<code>:</code>).
+
+<h1><code>DECLARE</code> Statement </h1>
+<p>Creates a new variable. Variables must be declared before use. Variables have script scope. That is, the variable can 
+be used anywhere else in the script, but it will not be visible to other scripts called using
+<a href="execute-stmt.html"><code>EXECUTE</code></a>, nor to the parent script if this script was itself called with
+<code>EXECUTE</code>. Variable names must begin with an at sign (<code>@</code>), dollar sign (<code>$</code>), or colon 
+(<code>:</code>). </p>
+<p>If the <code>PARAMETER</code> keyword is used, then the variable becomes a parameter to the script. If the script is 
+called using <code>EXECUTE</code>, then the caller must provide a value for this parameter unless the <code>DECLARE PARAMETER</code> 
+statement specifies an <span style="font-style: italic;">initial-value</span>. </p>
+<p>If the <code>DECLARE</code> statement does not include the <code>PARAMETER</code> keyword and does not specify an
+<span style="font-style: italic;">initial-value</span>, then the variable takes the initial value of <code>NULL</code>.
 </p>
-<p> If the <code>PARAMETER</code> keyword is used, then
-the variable becomes a parameter to the script. If the script is called
-using <code>EXECUTE</code>, then the caller must provide a
-value for this parameter unless the <code>DECLARE PARAMETER</code>
-statement specifies an <span style="font-style: italic;">initial-value</span>.
-</p>
-<p> If the <code>DECLARE</code> statement does not
-include the <code>PARAMETER</code> keyword and does not specify an <span style="font-style: italic;">initial-value</span>, then the variable takes the initial value of <code>NULL</code>.
-</p>
-<p> Unlike other popular SQL scripting languages, SQL Notebook's <code>DECLARE</code>
-statement does not require a data type to be specified. Variables follow the SQLite
-convention of allowing any data type to be stored.
-</p>
+<p>Unlike other popular SQL scripting languages, SQL Notebook's <code>DECLARE</code> statement does not require a data type 
+to be specified. Variables follow the SQLite convention of allowing any data type to be stored. </p>
 <h2>Syntax</h2>
-<p>
-<img style="width: 504px; height: 54px;" alt="Syntax for the DECLARE statement." src="art/doc-declare-stmt.png"><br></p>
+<p><img alt="Syntax for the DECLARE statement." src="art/doc-declare-stmt.png" style="width: 504px; height: 54px;"><br>
+</p>
 <h2>Arguments</h2>
-<ul class="args"><li><code style="font-weight: bold;">PARAMETER</code> (keyword)<br>If specified, then the variable is a parameter to the script, for which callers using the <code>EXECUTE</code> statement can specify an argument value. If the <span style="font-style: italic;">initial-value</span> argument is specified, then the parameter is optional and may be omitted by <code>EXECUTE</code> callers. If no <span style="font-style: italic;">initial-value</span> is specified, then callers must provide an argument value for this parameter.</li><li><span style="font-weight: bold;">variable-name</span> (identifier)<br>A name beginning with an at sign (<code>@</code>), dollar sign (<code>$</code>),
-or colon (<code>:</code>).&nbsp;The
-name must not have been previously declared in this script.&nbsp;To
-change the value of an existing variable, use the <code>SET</code> statement.</li><li><span style="font-weight: bold;">initial-value</span> (expression)<br>If provided, the variable will be assigned this value. It may be a scalar expression or a parentheses-enclosed <code>SELECT</code> statement. If not provided, the variable will be assigned a value of <code>NULL</code>. The value can be changed after declaration using the <code>SET</code> statement.</li></ul><h2>Examples</h2>
+<ul class="args">
+    <li><code style="font-weight: bold;">PARAMETER</code> (keyword)<br>If specified, then the variable is a parameter to 
+    the script, for which callers using the <code>EXECUTE</code> statement can specify an argument value. If the
+    <span style="font-style: italic;">initial-value</span> argument is specified, then the parameter is optional and may 
+    be omitted by <code>EXECUTE</code> callers. If no <span style="font-style: italic;">initial-value</span> is specified, 
+    then callers must provide an argument value for this parameter.</li>
+    <li><span style="font-weight: bold;">variable-name</span> (identifier)<br>A name beginning with an at sign (<code>@</code>), 
+    dollar sign (<code>$</code>), or colon (<code>:</code>).&nbsp;The name must not have been previously declared in this 
+    script.&nbsp;To change the value of an existing variable, use the <code>SET</code> statement.</li>
+    <li><span style="font-weight: bold;">initial-value</span> (expression)<br>If provided, the variable will be assigned 
+    this value. It may be a scalar expression or a parentheses-enclosed <code>SELECT</code> statement. If not provided, 
+    the variable will be assigned a value of <code>NULL</code>. The value can be changed after declaration using the
+    <code>SET</code> statement.</li>
+</ul>
+<h2>Examples</h2>
 <ul class="examples">
-<li><code>DECLARE @myvar = 1 + 2;</code><br>Creates a variable called <code>@myvar</code> and assigns it a value of 3.</li><li><code>DECLARE @num = (SELECT COUNT(*) FROM mytable);</code><br>Creates a variable called <code>@num</code> and sets it to the number of rows in <code>mytable</code>.</li><li><code>DECLARE @foo;</code><br>Creates a variable called <code>@foo</code> and sets it to <code>NULL</code>.</li><li><code>DECLARE PARAMETER @requiredParam;</code><br>Creates a parameter variable called <code>@requiredParam</code>. Because there is no <span style="font-style: italic;">initial-value</span> specified, the caller must provide a value for this parameter.</li><li><code>DECLARE PARAMETER @optionalParam = 5;</code><br>Creates a parameter variable called <code>@optionalParam</code>. Because an <span style="font-style: italic;">initial-value</span>
-of 5 is specified, the caller is not required to provide a value for
-this parameter, but may do so if it wants to override the default value.</li></ul></body></html>
+    <li><code>DECLARE @myvar = 1 + 2;</code><br>Creates a variable called <code>@myvar</code> and assigns it a value of 
+    3.</li>
+    <li><code>DECLARE @num = (SELECT COUNT(*) FROM mytable);</code><br>Creates a variable called <code>@num</code> and sets 
+    it to the number of rows in <code>mytable</code>.</li>
+    <li><code>DECLARE @foo;</code><br>Creates a variable called <code>@foo</code> and sets it to <code>NULL</code>.</li>
+    <li><code>DECLARE PARAMETER @requiredParam;</code><br>Creates a parameter variable called <code>@requiredParam</code>. 
+    Because there is no <span style="font-style: italic;">initial-value</span> specified, the caller must provide a value 
+    for this parameter.</li>
+    <li><code>DECLARE PARAMETER @optionalParam = 5;</code><br>Creates a parameter variable called <code>@optionalParam</code>. 
+    Because an <span style="font-style: italic;">initial-value</span> of 5 is specified, the caller is not required to provide 
+    a value for this parameter, but may do so if it wants to override the default value.</li>
+</ul>
+
+</body>
+
+</html>

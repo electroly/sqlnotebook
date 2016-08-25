@@ -1,55 +1,44 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>SPLIT Function</title></head>
+<!DOCTYPE html>
+<html>
 
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<title>SPLIT Function</title>
+</head>
 
-<body><h1><code>SPLIT</code> Function</h1>
-<p>
-Splits a string by a caller-specified separator and either returns the substrings as an <a href="array-func.html">array</a>, or returns one specific substring.
-</p>
+<body>
 
+<h1><code>SPLIT</code> Function</h1>
+<p>Splits a string by a caller-specified separator and either returns the substrings as an <a href="array-func.html">array</a>, 
+or returns one specific substring. </p>
 <h2>Syntax</h2>
 <blockquote>
-<code>SPLIT(<i>text</i>, <i>separator</i>, [<i>which-substring</i>])</code>
+    <code>SPLIT(<i>text</i>, <i>separator</i>, [<i>which-substring</i>])</code>
 </blockquote>
-
 <h2>Arguments</h2>
 <ul class="args">
-    <li>
-        <b>text</b> (string expression)<br>
-        The string to split up.
-    </li>
-    <li>
-        <b>separator</b> (string expression)<br>
-        The string that separates each substring in <i>text</i>.
-    </li>
-    <li>
-        <b>which-substring</b> (optional, integer expression, 0-∞)<br>
-        The index of the substring to return.  A <i>which-substring</i>
-value of 0 will return the first substring, 1 will return the second
-substring, and so on. If no such substring exist in the original
-string, then <code>NULL</code> is returned.
-    </li>
+    <li><b>text</b> (string expression)<br>The string to split up. </li>
+    <li><b>separator</b> (string expression)<br>The string that separates each substring in <i>text</i>. </li>
+    <li><b>which-substring</b> (optional, integer expression, 0-∞)<br>The index of the substring to return. A <i>which-substring</i> 
+    value of 0 will return the first substring, 1 will return the second substring, and so on. If no such substring exist 
+    in the original string, then <code>NULL</code> is returned. </li>
 </ul>
-
 <h2>Return Value</h2>
 <blockquote>
-If <i>which-substring</i> is provided, then the specified substring is returned.  If it is not provided, then an array of all the substrings is returned.
+    If <i>which-substring</i> is provided, then the specified substring is returned. If it is not provided, then an array 
+    of all the substrings is returned.
 </blockquote>
-
 <h2>Examples</h2>
 <ol class="examples">
-    <li>
-        <code>DECLARE @data = SPLIT('AAA|BBB|CCC', '|', 1);</code><br>
-        Assigns "BBB" to the variable <code>@data</code>.
+    <li><code>DECLARE @data = SPLIT('AAA|BBB|CCC', '|', 1);</code><br>Assigns "BBB" to the variable <code>@data</code>.
     </li>
-    <li>
-        <code>DECLARE @data = SPLIT('AAA|BBB|CCC', '|', 5);</code><br>
-        Assigns <code>NULL</code> to the variable <code>@data</code>.
+    <li><code>DECLARE @data = SPLIT('AAA|BBB|CCC', '|', 5);</code><br>Assigns <code>NULL</code> to the variable <code>@data</code>.
     </li>
-    <li>
-        <code>DECLARE @data = <a href="array-count-func.html">ARRAY_COUNT</a>(SPLIT('AAA|BBB|CCC', '|'));</code><br>
-        Assigns 3 to the variable <code>@data</code>.
-    </li>
+    <li><code>DECLARE @data = <a href="array-count-func.html">ARRAY_COUNT</a>(SPLIT('AAA|BBB|CCC', '|'));</code><br>Assigns 
+    3 to the variable <code>@data</code>. </li>
 </ol>
+<br>
 
-<br></body></html>
+</body>
+
+</html>

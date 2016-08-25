@@ -1,59 +1,39 @@
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 <title>DATETIMEFROMPARTS Function</title>
+</head>
+
+<body>
 
 <h1><code>DATETIMEFROMPARTS</code> Function</h1>
-<p>
-Returns a string formatted like "2015-12-25 06:54:47.152" based on the provided date and time values.
-</p>
-
+<p>Returns a string formatted like "2015-12-25 06:54:47.152" based on the provided date and time values. </p>
 <h2>Syntax</h2>
 <blockquote>
-<code>DATETIMEFROMPARTS(<i>year</i>, <i>month</i>, <i>day</i>, <i>hour</i>, <i>minute</i>, <i>second</i>, <i>millisecond</i>)</code>
+    <code>DATETIMEFROMPARTS(<i>year</i>, <i>month</i>, <i>day</i>, <i>hour</i>, <i>minute</i>, <i>second</i>, <i>millisecond</i>)</code>
 </blockquote>
-
 <h2>Arguments</h2>
 <ul class="args">
-    <li>
-        <b>year</b> (integer expression)<br>
-        Four-digit year.
-    </li>
-    <li>
-        <b>month</b> (integer expression, 1-12)<br>
-        Calendar month specified as a 1-based integer.
-    </li>
-    <li>
-        <b>day</b> (integer expression, 1-31)<br>
-        Day of the month specified as a 1-based integer.
-    </li>
-    <li>
-        <b>hour</b> (integer expression, 0-23)<br>
-        Clock hour expressed as a 0-based integer in 24-hour time.
-    </li>
-    <li>
-        <b>minute</b> (integer expression, 0-59)<br>
-        Clock minute.
-    </li>
-    <li>
-        <b>second</b> (integer expression, 0-59)<br>
-        Clock second.
-    </li>
-    <li>
-        <b>millisecond</b> (integer expression, 0-999)<br>
-        Clock millisecond.
-    </li>
+    <li><b>year</b> (integer expression)<br>Four-digit year. </li>
+    <li><b>month</b> (integer expression, 1-12)<br>Calendar month specified as a 1-based integer. </li>
+    <li><b>day</b> (integer expression, 1-31)<br>Day of the month specified as a 1-based integer. </li>
+    <li><b>hour</b> (integer expression, 0-23)<br>Clock hour expressed as a 0-based integer in 24-hour time. </li>
+    <li><b>minute</b> (integer expression, 0-59)<br>Clock minute. </li>
+    <li><b>second</b> (integer expression, 0-59)<br>Clock second. </li>
+    <li><b>millisecond</b> (integer expression, 0-999)<br>Clock millisecond. </li>
 </ul>
-
 <h2>Return Value</h2>
 <blockquote>
-A date/time string (without time zone offset) formatted like "2015-01-02 05:45:30.123".
+    A date/time string (without time zone offset) formatted like "2015-01-02 05:45:30.123".
 </blockquote>
-
 <h2>Examples</h2>
 <ul class="examples">
-    <li>
-        <code>PRINT DATETIMEFROMPARTS(2015, 1, 2, 5, 45, 30, 123)</code><br>
-        Prints "2015-01-02 05:45:30.123".
-    </li>
+    <li><code>PRINT DATETIMEFROMPARTS(2015, 1, 2, 5, 45, 30, 123)</code><br>Prints "2015-01-02 05:45:30.123". </li>
 </ul>
-
 <br>
+
+</body>
+
+</html>

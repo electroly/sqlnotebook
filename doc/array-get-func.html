@@ -1,44 +1,36 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>ARRAY_GET Function</title></head>
+<!DOCTYPE html>
+<html>
 
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<title>ARRAY_GET Function</title>
+</head>
 
-<body><h1><code>ARRAY_GET</code> Function</h1>
-<p>
-Retrieves an element at a specified index in an array.
-</p>
+<body>
 
+<h1><code>ARRAY_GET</code> Function</h1>
+<p>Retrieves an element at a specified index in an array. </p>
 <h2>Syntax</h2>
 <blockquote>
-<code>ARRAY_GET(<i>array</i>, <i>element-index</i>)</code>
+    <code>ARRAY_GET(<i>array</i>, <i>element-index</i>)</code>
 </blockquote>
-
 <h2>Arguments</h2>
 <ul class="args">
-    <li>
-        <b>array</b> (blob expression)<br>
-        The array from which to read an element.
-    </li>
-    <li>
-        <b>element-index</b> (integer expression)<br>
-        Zero-based index into the array.
-    </li>
+    <li><b>array</b> (blob expression)<br>The array from which to read an element. </li>
+    <li><b>element-index</b> (integer expression)<br>Zero-based index into the array. </li>
 </ul>
-
 <h2>Return Value</h2>
 <blockquote>
-The specified array element, or <code>NULL</code> if the index is outside the bounds of the array.
+    The specified array element, or <code>NULL</code> if the index is outside the bounds of the array.
 </blockquote>
-
 <h2>Examples</h2>
 <ul class="examples">
-    <li>
-        <code>PRINT ARRAY_GET(<a href="array-func.html">ARRAY</a>(1, 2, 3), 2)</code><br>
-        Prints 3.
-    </li>
-    <li>
-        <code>DECLARE @x = ARRAY_GET(<a href="array-func.html">ARRAY</a>(1, 2, 3), 10)</code><br>
-        Assigns <code>NULL</code> to <code>@x</code>.
-    </li>
+    <li><code>PRINT ARRAY_GET(<a href="array-func.html">ARRAY</a>(1, 2, 3), 2)</code><br>Prints 3. </li>
+    <li><code>DECLARE @x = ARRAY_GET(<a href="array-func.html">ARRAY</a>(1, 2, 3), 10)</code><br>Assigns <code>NULL</code> 
+    to <code>@x</code>. </li>
 </ul>
+<br>
 
-<br></body></html>
+</body>
+
+</html>

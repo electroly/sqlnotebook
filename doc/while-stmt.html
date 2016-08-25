@@ -1,10 +1,33 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>WHILE Statement</title></head>
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<title>WHILE Statement</title>
+</head>
+
 <body>
-<h1><code>WHILE</code> Statement
-</h1>Repeatedly executes the provided&nbsp;statements<span style="font-style: italic;"></span> as long as the <span style="font-style: italic;">condition</span> expression evaluates to the integer 1.<br><br>The loop may be terminated without regard to the expression by using the <a href="break-stmt.html"><code>BREAK</code></a> statement. The loop may be restarted by using the <a href="continue-stmt.html"><code>CONTINUE</code></a> statement.<h2>Syntax</h2>
-<p>
-<img style="width: 414px; height: 91px;" alt="Syntax for the WHILE statement" src="art/doc-while-stmt.png"><br></p>
+
+<h1><code>WHILE</code> Statement </h1>
+Repeatedly executes the provided&nbsp;statements<span style="font-style: italic;"></span> as long as the
+<span style="font-style: italic;">condition</span> expression evaluates to the integer 1.<br><br>The loop may be terminated 
+without regard to the expression by using the <a href="break-stmt.html"><code>BREAK</code></a> statement. The loop may be 
+restarted by using the <a href="continue-stmt.html"><code>CONTINUE</code></a> statement.<h2>Syntax</h2>
+<p><img alt="Syntax for the WHILE statement" src="art/doc-while-stmt.png" style="width: 414px; height: 91px;"><br></p>
 <h2>Arguments</h2>
-<ul class="args"><li><span style="font-weight: bold;">condition</span> (integer, 0 or 1)<br>If this expression evaluates to 1, then the <span style="font-style: italic;">stmt</span> statements are executed. &nbsp;Otherwise, the loop is terminated.</li><li><span style="font-weight: bold;">stmt</span> (statement)<br>The statements to execute if the condition is 1. &nbsp;If more than one <span style="font-style: italic;">stmt</span> is desired, the <code>BEGIN</code> and <code>END</code> keywords must be used.<span style="font-weight: bold;"></span><br></li></ul><h2>Examples</h2><ul class="examples"><li><code>DECLARE @counter = 1;<br>WHILE @counter &lt;= 10 BEGIN<br>&nbsp; &nbsp; PRINT @counter;<br>&nbsp; &nbsp; SET @counter = @counter + 1;<br>END</code><br>Prints the numbers 1 to 10 in increasing order.</li></ul></body></html>
+<ul class="args">
+    <li><span style="font-weight: bold;">condition</span> (integer, 0 or 1)<br>If this expression evaluates to 1, then the
+    <span style="font-style: italic;">stmt</span> statements are executed. &nbsp;Otherwise, the loop is terminated.</li>
+    <li><span style="font-weight: bold;">stmt</span> (statement)<br>The statements to execute if the condition is 1. &nbsp;If 
+    more than one <span style="font-style: italic;">stmt</span> is desired, the <code>BEGIN</code> and <code>END</code> 
+    keywords must be used.<span style="font-weight: bold;"></span><br></li>
+</ul>
+<h2>Examples</h2>
+<ul class="examples">
+    <li><code>DECLARE @counter = 1;<br>WHILE @counter &lt;= 10 BEGIN<br>&nbsp; &nbsp; PRINT @counter;<br>&nbsp; &nbsp; SET 
+    @counter = @counter + 1;<br>END</code><br>Prints the numbers 1 to 10 in increasing order.</li>
+</ul>
+
+</body>
+
+</html>

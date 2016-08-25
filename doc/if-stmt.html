@@ -1,15 +1,40 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>IF Statement</title></head>
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<title>IF Statement</title>
+</head>
+
 <body>
-<h1><code>IF</code> Statement
-</h1>
-    Takes one code path or the other based on an SQL expression.  The <span style="font-style: italic;">condition</span> expression must evaluate to the integer 0 or 1.<h2>Syntax</h2>
-<p>
-<img style="width: 418px; height: 219px;" alt="Syntax for the IF statement" src="art/doc-if-stmt.png"><br></p>
+
+<h1><code>IF</code> Statement </h1>
+Takes one code path or the other based on an SQL expression. The <span style="font-style: italic;">condition</span> expression 
+must evaluate to the integer 0 or 1.<h2>Syntax</h2>
+<p><img alt="Syntax for the IF statement" src="art/doc-if-stmt.png" style="width: 418px; height: 219px;"><br></p>
 <h2>Arguments</h2>
-<ul class="args"><li><span style="font-weight: bold;">condition</span> (integer, 0 or 1)<br>If this expression evaluates to 1, then the <span style="font-style: italic;">stmt-if-true</span> statements are executed. &nbsp;Otherwise, the <span style="font-style: italic;">stmt-if-false</span> statements are executed.</li><li><span style="font-weight: bold;">stmt-if-true</span> (statement)<br>The statements to execute if the condition is 1. &nbsp;If more than one <span style="font-style: italic;">stmt-if-true</span> statement is desired, the <code>BEGIN</code> and <code>END</code> keywords must be used.</li><li><span style="font-weight: bold;">stmt-if-false</span> (statement)<br>The statements to execute if the
-condition is 0. &nbsp;If more than one <span style="font-style: italic;">stmt-if-false</span> statement is desired,
-the <code>BEGIN</code> and <code>END</code> keywords must be used.</li></ul><h2>Examples</h2>
+<ul class="args">
+    <li><span style="font-weight: bold;">condition</span> (integer, 0 or 1)<br>If this expression evaluates to 1, then the
+    <span style="font-style: italic;">stmt-if-true</span> statements are executed. &nbsp;Otherwise, the
+    <span style="font-style: italic;">stmt-if-false</span> statements are executed.</li>
+    <li><span style="font-weight: bold;">stmt-if-true</span> (statement)<br>The statements to execute if the condition is 
+    1. &nbsp;If more than one <span style="font-style: italic;">stmt-if-true</span> statement is desired, the <code>BEGIN</code> 
+    and <code>END</code> keywords must be used.</li>
+    <li><span style="font-weight: bold;">stmt-if-false</span> (statement)<br>The statements to execute if the condition 
+    is 0. &nbsp;If more than one <span style="font-style: italic;">stmt-if-false</span> statement is desired, the <code>
+    BEGIN</code> and <code>END</code> keywords must be used.</li>
+</ul>
+<h2>Examples</h2>
 <ul class="examples">
-<li><code>IF 1 PRINT 'Hi';</code><br>Prints "Hi".</li><li><code>IF 0 PRINT 'Hi';</code><br>Prints nothing.</li><li><code>IF 1 + 1 = 2 PRINT 'Foo' ELSE PRINT 'Bar';</code><br>Prints "Foo".</li><li><code>IF 2 &gt; 3<br>&nbsp; &nbsp; PRINT 'Foo'<br>ELSE<br>&nbsp; &nbsp; BEGIN<br>&nbsp; &nbsp; PRINT 'Bar';<br>&nbsp; &nbsp; PRINT 'Baz';<br>&nbsp; &nbsp; END</code><br>Prints "Bar" and "Baz".</li><li><code>IF @x = 'foo' PRINT 'x is foo'<br>ELSE IF @x = 'bar' PRINT 'x is bar'<br>ELSE PRINT 'x is neither foo nor bar'</code><br>Prints whether the variable <code>@x</code> is "foo", "bar", or neither.</li></ul></body></html>
+    <li><code>IF 1 PRINT 'Hi';</code><br>Prints "Hi".</li>
+    <li><code>IF 0 PRINT 'Hi';</code><br>Prints nothing.</li>
+    <li><code>IF 1 + 1 = 2 PRINT 'Foo' ELSE PRINT 'Bar';</code><br>Prints "Foo".</li>
+    <li><code>IF 2 &gt; 3<br>&nbsp; &nbsp; PRINT 'Foo'<br>ELSE<br>&nbsp; &nbsp; BEGIN<br>&nbsp; &nbsp; PRINT 'Bar';<br>&nbsp; &nbsp; 
+    PRINT 'Baz';<br>&nbsp; &nbsp; END</code><br>Prints "Bar" and "Baz".</li>
+    <li><code>IF @x = 'foo' PRINT 'x is foo'<br>ELSE IF @x = 'bar' PRINT 'x is bar'<br>ELSE PRINT 'x is neither foo nor 
+    bar'</code><br>Prints whether the variable <code>@x</code> is "foo", "bar", or neither.</li>
+</ul>
+
+</body>
+
+</html>
