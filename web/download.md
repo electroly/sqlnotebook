@@ -15,4 +15,4 @@ Alternative installation methods:
 This portable version does not require installation.  Extract the .zip to a folder of your choosing and run `SqlNotebook.exe` to begin using SQL Notebook.
 
 - **Install using [Chocolatey](https://chocolatey.org/packages/sqlnotebook)**    
-Run `choco install sqlnotebook --version 0.6.0` to install SQL Notebook.
+Run `choco install sqlnotebook` to install SQL Notebook.
