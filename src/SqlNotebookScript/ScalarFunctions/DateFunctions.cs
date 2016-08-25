@@ -243,6 +243,14 @@ namespace SqlNotebookScript.ScalarFunctions {
             => DateTimeUtil.FormatDateTimeOffset(DateTimeOffset.Now);
     }
 
+    public sealed class NowFunction : CustomScalarFunction {
+        public override bool IsDeterministic => false;
+        public override string Name => "now";
+        public override int ParamCount => 0;
+        public override object Execute(IReadOnlyList<object> args)
+            => DateTimeUtil.FormatDateTimeOffset(DateTimeOffset.Now);
+    }
+
     public sealed class GetUtcDateFunction : CustomScalarFunction {
         public override bool IsDeterministic => false;
         public override string Name => "getutcdate";
