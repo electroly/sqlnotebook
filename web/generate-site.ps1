@@ -1,6 +1,5 @@
 $ErrorActionPreference = "Stop"
 
-# must have pandoc installed.
 function ReadFile($filePath) {
     $utf8 = New-Object System.Text.UTF8Encoding($False)
     return [System.IO.File]::ReadAllText($filePath, $utf8)
@@ -11,12 +10,6 @@ function WriteFile($filePath, $text) {
     [System.IO.File]::WriteAllText($filePath, $text, $utf8)
 }
 
-function MdToHtml($markdownPath) {
-    Remove-Item .\temp\md.html -ErrorAction SilentlyContinue
-    pandoc -o .\temp\md.html "$markdownPath" | Out-Null
-    return (ReadFile .\temp\md.html)
-}
-
 function FormatPage($title, $content, $metaDesc) {
     $tmpl = (ReadFile .\page.template.html)
     if ($title -eq "") {
@@ -24,7 +17,7 @@ function FormatPage($title, $content, $metaDesc) {
     } else {
         $title = $title + " - SQL Notebook"
     }
-    $result = $tmpl.Replace("<!--TITLE-->", $title).Replace("<!--CONTENT-->", $content).Replace("<!--METADESC-->", $metaDesc)
+    $result = $tmpl.Replace("<!--TITLE-->", $title).Replace("<!--CONTENT-->", $content.Trim()).Replace("<!--METADESC-->", $metaDesc)
 
     if ($metaDesc -eq "") {
         $result = $result -replace "<meta name=[^<]*>",""
@@ -32,9 +25,12 @@ function FormatPage($title, $content, $metaDesc) {
     return $result
 }
 
-function FormatMdPage($title, $mdPath, $metaDesc) {
-    $html = (MdToHtml $mdPath)
-    return (FormatPage $title $html $metaDesc)
+function FormatHtmlPage($title, $htmlPath, $metaDesc) {
+    $html = (ReadFile $htmlPath)
+    $start = $html.IndexOf("<body>") + 6
+    $end = $html.IndexOf("</body>")
+    $body = $html.Substring($start, $end - $start)
+    return (FormatPage $title $body $metaDesc)
 }
 
 function WriteDocFiles() {
@@ -70,15 +66,15 @@ function WriteDocFiles() {
     }
 }
 
-function GenerateDocMd() {
+function GenerateTempDocHtml() {
     Add-Type @"
         using System;
         using System.Collections.Generic;
         using System.IO;
         using System.Text.RegularExpressions;
         using System.Linq;
-        public class DocMdGenerator {
-            public void WriteTempDocMd(string docPath, string webPath) {
+        public class DocHtmlGenerator {
+            public void WriteDocHtml(string docPath, string webPath) {
                 var booksTxt = File.ReadAllLines(Path.Combine(docPath, "books.txt"));
                 var groupDefs = ReadGroupDefs(booksTxt);
                 var docFilePaths = Directory.GetFiles(docPath);
@@ -100,21 +96,21 @@ function GenerateDocMd() {
                 foreach (var docFile in docFiles.OrderBy(x => x.Title)) {
                     foreach (var groupDef in groupDefs) {
                         if (groupDef.Book == "SQL Notebook Help" && groupDef.Pattern.IsMatch(docFile.Title)) {
-                            groupDef.Markdown += string.Format("    - [{0}]({1}){2}", docFile.Title, docFile.Filename, Environment.NewLine);
+                            groupDef.Html += string.Format("<li><a href=\"{0}\">{1}</a></li>", docFile.Filename, docFile.Title);
                             break;
                         }
                     }
                 }
 
-                var indexMd = "";
+                var indexHtml = "";
                 foreach (var def in groupDefs) {
                     if (def.Book == "SQL Notebook Help") {
-                        indexMd += "- **" + def.Group + "**" + Environment.NewLine + def.Markdown + "<br><br>" + Environment.NewLine;
+                        indexHtml += "<li><h3>" + def.Group + "</h3><ul>" + def.Html + "</ul>";
                     }
                 }
-                var docMd = File.ReadAllText(Path.Combine(webPath, "doc.md"));
-                docMd = docMd.Replace("#INSERT-DOC-INDEX-HERE", indexMd);
-                File.WriteAllText(Path.Combine(webPath, "temp", "doc.md"), docMd);
+                var docHtml = File.ReadAllText(Path.Combine(webPath, "doc.html"));
+                docHtml = docHtml.Replace("<!--INDEX-->", indexHtml);
+                File.WriteAllText(Path.Combine(webPath, "temp", "doc.html"), docHtml);
             }
 
             private sealed class DocFile {
@@ -126,7 +122,7 @@ function GenerateDocMd() {
                 public string Book;
                 public string Group;
                 public Regex Pattern;
-                public string Markdown = "";
+                public string Html = "";
             }
 
             private List<GroupDef> ReadGroupDefs(string[] lines) {
@@ -151,16 +147,8 @@ function GenerateDocMd() {
 
     $docPath = (Resolve-Path ..\doc)
     $webPath = (Resolve-Path ..\web)
-    $obj = New-Object DocMdGenerator
-    $obj.WriteTempDocMd($docPath, $webPath)
-}
-
-function GenerateLicenseMd() {
-    $html = (ReadFile ..\src\SqlNotebook\Resources\ThirdPartyLicenses.html)
-    $html = $html -replace "<!DOCTYPE html>",""
-    $html = $html -replace "<meta[^>]*>",""
-    $html = $html -replace "<style>[^<]*</style>",""
-    return (FormatPage "License" $html "SQL Notebook is freely available under the MIT license.")
+    $obj = New-Object DocHtmlGenerator
+    $obj.WriteDocHtml($docPath, $webPath)
 }
 
 New-Item site -Type Directory -ErrorAction SilentlyContinue
@@ -176,17 +164,13 @@ copy .\favicon.ico .\site\
 copy .\robots.txt .\site\
 copy .\sitemap.txt .\site\
 
-# markdown-based pages
-WriteFile .\site\index.html (FormatMdPage "" .\index.md "Open source tool for tabular data exploration and manipulation.")
-WriteFile .\site\license.html (FormatMdPage "License" ..\license.md "SQL Notebook is available under the MIT license.")
-WriteFile .\site\download.html (FormatMdPage "Download & Install" .\download.md "Download and install SQL Notebook on your Windows-based computer.")
+WriteFile .\site\index.html (FormatHtmlPage "" .\index.html "Open source tool for tabular data exploration and manipulation.")
+WriteFile .\site\license.html (FormatHtmlPage "License" ..\src\SqlNotebook\Resources\ThirdPartyLicenses.html "SQL Notebook is freely available under the MIT license.")
+WriteFile .\site\download.html (FormatHtmlPage "Download & Install" .\download.html "Download and install SQL Notebook on your Windows-based computer.")
 
-# the doc index page is a special case
-GenerateDocMd
-WriteFile .\site\doc.html (FormatMdPage "Documentation" .\temp\doc.md "Index of SQL Notebook user documentation.")
+# doc index page
+GenerateTempDocHtml
+WriteFile .\site\doc.html (FormatHtmlPage "Documentation" .\temp\doc.html "Index of SQL Notebook user documentation.")
 
-# the license page is a special case
-WriteFile .\site\license.html (GenerateLicenseMd)
-
-# html-based pages
+# individual doc article pages
 WriteDocFiles

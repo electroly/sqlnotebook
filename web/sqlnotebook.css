@@ -2,14 +2,14 @@ html {
     overflow-y: scroll;
 }
 body {
-    font-family: 'Arimo', 'Arial', sans-serif;
+    font-family: 'Arial', sans-serif;
     margin: 0 auto;
     width: 800px;
     line-height: 150%;
     padding-top: 15px;
 }
 pre, code, tt {
-    font-family: 'Cousine', monospace;
+    font-family: 'Consolas', 'Monaco', monospace;
 }
 a, a:visited {
     color: #4078c0;
@@ -89,8 +89,6 @@ h1 {
 }
 h1 code {
     font-size: 22px;
-    position: relative;
-    top: -1px;
 }
 h2 {
     font-size: 20px;
