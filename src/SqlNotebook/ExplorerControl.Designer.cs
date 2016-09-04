@@ -157,6 +157,7 @@
             this._imageList.Images.SetKeyName(4, "filter.png");
             this._imageList.Images.SetKeyName(5, "bullet_black.png");
             this._imageList.Images.SetKeyName(6, "bullet_key.png");
+            this._imageList.Images.SetKeyName(7, "table_link.png");
             // 
             // _splitContainer
             // 

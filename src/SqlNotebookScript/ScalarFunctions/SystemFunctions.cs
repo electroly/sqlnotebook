@@ -92,7 +92,7 @@ namespace SqlNotebookScript.ScalarFunctions {
         public override int ParamCount => 2;
         public override object Execute(IReadOnlyList<object> args) {
             var filePath = ArgUtil.GetStrArg(args[0], "file-path", Name);
-            var encodingNum = ArgUtil.GetInt32Arg(args[0], "file-encoding", Name);
+            var encodingNum = ArgUtil.GetInt32Arg(args[1], "file-encoding", Name);
             
             try {
                 if (encodingNum < 0 || encodingNum > 65535) {

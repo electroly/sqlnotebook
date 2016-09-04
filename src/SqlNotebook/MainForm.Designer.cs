@@ -188,7 +188,7 @@
             this._statusLbl.Image = global::SqlNotebook.Properties.Resources.Hourglass;
             this._statusLbl.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Name = "_statusLbl";
-            this._statusLbl.Size = new System.Drawing.Size(1, 17);
+            this._statusLbl.Size = new System.Drawing.Size(762, 17);
             this._statusLbl.Spring = true;
             this._statusLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Visible = false;
@@ -438,6 +438,7 @@
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
             this.toolStripSeparator8.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator8.Visible = false;
             // 
             // _recentFilesMnu
             // 
@@ -446,6 +447,7 @@
             this._recentFilesMnu.Name = "_recentFilesMnu";
             this._recentFilesMnu.Size = new System.Drawing.Size(224, 22);
             this._recentFilesMnu.Text = "Recent files";
+            this._recentFilesMnu.Visible = false;
             // 
             // _recentFilesNoneMnu
             // 
@@ -461,6 +463,7 @@
             this._recentServersMnu.Name = "_recentServersMnu";
             this._recentServersMnu.Size = new System.Drawing.Size(224, 22);
             this._recentServersMnu.Text = "Recent servers";
+            this._recentServersMnu.Visible = false;
             // 
             // _recentServersNoneMnu
             // 
@@ -620,7 +623,7 @@
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this._menuStrip;
-            this.MinimumSize = new System.Drawing.Size(540, 359);
+            this.MinimumSize = new System.Drawing.Size(600, 359);
             this.Name = "MainForm";
             this.Text = "Untitled - SQL Notebook";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);

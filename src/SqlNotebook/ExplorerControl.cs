@@ -68,7 +68,11 @@ namespace SqlNotebook {
                     foreach (var item in e.AddedItems) {
                         var lvi = _list.Items.Add(item.Name);
                         lvi.Group = _list.Groups[item.Type.ToString()];
-                        lvi.ImageIndex = (int)item.Type;
+                        if (item.IsVirtualTable) {
+                            lvi.ImageIndex = 7;
+                        } else {
+                            lvi.ImageIndex = (int)item.Type;
+                        }
                     }
                     _list.Sort();
                     _list.EndUpdate();

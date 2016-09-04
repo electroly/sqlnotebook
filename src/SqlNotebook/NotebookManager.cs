@@ -39,9 +39,11 @@ namespace SqlNotebook {
     public struct NotebookItem {
         public NotebookItemType Type;
         public string Name;
-        public NotebookItem(NotebookItemType type, string name) {
+        public bool IsVirtualTable;
+        public NotebookItem(NotebookItemType type, string name, bool isVirtualTable = false) {
             Type = type;
             Name = name;
+            IsVirtualTable = isVirtualTable;
         }
     }
 
@@ -171,11 +173,12 @@ namespace SqlNotebook {
             if (!notebookItemsOnly) {
                 // tables and views
                 var dt = Notebook.SpecialReadOnlyQuery(
-                    "SELECT name, type FROM sqlite_master WHERE type = 'table' OR type = 'view' ",
+                    "SELECT name, type, sql FROM sqlite_master WHERE type = 'table' OR type = 'view' ",
                     new Dictionary<string, object>());
                 for (int i = 0; i < dt.Rows.Count; i++) {
                     var type = (string)dt.Get(i, "type") == "view" ? NotebookItemType.View : NotebookItemType.Table;
-                    items.Add(new NotebookItem(type, (string)dt.Get(i, "name")));
+                    var isVirtualTable = dt.Get(i, "sql").ToString().StartsWith("CREATE VIRTUAL TABLE");
+                    items.Add(new NotebookItem(type, (string)dt.Get(i, "name"), isVirtualTable));
                 }
             }
 

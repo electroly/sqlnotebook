@@ -113,21 +113,22 @@ namespace SqlNotebook {
                 }
                 if (result.TextOutput.Any()) {
                     parts.Add(
-                        "<div style=\"overflow: hidden;\">" +
+                        "<div style=\"overflow: hidden; overflow-x: auto; padding-bottom: 18px;\"><pre style=\"margin: 0; padding: 0;\"><font face=\"Segoe UI\" size=\"2\">" +
                         string.Join("<br>", result.TextOutput.Select(WebUtility.HtmlEncode)) +
-                        "</div>"
+                        "</font></pre></div>"
                     );
                 }
                 var sb = new StringBuilder();
                 // inline the CSS so it gets included when the user copies tables to the clipboard
                 var cellCss = "border: 1px solid rgb(229, 229, 229); padding: 3px; padding-left: 6px; " +
-                    "padding-right: 6px; text-align: left; vertical-align: top; font: 'Segoe UI' 9pt;";
+                    "padding-right: 6px; text-align: left; vertical-align: top; font: 'Segoe UI' 9pt; " +
+                    "max-height: 100px; overflow-y: auto;";
                 foreach (var dt in result.DataTables) {
                     sb.Append("<div style=\"overflow-x: auto; overflow-y: hidden; padding-bottom: 18px;\">");
                     sb.Append("<table style=\"border-collapse: collapse;\"><thead><tr>");
                     foreach (var col in dt.Columns) {
-                        sb.Append($"<td style=\"{cellCss}\"><font face=\"Segoe UI\" size=\"2\"><b>" +
-                            $"{WebUtility.HtmlEncode(col)}</b></font></td>");
+                        sb.Append($"<td style=\"{cellCss}\"><pre style=\"margin: 0; padding: 0;\">" +
+                            $"<font face=\"Segoe UI\" size=\"2\"><b>{WebUtility.HtmlEncode(col)}</b></font></pre></td>");
                     }
                     sb.Append("</tr></thead><tbody>");
                     int count = 0;
@@ -144,8 +145,8 @@ namespace SqlNotebook {
                                     cellText = "[" + string.Join(", ", ArrayUtil.GetArrayElements(cellBytes)) + "]";
                                 }
                             }
-                            sb.Append($"<td style=\"{cellCss}\"><font face=\"Segoe UI\" size=\"2\">" +
-                                $"{WebUtility.HtmlEncode(cellText)}</font></td>");
+                            sb.Append($"<td style=\"{cellCss}\"><pre style=\"margin:0; padding:0;\">" +
+                                $"<font face=\"Segoe UI\" size=\"2\">{WebUtility.HtmlEncode(cellText)}</font></pre></td>");
                         }
                         sb.Append("</tr>");
                         count++;

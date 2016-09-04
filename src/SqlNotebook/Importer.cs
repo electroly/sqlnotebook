@@ -714,11 +714,11 @@ namespace SqlNotebook {
         public IReadOnlyList<string> TableNames { get; protected set; } = new string[0];
 
         public void AddToRecentlyUsed() {
-            RecentDataSources.Add(new RecentDataSource {
+            /*RecentDataSources.Add(new RecentDataSource {
                 ConnectionString = _builder.ConnectionString,
                 DisplayName = GetDisplayName(),
                 ImportSessionType = this.GetType()
-            });
+            });*/
         }
     }
 }
