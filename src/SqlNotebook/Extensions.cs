@@ -311,5 +311,59 @@ namespace SqlNotebook {
             T item;
             while (self.TryTake(out item)) { }
         }
+
+        private static void FixToolStripMargins(ToolStrip self) {
+            foreach (var menu in self.Items.OfType<ToolStripMenuItem>()) {
+                FixMenuMargins(menu);
+            }
+        }
+
+        private static void FixContextMenuMargins(ContextMenuStrip self) {
+            self.Opened += (sender, e) => {
+                var items = self.Items.OfType<ToolStripMenuItem>().Where(x => x.Visible);
+                var first = items.First();
+                var last = items.Last();
+                foreach (var item in items) {
+                    if (item == first && item == last) {
+                        item.Margin = new Padding(0, 1, 0, 1);
+                    } else if (item == first) {
+                        item.Margin = new Padding(0, 1, 0, 0);
+                    } else if (item == last) {
+                        item.Margin = new Padding(0, 0, 0, 1);
+                    } else {
+                        item.Margin = Padding.Empty;
+                    }
+                }
+            };
+        }
+
+        private static void FixMenuMargins(ToolStripMenuItem self) {
+            self.DropDownOpened += (sender, e) => {
+                var items = self.DropDownItems.OfType<ToolStripMenuItem>().Where(x => x.Visible);
+                var first = items.First();
+                var last = items.Last();
+                foreach (var item in items) {
+                    if (item == first && item == last) {
+                        item.Margin = new Padding(0, 1, 0, 1);
+                    } else if (item == first) {
+                        item.Margin = new Padding(0, 1, 0, 0);
+                    } else if (item == last) {
+                        item.Margin = new Padding(0, 0, 0, 1);
+                    } else {
+                        item.Margin = Padding.Empty;
+                    }
+                }
+            };
+        }
+
+        public static void SetMenuAppearance(this ToolStrip self) {
+            self.Renderer = new MenuRenderer();
+            FixToolStripMargins(self);
+        }
+
+        public static void SetMenuAppearance(this ContextMenuStrip self) {
+            self.Renderer = new MenuRenderer();
+            FixContextMenuMargins(self);
+        }
     }
 }

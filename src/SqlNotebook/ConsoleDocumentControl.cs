@@ -59,7 +59,7 @@ namespace SqlNotebook {
             _manager = manager;
             _notebook = manager.Notebook;
             _mainForm = mainForm;
-            _contextMenuStrip.Renderer = new MenuRenderer();
+            _contextMenuStrip.SetMenuAppearance();
             
             _server = new ConsoleServer(manager, name);
             var url = $"http://127.0.0.1:{_server.Port}/console";

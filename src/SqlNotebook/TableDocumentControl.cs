@@ -33,7 +33,7 @@ namespace SqlNotebook {
             _manager = manager;
             _tableName = tableName;
             _mainForm = mainForm;
-            _toolStrip.Renderer = new MenuRenderer();
+            _toolStrip.SetMenuAppearance();
 
             _grid.EnableDoubleBuffering();
 

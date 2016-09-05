@@ -53,7 +53,7 @@ namespace SqlNotebook {
         public MainForm(string filePath, bool isNew) {
             InitializeComponent();
 
-            _menuStrip.Renderer = new MenuRenderer();
+            _menuStrip.SetMenuAppearance();
             _menuStrip.Items.Insert(0, _searchTxt = new CueToolStripTextBox {
                 Alignment = ToolStripItemAlignment.Right,
                 CueText = "Search Help",

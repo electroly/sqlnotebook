@@ -47,7 +47,7 @@ namespace SqlNotebook {
             _notebook = manager.Notebook;
             _mainForm = mainForm;
             _operationInProgress = operationInProgress;
-            _resultToolStrip.Renderer = new MenuRenderer();
+            _resultToolStrip.SetMenuAppearance();
 
             _grid.EnableDoubleBuffering();
 

@@ -38,8 +38,8 @@ namespace SqlNotebook {
             InitializeComponent();
             ItemName = name;
             _manager = manager;
-            _toolStrip.Renderer = new MenuRenderer();
-            _contextMenuStrip.Renderer = new MenuRenderer();
+            _toolStrip.SetMenuAppearance();
+            _contextMenuStrip.SetMenuAppearance();
             _browser.PreviewKeyDown += (sender, e) => {
                 if (e.KeyData == (Keys.Control | Keys.C)) {
                     EnableDisableContextMenu();

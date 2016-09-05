@@ -26,7 +26,7 @@ namespace SqlNotebook {
             var rect = e.TextRectangle;
             var menuItem = e.Item as ToolStripMenuItem;
             if (menuItem != null && e.Text != e.Item.Text) {
-                rect.Offset(10, 0);
+                rect.Offset(10, 0); // move the accelerator key text
             }
 
             TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, rect, color, e.TextFormat);
@@ -71,6 +71,8 @@ namespace SqlNotebook {
                 e.Graphics.DrawRectangle(borderPen, rect);
                 return;
             } else {
+                rect.Y--;
+                rect.Height += 2;
                 rect.X++;
                 rect.Width--;
                 Brush brush;

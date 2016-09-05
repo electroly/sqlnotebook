@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Windows.Forms;
 using System.ComponentModel;
 
@@ -579,15 +580,37 @@ namespace WeifenLuo.WinFormsUI.Docking
             m_toolTip = new ToolTip(Components);
             m_selectMenu = new ContextMenuStrip(Components);
 
-            //CHANGED: Use custom ToolStripRenderer
+            //CHANGED: Fix menu appearance
             var theme = (VS2012LightTheme)pane.DockPanel.Theme;
             if (theme.ToolStripRenderer != null) {
                 m_selectMenu.Renderer = theme.ToolStripRenderer;
             }
+            FixContextMenuMargins(m_selectMenu);
             //CHANGED: End of inserted code
 
             ResumeLayout();
         }
+
+        //CHANGED: set menu margins
+        private static void FixContextMenuMargins(ContextMenuStrip self) {
+            self.Opened += (sender, e) => {
+                var items = self.Items.OfType<ToolStripMenuItem>().Where(x => x.Visible);
+                var first = items.First();
+                var last = items.Last();
+                foreach (var item in items) {
+                    if (item == first && item == last) {
+                        item.Margin = new Padding(0, 1, 0, 1);
+                    } else if (item == first) {
+                        item.Margin = new Padding(0, 1, 0, 0);
+                    } else if (item == last) {
+                        item.Margin = new Padding(0, 0, 0, 1);
+                    } else {
+                        item.Margin = Padding.Empty;
+                    }
+                }
+            };
+        }
+        //CHANGED: End of inserted code
 
         protected override void Dispose(bool disposing)
         {

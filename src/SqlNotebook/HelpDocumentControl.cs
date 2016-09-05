@@ -32,8 +32,8 @@ namespace SqlNotebook {
         public HelpDocumentControl(NotebookManager manager, string homeUrl, string initialUrl = "about:blank") {
             InitializeComponent();
             _homeUrl = homeUrl;
-            _toolStrip.Renderer = new MenuRenderer();
-            _contextMenuStrip.Renderer = new MenuRenderer();
+            _toolStrip.SetMenuAppearance();
+            _contextMenuStrip.SetMenuAppearance();
             _browser.DocumentTitleChanged += (sender, e) => UpdateToolbar();
             _browser.CanGoBackChanged += (sender, e) => UpdateToolbar();
             _browser.CanGoForwardChanged += (sender, e) => UpdateToolbar();

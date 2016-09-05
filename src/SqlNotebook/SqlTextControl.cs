@@ -62,7 +62,7 @@ namespace SqlNotebook {
                 ReadOnly = readOnly
             };
             _scintilla.TextChanged += (sender, e) => SqlTextChanged?.Invoke(this, EventArgs.Empty);
-            _contextMenuStrip.Renderer = new MenuRenderer();
+            _contextMenuStrip.SetMenuAppearance();
             _scintilla.ContextMenuStrip = _contextMenuStrip;
             _pasteMnu.Visible = _cutMnu.Visible = !readOnly;
 
