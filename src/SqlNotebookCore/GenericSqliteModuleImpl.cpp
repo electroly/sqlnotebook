@@ -203,11 +203,10 @@ static int GenericColumn(sqlite3_vtab_cursor* pCur, sqlite3_context* ctx, int n)
 static int GenericRowid(sqlite3_vtab_cursor* pCur, sqlite3_int64* pRowid) {
     auto cursor = (GenericCursor*)pCur;
     try {
-        Int64 hash = 0;
         auto arr = cursor->Enumerator->Current;
+        int64_t hash = 13;
         for each (auto value in arr) {
-            hash <<= 1;
-            hash |= value->GetHashCode();
+            hash = (hash * 7) + value->GetHashCode();
         }
         *pRowid = hash;
         return SQLITE_OK;

@@ -433,10 +433,9 @@ static int AdoRowid(sqlite3_vtab_cursor* pCur, sqlite3_int64* pRowid) {
     auto cursor = (AdoCursor*)pCur;
     array<Object^>^ values = gcnew array<Object^>(cursor->Table->ColumnNames->Count);
     cursor->Reader->GetValues(values);
-    int64_t hash = 0;
+    int64_t hash = 13;
     for each (auto value in values) {
-        hash ^= value->GetHashCode();
-        hash <<= 2;
+        hash = (hash * 7) + value->GetHashCode();
     }
     *pRowid = hash;
     return SQLITE_OK;
