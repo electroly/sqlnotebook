@@ -96,7 +96,7 @@ function GenerateTempDocHtml() {
                 foreach (var docFile in docFiles.OrderBy(x => x.Title)) {
                     foreach (var groupDef in groupDefs) {
                         if (groupDef.Book == "SQL Notebook Help" && groupDef.Pattern.IsMatch(docFile.Title)) {
-                            groupDef.Html += string.Format("<li><a href=\"{0}\">{1}</a></li>", docFile.Filename, docFile.Title);
+                            groupDef.Html += string.Format("<li><a href=\"{0}\">{1}</a></li>\r\n", docFile.Filename, docFile.Title);
                             break;
                         }
                     }
@@ -105,7 +105,7 @@ function GenerateTempDocHtml() {
                 var indexHtml = "";
                 foreach (var def in groupDefs) {
                     if (def.Book == "SQL Notebook Help") {
-                        indexHtml += "<li><h3>" + def.Group + "</h3><ul>" + def.Html + "</ul>";
+                        indexHtml += "<h2>" + def.Group + "</h2>\r\n<ul class=\"doc-list\">\r\n" + def.Html + "</ul>\r\n";
                     }
                 }
                 var docHtml = File.ReadAllText(Path.Combine(webPath, "doc.html"));

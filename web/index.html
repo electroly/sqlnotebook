@@ -58,23 +58,16 @@ pre {
 <a href="https://www.sqlite.org/">SQLite</a> engine, supporting both <a href="https://en.wikipedia.org/wiki/SQL-92">standard 
 SQL</a> queries and SQL Notebook-specific commands. Everything you need to answer analysis questions about your data, regardless 
 of its format or origin, is built into SQL Notebook.</p>
-<p style="text-align: center"><img alt="Annotated screenshot of SQL Notebook's application window" 
-src="art/annotated-screenshot.png" style="width: 695px; height: 326px" /></p>
+<p style="text-align: center"><a href="download.html" style="border-bottom: 2px solid #4078c0; text-decoration: none;"><strong>Download SQL Notebook</strong></a></p>
+<p style="text-align: center"><img alt="Screenshot of SQL Notebook" src="art/main-screenshot.png" 
+style="width: 736px; height: 652px">&nbsp;</p>
 <h2>Easily import and export data</h2>
-<ul>
-    <li>
-    <p><strong>CSV</strong>, <strong>JSON</strong>, and <strong>Excel</strong> files can be imported into the notebook as 
+<p><strong>CSV</strong>, <strong>JSON</strong>, and <strong>Excel</strong> files can be imported into the notebook as 
     local SQLite tables. A graphical import wizard and <code>IMPORT</code> script commands are both available.</p>
-    </li>
-    <li>
-    <p><strong>Microsoft SQL Server</strong>, <strong>PostgreSQL</strong>, and <strong>MySQL</strong> tables can be linked 
+<p><strong>Microsoft SQL Server</strong>, <strong>PostgreSQL</strong>, and <strong>MySQL</strong> tables can be linked 
     into the notebook and queried interchangeably with local tables. Remote data is not physically copied into the notebook 
     file unless requested; instead, the data source is queried on-the-fly.</p>
-    </li>
-    <li>
-    <p>Tables and scripts can be exported in <strong>CSV</strong> format.</p>
-    </li>
-</ul>
+<p>Tables and scripts can be exported in <strong>CSV</strong> format.</p>
 <p style="text-align: center"><img alt="Annotated screenshot of SQL Notebook's CSV import dialog." 
 src="art/annotated-import-screenshot.png" style="width: 747px; height: 305px" /></p>
 <h2>Run quick queries or write sophisticated scripts</h2>
@@ -93,8 +86,8 @@ src="art/annotated-import-screenshot.png" style="width: 747px; height: 305px" />
 </ul>
 <p>Any combination of data sources can be used together in the same SQL query, including cross-file, cross-database, and 
 cross-server queries.</p>
-<p style="text-align: center"><img alt="Annotated screenshot of SQL Notebook's console and script interfaces." 
-src="art/annotated-console-script-screenshot.png" style="width: 754px; height: 390px" /></p>
+<p style="text-align: center"><img alt="Annotated screenshot of SQL Notebook consoles and scripts" 
+src="art/annotated-console-script-screenshot.png?version=2" style="width: 746px; height: 350px"></p>
 <h2>Document your work directly in the notebook</h2>
 <p>User-written documents are stored directly in notebook files alongside your SQL code and data. Standard word processing 
 features are available: fonts, lists, text alignment, and tables. Console and script output can be copied into a note for 
@@ -109,7 +102,8 @@ constructs from other programming languages are available, in addition to standa
     <tr>
         <td style="border-width: 0">
         <pre><span class="c-keyword">for</span> <em>:i</em> <span class="c-number">= 1</span> <span class="c-keyword">to</span> <span 
-        class="c-number">100</span> <span class="c-keyword">begin</span>
+        class="c-number">100</span><span class="c-keyword">
+begin</span>
     <span class="c-keyword">if</span> <em>:i</em> <span class="c-keyword">%</span> 3 <span class="c-number">= 0</span> <span 
         class="c-keyword">and</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
         <span class="c-keyword">print</span> <span class="c-string">'FizzBuzz'</span>
@@ -127,9 +121,11 @@ constructs from other programming languages are available, in addition to standa
         <span class="c-keyword">when</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0</span> <span 
         class="c-keyword">and</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
             <span class="c-keyword">then</span> <span class="c-string">'FizzBuzz'</span>
-        <span class="c-keyword">when</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0</span> <span 
+        <span class="c-keyword">when</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0
+            </span><span 
         class="c-keyword">then</span> <span class="c-string">'Fizz'</span>
-        <span class="c-keyword">when</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0</span> <span 
+        <span class="c-keyword">when</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0
+            </span><span 
         class="c-keyword">then</span> <span class="c-string">'Buzz'</span>
         <span class="c-keyword">else</span> number
     <span class="c-keyword">end</span>
