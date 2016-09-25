@@ -49,7 +49,7 @@ namespace SqlNotebook {
 
             _list.GotFocus += (sender, e) => {
                 _manager.CommitOpenEditors();
-                _manager.Rescan();
+                _manager.Rescan(notebookItemsOnly: true);
             };
         }
 
@@ -92,6 +92,17 @@ namespace SqlNotebook {
             }
             var lvi = _list.SelectedItems[0];
             var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
+
+            // can't open tables or views if an operation is in progress
+            bool isTableOrView = type == NotebookItemType.Table || type == NotebookItemType.View;
+            if (isTableOrView && _operationInProgress) {
+                MessageForm.ShowError(_mainForm,
+                    "Open Item",
+                    "Cannot open tables or views while an operation is in progress.",
+                    "Please wait until the current operation finishes, and then try again.");
+                return;
+            }
+
             _manager.OpenItem(new NotebookItem(type, lvi.Text));
         }
 
