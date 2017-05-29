@@ -22,7 +22,7 @@ using namespace System::Net;
 using namespace System::Net::Sockets;
 
 static int AccessHandlerCallback(void *cls, struct MHD_Connection *connection, const char *url, const char *method,
-    const char *version, const char *upload_data, size_t *upload_data_size, void **con_cls) {
+const char *version, const char *upload_data, size_t *upload_data_size, void **con_cls) {
     HttpServer^ server = *(gcroot<HttpServer^>*)cls;
     auto e = gcnew HttpRequestEventArgs();
     e->Url = Util::Str(url);
