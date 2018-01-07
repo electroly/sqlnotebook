@@ -8,3 +8,4 @@
 *.snk binary
 *.cur binary
 *.pfx binary
+ext/* linguist-vendored
