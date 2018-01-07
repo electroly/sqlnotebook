@@ -1,5 +1,5 @@
 ﻿// SQL Notebook
-// Copyright (C) 2016 Brian Luft
+// Copyright (C) 2018 Brian Luft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 // documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -14,23 +14,14 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Windows.Forms;
-using SqlNotebookScript.Utils;
-using WeifenLuo.WinFormsUI.Docking;
+using System;
+using System.Linq;
 
-namespace SqlNotebook {
-    public partial class UserControlDockContent : DockContent {
-        public IDocumentControl Content { get; private set; }
-
-        public UserControlDockContent(string title, UserControl control, DockAreas dockAreas = DockAreas.Document) {
-            InitializeComponent();
-            Text = title.EscapeAmpersand();
-            control.Dock = DockStyle.Fill;
-            Controls.Add(control);
-            Content = control as IDocumentControl;
-
-            // disable floating windows
-            DockAreas = dockAreas;
-        }
+namespace SqlNotebookScript.Utils {
+    public static class Extensions {
+        public static string GetCombinedMessage(this Exception self) =>
+            self is AggregateException a
+            ? string.Join(Environment.NewLine, a.InnerExceptions.Select(x => x.GetCombinedMessage()))
+            : self.Message;
     }
 }

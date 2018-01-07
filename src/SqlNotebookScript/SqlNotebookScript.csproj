@@ -75,7 +75,9 @@
     <Compile Include="Interpreter\ScriptParser.cs" />
     <Compile Include="Interpreter\ScriptRunner.cs" />
     <Compile Include="ScalarFunctions\RegexpFunction.cs" />
+    <Compile Include="Utils\CsvUtil.cs" />
     <Compile Include="Utils\DateTimeUtil.cs" />
+    <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\Slot.cs" />
     <Compile Include="Interpreter\SqliteGrammar.cs" />
     <Compile Include="Interpreter\SqliteParser.cs" />

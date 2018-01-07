@@ -65,6 +65,7 @@ namespace SqlNotebook {
                         dt.Rows.Add(dtRow);
                     }
                     _grid.DataSource = dt;
+                    _grid.AutoSizeColumns();
                 } else {
                     MessageForm.ShowError(_mainForm, "Preview Table", "An error occurred.", exception.Message);
                 }

@@ -326,6 +326,16 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Magnifier {
+            get {
+                object obj = ResourceManager.GetObject("Magnifier", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap NoteAdd {
             get {
                 object obj = ResourceManager.GetObject("NoteAdd", resourceCulture);
@@ -547,8 +557,9 @@ namespace SqlNotebook.Properties {
         ///&lt;/style&gt;
         ///&lt;/head&gt;&lt;body&gt;
         ///SQL Notebook&lt;br&gt;
-        ///Copyright © 2016 Brian Luft&lt;br&gt;&lt;br&gt;
-        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation file [rest of string was truncated]&quot;;.
+        ///&lt;a href=&quot;https://sqlnotebook.com&quot; target=&quot;_blank&quot;&gt;https://sqlnotebook.com&lt;/a&gt;&lt;br&gt;
+        ///Copyright © 2016-2018 Brian Luft&lt;br&gt;&lt;br&gt;
+        ///Permission is hereby granted, free of c [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ThirdPartyLicensesHtml {
             get {

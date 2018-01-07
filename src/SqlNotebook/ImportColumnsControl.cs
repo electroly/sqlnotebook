@@ -14,6 +14,7 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -23,6 +24,7 @@ using SqlNotebookScript.Utils;
 namespace SqlNotebook {
     public partial class ImportColumnsControl : UserControl {
         private static class GridColumn {
+            public static readonly string Import = "import";
             public static readonly string SourceName = "source_name";
             public static readonly string TargetName = "target_name";
             public static readonly string Conversion = "conversion";
@@ -31,14 +33,21 @@ namespace SqlNotebook {
         private readonly DataTable _table;
         private TableSchema _targetTable; // null if the target is a new table
 
-        public IEnumerable<ImportColumn> ImportColumns => GetImportColumns();
         public NotifySlot Change = new NotifySlot();
         public Slot<bool> Error = new Slot<bool>();
+
+        public string SqlColumnList =>
+            string.Join(",\r\n",
+                from col in GetImportColumns()
+                let renamed = col.SourceName != col.TargetName && col.TargetName != null
+                select $"    {col.SourceName.DoubleQuote()}{(renamed ? " AS " + col.TargetName.DoubleQuote() : "")} {col.Conversion}"
+            );
 
         public ImportColumnsControl() {
             InitializeComponent();
 
             _table = new DataTable();
+            _table.Columns.Add(GridColumn.Import, typeof(bool));
             _table.Columns.Add(GridColumn.SourceName, typeof(string));
             _table.Columns.Add(GridColumn.TargetName, typeof(string));
             _table.Columns.Add(GridColumn.Conversion, typeof(string));
@@ -52,11 +61,21 @@ namespace SqlNotebook {
                 (sender, e) => ValidateGridInput());
         }
 
+        public void SetFixedColumnWidths(int? sourceWidth = null, int? targetWidth = null, int? conversionWidth = null) {
+            foreach (var c in _grid.Columns.Cast<DataGridViewColumn>()) {
+                c.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            }
+            _sourceNameColumn.Width = sourceWidth ?? 250;
+            _targetNameColumn.Width = targetWidth ?? 250;
+            _conversionColumn.Width = conversionWidth ?? 150;
+        }
+
         public void SetSourceColumns(IReadOnlyList<string> columnNames) {
             _table.BeginLoadData();
             _table.Clear();
             foreach (var columnName in columnNames) {
                 var row = _table.NewRow();
+                row.SetField(GridColumn.Import, true);
                 row.SetField(GridColumn.SourceName, columnName);
                 // target_name will be set by ApplyTargetToTable() below
                 row.SetField(GridColumn.Conversion, "TEXT");
@@ -103,26 +122,63 @@ namespace SqlNotebook {
         }
 
         private IEnumerable<ImportColumn> GetImportColumns() {
-            return
-                from x in _table.Rows.Cast<DataRow>()
-                select new ImportColumn {
+            var list =
+                (from x in _table.Rows.Cast<DataRow>()
+                let c = new ImportColumn {
+                    Import = x.Field<bool>(GridColumn.Import),
                     SourceName = x.Field<string>(GridColumn.SourceName),
                     TargetName = TargetNameOrNull(x.Field<string>(GridColumn.TargetName)),
                     Conversion = x.Field<string>(GridColumn.Conversion)
-                };
+                }
+                where c.Import
+                select c
+                ).ToList();
+
+            if (!list.Any()) {
+                throw new Exception("At least one column must be selected for import.");
+            }
+
+            // check for blank column names
+            var missingTargetName =
+                (from x in list
+                where string.IsNullOrWhiteSpace(x.TargetName)
+                select x.SourceName
+                ).FirstOrDefault();
+            if (missingTargetName != null) {
+                throw new Exception($"The target column name for source column \"{missingTargetName}\" must be provided.");
+            }
+
+            // check for duplicate column names
+            var duplicateName =
+                (from x in list
+                group x by x.TargetName.ToUpper().Trim() into grp
+                where grp.Count() > 1
+                select grp.Key
+                ).FirstOrDefault();
+            if (duplicateName != null) {
+                throw new Exception($"The target column name \"{duplicateName}\" is included more than once.");
+            }
+
+            return list;
         }
 
         private static string TargetNameOrNull(string name) => string.IsNullOrWhiteSpace(name) ? null : name;
 
         private void ValidateGridInput() { // true = passed validation
             var seenLowercaseTargetColumnNames = new HashSet<string>();
-            bool error = false;
+            var error = false;
             foreach (DataRow row in _table.Rows) {
+                var sourceName = row.Field<string>(GridColumn.SourceName);
                 var targetName = row.Field<string>(GridColumn.TargetName);
                 var lcTargetName = targetName?.ToLower();
                 if (string.IsNullOrWhiteSpace(targetName)) {
-                    // this is okay, the column will not be imported
-                    row.SetColumnError(GridColumn.TargetName, null);
+                    if (!row.Field<bool>(GridColumn.Import)) {
+                        // this is okay, the column will not be imported
+                        row.SetColumnError(GridColumn.TargetName, null);
+                    } else {
+                        error = true;
+                        row.SetColumnError(GridColumn.TargetName, $"No column name is specified for the source column named \"{sourceName}\".");
+                    }
                 } else if (seenLowercaseTargetColumnNames.Contains(lcTargetName)) {
                     error = true;
                     row.SetColumnError(GridColumn.TargetName, $"The column name \"{targetName}\" is already in use.");
@@ -139,6 +195,7 @@ namespace SqlNotebook {
     }
 
     public sealed class ImportColumn {
+        public bool Import { get; set; }
         public string SourceName { get; set; }
         public string TargetName { get; set; }
         public string Conversion { get; set; }

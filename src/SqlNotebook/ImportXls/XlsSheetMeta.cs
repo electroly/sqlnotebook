@@ -1,5 +1,5 @@
 ﻿// SQL Notebook
-// Copyright (C) 2016 Brian Luft
+// Copyright (C) 2018 Brian Luft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 // documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -14,23 +14,25 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Windows.Forms;
-using SqlNotebookScript.Utils;
-using WeifenLuo.WinFormsUI.Docking;
+using System;
 
-namespace SqlNotebook {
-    public partial class UserControlDockContent : DockContent {
-        public IDocumentControl Content { get; private set; }
+namespace SqlNotebook.ImportXls {
+    public sealed class XlsSheetMeta {
+        public int Index { get; set; }
+        public string OriginalName { get; set; }
+        public string NewName { get; set; }
+        public bool ToBeImported { get; set; }
 
-        public UserControlDockContent(string title, UserControl control, DockAreas dockAreas = DockAreas.Document) {
-            InitializeComponent();
-            Text = title.EscapeAmpersand();
-            control.Dock = DockStyle.Fill;
-            Controls.Add(control);
-            Content = control as IDocumentControl;
+        public ImportTableExistsOption ImportTableExists { get; set; } = ImportTableExistsOption.DropTable;
+        public string ImportTableExistsString {
+            get => ImportTableExists.GetDescription();
+            set => ImportTableExists = ImportTableExists.GetValueFromDescription(value);
+        }
 
-            // disable floating windows
-            DockAreas = dockAreas;
+        public ImportConversionFailOption ImportConversionFail { get; set; } = ImportConversionFailOption.Abort;
+        public string ImportConversionFailString {
+            get => ImportConversionFail.GetDescription();
+            set => ImportConversionFail = ImportConversionFail.GetValueFromDescription(value);
         }
     }
 }

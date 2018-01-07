@@ -130,7 +130,7 @@ namespace SqlNotebookScript.Interpreter {
                 var rows = XlsUtil.ReadSheet(sheet, _firstRowIndex, _lastRowIndex, _firstColumnIndex, _lastColumnIndex);
 
                 SqlUtil.Import(
-                    srcColNames: ReadColumnNames(rows), 
+                    srcColNames: XlsUtil.ReadColumnNames(rows, _headerRow), 
                     dataRows: rows.Skip(_headerRow ? 1 : 0),
                     importTable: _stmt.ImportTable, 
                     temporaryTable: _temporaryTable, 
@@ -140,36 +140,6 @@ namespace SqlNotebookScript.Interpreter {
                     runner: _runner,
                     env: _env);
             });
-        }
-
-        private string[] ReadColumnNames(IReadOnlyList<object[]> rows) {
-            string[] columnNames;
-            if (rows.Count == 0) {
-                columnNames = new[] { "column1" };
-            } else if (_headerRow) {
-                var originalHeader = rows[0];
-                columnNames = new string[originalHeader.Length];
-                var seenColumnNames = new HashSet<string>();
-                for (int i = 0; i < originalHeader.Length; i++) {
-                    var originalName = originalHeader[i];
-                    var isNull = originalName is DBNull || originalName == null;
-                    var prefix = isNull ? $"column{i + 1}" : originalName.ToString();
-                    var candidate = prefix;
-                    int suffix = 2;
-                    while (seenColumnNames.Contains(candidate)) {
-                        candidate = $"{prefix}{suffix++}";
-                    }
-                    seenColumnNames.Add(candidate);
-                    columnNames[i] = candidate;
-                }
-            } else {
-                columnNames = new string[rows[0].Length];
-                for (int i = 0; i < rows[0].Length; i++) {
-                    columnNames[i] = $"column{i + 1}";
-                }
-            }
-
-            return columnNames;
         }
 
         private int GetSheetIndex(IWorkbook workbook) {

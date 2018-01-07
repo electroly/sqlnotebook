@@ -1,5 +1,5 @@
 ﻿// SQL Notebook
-// Copyright (C) 2016 Brian Luft
+// Copyright (C) 2018 Brian Luft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 // documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -14,23 +14,35 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Windows.Forms;
-using SqlNotebookScript.Utils;
-using WeifenLuo.WinFormsUI.Docking;
 
-namespace SqlNotebook {
-    public partial class UserControlDockContent : DockContent {
-        public IDocumentControl Content { get; private set; }
+namespace SqlNotebook.ImportXls {
+    public partial class ImportXlsSheetsControl : UserControl {
+        private List<XlsSheetMeta> _list;
 
-        public UserControlDockContent(string title, UserControl control, DockAreas dockAreas = DockAreas.Document) {
+        public event EventHandler ValueChanged;
+
+        public ImportXlsSheetsControl() {
             InitializeComponent();
-            Text = title.EscapeAmpersand();
-            control.Dock = DockStyle.Fill;
-            Controls.Add(control);
-            Content = control as IDocumentControl;
-
-            // disable floating windows
-            DockAreas = dockAreas;
+            _grid.AutoGenerateColumns = false;
+            _grid.ApplyOneClickComboBoxFix();
+            _grid.EnableDoubleBuffering();
+            _importTableExistsColumn.Items.AddRange(
+                default(ImportTableExistsOption).GetDescriptions().Cast<object>().ToArray());
+            _onErrorColumn.Items.AddRange(
+                default(ImportConversionFailOption).GetDescriptions().Cast<object>().ToArray());
         }
+
+        public void SetWorksheetInfos(IEnumerable<XlsSheetMeta> list) {
+            _list = list.ToList();
+            _grid.DataSource = _list;
+        }
+
+        private void Grid_CellValueChanged(object sender, DataGridViewCellEventArgs e) =>
+            ValueChanged?.Invoke(this, EventArgs.Empty);
     }
 }

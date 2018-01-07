@@ -22,6 +22,8 @@ using Ast = SqlNotebookScript.Interpreter.Ast;
 
 namespace SqlNotebookScript.Utils {
     public static class SqlUtil {
+        public static string EscapeAmpersand(this string str) => str.Replace("&", "&&");
+
         public static string DoubleQuote(this string str) {
             return $"\"{str.Replace("\"", "\"\"")}\"";
         }
@@ -265,8 +267,14 @@ namespace SqlNotebookScript.Utils {
             }
         }
 
-        public static void WithTransaction(INotebook notebook, Action action) {
-            bool didBeginTransaction = false;
+        public static void WithTransaction(INotebook notebook, Action action) =>
+            WithTransactionCore(notebook, action, rollback: false);
+ 
+        public static void WithRollbackTransaction(INotebook notebook, Action action) =>
+            WithTransactionCore(notebook, action, rollback: true);
+
+        private static void WithTransactionCore(INotebook notebook, Action action, bool rollback) {
+            var didBeginTransaction = false;
             if (!notebook.IsTransactionActive()) {
                 notebook.Execute("BEGIN");
                 didBeginTransaction = true;
@@ -274,7 +282,7 @@ namespace SqlNotebookScript.Utils {
             try {
                 action();
                 if (didBeginTransaction) {
-                    notebook.Execute("COMMIT");
+                    notebook.Execute(rollback ? "ROLLBACK" : "COMMIT");
                 }
             } catch {
                 if (didBeginTransaction) {
@@ -284,14 +292,19 @@ namespace SqlNotebookScript.Utils {
             }
         }
 
-        public static T WithTransaction<T>(INotebook notebook, Func<T> func) {
+        public static T WithTransaction<T>(INotebook notebook, Func<T> func) =>
+            WithTransactionCore<T>(notebook, func, rollback: false);
+
+        public static T WithRollbackTransaction<T>(INotebook notebook, Func<T> func) =>
+            WithTransactionCore<T>(notebook, func, rollback: true);
+
+        private static T WithTransactionCore<T>(INotebook notebook, Func<T> func, bool rollback) {
             var value = default(T);
-            WithTransaction(notebook, () => {
+            WithTransactionCore(notebook, () => {
                 value = func();
-            });
+            }, rollback);
             return value;
         }
-
     }
 
     public enum IfConversionFails {

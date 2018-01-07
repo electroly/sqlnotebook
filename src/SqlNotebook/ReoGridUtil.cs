@@ -50,10 +50,10 @@ namespace SqlNotebook {
                 [ControlAppearanceColors.GridLine] = new SolidColor(0xE5, 0xE5, 0xE5)
             };
 
-        public static void InitGrid(ReoGridControl grid, bool read_only) {
+        public static void InitGrid(ReoGridControl grid, bool readOnly) {
             grid.Dock = DockStyle.Fill;
             grid.SheetTabVisible = false;
-            grid.Readonly = read_only;
+            grid.Readonly = readOnly;
             foreach (var color in _colors) {
                 grid.ControlStyle.SetColor(color.Key, color.Value);
             }

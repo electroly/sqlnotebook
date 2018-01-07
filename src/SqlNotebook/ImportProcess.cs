@@ -18,6 +18,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SqlNotebook.ImportXls;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {
@@ -64,11 +65,15 @@ namespace SqlNotebook {
 
         private static async Task<bool> ImportXls(IWin32Window owner, string filePath, NotebookManager manager,
         DatabaseSchema schema) {
+            string importSql;
             using (var f = new ImportXlsBookForm(filePath, schema, manager)) {
-                f.ShowDialog(owner);
+                if (f.ShowDialog(owner) != DialogResult.OK) {
+                    return false;
+                }
+                importSql = f.GeneratedImportSql;
             }
 
-            return true;
+            return await RunImportScript(importSql, owner, filePath, manager);
         }
 
         private static async Task<DatabaseSchema> ReadDatabaseSchema(IWin32Window owner, NotebookManager manager) {
@@ -94,7 +99,7 @@ namespace SqlNotebook {
             manager.PushStatus($"Importing \"{Path.GetFileName(filePath)}\"...");
             try {
                 await Task.Run(() => {
-                    manager.ExecuteScript(importSql, withTransaction: true);
+                    manager.ExecuteScript(importSql, transactionType: NotebookManager.TransactionType.Transaction);
                 });
                 manager.Rescan();
             } catch (Exception ex) {

@@ -54,7 +54,7 @@ namespace SqlNotebook {
         private readonly LoadingContainerControl _outputPreviewLoadControl;
         private Guid _outputPreviewLoadId;
 
-        public string GeneratedImportSql { get; private set; } // the ultimate result of this forum
+        public string GeneratedImportSql { get; private set; } // the ultimate result of this form
 
         public ImportCsvForm(string filePath, DatabaseSchema schema, NotebookManager manager) {
             InitializeComponent();
@@ -304,21 +304,15 @@ namespace SqlNotebook {
         }
 
         private string GetImportSql(int takeRows = -1, string temporaryTableName = null) {
-            var columnList =
-                from col in _columnsControl.ImportColumns
-                let renamed = col.SourceName != col.TargetName && col.TargetName != null
-                select $"    {col.SourceName.DoubleQuote()}{(renamed ? " AS " + col.TargetName.DoubleQuote() : "")} {col.Conversion}";
-
             var truncate = _optionsControl.IfTableExists.Value != ImportTableExistsOption.AppendNewRows;
             var drop = _optionsControl.IfTableExists.Value == ImportTableExistsOption.DropTable;
             var tableName = temporaryTableName ?? _optionsControl.TargetTableName.Value;
 
             return
                 (drop ? $"DROP TABLE IF EXISTS {_optionsControl.TargetTableName.Value.DoubleQuote()};\r\n\r\n" : "") +
-                $"IMPORT CSV\r\n" +
-                $"    {_filePath.SingleQuote()}\r\n" +
+                $"IMPORT CSV {_filePath.SingleQuote()}\r\n" +
                 $"INTO {tableName.DoubleQuote()} (\r\n" +
-                string.Join(",\r\n", columnList) + "\r\n" +
+                _columnsControl.SqlColumnList + "\r\n" +
                 $")\r\n" +
                 $"OPTIONS (\r\n" +
                 $"    SKIP_LINES: {_optionsControl.SkipLines.Value},\r\n" +

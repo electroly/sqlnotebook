@@ -56,7 +56,7 @@ namespace SqlNotebookScript.Utils {
             });
         }
 
-        public static IReadOnlyList<object[]> ReadWorksheet(string filePath, int worksheetIndex) {
+        public static List<object[]> ReadWorksheet(string filePath, int worksheetIndex, int? lastRowIndex = null) {
             if (!File.Exists(filePath)) {
                 throw new FileNotFoundException();
             }
@@ -71,7 +71,7 @@ namespace SqlNotebookScript.Utils {
                 }
 
                 var sheet = workbook.GetSheetAt(worksheetIndex);
-                return ReadSheet(sheet);
+                return ReadSheet(sheet, lastRowIndex: lastRowIndex);
             });
         }
 
@@ -92,7 +92,7 @@ namespace SqlNotebookScript.Utils {
             }
         }
 
-        public static IReadOnlyList<object[]> ReadSheet(ISheet sheet, int firstRowIndex = 0, int? lastRowIndex = null,
+        public static List<object[]> ReadSheet(ISheet sheet, int firstRowIndex = 0, int? lastRowIndex = null,
         int firstColumnIndex = 0, int? lastColumnIndex = null) {
             var lastRow = Math.Min(sheet.LastRowNum, lastRowIndex ?? int.MaxValue);
             var rowValues = new List<object>();
@@ -115,15 +115,79 @@ namespace SqlNotebookScript.Utils {
             // val may be numeric (1-based column number) or string (A, B, C, ..., XFC, XFD)
             if (val == null) {
                 return null;
-            } else if (val is string) {
-                var columnString = val.ToString().ToUpper();
-                return CellReference.ConvertColStringToIndex(columnString);
+            } else if (val is string str) {
+                if (int.TryParse(str, out var num)) {
+                    return num >= 1 ? (int?)(num - 1) : null;
+                } else {
+                    return CellReference.ConvertColStringToIndex(str.ToUpper());
+                }
             } else if (val is int || val is long) {
-                var index = Convert.ToInt32(val) - 1;
-                return index >= 0 ? (int?)index : null;
+                var num = Convert.ToInt32(val);
+                return num >= 1 ? (int?)(num - 1) : null;
             } else {
                 return null;
             }
+        }
+
+        public static string GetColumnRefString(object val) {
+            var index = ColumnRefToIndex(val);
+            if (index.HasValue) {
+                return CellReference.ConvertNumToColString(index.Value);
+            } else {
+                return null;
+            }
+        }
+
+        public static string[] ReadColumnNames(string filePath, int worksheetIndex, int? firstRowNumber,
+        string firstColumnLetter, string lastColumnLetter, bool headerRow) {
+            var firstRowIndex = firstRowNumber.HasValue ? firstRowNumber.Value - 1 : 0;
+            var firstColumnIndex = firstColumnLetter == null ? 0 : ColumnRefToIndex(firstColumnLetter) ?? 0;
+            var lastColumnIndex = lastColumnLetter == null ? null : ColumnRefToIndex(lastColumnLetter);
+            return WithWorkbook(filePath, workbook => {
+                var sheet = workbook.GetSheetAt(worksheetIndex);
+                var row =
+                    ReadSheet(sheet, firstRowIndex, firstRowIndex, firstColumnIndex, lastColumnIndex)
+                    .SingleOrDefault();
+                if (row == null) {
+                    return new string[0];
+                } else {
+                    var strings = new string[row.Length];
+                    for (var i = 0; i < row.Length; i++) {
+                        strings[i] = row[i]?.ToString() ?? "";
+                    }
+                    return strings;
+                }
+            });
+        }
+
+        public static string[] ReadColumnNames(IReadOnlyList<object[]> rows, bool headerRow) {
+            string[] columnNames;
+            if (rows.Count == 0) {
+                columnNames = new[] { "column1" };
+            } else if (headerRow) {
+                var originalHeader = rows[0];
+                columnNames = new string[originalHeader.Length];
+                var seenColumnNames = new HashSet<string>();
+                for (int i = 0; i < originalHeader.Length; i++) {
+                    var originalName = originalHeader[i];
+                    var isNull = originalName is DBNull || originalName == null;
+                    var prefix = isNull ? $"column{i + 1}" : originalName.ToString();
+                    var candidate = prefix;
+                    int suffix = 2;
+                    while (seenColumnNames.Contains(candidate)) {
+                        candidate = $"{prefix}{suffix++}";
+                    }
+                    seenColumnNames.Add(candidate);
+                    columnNames[i] = candidate;
+                }
+            } else {
+                columnNames = new string[rows[0].Length];
+                for (int i = 0; i < rows[0].Length; i++) {
+                    columnNames[i] = $"column{i + 1}";
+                }
+            }
+
+            return columnNames;
         }
     }
 }

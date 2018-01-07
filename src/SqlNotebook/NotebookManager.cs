@@ -257,20 +257,27 @@ namespace SqlNotebook {
         }
 
         public ScriptOutput ExecuteScript(string code, IReadOnlyDictionary<string, object> args = null,
-        bool withTransaction = false) {
-            Dictionary<string, object> vars;
-            return ExecuteScriptEx(code, args, withTransaction, out vars);
+        TransactionType transactionType = TransactionType.NoTransaction) =>
+            ExecuteScriptEx(code, args, transactionType, out _);
+
+        public enum TransactionType {
+            Transaction,
+            RollbackTransaction,
+            NoTransaction
         }
 
         public ScriptOutput ExecuteScriptEx(string code, IReadOnlyDictionary<string, object> args,
-        bool withTransaction, out Dictionary<string, object> vars) {
+        TransactionType transactionType, out Dictionary<string, object> vars) {
             var env = new ScriptEnv();
             var output = Invoke(() => {
                 var parser = new ScriptParser(Notebook);
                 var script = parser.Parse(code);
                 var runner = new ScriptRunner(Notebook, Notebook.GetScripts());
-                if (withTransaction) {
+                if (transactionType == TransactionType.Transaction) {
                     return SqlUtil.WithTransaction(Notebook, 
+                        () => runner.Execute(script, env, args ?? new Dictionary<string, object>()));
+                } else if (transactionType == TransactionType.RollbackTransaction) {
+                    return SqlUtil.WithRollbackTransaction(Notebook, 
                         () => runner.Execute(script, env, args ?? new Dictionary<string, object>()));
                 } else {
                     return runner.Execute(script, env, args ?? new Dictionary<string, object>());

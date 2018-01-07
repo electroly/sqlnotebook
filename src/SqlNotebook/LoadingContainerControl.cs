@@ -14,6 +14,8 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using SqlNotebookScript.Utils;
 
@@ -49,6 +51,15 @@ namespace SqlNotebook {
         public void PopLoad() {
             _loadCount--;
             ShowHideLoadingLbl();
+        }
+
+        public async Task DoLoad(Func<Task> action) {
+            PushLoad();
+            try {
+                await action();
+            } finally {
+                PopLoad();
+            }
         }
 
         public void SetError(string message) {

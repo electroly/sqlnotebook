@@ -94,8 +94,7 @@ namespace SqlNotebook {
             _manager.CommitOpenEditors();
             string response;
             try {
-               Dictionary<string, object> newVars;
-                var result = _manager.ExecuteScriptEx(sql, _variables, true, out newVars);
+                var result = _manager.ExecuteScriptEx(sql, _variables, NotebookManager.TransactionType.Transaction, out var newVars);
                 _variables = newVars;
                 UpdateConsoleState();
                 _manager.SetDirty();

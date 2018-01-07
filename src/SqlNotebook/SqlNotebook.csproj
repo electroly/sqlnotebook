@@ -127,6 +127,9 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
@@ -201,6 +204,12 @@
       <DependentUpon>ImportCsvOptionsControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Importer.cs" />
+    <Compile Include="ImportMultiTablePreviewControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImportMultiTablePreviewControl.Designer.cs">
+      <DependentUpon>ImportMultiTablePreviewControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ImportPreviewControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -220,6 +229,11 @@
     <Compile Include="ImportRenameTableForm.Designer.cs">
       <DependentUpon>ImportRenameTableForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImportXls\XlsColumnLetterOrAutoConverter.cs" />
+    <Compile Include="ImportXls\XlsEmptyRowBehavior.cs" />
+    <Compile Include="ImportXls\XlsRowNumberOrAutoConverter.cs" />
+    <Compile Include="ImportXls\XlsSheetMeta.cs" />
+    <Compile Include="ImportXls\XlsSheetOptions.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="ImportTextFilePreviewControl.cs">
       <SubType>UserControl</SubType>
@@ -227,22 +241,22 @@
     <Compile Include="ImportTextFilePreviewControl.Designer.cs">
       <DependentUpon>ImportTextFilePreviewControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImportXlsBookForm.cs">
+    <Compile Include="ImportXls\ImportXlsBookForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ImportXlsBookForm.Designer.cs">
+    <Compile Include="ImportXls\ImportXlsBookForm.Designer.cs">
       <DependentUpon>ImportXlsBookForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImportXlsSheetControl.cs">
+    <Compile Include="ImportXls\ImportXlsSheetControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImportXlsSheetControl.Designer.cs">
+    <Compile Include="ImportXls\ImportXlsSheetControl.Designer.cs">
       <DependentUpon>ImportXlsSheetControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImportXlsSheetsControl.cs">
+    <Compile Include="ImportXls\ImportXlsSheetsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImportXlsSheetsControl.Designer.cs">
+    <Compile Include="ImportXls\ImportXlsSheetsControl.Designer.cs">
       <DependentUpon>ImportXlsSheetsControl.cs</DependentUpon>
     </Compile>
     <Compile Include="LoadingContainerControl.cs">
@@ -354,6 +368,9 @@
     <EmbeddedResource Include="ImportCsvOptionsControl.resx">
       <DependentUpon>ImportCsvOptionsControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ImportMultiTablePreviewControl.resx">
+      <DependentUpon>ImportMultiTablePreviewControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ImportPreviewControl.resx">
       <DependentUpon>ImportPreviewControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -366,13 +383,13 @@
     <EmbeddedResource Include="ImportTextFilePreviewControl.resx">
       <DependentUpon>ImportTextFilePreviewControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImportXlsBookForm.resx">
+    <EmbeddedResource Include="ImportXls\ImportXlsBookForm.resx">
       <DependentUpon>ImportXlsBookForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImportXlsSheetControl.resx">
+    <EmbeddedResource Include="ImportXls\ImportXlsSheetControl.resx">
       <DependentUpon>ImportXlsSheetControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImportXlsSheetsControl.resx">
+    <EmbeddedResource Include="ImportXls\ImportXlsSheetsControl.resx">
       <DependentUpon>ImportXlsSheetsControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoadingContainerControl.resx">

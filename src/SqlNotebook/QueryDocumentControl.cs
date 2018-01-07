@@ -157,12 +157,7 @@ namespace SqlNotebook {
                 }
                 var source = index >= 0 && index < _results.Count ? _results[index] : null;
                 _grid.DataSource = source;
-                foreach (DataGridViewColumn col in _grid.Columns) {
-                    col.AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                    var width = col.Width;
-                    col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                    col.Width = Math.Min(250, width);
-                }
+                _grid.AutoSizeColumns();
                 _resultSetLbl.Text = $"{index + 1} of {_results.Count}";
                 _rowCountLbl.Text = source == null ? "" : $"{source.Rows.Count} row{(source.Rows.Count == 1 ? "" : "s")}";
             }
