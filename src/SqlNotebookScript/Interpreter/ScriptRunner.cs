@@ -58,9 +58,7 @@ namespace SqlNotebookScript.Interpreter {
         public bool DidContinue { get; set; }
         public bool DidThrow { get; set; }
 
-        public object ErrorNumber { get; set; }
         public object ErrorMessage { get; set; }
-        public object ErrorState { get; set; }
     }
 
     public class ScriptException : Exception {
@@ -68,14 +66,10 @@ namespace SqlNotebookScript.Interpreter {
     }
 
     public sealed class UncaughtErrorScriptException : ScriptException {
-        public object ErrorNumber { get; }
         public object ErrorMessage { get; }
-        public object ErrorState { get; }
-        public UncaughtErrorScriptException(object errorNumber, object errorMessage, object errorState)
-            : base($"Uncaught SQL error.  Message: \"{errorMessage}\", Number: {errorNumber}, State: {errorState}.") {
-            ErrorNumber = errorNumber;
+        public UncaughtErrorScriptException(object errorMessage)
+            : base($"Uncaught SQL error: {errorMessage}") {
             ErrorMessage = errorMessage;
-            ErrorState = errorState;
         }
     }
 
@@ -141,7 +135,7 @@ namespace SqlNotebookScript.Interpreter {
             } else if (env.DidContinue) {
                 throw new ScriptException($"Attempted to CONTINUE outside of a WHILE loop.");
             } else if (env.DidThrow) {
-                throw new UncaughtErrorScriptException(env.ErrorNumber, env.ErrorMessage, env.ErrorState);
+                throw new UncaughtErrorScriptException(env.ErrorMessage);
             }
         }
 
@@ -336,9 +330,7 @@ namespace SqlNotebookScript.Interpreter {
             try {
                 runner.Execute(script, subEnv);
             } catch (UncaughtErrorScriptException ex) {
-                env.ErrorNumber = ex.ErrorNumber;
                 env.ErrorMessage = ex.ErrorMessage;
-                env.ErrorState = ex.ErrorState;
                 env.DidThrow = true;
                 return;
             }
@@ -359,26 +351,19 @@ namespace SqlNotebookScript.Interpreter {
 
         private void ExecuteThrowStmt(Ast.ThrowStmt stmt, ScriptEnv env) {
             if (stmt.HasErrorValues) {
-                var errorNumber = EvaluateExpr(stmt.ErrorNumber, env);
                 var errorMessage = EvaluateExpr(stmt.Message, env); ;
-                var errorState = EvaluateExpr(stmt.State, env);
-                Throw(env, errorNumber, errorMessage, errorState);
+                Throw(env, errorMessage);
             } else {
                 env.DidThrow = true;
             }
         }
 
-        private void Throw(ScriptEnv env, object errorNumber, object errorMessage, object errorState) {
-            env.ErrorNumber = errorNumber;
+        private void Throw(ScriptEnv env, object errorMessage) {
             env.ErrorMessage = errorMessage;
-            env.ErrorState = errorState;
             env.DidThrow = true;
 
-            // make the error number, message, and state available via the error_number(), error_message(), and 
-            // error_state() functions.
-            _notebook.UserData.LastError.ErrorNumber = env.ErrorNumber;
+            // make the error message available via the error_message() function
             _notebook.UserData.LastError.ErrorMessage = env.ErrorMessage;
-            _notebook.UserData.LastError.ErrorState = env.ErrorState;
         }
 
         private void ExecuteRethrowStmt(Ast.RethrowStmt stmt, ScriptEnv env) {
@@ -397,7 +382,7 @@ namespace SqlNotebookScript.Interpreter {
             try {
                 ImportCsvStmtRunner.Run(_notebook, env, this, stmt);
             } catch (Exception ex) {
-                Throw(env, -1, ex.Message, -1);
+                Throw(env, ex.Message);
             }
         }
 
@@ -405,7 +390,7 @@ namespace SqlNotebookScript.Interpreter {
             try {
                 ImportXlsStmtRunner.Run(_notebook, env, this, stmt);
             } catch (Exception ex) {
-                Throw(env, -1, ex.Message, -1);
+                Throw(env, ex.Message);
             }
         }
 
@@ -413,7 +398,7 @@ namespace SqlNotebookScript.Interpreter {
             try {
                 ImportTxtStmtRunner.Run(_notebook, env, this, stmt);
             } catch (Exception ex) {
-                Throw(env, -1, ex.Message, -1);
+                Throw(env, ex.Message);
             }
         }
 
@@ -421,7 +406,7 @@ namespace SqlNotebookScript.Interpreter {
             try {
                 ExportTxtStmtRunner.Run(_notebook, env, this, stmt);
             } catch (Exception ex) {
-                Throw(env, -1, ex.Message, -1);
+                Throw(env, ex.Message);
             }
         }
 

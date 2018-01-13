@@ -223,11 +223,7 @@ namespace SqlNotebookScript.Interpreter {
             q.Take("throw");
             if (PeekExpr(q)) {
                 stmt.HasErrorValues = true;
-                stmt.ErrorNumber = ParseExpr(q);
-                q.Take(",");
                 stmt.Message = ParseExpr(q);
-                q.Take(",");
-                stmt.State = ParseExpr(q);
             }
             ConsumeSemicolon(q);
             return stmt;

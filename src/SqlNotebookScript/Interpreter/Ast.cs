@@ -187,15 +187,13 @@ namespace SqlNotebookScript.Interpreter.Ast {
 
     public sealed class ReturnStmt : Stmt {
         public Expr Value { get; set; }
-        protected override Node GetChild() { return Value; }
+        protected override Node GetChild() => Value;
     }
 
     public sealed class ThrowStmt : Stmt {
         public bool HasErrorValues { get; set; }
-        public Expr ErrorNumber { get; set; }
         public Expr Message { get; set; }
-        public Expr State { get; set; }
-        protected override IEnumerable<Node> GetChildren() => new Node[] { ErrorNumber, Message, State };
+        protected override Node GetChild() => Message;
     }
 
     public sealed class RethrowStmt : Stmt {
