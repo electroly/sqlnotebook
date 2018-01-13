@@ -307,8 +307,8 @@ namespace SqlNotebook {
         }
 
         public void RenameItem(NotebookItem item, string newName) {
-            string lcNewName = newName.ToLower();
-            bool isCaseChange = item.Name.ToLower() == lcNewName;
+            var lcNewName = newName.ToLower();
+            var isCaseChange = item.Name.ToLower() == lcNewName;
 
             switch (item.Type) {
                 case NotebookItemType.Console:
@@ -333,9 +333,19 @@ namespace SqlNotebook {
                     break;
 
                 case NotebookItemType.Table:
-                    Notebook.Invoke(() => {
-                        Notebook.Execute($"ALTER TABLE {item.Name.DoubleQuote()} RENAME TO \"{newName.Replace("\"", "\"\"")}\"");
-                    });
+                    // sqlite won't let us rename a table with just a case change, so in that situation we'll rename
+                    // to something else and then rename back
+                    if (isCaseChange) {
+                        var tempName = $"temp_{Guid.NewGuid()}";
+                        Notebook.Invoke(() => {
+                            Notebook.Execute($"ALTER TABLE {item.Name.DoubleQuote()} RENAME TO {tempName.DoubleQuote()};");
+                            Notebook.Execute($"ALTER TABLE {tempName.DoubleQuote()} RENAME TO {newName.DoubleQuote()};");
+                        });
+                    } else {
+                        Notebook.Invoke(() => {
+                            Notebook.Execute($"ALTER TABLE {item.Name.DoubleQuote()} RENAME TO {newName.DoubleQuote()}");
+                        });
+                    }
                     break;
 
                 case NotebookItemType.View:
