@@ -81,7 +81,7 @@ if (-not (Test-Path "$reldir\SqlNotebook.wixobj")) {
     throw "candle failed to produce SqlNotebook.wixobj"
 }
 
-& "$wixdir\light.exe" -nologo -pedantic "$reldir\SqlNotebook.wixobj" | Write-Output
+& "$wixdir\light.exe" -nologo -pedantic -ext WixUIExtension -cultures:en-us "$reldir\SqlNotebook.wixobj" | Write-Output
 
 if (-not (Test-Path "$reldir\SqlNotebook.msi")) {
     throw "light failed to produce SqlNotebook.msi"

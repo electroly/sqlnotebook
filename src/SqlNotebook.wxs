@@ -34,13 +34,53 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
             Description="SQL Notebook"
             Comments="Environment for ad-hoc exploration and manipulation of tabular data."
             />
+
+        <!-- https://stackoverflow.com/a/597060 -->
+        <UI Id="WixUI_Minimal">
+            <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+            <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+            <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
+
+            <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+            <Property Id="WixUI_Mode" Value="Minimal" />
+
+            <DialogRef Id="ErrorDlg" />
+            <DialogRef Id="FatalError" />
+            <DialogRef Id="FilesInUse" />
+            <DialogRef Id="MsiRMFilesInUse" />
+            <DialogRef Id="PrepareDlg" />
+            <DialogRef Id="ProgressDlg" />
+            <DialogRef Id="ResumeDlg" />
+            <DialogRef Id="UserExit" />
+
+            <!-- This is the welcome dialog you specified-->
+            <DialogRef Id="WelcomeDlg" /> 
+
+            <!-- Hook the new welcome dialog to the next one in the stack-->
+            <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="PrepareDlg">1</Publish> 
+
+            <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
+
+            <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+
+            <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+
+            <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+            <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+            <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg">1</Publish>
+
+            <Property Id="ARPNOMODIFY" Value="1" />
+        </UI>
+
+        <UIRef Id="WixUI_Common" />
+        <!-- end of UI stuff -->
+
         <Media Id="1" Cabinet="product.cab" EmbedCab="yes"/>
         <Icon Id="ProductIcon" SourceFile="SqlNotebookIcon.ico"/>
         <Property Id="ARPPRODUCTICON" Value="ProductIcon"/>
         <Property Id="ARPHELPLINK" Value="https://sqlnotebook.com"/>
         <Property Id="ARPURLINFOABOUT" Value="https://sqlnotebook.com"/>
         <Property Id="ARPNOREPAIR" Value="1"/>
-        <Property Id="ARPNOMODIFY" Value="1"/>
         <Upgrade Id="$(var.ProductUpgradeCode)">
             <UpgradeVersion
                 Minimum="$(var.ProductVersion)"
@@ -85,6 +125,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
                         <File Id="SqlNotebook.exe.manifest" Source="SqlNotebook.exe.manifest"/>
                         <File Id="SqlNotebookCore.dll" Source="SqlNotebookCore.dll"/>
                         <File Id="SqlNotebookScript.dll" Source="SqlNotebookScript.dll"/>
+                        <File Id="unvell.ReoGrid.dll" Source="unvell.ReoGrid.dll"/>
                         <File Id="WeifenLuo.WinFormsUI.Docking.dll" Source="WeifenLuo.WinFormsUI.Docking.dll"/>
                         <File Id="WeifenLuo.WinFormsUI.Docking.ThemeVS2012Light.dll" Source="WeifenLuo.WinFormsUI.Docking.ThemeVS2012Light.dll"/>
 
