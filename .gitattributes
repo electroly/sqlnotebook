@@ -1,4 +1,10 @@
 * text=auto
+*.json text eol=crlf
+*.cs text eol=crlf
+*.resx text eol=crlf
+*.csproj text eol=crlf
+*.sln text eol=crlf
+*.md text eol=lf
 *.png binary
 *.bmp binary
 *.ico binary

@@ -1,7 +1,11 @@
+bin/
+obj/
 Release/
 Debug/
 publish/
 publish-portable/
+
+*.user
 
 # Windows image file caches
 Thumbs.db

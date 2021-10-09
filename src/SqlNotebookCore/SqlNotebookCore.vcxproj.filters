@@ -12,4 +12,7 @@
     <ClCompile Include="CustomFunctions.cpp" />
     <ClCompile Include="GenericSqliteModuleImpl.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

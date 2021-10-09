@@ -1,21 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4766090D-0E56-4A24-BDE7-3F9FB8D37C80}</ProjectGuid>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SqlNotebook</RootNamespace>
-    <AssemblyName>SqlNotebook</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
     <PublishUrl>..\..\publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -38,35 +25,24 @@
     <UseApplicationTrust>true</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
     <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\..\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
     <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>A5AFC4D045E7C07EF0B3A3F3EDEBE97B371E7E3B</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>
-    </ManifestKeyFile>
+    <ManifestKeyFile></ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -77,7 +53,6 @@
   <PropertyGroup>
     <ApplicationIcon>SqlNotebookIcon.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup />
   <PropertyGroup>
     <StartupObject>SqlNotebook.Program</StartupObject>
   </PropertyGroup>
@@ -85,11 +60,7 @@
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestTimestampUrl>
-    </ManifestTimestampUrl>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <ManifestTimestampUrl></ManifestTimestampUrl>
   </PropertyGroup>
   <PropertyGroup>
     <DelaySign>true</DelaySign>
@@ -98,375 +69,69 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HtmlAgilityPack, Version=1.4.9.5, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Npgsql, Version=3.1.7.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npgsql.3.1.7\lib\net451\Npgsql.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ScintillaNET, Version=3.5.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\jacobslusser.ScintillaNET.3.5.10\lib\net40\ScintillaNET.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Windows.Forms.DataVisualization" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="unvell.ReoGrid, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\unvell.ReoGrid.dll.2.0.1.0\lib\20\unvell.ReoGrid.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AboutForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AboutForm.Designer.cs">
-      <DependentUpon>AboutForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ConsoleDocumentControl.cs">
+    <Compile Update="ConsoleDocumentControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ConsoleDocumentControl.Designer.cs">
-      <DependentUpon>ConsoleDocumentControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ConsoleServer.cs" />
-    <Compile Include="CueToolStripTextBox.cs">
+    <Compile Update="CueToolStripTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="DatabaseSchema.cs" />
-    <Compile Include="DescriptionEnumConverter.cs" />
-    <Compile Include="DockPanelUtil.cs" />
-    <Compile Include="ExportForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ExportForm.Designer.cs">
-      <DependentUpon>ExportForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Extensions.cs" />
-    <Compile Include="HelpDocumentControl.cs">
+    <Compile Update="HelpDocumentControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="HelpDocumentControl.Designer.cs">
-      <DependentUpon>HelpDocumentControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HelpServer.cs" />
-    <Compile Include="IDocumentControl.cs" />
-    <Compile Include="ImportColumnsControl.cs">
+    <Compile Update="ImportColumnsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImportColumnsControl.Designer.cs">
-      <DependentUpon>ImportColumnsControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ImportConnectionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ImportConnectionForm.Designer.cs">
-      <DependentUpon>ImportConnectionForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ImportCsvForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ImportCsvForm.Designer.cs">
-      <DependentUpon>ImportCsvForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ImportCsvOptionsControl.cs">
+    <Compile Update="ImportCsvOptionsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImportCsvOptionsControl.Designer.cs">
-      <DependentUpon>ImportCsvOptionsControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Importer.cs" />
-    <Compile Include="ImportMultiTablePreviewControl.cs">
+    <Compile Update="ImportMultiTablePreviewControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImportMultiTablePreviewControl.Designer.cs">
-      <DependentUpon>ImportMultiTablePreviewControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ImportPreviewControl.cs">
+    <Compile Update="ImportPreviewControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImportPreviewControl.Designer.cs">
-      <DependentUpon>ImportPreviewControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ImportPreviewForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ImportPreviewForm.Designer.cs">
-      <DependentUpon>ImportPreviewForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ImportProcess.cs" />
-    <Compile Include="ImportRenameTableForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ImportRenameTableForm.Designer.cs">
-      <DependentUpon>ImportRenameTableForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ImportXls\XlsColumnLetterOrAutoConverter.cs" />
-    <Compile Include="ImportXls\XlsEmptyRowBehavior.cs" />
-    <Compile Include="ImportXls\XlsRowNumberOrAutoConverter.cs" />
-    <Compile Include="ImportXls\XlsSheetMeta.cs" />
-    <Compile Include="ImportXls\XlsSheetOptions.cs" />
-    <Compile Include="Options.cs" />
-    <Compile Include="ImportTextFilePreviewControl.cs">
+    <Compile Update="ImportTextFilePreviewControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImportTextFilePreviewControl.Designer.cs">
-      <DependentUpon>ImportTextFilePreviewControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ImportXls\ImportXlsBookForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ImportXls\ImportXlsBookForm.Designer.cs">
-      <DependentUpon>ImportXlsBookForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ImportXls\ImportXlsSheetControl.cs">
+    <Compile Update="ImportXls\ImportXlsSheetControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImportXls\ImportXlsSheetControl.Designer.cs">
-      <DependentUpon>ImportXlsSheetControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ImportXls\ImportXlsSheetsControl.cs">
+    <Compile Update="ImportXls\ImportXlsSheetsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImportXls\ImportXlsSheetsControl.Designer.cs">
-      <DependentUpon>ImportXlsSheetsControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LoadingContainerControl.cs">
+    <Compile Update="LoadingContainerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="LoadingContainerControl.Designer.cs">
-      <DependentUpon>LoadingContainerControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MenuRenderer.cs" />
-    <Compile Include="MessageForm.cs" />
-    <Compile Include="NotebookManager.cs" />
-    <Compile Include="NoteDocumentControl.cs">
+    <Compile Update="NoteDocumentControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="NoteDocumentControl.Designer.cs">
-      <DependentUpon>NoteDocumentControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="NoteNewTableForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="NoteNewTableForm.Designer.cs">
-      <DependentUpon>NoteNewTableForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="OptionsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="OptionsForm.Designer.cs">
-      <DependentUpon>OptionsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="QueryDocumentControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="QueryDocumentControl.Designer.cs">
-      <DependentUpon>QueryDocumentControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="RecentDataSources.cs" />
-    <Compile Include="Bind.cs" />
-    <Compile Include="ReoGridUtil.cs" />
-    <Compile Include="SendToTableForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SendToTableForm.Designer.cs">
-      <DependentUpon>SendToTableForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SqlTextControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="SqlTextControl.Designer.cs">
-      <DependentUpon>SqlTextControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TableDocumentControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="TableDocumentControl.Designer.cs">
-      <DependentUpon>TableDocumentControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControlDockContent.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UserControlDockContent.Designer.cs">
-      <DependentUpon>UserControlDockContent.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ExplorerControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ExplorerControl.Designer.cs">
-      <DependentUpon>ExplorerControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WaitForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WaitForm.Designer.cs">
-      <DependentUpon>WaitForm.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="AboutForm.resx">
-      <DependentUpon>AboutForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ConsoleDocumentControl.resx">
-      <DependentUpon>ConsoleDocumentControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ExportForm.resx">
-      <DependentUpon>ExportForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HelpDocumentControl.resx">
-      <DependentUpon>HelpDocumentControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ImportColumnsControl.resx">
-      <DependentUpon>ImportColumnsControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ImportConnectionForm.resx">
-      <DependentUpon>ImportConnectionForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ImportCsvForm.resx">
-      <DependentUpon>ImportCsvForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ImportCsvOptionsControl.resx">
-      <DependentUpon>ImportCsvOptionsControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ImportMultiTablePreviewControl.resx">
-      <DependentUpon>ImportMultiTablePreviewControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ImportPreviewControl.resx">
-      <DependentUpon>ImportPreviewControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ImportPreviewForm.resx">
-      <DependentUpon>ImportPreviewForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ImportRenameTableForm.resx">
-      <DependentUpon>ImportRenameTableForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ImportTextFilePreviewControl.resx">
-      <DependentUpon>ImportTextFilePreviewControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ImportXls\ImportXlsBookForm.resx">
-      <DependentUpon>ImportXlsBookForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ImportXls\ImportXlsSheetControl.resx">
-      <DependentUpon>ImportXlsSheetControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ImportXls\ImportXlsSheetsControl.resx">
-      <DependentUpon>ImportXlsSheetsControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LoadingContainerControl.resx">
-      <DependentUpon>LoadingContainerControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ExplorerControl.resx">
-      <DependentUpon>ExplorerControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NoteDocumentControl.resx">
-      <DependentUpon>NoteDocumentControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NoteNewTableForm.resx">
-      <DependentUpon>NoteNewTableForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OptionsForm.resx">
-      <DependentUpon>OptionsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="QueryDocumentControl.resx">
-      <DependentUpon>QueryDocumentControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SendToTableForm.resx">
-      <DependentUpon>SendToTableForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SqlTextControl.resx">
-      <DependentUpon>SqlTextControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TableDocumentControl.resx">
-      <DependentUpon>TableDocumentControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WaitForm.resx">
-      <DependentUpon>WaitForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Resources\favicon.ico.binary" />
-    <None Include="Resources\sqlite-doc.zip" />
+    <Compile Update="QueryDocumentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="SqlTextControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="TableDocumentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ExplorerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\ThemeVS2012Light.csproj">
-      <Project>{4ed4fdb5-9fd0-49e6-876d-1635f727c755}</Project>
-      <Name>ThemeVS2012Light</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\WinFormsUI.csproj">
-      <Project>{c75532c4-765b-418e-b09b-46d36b2abdb1}</Project>
-      <Name>WinFormsUI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SqlNotebookCore\SqlNotebookCore.vcxproj">
-      <Project>{4991e0f9-fd29-4d6a-b489-f355a808ca8a}</Project>
-      <Name>SqlNotebookCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SqlNotebookScript\SqlNotebookScript.csproj">
-      <Project>{2255c461-80d4-419c-aa57-60af7d2c6305}</Project>
-      <Name>SqlNotebookScript</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SqlNotebookUpdater\SqlNotebookUpdater.csproj">
-      <Project>{d5f9a034-b7a9-444d-8d4e-8f8e55baeef1}</Project>
-      <Name>SqlNotebookUpdater</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\ThemeVS2012Light.csproj" />
+    <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\WinFormsUI.csproj" />
+    <ProjectReference Include="..\SqlNotebookCore\SqlNotebookCore.vcxproj" />
+    <ProjectReference Include="..\SqlNotebookScript\SqlNotebookScript.csproj" />
+    <ProjectReference Include="..\SqlNotebookUpdater\SqlNotebookUpdater.csproj" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6">
@@ -494,13 +159,6 @@
     </FileAssociation>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\SqlNotebookIcon32.png" />
-    <None Include="Resources\SqlNotebookIcon48.png" />
-    <None Include="Resources\Help.css" />
-    <None Include="Resources\ThirdPartyLicenses.html" />
-    <None Include="Resources\NoteEditor.html" />
-    <None Include="Resources\SqliteSiteErrorPlaceholder.png" />
-    <None Include="Resources\Console.html" />
     <Content Include="SqlNotebookIcon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -514,20 +172,24 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -ExecutionPolicy RemoteSigned -NonInteractive -Command .'$(ProjectDir)Resources\generate-sqlite-doc-zip.ps1'
-</PreBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.37" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
+    <PackageReference Include="MySql.Data" Version="8.0.26" />
+    <PackageReference Include="Npgsql" Version="5.0.10" />
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+    <PackageReference Include="unvell.ReoGrid.dll" Version="3.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <PropertyGroup />
+  <PropertyGroup />
 </Project>

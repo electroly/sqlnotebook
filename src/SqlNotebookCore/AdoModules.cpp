@@ -27,22 +27,23 @@ using namespace Npgsql;
 using namespace msclr;
 using namespace MySql::Data::MySqlClient;
 
+// these Object^s should be String^ but I ran into strange linker errors
 private struct AdoCreateInfo {
-    gcroot<Func<String^, IDbConnection^>^> ConnectionCreator;
-    gcroot<String^> SelectRandomSampleSql; // should contain {0} as a placeholder for the escaped table name including surrounding quotes
+    gcroot<Func<Object^, IDbConnection^>^> ConnectionCreator;
+    gcroot<Object^> SelectRandomSampleSql; // should contain {0} as a placeholder for the escaped table name including surrounding quotes
 };
 
 private struct AdoTable {
     sqlite3_vtab Super;
-    gcroot<String^> ConnectionString;
-    gcroot<String^> AdoTableName;
-    gcroot<String^> AdoSchemaName;
-    gcroot<List<String^>^> ColumnNames;
-    gcroot<Func<String^, IDbConnection^>^> ConnectionCreator;
+    gcroot<Object^> ConnectionString;
+    gcroot<Object^> AdoTableName;
+    gcroot<Object^> AdoSchemaName;
+    gcroot<List<Object^>^> ColumnNames;
+    gcroot<Func<Object^, IDbConnection^>^> ConnectionCreator;
     int64_t InitialRowCount;
 
     // column name => estimated rows as a fraction (0-1) of the total row count
-    gcroot<Dictionary<String^, double>^> EstimatedRowsPercentByColumn; 
+    gcroot<Dictionary<Object^, double>^> EstimatedRowsPercentByColumn;
 
     AdoTable() {
         memset(&Super, 0, sizeof(Super));
@@ -55,7 +56,7 @@ private struct AdoCursor {
     gcroot<IDbConnection^> Connection;
     gcroot<IDbCommand^> Command;
     gcroot<IDataReader^> Reader;
-    gcroot<String^> ReaderSql;
+    gcroot<Object^> ReaderSql;
     bool IsEof;
 
     AdoCursor() {
@@ -78,9 +79,9 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
         if (argc != 5 && argc != 6) {
             throw gcnew Exception("Syntax: CREATE VIRTUAL TABLE <name> USING <driver> ('<connection string>', 'table name', ['schema name']);");
         }
-        auto connStr = Util::Str(argv[3])->Trim(L'\'');
-        auto adoTableName = Util::Str(argv[4])->Trim(L'\'');
-        auto adoSchemaName = Util::Str(argc == 6 ? argv[5] : "")->Trim(L'\'');
+        auto connStr = SqlNotebookCore::Util::Str(argv[3])->Trim(L'\'');
+        auto adoTableName = SqlNotebookCore::Util::Str(argv[4])->Trim(L'\'');
+        auto adoSchemaName = SqlNotebookCore::Util::Str(argc == 6 ? argv[5] : "")->Trim(L'\'');
         auto adoQuotedCombinedName = adoSchemaName->Length > 0
             ? String::Format("\"{0}\".\"{1}\"", adoSchemaName->Replace("\"", "\"\""), adoTableName->Replace("\"", "\"\"")) 
             : String::Format("\"{0}\"", adoTableName->Replace("\"", "\"\""));
@@ -88,7 +89,7 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
         conn->Open();
 
         // ensure the table exists and detect the column names
-        auto columnNames = gcnew List<String^>();
+        auto columnNames = gcnew List<Object^>();
         auto columnTypes = gcnew List<Type^>();
         {
             auto_handle<IDbCommand> cmd(conn->CreateCommand());
@@ -118,7 +119,7 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
         // take a random sample of rows and compute some basic statistics
         {
             auto_handle<IDbCommand> cmd(conn->CreateCommand());
-            cmd->CommandText = createInfo->SelectRandomSampleSql->Replace("{0}", adoQuotedCombinedName);
+            cmd->CommandText = ((String^)(Object^)createInfo->SelectRandomSampleSql)->Replace("{0}", adoQuotedCombinedName);
             auto_handle<IDataReader> reader(cmd->ExecuteReader());
 
             auto colCount = columnNames->Count;
@@ -147,7 +148,7 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
             }
             // this is the average number of rows we expect any arbitrary value to appear in the column
             // for instance, if the column is a list of 500 coin flips 0 or 1, an average around 250 is expected
-            vtab->EstimatedRowsPercentByColumn = gcnew Dictionary<String^, double>(colCount);
+            vtab->EstimatedRowsPercentByColumn = gcnew Dictionary<Object^, double>(colCount);
             for (int i = 0; i < colCount; i++) {
                 auto name = columnNames[i];
                 auto value = sampleSize > 0 ? (Enumerable::Average(colDicts[i]->Values) / sampleSize) : 1.0;
@@ -170,16 +171,16 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
             } else {
                 sqlType = "text";
             }
-            columnLines->Add("\"" + columnNames[i]->Replace("\"", "\"\"") + "\" " + sqlType);
+            columnLines->Add("\"" + ((String^)columnNames[i])->Replace("\"", "\"\"") + "\" " + sqlType);
         }
         auto createSql = "CREATE TABLE a (" + String::Join(", ", columnLines) + ")";
-        g_SqliteCall(db, sqlite3_declare_vtab(db, Util::CStr(createSql).c_str()));
+        g_SqliteCall(db, sqlite3_declare_vtab(db, SqlNotebookCore::Util::CStr(createSql).c_str()));
 
         *ppVTab = &vtab->Super;
         return SQLITE_OK;
     } catch (Exception^ ex) {
         delete vtab;
-        *pzErr = sqlite3_mprintf("AdoCreate: %s", Util::CStr(ex->Message).c_str());
+        *pzErr = sqlite3_mprintf("AdoCreate: %s", SqlNotebookCore::Util::CStr(ex->Message).c_str());
         return SQLITE_ERROR;
     }
 }
@@ -201,9 +202,11 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
     // build a query corresponding to the request
     auto sb = gcnew StringBuilder();
     sb->Append("SELECT * FROM ");
-    auto adoQuotedCombinedName = vtab->AdoSchemaName->Length > 0
-        ? String::Format("\"{0}\".\"{1}\"", vtab->AdoSchemaName->Replace("\"", "\"\""), vtab->AdoTableName->Replace("\"", "\"\""))
-        : String::Format("\"{0}\"", vtab->AdoTableName->Replace("\"", "\"\""));
+    auto schemaName = (String^)(Object^)vtab->AdoSchemaName;
+    auto tableName = (String^)(Object^)vtab->AdoTableName;
+    auto adoQuotedCombinedName = schemaName->Length > 0
+        ? String::Format("\"{0}\".\"{1}\"", schemaName->Replace("\"", "\"\""), tableName->Replace("\"", "\"\""))
+        : String::Format("\"{0}\"", tableName->Replace("\"", "\"\""));
     sb->Append(adoQuotedCombinedName);
 
     // where clause
@@ -232,7 +235,7 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
 
             info->aConstraintUsage[i].argvIndex = argvIndex;
             info->aConstraintUsage[i].omit = true;
-            auto columnName = vtab->ColumnNames->default[info->aConstraint[i].iColumn];
+            auto columnName = (String^)vtab->ColumnNames->default[info->aConstraint[i].iColumn];
             terms->Add("\"" + columnName->Replace("\"", "\"\"") + "\"" + op + "@arg" + argvIndex);
             argvIndex++;
 
@@ -246,7 +249,7 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
         sb->Append(" ORDER BY ");
         auto terms = gcnew List<String^>();
         for (int i = 0; i < info->nOrderBy; i++) {
-            terms->Add(vtab->ColumnNames->default[info->aOrderBy[i].iColumn] + (info->aOrderBy[i].desc ? " DESC" : ""));
+            terms->Add((String^)vtab->ColumnNames->default[info->aOrderBy[i].iColumn] + (info->aOrderBy[i].desc ? " DESC" : ""));
         }
         sb->Append(String::Join(", ", terms));
         info->orderByConsumed = true;
@@ -255,7 +258,7 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
 #ifdef _DEBUG
     System::Diagnostics::Debug::WriteLine(sb);
 #endif
-    auto sql = Util::CStr(sb->ToString());
+    auto sql = SqlNotebookCore::Util::CStr(sb->ToString());
     info->idxNum = 0;
     info->idxStr = sqlite3_mprintf("%s", sql.c_str());
     info->needToFreeIdxStr = true;
@@ -303,11 +306,11 @@ static int AdoClose(sqlite3_vtab_cursor* pCur) {
 
 static int AdoFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxStr, int argc, sqlite3_value** argv) {
 #ifdef _DEBUG
-    System::Diagnostics::Debug::WriteLine("AdoFilter: " + Util::Str(idxStr));
+    System::Diagnostics::Debug::WriteLine("AdoFilter: " + SqlNotebookCore::Util::Str(idxStr));
 #endif
     try {
         auto cursor = (AdoCursor*)pCur;
-        auto sql = Util::Str(idxStr);
+        auto sql = SqlNotebookCore::Util::Str(idxStr);
         auto args = gcnew array<Object^>(argc);
 
         for (int i = 0; i < argc; i++) {
@@ -322,7 +325,7 @@ static int AdoFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxStr, 
                     args[i] = DBNull::Value;
                     break;
                 case SQLITE_TEXT:
-                    args[i] = Util::Str((const wchar_t*)sqlite3_value_text16(argv[i]));
+                    args[i] = SqlNotebookCore::Util::Str((const wchar_t*)sqlite3_value_text16(argv[i]));
                     break;
                 default:
                     throw gcnew Exception("Data type not supported.");
@@ -332,7 +335,7 @@ static int AdoFilter(sqlite3_vtab_cursor* pCur, int idxNum, const char* idxStr, 
         delete cursor->Reader;
         cursor->Reader = nullptr;
 
-        if ((String^)cursor->ReaderSql != nullptr && sql == cursor->ReaderSql) {
+        if ((Object^)cursor->ReaderSql != nullptr && sql == (String^)(Object^)cursor->ReaderSql) {
             // sqlite is issuing new arguments for the same statement
             for (int i = 0; i < argc; i++) {
                 auto parameter = (IDataParameter^)cursor->Command->Parameters[i];
@@ -379,8 +382,9 @@ static int AdoEof(sqlite3_vtab_cursor* pCur) {
     return cursor->IsEof ? 1 : 0;
 }
 
-static void ResultText16(sqlite3_context* ctx, String^ str) {
-    auto wstr = Util::WStr(str);
+static void ResultText16(sqlite3_context* ctx, Object^ strObj) {
+    auto str = (String^)strObj;
+    auto wstr = SqlNotebookCore::Util::WStr(str);
     auto wstrCopy = _wcsdup(wstr.c_str());
     auto lenB = wstr.size() * sizeof(wchar_t);
     sqlite3_result_text16(ctx, wstrCopy, (int)lenB, free);
@@ -467,13 +471,13 @@ static void AdoPopulateModule(sqlite3_module* module) {
 // --- PostgreSQL ---
 static sqlite3_module s_pgModule = { 0 };
 static AdoCreateInfo s_pgCreateInfo;
-static IDbConnection^ PgCreateConnection(String^ connStr) {
-    return gcnew NpgsqlConnection(connStr);
+static IDbConnection^ PgCreateConnection(Object^ connStr) {
+    return gcnew NpgsqlConnection((String^)connStr);
 }
 void Notebook::InstallPgModule() {
     if (s_pgModule.iVersion != 1) {
         AdoPopulateModule(&s_pgModule);
-        s_pgCreateInfo.ConnectionCreator = gcnew Func<String^, IDbConnection^>(PgCreateConnection);
+        s_pgCreateInfo.ConnectionCreator = gcnew Func<Object^, IDbConnection^>(PgCreateConnection);
         s_pgCreateInfo.SelectRandomSampleSql = "SELECT * FROM {0} ORDER BY RANDOM() LIMIT 5000;";
     }
     SqliteCall(sqlite3_create_module_v2(_sqlite, "pgsql", &s_pgModule, &s_pgCreateInfo, NULL));
@@ -482,13 +486,13 @@ void Notebook::InstallPgModule() {
 // --- Microsoft SQL Server ---
 static sqlite3_module s_msModule = { 0 };
 static AdoCreateInfo s_msCreateInfo;
-static IDbConnection^ MsCreateConnection(String^ connStr) {
-    return gcnew SqlConnection(connStr);
+static IDbConnection^ MsCreateConnection(Object^ connStr) {
+    return gcnew SqlConnection((String^)connStr);
 }
 void Notebook::InstallMsModule() {
     if (s_msModule.iVersion != 1) {
         AdoPopulateModule(&s_msModule);
-        s_msCreateInfo.ConnectionCreator = gcnew Func<String^, IDbConnection^>(MsCreateConnection);
+        s_msCreateInfo.ConnectionCreator = gcnew Func<Object^, IDbConnection^>(MsCreateConnection);
         s_msCreateInfo.SelectRandomSampleSql = "SELECT * FROM {0} TABLESAMPLE (5000 ROWS);";
     }
     SqliteCall(sqlite3_create_module_v2(_sqlite, "mssql", &s_msModule, &s_msCreateInfo, NULL));
@@ -497,13 +501,13 @@ void Notebook::InstallMsModule() {
 // --- MySQL ---
 static sqlite3_module s_myModule = { 0 };
 static AdoCreateInfo s_myCreateInfo;
-static IDbConnection^ MyCreateConnection(String^ connStr) {
-    return gcnew MySqlConnection(connStr);
+static IDbConnection^ MyCreateConnection(Object^ connStr) {
+    return gcnew MySqlConnection((String^)connStr);
 }
 void Notebook::InstallMyModule() {
     if (s_myModule.iVersion != 1) {
         AdoPopulateModule(&s_myModule);
-        s_myCreateInfo.ConnectionCreator = gcnew Func<String^, IDbConnection^>(MyCreateConnection);
+        s_myCreateInfo.ConnectionCreator = gcnew Func<Object^, IDbConnection^>(MyCreateConnection);
         s_myCreateInfo.SelectRandomSampleSql = "SELECT * FROM {0} ORDER BY RAND() LIMIT 5000;";
     }
     SqliteCall(sqlite3_create_module_v2(_sqlite, "mysql", &s_myModule, &s_myCreateInfo, NULL));

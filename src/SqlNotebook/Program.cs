@@ -37,17 +37,9 @@ namespace SqlNotebook {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            var clickOnceFiles = AppDomain.CurrentDomain.SetupInformation.ActivationArguments?.ActivationData ?? new string[0];
-            foreach (var extraFilePath in clickOnceFiles.Skip(1)) {
-                Process.Start(Application.ExecutablePath, $"\"{extraFilePath}");
-            }
-
             string filePath;
             bool isNew;
-            if (clickOnceFiles.Any()) {
-                filePath = clickOnceFiles.First();
-                isNew = false;
-            } else if (Environment.GetCommandLineArgs().Length == 2) {
+            if (Environment.GetCommandLineArgs().Length == 2) {
                 filePath = Environment.GetCommandLineArgs()[1];
                 isNew = false;
             } else {

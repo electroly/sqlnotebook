@@ -43,8 +43,8 @@
             this._splitContainer = new System.Windows.Forms.SplitContainer();
             this._detailsLst = new System.Windows.Forms.ListView();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
-            _nameColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            _nameColumn = new System.Windows.Forms.ColumnHeader();
+            columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this._contextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._splitContainer)).BeginInit();
             this._splitContainer.Panel1.SuspendLayout();
@@ -92,6 +92,7 @@
             listViewGroup4,
             listViewGroup5});
             this._list.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this._list.HideSelection = false;
             this._list.LabelEdit = true;
             this._list.LabelWrap = false;
             this._list.Location = new System.Drawing.Point(0, 0);
@@ -110,6 +111,7 @@
             // 
             // _contextMenuStrip
             // 
+            this._contextMenuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this._contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._openMnu,
             this.toolStripSeparator1,
@@ -117,47 +119,47 @@
             this._renameMnu});
             this._contextMenuStrip.Name = "_contextMenuStrip";
             this._contextMenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this._contextMenuStrip.Size = new System.Drawing.Size(118, 76);
+            this._contextMenuStrip.Size = new System.Drawing.Size(148, 106);
             this._contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip_Opening);
             // 
             // _openMnu
             // 
             this._openMnu.Name = "_openMnu";
-            this._openMnu.Size = new System.Drawing.Size(117, 22);
+            this._openMnu.Size = new System.Drawing.Size(147, 32);
             this._openMnu.Text = "&Open";
             this._openMnu.Click += new System.EventHandler(this.List_ItemActivate);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(114, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(144, 6);
             // 
             // _deleteMnu
             // 
             this._deleteMnu.Name = "_deleteMnu";
-            this._deleteMnu.Size = new System.Drawing.Size(117, 22);
+            this._deleteMnu.Size = new System.Drawing.Size(147, 32);
             this._deleteMnu.Text = "&Delete";
             this._deleteMnu.Click += new System.EventHandler(this.DeleteMnu_Click);
             // 
             // _renameMnu
             // 
             this._renameMnu.Name = "_renameMnu";
-            this._renameMnu.Size = new System.Drawing.Size(117, 22);
+            this._renameMnu.Size = new System.Drawing.Size(147, 32);
             this._renameMnu.Text = "&Rename";
             this._renameMnu.Click += new System.EventHandler(this.RenameMnu_Click);
             // 
             // _imageList
             // 
+            this._imageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this._imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("_imageList.ImageStream")));
             this._imageList.TransparentColor = System.Drawing.Color.Transparent;
             this._imageList.Images.SetKeyName(0, "note.png");
-            this._imageList.Images.SetKeyName(1, "application_xp_terminal.png");
-            this._imageList.Images.SetKeyName(2, "script.png");
-            this._imageList.Images.SetKeyName(3, "table.png");
-            this._imageList.Images.SetKeyName(4, "filter.png");
-            this._imageList.Images.SetKeyName(5, "bullet_black.png");
-            this._imageList.Images.SetKeyName(6, "bullet_key.png");
-            this._imageList.Images.SetKeyName(7, "table_link.png");
+            this._imageList.Images.SetKeyName(1, "script.png");
+            this._imageList.Images.SetKeyName(2, "table.png");
+            this._imageList.Images.SetKeyName(3, "filter.png");
+            this._imageList.Images.SetKeyName(4, "bullet_black.png");
+            this._imageList.Images.SetKeyName(5, "bullet_key.png");
+            this._imageList.Images.SetKeyName(6, "table_link.png");
             // 
             // _splitContainer
             // 
@@ -191,6 +193,7 @@
             this._detailsLst.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
             listViewGroup6});
             this._detailsLst.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this._detailsLst.HideSelection = false;
             this._detailsLst.Location = new System.Drawing.Point(0, 0);
             this._detailsLst.MultiSelect = false;
             this._detailsLst.Name = "_detailsLst";
@@ -221,7 +224,7 @@
             // ExplorerControl
             // 
             this.Controls.Add(this.toolStripContainer1);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Name = "ExplorerControl";
             this.Size = new System.Drawing.Size(340, 608);
             this._contextMenuStrip.ResumeLayout(false);

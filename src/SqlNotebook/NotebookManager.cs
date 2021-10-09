@@ -30,7 +30,6 @@ using SqlNotebookScript.Utils;
 namespace SqlNotebook {
     public enum NotebookItemType {
         Note,
-        Console,
         Script,
         Table,
         View
@@ -191,10 +190,6 @@ namespace SqlNotebook {
             return items;
         }
 
-        public string NewConsole() {
-            return NewItem(NotebookItemType.Console.ToString());
-        }
-
         public string NewScript() {
             return NewItem(NotebookItemType.Script.ToString());
         }
@@ -289,7 +284,6 @@ namespace SqlNotebook {
 
         public void DeleteItem(NotebookItem item) {
             switch (item.Type) {
-                case NotebookItemType.Console:
                 case NotebookItemType.Script:
                 case NotebookItemType.Note:
                     Notebook.UserData.Items.RemoveWhere(x => x.Name == item.Name);
@@ -311,7 +305,6 @@ namespace SqlNotebook {
             var isCaseChange = item.Name.ToLower() == lcNewName;
 
             switch (item.Type) {
-                case NotebookItemType.Console:
                 case NotebookItemType.Note:
                 case NotebookItemType.Script:
                     if (!isCaseChange) {

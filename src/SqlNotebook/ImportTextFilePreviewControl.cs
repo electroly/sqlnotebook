@@ -20,45 +20,33 @@ using System.Drawing;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ScintillaNET;
 using SqlNotebookCore;
 
 namespace SqlNotebook {
     public partial class ImportTextFilePreviewControl : UserControl {
-        private readonly Scintilla _scintilla;
+        private readonly TextBox _text;
 
         public string PreviewText {
             get {
-                return _scintilla.Text;
+                return _text.Text;
             }
             set {
-                _scintilla.ReadOnly = false;
-                _scintilla.Text = value;
-                _scintilla.ReadOnly = true;
+                _text.ReadOnly = false;
+                _text.Text = value;
+                _text.ReadOnly = true;
             }
         }
 
         public ImportTextFilePreviewControl() {
             InitializeComponent();
 
-            _scintilla = new Scintilla {
+            _text = new TextBox {
                 Dock = DockStyle.Fill,
-                Lexer = Lexer.Null,
-                FontQuality = FontQuality.LcdOptimized,
-                IndentWidth = 4,
-                BufferedDraw = true,
-                TabWidth = 4,
-                ScrollWidthTracking = true,
-                ScrollWidth = 1,
                 BorderStyle = BorderStyle.None,
                 ReadOnly = true,
+                Multiline = true,
             };
-            foreach (var style in _scintilla.Styles) {
-                style.Font = "Consolas";
-                style.Size = 10;
-            }
-            _scintilla.Margins[1].Width = 0;
-            Controls.Add(_scintilla);
+            Controls.Add(_text);
         }
     }
 }

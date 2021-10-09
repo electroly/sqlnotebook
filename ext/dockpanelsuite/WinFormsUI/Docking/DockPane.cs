@@ -249,8 +249,6 @@ namespace WeifenLuo.WinFormsUI.Docking
 
                 if (content.DockHandler.TabPageContextMenuStrip != null)
                     return content.DockHandler.TabPageContextMenuStrip;
-                else if (content.DockHandler.TabPageContextMenu != null)
-                    return content.DockHandler.TabPageContextMenu;
                 else
                     return null;
             }
@@ -274,10 +272,6 @@ namespace WeifenLuo.WinFormsUI.Docking
                 contextMenuStrip.Show(control, position);
                 return;
             }
-
-            ContextMenu contextMenu = menu as ContextMenu;
-            if (contextMenu != null)
-                contextMenu.Show(this, position);
         }
 
         private Rectangle CaptionRectangle

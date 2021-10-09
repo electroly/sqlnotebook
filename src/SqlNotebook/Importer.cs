@@ -14,24 +14,21 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MySql.Data.MySqlClient;
+using Npgsql;
+using SqlNotebookCore;
+using SqlNotebookScript.Utils;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.VisualBasic.FileIO;
-using MySql.Data.MySqlClient;
-using Newtonsoft.Json.Linq;
-using Npgsql;
-using SqlNotebookCore;
-using SqlNotebookScript.Utils;
 
-namespace SqlNotebook {
+namespace SqlNotebook
+{
     public sealed class RecentDataSource {
         public Type ImportSessionType;
         public string DisplayName;
@@ -208,7 +205,7 @@ namespace SqlNotebook {
         }
 
         protected override IDbConnection CreateConnection(Npgsql.NpgsqlConnectionStringBuilder builder) {
-            return new Npgsql.NpgsqlConnection(builder);
+            return new Npgsql.NpgsqlConnection(builder.ConnectionString);
         }
 
         protected override void ReadTableNames(IDbConnection connection) {

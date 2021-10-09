@@ -14,6 +14,9 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using SqlNotebook.Properties;
+using SqlNotebookCore;
+using SqlNotebookScript.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,13 +27,10 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json.Linq;
-using SqlNotebook.Properties;
-using SqlNotebookCore;
-using SqlNotebookScript.Utils;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace SqlNotebook {
+namespace SqlNotebook
+{
     public partial class MainForm : Form {
         private readonly DockPanel _dockPanel;
         private NotebookManager _manager;
@@ -52,6 +52,14 @@ namespace SqlNotebook {
 
         public MainForm(string filePath, bool isNew) {
             InitializeComponent();
+
+            // detect corrupted settings
+            try {
+                _ = Settings.Default.AutoCreateInNewNotebooks;
+            } catch {
+                Settings.Default.Reset();
+                Settings.Default.Save();
+            }
 
             _menuStrip.SetMenuAppearance();
             _menuStrip.Items.Insert(0, _searchTxt = new CueToolStripTextBox {
@@ -169,14 +177,6 @@ namespace SqlNotebook {
                         };
                         break;
 
-                    case 2: // New console
-                        Load += (sender, e) => {
-                            var name = _manager.NewConsole();
-                            OpenItem(new NotebookItem(NotebookItemType.Console, name));
-                            _isDirty.Value = false;
-                        };
-                        break;
-
                     case 3: // New script
                         Load += (sender, e) => {
                             var name = _manager.NewScript();
@@ -206,7 +206,6 @@ namespace SqlNotebook {
                 case (Keys.Control | Keys.S): _saveMnu.PerformClick(); break;
                 case (Keys.Alt | Keys.F4): _exitMnu.PerformClick(); break;
                 case (Keys.Control | Keys.Shift | Keys.N): _newNoteMnu.PerformClick(); break;
-                case (Keys.Control | Keys.Shift | Keys.C): _newConsoleMnu.PerformClick(); break;
                 case (Keys.Control | Keys.Shift | Keys.S): _newScriptMnu.PerformClick(); break;
                 case Keys.F1: _viewDocMnu.PerformClick(); break;
                 case (Keys.Control | Keys.H): _searchDocMnu.PerformClick(); break;
@@ -280,14 +279,7 @@ namespace SqlNotebook {
             UserControlDockContent f = null;
             Func<string> getName = null;
             var dockAreas = DockAreas.Document | DockAreas.Float;
-            if (item.Type == NotebookItemType.Console) {
-                var doc = new ConsoleDocumentControl(item.Name, _manager, this);
-                f = new UserControlDockContent(item.Name, doc, dockAreas) {
-                    Icon = Resources.ApplicationXpTerminalIco
-                };
-                ApplySaveOnClose(f, doc);
-                getName = () => doc.ItemName;
-            } else if (item.Type == NotebookItemType.Note) {
+            if (item.Type == NotebookItemType.Note) {
                 var doc = new NoteDocumentControl(item.Name, _manager);
                 f = new UserControlDockContent(item.Name, doc, dockAreas) {
                     Icon = Resources.NoteIco
@@ -384,14 +376,6 @@ namespace SqlNotebook {
 
         private void ErrorBox(string title, string message, string details = null) {
             MessageForm.ShowError(this, title, message, details);
-        }
-
-        private void NewConsoleBtn_Click(object sender, EventArgs e) {
-            try {
-                OpenItem(new NotebookItem(NotebookItemType.Console, _manager.NewConsole()));
-            } catch (Exception ex) {
-                ErrorBox("Notebook Error", "There was a problem creating the console.", ex.Message);
-            }
         }
 
         private void NewScriptBtn_Click(object sender, EventArgs e) {

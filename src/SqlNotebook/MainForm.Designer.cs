@@ -43,7 +43,6 @@
             this._menuStrip = new System.Windows.Forms.MenuStrip();
             this._saveBtn = new System.Windows.Forms.ToolStripButton();
             this._newNoteBtn = new System.Windows.Forms.ToolStripButton();
-            this._newConsoleBtn = new System.Windows.Forms.ToolStripButton();
             this._newScriptBtn = new System.Windows.Forms.ToolStripButton();
             this._notebookMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newMnu = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,7 +50,6 @@
             this._saveMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._saveAsMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newNoteMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this._newConsoleMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newScriptMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this._optionsMnu = new System.Windows.Forms.ToolStripMenuItem();
@@ -220,7 +218,6 @@
             this._menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._saveBtn,
             this._newNoteBtn,
-            this._newConsoleBtn,
             this._newScriptBtn,
             this._notebookMnu,
             this._importMnu,
@@ -261,19 +258,6 @@
             this._newNoteBtn.ToolTipText = "Add new note (Ctrl+Shift+N)";
             this._newNoteBtn.Click += new System.EventHandler(this.NewNoteBtn_Click);
             // 
-            // _newConsoleBtn
-            // 
-            this._newConsoleBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._newConsoleBtn.Image = global::SqlNotebook.Properties.Resources.ApplicationXpTerminalAdd;
-            this._newConsoleBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._newConsoleBtn.Margin = new System.Windows.Forms.Padding(0);
-            this._newConsoleBtn.Name = "_newConsoleBtn";
-            this._newConsoleBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this._newConsoleBtn.Size = new System.Drawing.Size(28, 20);
-            this._newConsoleBtn.Text = "toolStripButton1";
-            this._newConsoleBtn.ToolTipText = "Add new console (Ctrl+Shift+C)";
-            this._newConsoleBtn.Click += new System.EventHandler(this.NewConsoleBtn_Click);
-            // 
             // _newScriptBtn
             // 
             this._newScriptBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -296,7 +280,6 @@
             this._saveAsMnu,
             toolStripSeparator3,
             this._newNoteMnu,
-            this._newConsoleMnu,
             this._newScriptMnu,
             this.toolStripSeparator4,
             this._optionsMnu,
@@ -350,16 +333,6 @@
             this._newNoteMnu.Size = new System.Drawing.Size(214, 22);
             this._newNoteMnu.Text = "Add &note";
             this._newNoteMnu.Click += new System.EventHandler(this.NewNoteBtn_Click);
-            // 
-            // _newConsoleMnu
-            // 
-            this._newConsoleMnu.Image = global::SqlNotebook.Properties.Resources.ApplicationXpTerminalAdd;
-            this._newConsoleMnu.Name = "_newConsoleMnu";
-            this._newConsoleMnu.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.C)));
-            this._newConsoleMnu.Size = new System.Drawing.Size(214, 22);
-            this._newConsoleMnu.Text = "Add &console";
-            this._newConsoleMnu.Click += new System.EventHandler(this.NewConsoleBtn_Click);
             // 
             // _newScriptMnu
             // 
@@ -686,10 +659,8 @@
         private System.Windows.Forms.ToolStripMenuItem _exitMnu;
         private System.Windows.Forms.ToolStripButton _saveBtn;
         private System.Windows.Forms.ToolStripButton _newNoteBtn;
-        private System.Windows.Forms.ToolStripButton _newConsoleBtn;
         private System.Windows.Forms.ToolStripButton _newScriptBtn;
         private System.Windows.Forms.ToolStripMenuItem _newNoteMnu;
-        private System.Windows.Forms.ToolStripMenuItem _newConsoleMnu;
         private System.Windows.Forms.ToolStripMenuItem _newScriptMnu;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem _searchDocMnu;

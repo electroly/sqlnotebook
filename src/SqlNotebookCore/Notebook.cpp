@@ -22,7 +22,7 @@ using namespace System::IO::Compression;
 using namespace System::Text;
 using namespace System::Runtime::InteropServices;
 using namespace msclr;
-using namespace Newtonsoft::Json;
+using namespace System::Text::Json;
 
 #define SQLITE_ZIP_ENTRY_NAME "sqlite.db"
 #define NOTEBOOK_ZIP_ENTRY_NAME "notebook.json"
@@ -45,9 +45,9 @@ Notebook::Notebook(String^ filePath, bool isNew) {
             {
                 auto entry = zip->GetEntry(NOTEBOOK_ZIP_ENTRY_NAME);
                 auto_handle<Stream> inStream(entry->Open());
-                StreamReader reader(inStream.get(), Encoding::UTF8);
+                StreamReader reader(inStream.get(), Encoding::UTF8, false, 8192, false);
                 auto json = reader.ReadToEnd();
-                _userData = (NotebookUserData^)JsonConvert::DeserializeObject(json, NotebookUserData::typeid);
+                _userData = (NotebookUserData^)JsonSerializer::Deserialize(json, NotebookUserData::typeid, gcnew JsonSerializerOptions());
             }
         } catch (Exception^) {
             File::Delete(_workingCopyFilePath);
@@ -403,8 +403,8 @@ void Notebook::Save() {
         {
             auto entry = archive->CreateEntry(NOTEBOOK_ZIP_ENTRY_NAME, CompressionLevel::Fastest);
             auto_handle<Stream> outStream(entry->Open());
-            auto json = JsonConvert::SerializeObject(_userData);
-            StreamWriter writer(outStream.get(), Encoding::UTF8);
+            auto json = JsonSerializer::Serialize(_userData, gcnew JsonSerializerOptions());
+            StreamWriter writer(outStream.get(), Encoding::UTF8, 8192, false);
             writer.Write(json);
         }
     } finally {

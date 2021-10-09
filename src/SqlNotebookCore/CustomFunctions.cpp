@@ -21,7 +21,7 @@ using namespace System::IO;
 using namespace System::IO::Compression;
 using namespace System::Text;
 using namespace msclr;
-using namespace Newtonsoft::Json;
+using namespace System::Text::Json;
 
 private ref class CustomFunctionContext {
     public:
