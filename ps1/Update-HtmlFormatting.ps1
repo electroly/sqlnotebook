@@ -28,5 +28,6 @@ foreach ($htmlFilename in $htmlFilenames) {
 
     # Write back to $htmlFilePath
     [System.IO.File]::WriteAllText($htmlFilePath, $html)
+    & unix2dos --quiet "$htmlFilePath"
     Remove-Item -Force $tempFilePath
 }

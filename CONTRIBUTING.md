@@ -7,7 +7,7 @@ A Windows build machine is assumed.
     - "Desktop development with C++" workload
     - "C++/CLI support for v142 build tools (Latest)" component
 - Install WSL with Ubuntu 20.04.
-    - Install some tools: `sudo apt-get install tidy`
+    - Install some tools: `sudo apt-get install tidy dos2unix`
     - Install PowerShell:
         ```
         sudo apt-get update
