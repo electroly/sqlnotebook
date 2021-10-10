@@ -4,6 +4,7 @@
 *.resx text eol=crlf
 *.csproj text eol=crlf
 *.sln text eol=crlf
+*.xshd text eol=crlf
 *.md text eol=lf
 *.png binary
 *.bmp binary
