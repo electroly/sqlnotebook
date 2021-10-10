@@ -12,13 +12,7 @@
 <style>
 h2 {
 	padding-top: 40px;
-	margin-left: -28px;
 	font-size: 24px;
-}
-h2:before {
-	content: "✽ ";
-	color: #2ca089;
-	font-weight: normal;
 }
 table {
 	width: 100%;
@@ -53,52 +47,41 @@ pre {
 	font-size: 13px;
 	margin-right: 20px;
 }
+img#index-screenshot { zoom: 0.5; }
+@media only screen and (max-width: 900px) and (min-width: 650px) {
+    img#index-screenshot { zoom: 0.375; }
+}
+@media only screen and (max-width: 650px) and (min-width: 400px) {
+    img#index-screenshot { zoom: 0.25; }
+}
+@media only screen and (max-width: 400px) {
+    img#index-screenshot { zoom: 0.15; }
+}
 </style>
-<p>SQL Notebook is a free Windows app for <strong>exploring and manipulating tabular data</strong>. It is powered by a supercharged
+<p><strong>SQL Notebook is a free Windows app for exploring and manipulating tabular data.</strong> It is powered by a supercharged
 <a href="https://www.sqlite.org/">SQLite</a> engine, supporting both <a href="https://en.wikipedia.org/wiki/SQL-92">standard 
 SQL</a> queries and SQL Notebook-specific commands. Everything you need to answer analysis questions about your data, regardless 
 of its format or origin, is built into SQL Notebook.</p>
-<p style="text-align: center"><a href="download.html" style="border-bottom: 2px solid #4078c0; text-decoration: none;"><strong>Download SQL Notebook</strong></a></p>
-<p style="text-align: center"><img alt="Screenshot of SQL Notebook" src="art/main-screenshot.png" 
-style="width: 736px; height: 652px">&nbsp;</p>
+<p style="text-align: center"><a href="download.html" style="border-bottom: 2px solid #4078c0; text-decoration: none; font-weight: bold;">Download SQL Notebook</a></p>
+<p style="text-align: center"><img alt="Screenshot of SQL Notebook" src="art/main-screenshot-1.png" width="1499" height="1220" id="index-screenshot">&nbsp;</p>
+
 <h2>Easily import and export data</h2>
-<p><strong>CSV</strong>, <strong>JSON</strong>, and <strong>Excel</strong> files can be imported into the notebook as 
+<p>CSV, JSON, and Excel files can be imported into the notebook as 
     local SQLite tables. A graphical import wizard and <code>IMPORT</code> script commands are both available.</p>
-<p><strong>Microsoft SQL Server</strong>, <strong>PostgreSQL</strong>, and <strong>MySQL</strong> tables can be linked 
+<p>Microsoft SQL Server, PostgreSQL, and MySQL tables can be linked 
     into the notebook and queried interchangeably with local tables. Remote data is not physically copied into the notebook 
     file unless requested; instead, the data source is queried on-the-fly.</p>
-<p>Tables and scripts can be exported in <strong>CSV</strong> format.</p>
-<p style="text-align: center"><img alt="Annotated screenshot of SQL Notebook's CSV import dialog." 
-src="art/annotated-import-screenshot.png" style="width: 747px; height: 305px" /></p>
+<p>Tables and scripts can be exported in CSV format.</p>
+
 <h2>Run quick queries or write sophisticated scripts</h2>
-<p>SQL Notebook offers two standard user interfaces for entering SQL queries:</p>
-<ul>
-    <li>
-    <p><strong>Console</strong>: A command prompt that is optimal for quick queries. Enter SQL commands interactively at 
-    the &quot;&gt;&quot; prompt and see results inline. The command history and output log of each console are retained 
-    in the notebook file for the user's future reference.</p>
-    </li>
-    <li>
-    <p><strong>Script</strong>: Develop more complex scripts using a syntax-colored text editor. Run a script directly by 
-    pressing F5, or invoke it from consoles and other scripts using <a href="execute-stmt.html"><code>EXECUTE</code></a>. 
-    The script may define input parameters using <a href="declare-stmt.html"><code>DECLARE PARAMETER</code></a>.</p>
-    </li>
-</ul>
-<p>Any combination of data sources can be used together in the same SQL query, including cross-file, cross-database, and 
-cross-server queries.</p>
-<p style="text-align: center"><img alt="Annotated screenshot of SQL Notebook consoles and scripts" 
-src="art/annotated-console-script-screenshot.png?version=2" style="width: 746px; height: 350px"></p>
-<h2>Document your work directly in the notebook</h2>
-<p>User-written documents are stored directly in notebook files alongside your SQL code and data. Standard word processing 
-features are available: fonts, lists, text alignment, and tables. Console and script output can be copied into a note for 
-annotation. By keeping your notes with your code, everything you need will be in one place should you need to revisit some 
-work done in SQL Notebook.</p>
-<p style="text-align: center"><img alt="Annotated screenshot of SQL Notebook's note interface." 
-src="art/annotated-note-screenshot.png" style="width: 635px; height: 301px" /></p>
+<p>Enter SQL commands interactively and press F5 to execute.
+Invoke sub-scripts using `EXECUTE` and pass parameters using `DECLARE PARAMETER`.
+Any combination of data sources can be used together in the same SQL query, including cross-file, cross-database, and cross-server queries.</p>
+
 <h2>Use familiar programming constructs</h2>
-<p>Users with prior SQL or other programming language experience will feel right at home in SQL Notebook. All common programming 
-constructs from other programming languages are available, in addition to standard SQLite queries and commands.</p>
-<table style="width: 100%">
+<p>Users with prior SQL or other programming language experience will feel right at home in SQL Notebook.
+All common programming constructs from other programming languages are available, in addition to standard SQLite queries and commands.</p>
+<div style="overflow-x: auto; overflow-y: hidden;"><table>
     <tr>
         <td style="border-width: 0">
         <pre><span class="c-keyword">for</span> <em>:i</em> <span class="c-number">= 1</span> <span class="c-keyword">to</span> <span 
@@ -132,7 +115,7 @@ begin</span>
 <span class="c-keyword">from</span> range<span class="c-number">(1, 100)</span></pre>
         </td>
     </tr>
-</table>
+</table></div>
 <p>Learn more in the <a href="doc.html">documentation</a>:</p>
 <ul>
     <li>Variables (<a href="declare-stmt.html"><code>DECLARE</code></a>, <a href="set-stmt.html"><code>SET</code></a>)</li>
@@ -144,7 +127,7 @@ begin</span>
 <h2>Access a rich library of built-in functionality</h2>
 <p>SQL Notebook is a &quot;batteries included&quot; solution to everyday data analysis needs. A wide variety of functionality 
 is immediately available out of the box.</p>
-<pre style="margin-left: 40px"><span class="c-comment">-- Access the filesystem</span><span class="c-keyword">
+<pre style="overflow-x: auto; overflow-y: hidden;"><span class="c-comment">-- Access the filesystem</span><span class="c-keyword">
 select</span> filename <span class="c-keyword">from</span> list_files<span class="c-number">(</span><span 
 class="c-string">'C:\'</span><span class="c-number">)</span> <span class="c-keyword">where</span> extension <span 
 class="c-keyword">in</span> <span class="c-number">(</span><span 
@@ -183,7 +166,7 @@ or enter a keyword into the &quot;Search Help&quot; box in the upper-right corne
 and SQL Notebook documentation is included. Every available statement and function is documented. <a href="doc.html">The 
 documentation is also available online</a>.</p>
 <h2>It's free!</h2>
-<p>SQL Notebook is <strong>free and open source</strong> software available under the popular <a href="license.html">MIT 
+<p>SQL Notebook is free and open source software available under the popular <a href="license.html">MIT 
 license</a>.</p>
 <p><a href="download.html">Download and install SQL Notebook now!</a>&nbsp;</p>
 

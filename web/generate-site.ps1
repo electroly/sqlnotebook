@@ -1,16 +1,32 @@
 $ErrorActionPreference = "Stop"
 
-function ReadFile($filePath) {
+function ReadFileAbsolute($filePath) {
+    Write-Host "ReadFileAbsolute($filePath)"
     $utf8 = New-Object System.Text.UTF8Encoding($False)
     return [System.IO.File]::ReadAllText($filePath, $utf8)
 }
 
-function WriteFile($filePath, $text) {
+function ReadFile($filePath) {
+    Write-Host "ReadFile($filePath)"
+    $filePath = Join-Path $PSScriptRoot $filePath
+    return ReadFileAbsolute($filePath)
+}
+
+function WriteFileAbsolute($filePath, $text) {
+    Write-Host "WriteFileAbsolute($filePath)"
     $utf8 = New-Object System.Text.UTF8Encoding($False)
     [System.IO.File]::WriteAllText($filePath, $text, $utf8)
 }
 
+function WriteFile($filePath, $text) {
+    Write-Host "WriteFile($filePath)"
+    $filePath = Join-Path $PSScriptRoot $filePath
+    WriteFileAbsolute $filePath $text
+}
+
 function FormatPage($title, $content, $metaDesc) {
+    Write-Host "FormatPage($title)"
+
     $tmpl = (ReadFile .\page.template.html)
     if ($title -eq "") {
         $title = "SQL Notebook"
@@ -26,6 +42,7 @@ function FormatPage($title, $content, $metaDesc) {
 }
 
 function FormatHtmlPage($title, $htmlPath, $metaDesc) {
+    Write-Host "FormatHtmlPage($htmlPage)"
     $html = (ReadFile $htmlPath)
     $start = $html.IndexOf("<body>") + 6
     $end = $html.IndexOf("</body>")
@@ -42,7 +59,7 @@ function WriteDocFiles() {
         if ($docFilePath.EndsWith("books.txt")) {
             continue
         }
-        $html = (ReadFile $docFilePath)
+        $html = (ReadFileAbsolute $docFilePath)
 
         # parse out the title
         $startIndex = $html.IndexOf("<title>") + 7
@@ -62,7 +79,7 @@ function WriteDocFiles() {
         $html = $html -replace "</body>",""
 
         $siteFilePath = [System.IO.Path]::Combine($sitePath, $docFilename)
-        WriteFile $siteFilePath (FormatPage $title $html "")
+        WriteFileAbsolute $siteFilePath (FormatPage $title $html "")
     }
 }
 
@@ -150,6 +167,9 @@ function GenerateTempDocHtml() {
     $obj = New-Object DocHtmlGenerator
     $obj.WriteDocHtml($docPath, $webPath)
 }
+
+Write-Host "Dir: $PSScriptRoot"
+cd $PSScriptRoot
 
 New-Item site -Type Directory -ErrorAction SilentlyContinue
 New-Item site/art -Type Directory -ErrorAction SilentlyContinue

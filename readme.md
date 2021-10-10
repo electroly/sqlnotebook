@@ -1,6 +1,7 @@
-<a href="https://sqlnotebook.com/index.html"><img src="https://sqlnotebook.com/art/icon-title.png"></a>    
-- [**Website**](https://sqlnotebook.com/index.html)
-- [**Download & Install**](https://sqlnotebook.com/download.html)
-- [**Documentation**](https://sqlnotebook.com/doc.html)
+# SQL Notebook
 
-SQL Notebook is a Windows desktop application for tabular data exploration and manipulation.  Please visit the [SQL Notebook website](https://sqlnotebook.com/index.html) for more information.
+SQL Notebook is a free Windows app for exploring and manipulating tabular data.
+It is powered by a supercharged [SQLite](https://www.sqlite.org/) engine, supporting both [standard SQL](https://en.wikipedia.org/wiki/SQL-92) queries and SQL Notebook-specific commands.
+Everything you need to answer analysis questions about your data, regardless of its format or origin, is built into SQL Notebook.
+
+[**Learn more at the SQL Notebook website!**](https://sqlnotebook.com)

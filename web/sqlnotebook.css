@@ -1,12 +1,23 @@
+* { -webkit-text-size-adjust: none; text-size-adjust: none; }
 html {
     overflow-y: scroll;
 }
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     margin: 0 auto;
-    width: 800px;
+    max-width: 800px;
     line-height: 150%;
-    padding-top: 15px;
+    padding: 15px;
+}
+header > a, header > a:visited, header > a:hover, header > a:active {
+    text-decoration: none;
+    color: black;
+    font-size: 32px;
+}
+header > a > span {
+    display: inline-block;
+    padding-top: 5px;
+    font-weight: bold;
 }
 pre, code, tt {
     font-family: 'Consolas', 'Monaco', monospace;
@@ -33,20 +44,14 @@ ul#nav {
 ul#nav li {
     display: inline-block;
     padding-right: 15px;
-    font-size: 16px;
-}
-ul#nav li:before {
-    content: "✽ ";
-    color: #E0E0E0;
+    font-size: 20px;
 }
 ul#nav li a {
     font-weight: bold;
 }
 hr {
-    height: 2px;
+    height: 1px;
     border-width: 0;
-    margin-left: -24px;
-    margin-right: -24px;
     color: gray;
     background-color: gray;
 }
@@ -103,4 +108,12 @@ ul.doc-list {
     font-size: 12px;
     line-height: 150%;
     margin-bottom: 30px;
+}
+span#header-doc-short {
+    display: none;
+}
+@media only screen and (max-width: 750px) {
+    iframe#github-star { display: none; }
+    span#header-doc-long { display: none; }
+    span#header-doc-short { display: inline; }
 }
