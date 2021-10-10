@@ -1,38 +1,34 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<title>READ_FILE_TEXT Function</title>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>READ_FILE_TEXT Function</title>
 </head>
-
 <body>
-
-<h1><code>READ_FILE_TEXT</code> Function</h1>
-<p>Reads the contents of a text file and returns it as a single string representing the whole file. </p>
-<h2>Syntax</h2>
-<blockquote>
+  <h1><code>READ_FILE_TEXT</code> Function</h1>
+  <p>Reads the contents of a text file and returns it as a single string representing the whole file.</p>
+  <h2>Syntax</h2>
+  <blockquote>
     <code>READ_FILE_TEXT(<i>file-path</i>, [<i>file-encoding</i>])</code>
-</blockquote>
-<h2>Arguments</h2>
-<ul class="args">
-    <li><b>file-path</b> (string expression)<br>The absolute path to the text file to read. </li>
-    <li><b>file-encoding</b> (integer expression, optional, 0-65535, default: 0)<br>Indicates the text encoding to use when 
-    reading the file. Specify 0 to detect the encoding automatically. Any nonzero integer is treated as a Windows code page 
-    number. </li>
-</ul>
-<h2>Return Value</h2>
-<p>Text. </p>
-<h2>Examples</h2>
-<ol class="examples">
-    <li><code>DECLARE @data = READ_FILE_TEXT('C:\MyFile.txt');</code><br>Reads the contents of "MyFile.txt" into a text 
-    variable called <code>@data</code>. Because the <i>file-encoding</i> parameter is not specified, the UTF-8 encoding 
-    is used to read the file. </li>
-    <li><code>SELECT READ_FILE_TEXT('C:\ShiftJIS.txt', 932) AS data;</code><br>Produces a 1-row query result containing 
-    the contents of "ShiftJIS.txt", which is read using the Japanese Shift-JIS encoding (code page 932). </li>
-</ol>
-<br>
-
+  </blockquote>
+  <h2>Arguments</h2>
+  <ul class="args">
+    <li><b>file-path</b> (string expression)<br>
+    The absolute path to the text file to read.</li>
+    <li><b>file-encoding</b> (integer expression, optional, 0-65535, default: 0)<br>
+    Indicates the text encoding to use when reading the file. Specify 0 to detect the encoding automatically. Any
+    nonzero integer is treated as a Windows code page number.</li>
+  </ul>
+  <h2>Return Value</h2>
+  <p>Text.</p>
+  <h2>Examples</h2>
+  <ol class="examples">
+    <li><code>DECLARE @data = READ_FILE_TEXT('C:\MyFile.txt');</code><br>
+    Reads the contents of "MyFile.txt" into a text variable called <code>@data</code>. Because the <i>file-encoding</i>
+    parameter is not specified, the UTF-8 encoding is used to read the file.</li>
+    <li><code>SELECT READ_FILE_TEXT('C:\ShiftJIS.txt', 932) AS data;</code><br>
+    Produces a 1-row query result containing the contents of "ShiftJIS.txt", which is read using the Japanese Shift-JIS
+    encoding (code page 932).</li>
+  </ol><br>
 </body>
-
 </html>

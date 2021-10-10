@@ -1,45 +1,44 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<title>ARRAY_INSERT Function</title>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>ARRAY_INSERT Function</title>
 </head>
-
 <body>
-
-<h1><code>ARRAY_INSERT</code> Function</h1>
-<p>Creates a new array by copying an existing array and inserting one or more elements. The existing array is not modified.
-</p>
-<h2>Syntax</h2>
-<blockquote>
+  <h1><code>ARRAY_INSERT</code> Function</h1>
+  <p>Creates a new array by copying an existing array and inserting one or more elements. The existing array is not
+  modified.</p>
+  <h2>Syntax</h2>
+  <blockquote>
     <code>ARRAY_INSERT(<i>array</i>, <i>element-index</i>, <i>value1</i>, [<i>value2</i>], ...)</code>
-</blockquote>
-<h2>Arguments</h2>
-<ul class="args">
-    <li><b>array</b> (blob expression)<br>The existing array to copy. </li>
-    <li><b>element-index</b> (integer expression)<br>Zero-based index into the array, specifying where to insert the new 
-    elements. If <i>element-index</i> equals the length of the array (i.e. one index past the last element) then the value 
-    is appended to the array. </li>
-    <li><b>value1</b>, <b>value2</b>, ... (expression)<br>The values to insert at the specified location. </li>
-</ul>
-<h2>Return Value</h2>
-<blockquote>
+  </blockquote>
+  <h2>Arguments</h2>
+  <ul class="args">
+    <li><b>array</b> (blob expression)<br>
+    The existing array to copy.</li>
+    <li><b>element-index</b> (integer expression)<br>
+    Zero-based index into the array, specifying where to insert the new elements. If <i>element-index</i> equals the
+    length of the array (i.e. one index past the last element) then the value is appended to the array.</li>
+    <li><b>value1</b>, <b>value2</b>, ... (expression)<br>
+    The values to insert at the specified location.</li>
+  </ul>
+  <h2>Return Value</h2>
+  <blockquote>
     The new array, with the new values inserted at index <i>element-index</i>.
-</blockquote>
-<h2>Examples</h2>
-<ul class="examples">
-    <li><code>DECLARE @x = ARRAY_INSERT(<a href="array-func.html">ARRAY</a>(1, 2, 3), 2, 99)</code><br>Assigns a 4-element 
-    array containing 1, 2, 99, 3 to <code>@x</code>. </li>
-    <li><code>DECLARE @x = ARRAY_INSERT(</code><code><a href="array-func.html">ARRAY</a></code><code>(1, 2, 3), 3, 99)</code><br>
-    Assigns a 4-element array containing 1, 2, 3, 99 to <code>@x</code>. </li>
-    <li><code>DECLARE @x = ARRAY_INSERT(</code><code><a href="array-func.html">ARRAY</a></code><code>(1, 2, 3), 0, 99)</code><br>
-    Assigns a 4-element array containing 99, 1, 2, 3 to <code>@x</code>. </li>
-    <li><code>DECLARE @x = ARRAY_INSERT(</code><code><a href="array-func.html">ARRAY</a></code><code>(1, 2, 3), 10, 5)</code><br>
-    Raises an error because the <i>element-index</i> is out of the array's bounds. </li>
-</ul>
-<br>
-
+  </blockquote>
+  <h2>Examples</h2>
+  <ul class="examples">
+    <li><code>DECLARE @x = ARRAY_INSERT(<a href="array-func.html">ARRAY</a>(1, 2, 3), 2, 99)</code><br>
+    Assigns a 4-element array containing 1, 2, 99, 3 to <code>@x</code>.</li>
+    <li><code>DECLARE @x = ARRAY_INSERT(</code><code><a href="array-func.html">ARRAY</a></code><code>(1, 2, 3), 3,
+    99)</code><br>
+    Assigns a 4-element array containing 1, 2, 3, 99 to <code>@x</code>.</li>
+    <li><code>DECLARE @x = ARRAY_INSERT(</code><code><a href="array-func.html">ARRAY</a></code><code>(1, 2, 3), 0,
+    99)</code><br>
+    Assigns a 4-element array containing 99, 1, 2, 3 to <code>@x</code>.</li>
+    <li><code>DECLARE @x = ARRAY_INSERT(</code><code><a href="array-func.html">ARRAY</a></code><code>(1, 2, 3), 10,
+    5)</code><br>
+    Raises an error because the <i>element-index</i> is out of the array's bounds.</li>
+  </ul><br>
 </body>
-
 </html>

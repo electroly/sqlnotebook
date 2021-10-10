@@ -1,38 +1,38 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<title>EOMONTH Function</title>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>EOMONTH Function</title>
 </head>
-
 <body>
-
-<h1><code>EOMONTH</code> Function</h1>
-<p>Returns the last day of the month containing the specified date. </p>
-<h2>Syntax</h2>
-<blockquote>
+  <h1><code>EOMONTH</code> Function</h1>
+  <p>Returns the last day of the month containing the specified date.</p>
+  <h2>Syntax</h2>
+  <blockquote>
     <code>EOMONTH(<i>date</i>, [<i>months-to-add</i>])</code>
-</blockquote>
-<h2>Arguments</h2>
-<ul class="args">
-    <li><b>date</b> (date/time expression)<br>A text value that can be parsed into a date/time. </li>
-    <li><b>months-to-add</b> (integer expression, optional)<br>If specified, this number of months is added to <i>date</i> 
-    before calculating the last day of the containing month. </li>
-</ul>
-<h2>Return Value</h2>
-<blockquote>
+  </blockquote>
+  <h2>Arguments</h2>
+  <ul class="args">
+    <li><b>date</b> (date/time expression)<br>
+    A text value that can be parsed into a date/time.</li>
+    <li><b>months-to-add</b> (integer expression, optional)<br>
+    If specified, this number of months is added to <i>date</i> before calculating the last day of the containing
+    month.</li>
+  </ul>
+  <h2>Return Value</h2>
+  <blockquote>
     A date string formatted like "2016-02-29".
-</blockquote>
-<h2>Examples</h2>
-<ul class="examples">
-    <li><code>PRINT EOMONTH('2016-03-07');</code><br>Prints "2016-03-31". </li>
-    <li><code>PRINT EOMONTH('2016-03-07', 1);</code><br>Prints "2016-04-30". </li>
-    <li><code>PRINT EOMONTH('2016-03-07', -1);</code><br>Prints "2016-02-29". </li>
-    <li><code>PRINT EOMONTH('2016-01-23 22:06:53.742 -04:00');</code><br>Prints "2016-01-31". </li>
-</ul>
-<br>
-
+  </blockquote>
+  <h2>Examples</h2>
+  <ul class="examples">
+    <li><code>PRINT EOMONTH('2016-03-07');</code><br>
+    Prints "2016-03-31".</li>
+    <li><code>PRINT EOMONTH('2016-03-07', 1);</code><br>
+    Prints "2016-04-30".</li>
+    <li><code>PRINT EOMONTH('2016-03-07', -1);</code><br>
+    Prints "2016-02-29".</li>
+    <li><code>PRINT EOMONTH('2016-01-23 22:06:53.742 -04:00');</code><br>
+    Prints "2016-01-31".</li>
+  </ul><br>
 </body>
-
 </html>

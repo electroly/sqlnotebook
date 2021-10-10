@@ -1,68 +1,64 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<title>LIST_FILES Function</title>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>LIST_FILES Function</title>
 </head>
-
 <body>
-
-<h1><code>LIST_FILES</code> Function</h1>
-<p>Returns a table containing the files in a particular folder, optionally recursing into subfolders. If a folder cannot 
-be accessed, then it is skipped silently. This function is used in the <code>FROM</code> clause of a <code>SELECT</code> 
-statement and can participate in <code>JOIN</code>s as if it were a table. </p>
-<h2>Syntax</h2>
-<blockquote>
+  <h1><code>LIST_FILES</code> Function</h1>
+  <p>Returns a table containing the files in a particular folder, optionally recursing into subfolders. If a folder
+  cannot be accessed, then it is skipped silently. This function is used in the <code>FROM</code> clause of a
+  <code>SELECT</code> statement and can participate in <code>JOIN</code>s as if it were a table.</p>
+  <h2>Syntax</h2>
+  <blockquote>
     <code>LIST_FILES(<i>root-path</i>, [<i>recursive</i>])</code>
-</blockquote>
-<h2>Arguments</h2>
-<ul class="args">
-    <li><b>root-path</b> (text expression)<br>The absolute path of the folder on disk in which to search for files. </li>
-    <li><b>recursive</b> (integer expression, optional)<br>If specified as non-zero, then all files in all subdirectories, 
-    recursively, will be returned. </li>
-</ul>
-<h2>Return Value</h2>
-<blockquote>
+  </blockquote>
+  <h2>Arguments</h2>
+  <ul class="args">
+    <li><b>root-path</b> (text expression)<br>
+    The absolute path of the folder on disk in which to search for files.</li>
+    <li><b>recursive</b> (integer expression, optional)<br>
+    If specified as non-zero, then all files in all subdirectories, recursively, will be returned.</li>
+  </ul>
+  <h2>Return Value</h2>
+  <blockquote>
     A table with the following columns:
     <table>
-        <thead>
-            <tr>
-                <th>Column name</th>
-                <th>Example value</th>
-            </tr>
-        </thead>
+      <thead>
         <tr>
-            <td><code>file_path</code></td>
-            <td>"C:\Temp\file1.csv"</td>
+          <th>Column name</th>
+          <th>Example value</th>
         </tr>
-        <tr>
-            <td><code>folder</code></td>
-            <td>"C:\Temp"</td>
-        </tr>
-        <tr>
-            <td><code>filename</code></td>
-            <td>"file1.csv"</td>
-        </tr>
-        <tr>
-            <td><code>extension</code></td>
-            <td>".csv"</td>
-        </tr>
-        <tr>
-            <td><code>modified_date</code></td>
-            <td>"2016-04-03 22:05:14.790 -04:00"</td>
-        </tr>
+      </thead>
+      <tr>
+        <td><code>file_path</code></td>
+        <td>"C:\Temp\file1.csv"</td>
+      </tr>
+      <tr>
+        <td><code>folder</code></td>
+        <td>"C:\Temp"</td>
+      </tr>
+      <tr>
+        <td><code>filename</code></td>
+        <td>"file1.csv"</td>
+      </tr>
+      <tr>
+        <td><code>extension</code></td>
+        <td>".csv"</td>
+      </tr>
+      <tr>
+        <td><code>modified_date</code></td>
+        <td>"2016-04-03 22:05:14.790 -04:00"</td>
+      </tr>
     </table>
-</blockquote>
-<h2>Examples</h2>
-<ul class="examples">
-    <li><code>SELECT * FROM LIST_FILES('C:\');</code><br>Returns a table listing all the files in the root C:\ directory.
-    </li>
-    <li><code>SELECT file_path FROM LIST_FILES('C:\Users\', 1) LIMIT 50;</code><br>Returns a table listing the first 50 
-    file paths in the C:\Users\ directory and all subdirectories within it, recursively. </li>
-</ul>
-<br>
-
+  </blockquote>
+  <h2>Examples</h2>
+  <ul class="examples">
+    <li><code>SELECT * FROM LIST_FILES('C:\');</code><br>
+    Returns a table listing all the files in the root C:\ directory.</li>
+    <li><code>SELECT file_path FROM LIST_FILES('C:\Users\', 1) LIMIT 50;</code><br>
+    Returns a table listing the first 50 file paths in the C:\Users\ directory and all subdirectories within it,
+    recursively.</li>
+  </ul><br>
 </body>
-
 </html>

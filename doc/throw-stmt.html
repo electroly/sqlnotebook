@@ -1,30 +1,29 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<title>THROW Statement</title>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>THROW Statement</title>
 </head>
-
 <body>
-
-<h1><code>THROW</code> Statement </h1>
-Throws an error, causing code execution to jump to an enclosing <a href="try-catch-stmt.html"><code>CATCH</code></a> 
-block.<h2>Syntax</h2>
-<p><img alt="Syntax for the THROW statement" src="art/doc-throw-stmt.png" style="width: 235px; height: 54px"><br>
-</p>
-<h2>Arguments</h2>
-<ul class="args">
-    <li><span style="font-weight: bold;">error-message </span>(any expression, optional)<br>The values to be returned from the&nbsp;<a href="error-message-func.html"><code>ERROR_MESSAGE</code></a> 
-    function. If not provided, then the value from the last thrown error is retained; this allows a <code>CATCH</code> block to re-throw an error without changing it.</li>
-</ul>
-<h2>Examples</h2>
-<ul class="examples">
-    <li><code>THROW 'Oops';</code><br>Throws an error such that <code>ERROR_MESSAGE()</code> 
-    returns "Oops".</li>
-    <li><code>THROW;</code><br>Re-throws the last thrown error without changing it.</li>
-</ul>
-
+  <h1><code>THROW</code> Statement</h1>Throws an error, causing code execution to jump to an enclosing <a href=
+  "try-catch-stmt.html"><code>CATCH</code></a> block.
+  <h2>Syntax</h2>
+  <p><img alt="Syntax for the THROW statement" src="art/doc-throw-stmt.png" style="width: 235px; height: 54px"><br></p>
+  <h2>Arguments</h2>
+  <ul class="args">
+    <li>
+      <span style="font-weight: bold;">error-message</span> (any expression, optional)<br>
+      The values to be returned from the&nbsp;<a href="error-message-func.html"><code>ERROR_MESSAGE</code></a>
+      function. If not provided, then the value from the last thrown error is retained; this allows a
+      <code>CATCH</code> block to re-throw an error without changing it.
+    </li>
+  </ul>
+  <h2>Examples</h2>
+  <ul class="examples">
+    <li><code>THROW 'Oops';</code><br>
+    Throws an error such that <code>ERROR_MESSAGE()</code> returns "Oops".</li>
+    <li><code>THROW;</code><br>
+    Re-throws the last thrown error without changing it.</li>
+  </ul>
 </body>
-
 </html>

@@ -1,39 +1,43 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<title>TRY/CATCH Statement</title>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>TRY/CATCH Statement</title>
 </head>
-
 <body>
-
-<h1><code>TRY/CATCH</code> Statement </h1>
-Executes the <span style="font-style: italic;">stmt-to-try</span> statements in order until successful completion or until 
-one of the statements throws an error. If an error is thrown, then <span style="font-style: italic;">stmt-if-error</span> 
-statements are executed. The statements in the <code>CATCH</code> block may use the <a href="error-number-func.html">
-<code>ERROR_NUMBER</code></a>, <a href="error-message-func.html"><code>ERROR_MESSAGE</code></a>, and
-<a href="error-state-func.html"><code>ERROR_STATE</code></a> functions to access the thrown error information.<br>
-<h2>Syntax</h2>
-<p><span style="font-family: monospace;">
-<img alt="Syntax for the TRY/CATCH statement" src="art/doc-try-stmt.png" style="width: 627px; height: 109px;"></span><br>
-</p>
-<h2>Arguments</h2>
-<ul class="args">
-    <li><span style="font-weight: bold;">stmt-to-try</span><span style="font-weight: bold;"> </span>(statement)<br>The statements 
-    to execute. These statements may <a href="throw-stmt.html"><code>THROW</code></a> an error, causing execution to divert 
-    to the <span style="font-style: italic;">stmt-if-error</span> statements.</li>
-    <li><span style="font-weight: bold;">stmt-if-error</span> (statement)<br>The statements to execute if any
-    <span style="font-style: italic;">stmt-to-try</span> throws an error. These statements may use the
-    <a href="error-number-func.html"><code>ERROR_NUMBER</code></a>, <a href="error-message-func.html"><code>ERROR_MESSAGE</code></a>, 
-    and <a href="error-state-func.html"><code>ERROR_STATE</code></a> functions to access the thrown error information.</li>
-</ul>
-<h2>Examples</h2>
-<ul class="examples">
-    <li><code>BEGIN TRY<br>&nbsp;&nbsp;&nbsp; THROW 0, 'Foo', 0;<br>END TRY<br>BEGIN CATCH<br>&nbsp;&nbsp;&nbsp; PRINT ERROR_MESSAGE();<br>
-    END CATCH</code><br>Prints "Foo".</li>
-</ul>
-
+  <h1><code>TRY/CATCH</code> Statement</h1>Executes the <span style="font-style: italic;">stmt-to-try</span> statements
+  in order until successful completion or until one of the statements throws an error. If an error is thrown, then
+  <span style="font-style: italic;">stmt-if-error</span> statements are executed. The statements in the
+  <code>CATCH</code> block may use the <a href="error-number-func.html"><code>ERROR_NUMBER</code></a>, <a href=
+  "error-message-func.html"><code>ERROR_MESSAGE</code></a>, and <a href=
+  "error-state-func.html"><code>ERROR_STATE</code></a> functions to access the thrown error information.<br>
+  <h2>Syntax</h2>
+  <p><span style="font-family: monospace;"><img alt="Syntax for the TRY/CATCH statement" src="art/doc-try-stmt.png"
+  style="width: 627px; height: 109px;"></span><br></p>
+  <h2>Arguments</h2>
+  <ul class="args">
+    <li>
+      <span style="font-weight: bold;">stmt-to-try</span> (statement)<br>
+      The statements to execute. These statements may <a href="throw-stmt.html"><code>THROW</code></a> an error,
+      causing execution to divert to the <span style="font-style: italic;">stmt-if-error</span> statements.
+    </li>
+    <li>
+      <span style="font-weight: bold;">stmt-if-error</span> (statement)<br>
+      The statements to execute if any <span style="font-style: italic;">stmt-to-try</span> throws an error. These
+      statements may use the <a href="error-number-func.html"><code>ERROR_NUMBER</code></a>, <a href=
+      "error-message-func.html"><code>ERROR_MESSAGE</code></a>, and <a href=
+      "error-state-func.html"><code>ERROR_STATE</code></a> functions to access the thrown error information.
+    </li>
+  </ul>
+  <h2>Examples</h2>
+  <ul class="examples">
+    <li><code>BEGIN TRY<br>
+    &nbsp;&nbsp;&nbsp; THROW 0, 'Foo', 0;<br>
+    END TRY<br>
+    BEGIN CATCH<br>
+    &nbsp;&nbsp;&nbsp; PRINT ERROR_MESSAGE();<br>
+    END CATCH</code><br>
+    Prints "Foo".</li>
+  </ul>
 </body>
-
 </html>

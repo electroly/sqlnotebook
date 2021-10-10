@@ -1,4 +1,7 @@
-* { -webkit-text-size-adjust: none; text-size-adjust: none; }
+* {
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+}
 html {
     overflow-y: scroll;
 }
@@ -35,6 +38,7 @@ div#article {
 }
 div#footer {
     margin-bottom: 75px;
+    text-align: right;
 }
 ul#nav {
     padding-left: 0px;
@@ -105,7 +109,7 @@ img, a img {
     border: 0;
 }
 ul.doc-list {
-    font-size: 12px;
+    font-size: 14px;
     line-height: 150%;
     margin-bottom: 30px;
 }
