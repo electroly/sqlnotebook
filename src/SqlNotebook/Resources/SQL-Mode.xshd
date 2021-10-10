@@ -1,0 +1,193 @@
+﻿<?xml version="1.0"?>
+<SyntaxDefinition name="SQL" extensions=".sql" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<!-- Derived from TSQL-Mode.xshd in AvalonEdit -->
+	<Color name="Comment" foreground="Green" exampleText="-- comment" />
+	<Color name="Char" foreground="Red" exampleText="name = 'abc'"/>
+	<Color name="Keywords" fontWeight="bold" foreground="Blue" exampleText="SELECT FROM"/>
+
+	<Property name="DocCommentMarker" value="///" />
+
+	<RuleSet name="CommentMarkerSet">
+		<Keywords fontWeight="bold" foreground="Red">
+			<Word>TODO</Word>
+			<Word>FIXME</Word>
+		</Keywords>
+		<Keywords fontWeight="bold" foreground="#E0E000">
+			<Word>HACK</Word>
+			<Word>UNDONE</Word>
+		</Keywords>
+	</RuleSet>
+
+	<RuleSet ignoreCase="true">
+		<Span color="Comment" ruleSet="CommentMarkerSet">
+			<Begin>--</Begin>
+		</Span>
+
+		<Span color="Comment" ruleSet="CommentMarkerSet" multiline="true">
+			<Begin>/\*</Begin>
+			<End>\*/</End>
+		</Span>
+
+		<Span color="Char">
+			<Begin>'</Begin>
+			<End>'</End>
+			<RuleSet>
+				<Span begin="\\" end="."/>
+			</RuleSet>
+		</Span>
+
+		<Keywords color="Keywords">
+			<!-- SQL Notebook tokens -->
+			<Word>declare</Word>
+			<Word>parameter</Word>
+			<Word>while</Word>
+			<Word>step</Word>
+			<Word>break</Word>
+			<Word>continue</Word>
+			<Word>print</Word>
+			<Word>exec</Word>
+			<Word>execute</Word>
+			<Word>default</Word>
+			<Word>return</Word>
+			<Word>throw</Word>
+			<Word>catch</Word>
+			<Word>import</Word>
+			<Word>csv</Word>
+			<Word>txt</Word>
+			<Word>xls</Word>
+			<Word>worksheet</Word>
+			<Word>options</Word>
+			<Word>export</Word>
+			<Word>text</Word>
+			<Word>real</Word>
+			<Word>date</Word>
+			<Word>datetime</Word>
+			<Word>datetimeoffset</Word>
+
+			<!-- SQLite tokens -->
+			<Word>abort</Word>
+			<Word>action</Word>
+			<Word>add</Word>
+			<Word>after</Word>
+			<Word>all</Word>
+			<Word>alter</Word>
+			<Word>analyze</Word>
+			<Word>and</Word>
+			<Word>any</Word>
+			<Word>as</Word>
+			<Word>asc</Word>
+			<Word>attach</Word>
+			<Word>autoincr</Word>
+			<Word>before</Word>
+			<Word>begin</Word>
+			<Word>between</Word>
+			<Word>bitnot</Word>
+			<Word>blob</Word>
+			<Word>by</Word>
+			<Word>cascade</Word>
+			<Word>case</Word>
+			<Word>cast</Word>
+			<Word>check</Word>
+			<Word>collate</Word>
+			<Word>column</Word>
+			<Word>comma</Word>
+			<Word>commit</Word>
+			<Word>concat</Word>
+			<Word>conflict</Word>
+			<Word>constraint</Word>
+			<Word>create</Word>
+			<Word>ctime</Word>
+			<Word>database</Word>
+			<Word>default</Word>
+			<Word>deferrable</Word>
+			<Word>deferred</Word>
+			<Word>delete</Word>
+			<Word>desc</Word>
+			<Word>detach</Word>
+			<Word>distinct</Word>
+			<Word>drop</Word>
+			<Word>each</Word>
+			<Word>else</Word>
+			<Word>end</Word>
+			<Word>except</Word>
+			<Word>exclusive</Word>
+			<Word>exists</Word>
+			<Word>explain</Word>
+			<Word>fail</Word>
+			<Word>float</Word>
+			<Word>for</Word>
+			<Word>foreign</Word>
+			<Word>from</Word>
+			<Word>function</Word>
+			<Word>group</Word>
+			<Word>having</Word>
+			<Word>id</Word>
+			<Word>if</Word>
+			<Word>ignore</Word>
+			<Word>immediate</Word>
+			<Word>in</Word>
+			<Word>index</Word>
+			<Word>indexed</Word>
+			<Word>initially</Word>
+			<Word>insert</Word>
+			<Word>instead</Word>
+			<Word>integer</Word>
+			<Word>intersect</Word>
+			<Word>into</Word>
+			<Word>is</Word>
+			<Word>join</Word>
+			<Word>key</Word>
+			<Word>like</Word>
+			<Word>limit</Word>
+			<Word>lp</Word>
+			<Word>match</Word>
+			<Word>no</Word>
+			<Word>not</Word>
+			<Word>null</Word>
+			<Word>of</Word>
+			<Word>offset</Word>
+			<Word>on</Word>
+			<Word>or</Word>
+			<Word>order</Word>
+			<Word>plan</Word>
+			<Word>pragma</Word>
+			<Word>primary</Word>
+			<Word>query</Word>
+			<Word>raise</Word>
+			<Word>recursive</Word>
+			<Word>references</Word>
+			<Word>reindex</Word>
+			<Word>release</Word>
+			<Word>rem</Word>
+			<Word>rename</Word>
+			<Word>replace</Word>
+			<Word>restrict</Word>
+			<Word>rollback</Word>
+			<Word>row</Word>
+			<Word>rp</Word>
+			<Word>savepoint</Word>
+			<Word>select</Word>
+			<Word>semi</Word>
+			<Word>set</Word>
+			<Word>string</Word>
+			<Word>table</Word>
+			<Word>temp</Word>
+			<Word>then</Word>
+			<Word>to</Word>
+			<Word>transaction</Word>
+			<Word>trigger</Word>
+			<Word>union</Word>
+			<Word>unique</Word>
+			<Word>update</Word>
+			<Word>using</Word>
+			<Word>vacuum</Word>
+			<Word>values</Word>
+			<Word>view</Word>
+			<Word>virtual</Word>
+			<Word>when</Word>
+			<Word>where</Word>
+			<Word>with</Word>
+			<Word>without</Word>
+		</Keywords>
+	</RuleSet>
+</SyntaxDefinition>

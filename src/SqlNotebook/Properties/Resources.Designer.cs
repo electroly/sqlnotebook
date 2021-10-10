@@ -542,6 +542,16 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] SQL_Mode_xshd {
+            get {
+                object obj = ResourceManager.GetObject("SQL_Mode_xshd", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] SqliteDocZip {
             get {
                 object obj = ResourceManager.GetObject("SqliteDocZip", resourceCulture);

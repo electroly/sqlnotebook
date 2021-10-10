@@ -53,7 +53,7 @@ namespace SqlNotebook {
             // if this tool window has been pulled off into a floating window, then the MainForm's key handler won't
             // trigger on F5, so catch it here.
             _textCtl.TextBox.KeyDown += async (sender, e) => {
-                if (e.KeyCode == Keys.F5) {
+                if (e.SystemKey == System.Windows.Input.Key.F5) {
                     await Execute();
                 }
             };
