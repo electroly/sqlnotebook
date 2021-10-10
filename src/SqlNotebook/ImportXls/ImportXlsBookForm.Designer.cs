@@ -65,7 +65,7 @@
             this._dockPanelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this._dockPanelContainer.Location = new System.Drawing.Point(3, 3);
             this._dockPanelContainer.Name = "_dockPanelContainer";
-            this._dockPanelContainer.Size = new System.Drawing.Size(1350, 385);
+            this._dockPanelContainer.Size = new System.Drawing.Size(1350, 729);
             this._dockPanelContainer.TabIndex = 11;
             // 
             // _progressBar
@@ -97,12 +97,13 @@
             // 
             // _buttonFlow
             // 
+            this._buttonFlow.AutoSize = true;
             this._buttonFlow.Controls.Add(this._okBtn);
             this._buttonFlow.Controls.Add(this._cancelBtn);
             this._buttonFlow.Dock = System.Windows.Forms.DockStyle.Right;
-            this._buttonFlow.Location = new System.Drawing.Point(1053, 394);
+            this._buttonFlow.Location = new System.Drawing.Point(1165, 738);
             this._buttonFlow.Name = "_buttonFlow";
-            this._buttonFlow.Size = new System.Drawing.Size(300, 385);
+            this._buttonFlow.Size = new System.Drawing.Size(188, 41);
             this._buttonFlow.TabIndex = 13;
             this._buttonFlow.WrapContents = false;
             // 
@@ -125,6 +126,7 @@
             this.Text = "XLS Import";
             this.Shown += new System.EventHandler(this.ImportXlsBookForm_Shown);
             this._table.ResumeLayout(false);
+            this._table.PerformLayout();
             this._buttonFlow.ResumeLayout(false);
             this._buttonFlow.PerformLayout();
             this.ResumeLayout(false);

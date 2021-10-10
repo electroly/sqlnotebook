@@ -65,7 +65,7 @@
             panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             panel3.Location = new System.Drawing.Point(0, 0);
             panel3.Name = "panel3";
-            panel3.Size = new System.Drawing.Size(470, 575);
+            panel3.Size = new System.Drawing.Size(470, 582);
             panel3.TabIndex = 52;
             // 
             // _propPanel
@@ -75,7 +75,7 @@
             this._propPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._propPanel.Location = new System.Drawing.Point(0, 29);
             this._propPanel.Name = "_propPanel";
-            this._propPanel.Size = new System.Drawing.Size(470, 546);
+            this._propPanel.Size = new System.Drawing.Size(470, 553);
             this._propPanel.TabIndex = 55;
             // 
             // _propGrid
@@ -87,7 +87,7 @@
             this._propGrid.Location = new System.Drawing.Point(0, 0);
             this._propGrid.Name = "_propGrid";
             this._propGrid.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this._propGrid.Size = new System.Drawing.Size(468, 544);
+            this._propGrid.Size = new System.Drawing.Size(468, 551);
             this._propGrid.TabIndex = 51;
             this._propGrid.ToolbarVisible = false;
             this._propGrid.ViewBackColor = System.Drawing.Color.White;
@@ -135,7 +135,7 @@
             panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             panel2.Location = new System.Drawing.Point(0, 0);
             panel2.Name = "panel2";
-            panel2.Size = new System.Drawing.Size(1046, 575);
+            panel2.Size = new System.Drawing.Size(1046, 582);
             panel2.TabIndex = 50;
             // 
             // _bottomSplitContainer
@@ -153,7 +153,7 @@
             // 
             this._bottomSplitContainer.Panel2.Controls.Add(this._columnsPanel);
             this._bottomSplitContainer.Panel2.Controls.Add(this._columnsLbl);
-            this._bottomSplitContainer.Size = new System.Drawing.Size(1046, 575);
+            this._bottomSplitContainer.Size = new System.Drawing.Size(1046, 582);
             this._bottomSplitContainer.SplitterDistance = 470;
             this._bottomSplitContainer.SplitterWidth = 11;
             this._bottomSplitContainer.TabIndex = 49;
@@ -164,7 +164,7 @@
             this._columnsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._columnsPanel.Location = new System.Drawing.Point(0, 29);
             this._columnsPanel.Name = "_columnsPanel";
-            this._columnsPanel.Size = new System.Drawing.Size(565, 546);
+            this._columnsPanel.Size = new System.Drawing.Size(565, 553);
             this._columnsPanel.TabIndex = 48;
             // 
             // _columnsLbl
@@ -206,7 +206,7 @@
             // 
             this._outerSplitContainer.Panel2.Controls.Add(panel2);
             this._outerSplitContainer.Size = new System.Drawing.Size(1046, 654);
-            this._outerSplitContainer.SplitterDistance = 68;
+            this._outerSplitContainer.SplitterDistance = 61;
             this._outerSplitContainer.SplitterWidth = 11;
             this._outerSplitContainer.TabIndex = 50;
             // 
@@ -216,7 +216,7 @@
             this._previewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._previewPanel.Location = new System.Drawing.Point(0, 29);
             this._previewPanel.Name = "_previewPanel";
-            this._previewPanel.Size = new System.Drawing.Size(1046, 39);
+            this._previewPanel.Size = new System.Drawing.Size(1046, 32);
             this._previewPanel.TabIndex = 47;
             // 
             // flowLayoutPanel1

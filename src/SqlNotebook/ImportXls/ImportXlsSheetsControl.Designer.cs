@@ -24,6 +24,8 @@
         /// </summary>
         private void InitializeComponent() {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this._grid = new System.Windows.Forms.DataGridView();
             this._toBeImportedColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this._originalNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -41,6 +43,14 @@
             this._grid.BackgroundColor = System.Drawing.SystemColors.Window;
             this._grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._grid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this._grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this._toBeImportedColumn,
@@ -48,6 +58,14 @@
             this._newNameColumn,
             this._importTableExistsColumn,
             this._onErrorColumn});
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this._grid.DefaultCellStyle = dataGridViewCellStyle3;
             this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._grid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(229)))), ((int)(((byte)(229)))));
             this._grid.Location = new System.Drawing.Point(0, 0);
@@ -76,10 +94,10 @@
             // 
             this._originalNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this._originalNameColumn.DataPropertyName = "OriginalName";
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.WindowText;
-            this._originalNameColumn.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.WindowText;
+            this._originalNameColumn.DefaultCellStyle = dataGridViewCellStyle2;
             this._originalNameColumn.HeaderText = "Original worksheet name";
             this._originalNameColumn.MinimumWidth = 8;
             this._originalNameColumn.Name = "_originalNameColumn";
@@ -91,7 +109,7 @@
             // 
             this._newNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this._newNameColumn.DataPropertyName = "NewName";
-            this._newNameColumn.HeaderText = "New table name";
+            this._newNameColumn.HeaderText = "Imported name";
             this._newNameColumn.MinimumWidth = 8;
             this._newNameColumn.Name = "_newNameColumn";
             this._newNameColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
