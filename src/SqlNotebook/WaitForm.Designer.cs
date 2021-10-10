@@ -24,40 +24,57 @@
         /// </summary>
         private void InitializeComponent() {
             this._infoTxt = new System.Windows.Forms.Label();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this._progressBar = new System.Windows.Forms.ProgressBar();
+            this._table = new System.Windows.Forms.TableLayoutPanel();
+            this._table.SuspendLayout();
             this.SuspendLayout();
             // 
             // _infoTxt
             // 
             this._infoTxt.AutoEllipsis = true;
-            this._infoTxt.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._infoTxt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))));
-            this._infoTxt.Location = new System.Drawing.Point(11, 9);
+            this._infoTxt.AutoSize = true;
+            this._infoTxt.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this._infoTxt.Location = new System.Drawing.Point(3, 0);
             this._infoTxt.Name = "_infoTxt";
-            this._infoTxt.Size = new System.Drawing.Size(296, 39);
+            this._infoTxt.Size = new System.Drawing.Size(291, 32);
             this._infoTxt.TabIndex = 0;
             this._infoTxt.Text = "Running your SQL query...";
             // 
-            // progressBar1
+            // _progressBar
             // 
-            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.progressBar1.Location = new System.Drawing.Point(15, 51);
-            this.progressBar1.MarqueeAnimationSpeed = 25;
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(292, 15);
-            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-            this.progressBar1.TabIndex = 4;
+            this._progressBar.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this._progressBar.Location = new System.Drawing.Point(3, 340);
+            this._progressBar.MarqueeAnimationSpeed = 25;
+            this._progressBar.Name = "_progressBar";
+            this._progressBar.Size = new System.Drawing.Size(575, 15);
+            this._progressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this._progressBar.TabIndex = 4;
+            // 
+            // _table
+            // 
+            this._table.ColumnCount = 1;
+            this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._table.Controls.Add(this._infoTxt, 0, 0);
+            this._table.Controls.Add(this._progressBar, 0, 1);
+            this._table.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._table.Location = new System.Drawing.Point(0, 0);
+            this._table.Name = "_table";
+            this._table.RowCount = 2;
+            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._table.Size = new System.Drawing.Size(581, 358);
+            this._table.TabIndex = 5;
             // 
             // WaitForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(319, 83);
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ClientSize = new System.Drawing.Size(581, 358);
             this.ControlBox = false;
-            this.Controls.Add(this.progressBar1);
-            this.Controls.Add(this._infoTxt);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Controls.Add(this._table);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -66,6 +83,8 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "SQL Query";
+            this._table.ResumeLayout(false);
+            this._table.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -73,6 +92,7 @@
         #endregion
 
         private System.Windows.Forms.Label _infoTxt;
-        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.ProgressBar _progressBar;
+        private System.Windows.Forms.TableLayoutPanel _table;
     }
 }

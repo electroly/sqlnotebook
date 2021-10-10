@@ -15,6 +15,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
@@ -42,35 +43,13 @@ namespace SqlNotebook {
                 BorderStyle = BorderStyle.None,
                 ReadOnly = readOnly,
                 Multiline = true,
+                BackColor = SystemColors.Window,
+                Font = new("Consolas", 11f),
+                ScrollBars = ScrollBars.Both
             };
             _text.TextChanged += (sender, e) => SqlTextChanged?.Invoke(this, EventArgs.Empty);
-            _contextMenuStrip.SetMenuAppearance();
-            _text.ContextMenuStrip = _contextMenuStrip;
-            _pasteMnu.Visible = _cutMnu.Visible = !readOnly;
 
             Controls.Add(_text);
-        }
-
-        private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
-            _copyMnu.Enabled = _text.SelectedText.Length > 0;
-            _cutMnu.Enabled = !_text.ReadOnly && _text.SelectedText.Length > 0;
-            _pasteMnu.Enabled = !_text.ReadOnly && Clipboard.ContainsText();
-        }
-
-        private void CutMnu_Click(object sender, EventArgs e) {
-            _text.Cut();
-        }
-
-        private void CopyMnu_Click(object sender, EventArgs e) {
-            _text.Copy();
-        }
-
-        private void PasteMnu_Click(object sender, EventArgs e) {
-            _text.Paste();
-        }
-
-        private void SelectAllMnu_Click(object sender, EventArgs e) {
-            _text.SelectAll();
         }
     }
 }

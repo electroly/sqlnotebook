@@ -20,6 +20,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SqlNotebook.Properties;
 using SqlNotebookCore;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
@@ -53,9 +54,17 @@ namespace SqlNotebook {
 
             _textCtl = new SqlTextControl(false) {
                 Dock = DockStyle.Fill,
-                Padding = new Padding(4, 0, 0, 0)
+                Padding = new Padding(4, 0, 0, 0),
             };
             _sqlPanel.Controls.Add(_textCtl);
+
+            Ui ui = new(this, false);
+            ui.Init(_executeBtn, Resources.ControlPlayBlue, Resources.control_play_blue32);
+            ui.Init(_prevBtn, Resources.resultset_previous, Resources.resultset_previous32);
+            ui.Init(_nextBtn, Resources.resultset_next, Resources.resultset_next32);
+            ui.Init(_sendTableMnu, Resources.table, Resources.table32);
+            ui.Init(_sendCsvMnu, Resources.page_white_text, Resources.page_white_text32);
+            ui.Init(_sendExcelMnu, Resources.page_white_excel, Resources.page_white_excel32);
 
             // if this tool window has been pulled off into a floating window, then the MainForm's key handler won't
             // trigger on F5, so catch it here.
@@ -65,16 +74,14 @@ namespace SqlNotebook {
                 }
             };
 
-            Load += (sender, e) => {
-                string initialText = _manager.GetItemData(ItemName);
-                if (initialText != null) {
-                    _textCtl.SqlText = initialText;
-                }
+            string initialText = _manager.GetItemData(ItemName);
+            if (initialText != null) {
+                _textCtl.SqlText = initialText;
+            }
 
-                _textCtl.SqlTextChanged += (sender2, e2) => _manager.SetDirty();
+            _textCtl.SqlTextChanged += (sender2, e2) => _manager.SetDirty();
 
-                ShowResult(0);
-            };
+            ShowResult(0);
         }
 
         public async Task Execute() {

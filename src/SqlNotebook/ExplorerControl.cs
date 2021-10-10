@@ -39,7 +39,10 @@ namespace SqlNotebook {
             _manager.NotebookChange += (sender, e) => HandleNotebookChange(e);
             _contextMenuStrip.SetMenuAppearance();
 
-            _list.SmallImageList = _detailsLst.SmallImageList = _paddedImageList = _imageList.PadListViewIcons();
+            using var g = CreateGraphics();
+            _list.SmallImageList = _detailsLst.SmallImageList = _paddedImageList = _imageList.PadListViewIcons(g);
+
+            Ui ui = new(this, false);
 
             _operationInProgress.Change += (a, b) => {
                 if (a && !b) {
@@ -53,7 +56,7 @@ namespace SqlNotebook {
             };
 
             Load += (sender, e) => {
-                _splitContainer.SplitterDistance = _splitContainer.Height - 300;
+                _splitContainer.SplitterDistance = Math.Max(0, _splitContainer.Height - 300);
             };
         }
 
@@ -73,7 +76,7 @@ namespace SqlNotebook {
                         var lvi = _list.Items.Add(item.Name);
                         lvi.Group = _list.Groups[item.Type.ToString()];
                         if (item.IsVirtualTable) {
-                            lvi.ImageIndex = 7;
+                            lvi.ImageIndex = _list.SmallImageList.Images.Count - 1;
                         } else {
                             lvi.ImageIndex = (int)item.Type;
                         }
@@ -132,14 +135,11 @@ namespace SqlNotebook {
                 return;
             }
 
-            var deleteBtn = "&Delete";
-            var d = new MessageForm {
-                Title = "Delete Item",
-                Message = $"Are you sure you want to delete \"{name}\"?",
-                Buttons = new[] { deleteBtn, "Cancel" },
-                Icon = Resources.Warning32
-            };
-            if (d.ShowDialog(this) != deleteBtn) {
+            if (MessageBox.Show(_mainForm,
+                $"Delete \"{name}\"?",
+                "Delete Item",
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Question) != DialogResult.OK) {
                 return;
             }
 

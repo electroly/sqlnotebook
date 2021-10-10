@@ -11,6 +11,8 @@ namespace WeifenLuo.WinFormsUI.Docking
 
     internal class VS2012LightDockPaneStrip : DockPaneStripBase
     {
+        private int _documentTabHeight;
+
         private class TabVS2012Light : Tab
         {
             public TabVS2012Light(IDockContent content)
@@ -588,6 +590,10 @@ namespace WeifenLuo.WinFormsUI.Docking
             FixContextMenuMargins(m_selectMenu);
             //CHANGED: End of inserted code
 
+            using var g = CreateGraphics();
+            var x = g.MeasureString("x", Font, PointF.Empty, StringFormat.GenericTypographic);
+            _documentTabHeight = (int)(x.Height * 1.5);
+
             ResumeLayout();
         }
 
@@ -647,11 +653,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
         private int MeasureHeight_Document()
         {
-            int height = Math.Max(TextFont.Height + DocumentTabGapTop,
-                ButtonClose.Height + DocumentButtonGapTop + DocumentButtonGapBottom)
-                + DocumentStripGapBottom + DocumentStripGapTop;
-
-            return height;
+            return _documentTabHeight;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -1200,15 +1202,16 @@ namespace WeifenLuo.WinFormsUI.Docking
                 rect.Y + rect.Height - DocumentIconGapBottom - DocumentIconHeight,
                 DocumentIconWidth, DocumentIconHeight);
             Rectangle rectText = rectIcon;
-            if (DockPane.DockPanel.ShowDocumentIcon)
-            {
+            if (DockPane.DockPanel.ShowDocumentIcon) {
                 rectText.X += rectIcon.Width + DocumentIconGapRight;
                 rectText.Y = rect.Y;
                 rectText.Width = rect.Width - rectIcon.Width - DocumentIconGapLeft - DocumentIconGapRight - DocumentTextGapRight;
                 rectText.Height = rect.Height;
-            }
-            else
+            } else {
+                rectText.Y = rect.Y;
+                rectText.Height = rect.Height;
                 rectText.Width = rect.Width - DocumentIconGapLeft - DocumentTextGapRight;
+            }
 
             if (closeButtonVisible)
                 rectText.Width -= rectCloseButton.Width;

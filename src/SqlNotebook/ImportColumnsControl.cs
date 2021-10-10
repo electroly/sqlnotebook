@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using SqlNotebookScript.Utils;
@@ -57,17 +58,18 @@ namespace SqlNotebook {
             _grid.ApplyOneClickComboBoxFix();
             _grid.EnableDoubleBuffering();
 
+            Ui ui = new(this, false);
+            ui.Init(_importColumn, 10);
+            ui.Init(_conversionColumn, 25);
+
             Bind.OnChange(new Slot[] { Change },
                 (sender, e) => ValidateGridInput());
         }
 
-        public void SetFixedColumnWidths(int? sourceWidth = null, int? targetWidth = null, int? conversionWidth = null) {
-            foreach (var c in _grid.Columns.Cast<DataGridViewColumn>()) {
-                c.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            }
-            _sourceNameColumn.Width = sourceWidth ?? 250;
-            _targetNameColumn.Width = targetWidth ?? 250;
-            _conversionColumn.Width = conversionWidth ?? 150;
+        public void SetFixedColumnWidths(int? conversionWidth = null) {
+            using var g = CreateGraphics();
+            var x = g.MeasureString("x", Font, PointF.Empty, StringFormat.GenericTypographic);
+            _conversionColumn.Width = (int)((conversionWidth ?? 25) * x.Width);
         }
 
         public void SetSourceColumns(IReadOnlyList<string> columnNames) {

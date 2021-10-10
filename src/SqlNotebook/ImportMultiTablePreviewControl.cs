@@ -31,7 +31,8 @@ namespace SqlNotebook {
         public ImportMultiTablePreviewControl() {
             InitializeComponent();
             _toolStrip.SetMenuAppearance();
-            _tablesLst.SmallImageList = _imageList.PadListViewIcons();
+            using var g = CreateGraphics();
+            _tablesLst.SmallImageList = _imageList.PadListViewIcons(g);
         }
 
         private void GeneratePreviewBtn_Click(object sender, EventArgs e) {

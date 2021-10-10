@@ -29,6 +29,11 @@ namespace SqlNotebook {
             Text = title;
             _infoTxt.Text = text;
 
+            Ui ui = new(this, 65, 8);
+            ui.Init(_table);
+            ui.Init(_infoTxt);
+            ui.Init(_progressBar);
+
             WaitTask = Task.Run(() => {
                 try {
                     action();

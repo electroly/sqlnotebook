@@ -19,7 +19,7 @@ namespace SqlNotebook.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -63,36 +63,6 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ApplicationXpTerminal {
-            get {
-                object obj = ResourceManager.GetObject("ApplicationXpTerminal", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ApplicationXpTerminalAdd {
-            get {
-                object obj = ResourceManager.GetObject("ApplicationXpTerminalAdd", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon ApplicationXpTerminalIco {
-            get {
-                object obj = ResourceManager.GetObject("ApplicationXpTerminalIco", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap Bookmark {
             get {
                 object obj = ResourceManager.GetObject("Bookmark", resourceCulture);
@@ -111,27 +81,32 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///&lt;html&gt;
-        ///&lt;head&gt;
-        ///    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
-        ///    &lt;script src=&quot;simple-console.js&quot;&gt;&lt;/script&gt;
-        ///    &lt;link rel=&quot;stylesheet&quot; href=&quot;simple-console.css&quot;&gt;
-        ///    &lt;style&gt;
-        ///        body, .simple-console, .simple-console-input {
-        ///            font-family: &apos;Consolas&apos;;
-        ///            font-size: 10pt;
-        ///        }
-        ///        div.response, div.response * {
-        ///            font-family: &apos;Segoe UI&apos;;
-        ///            font-size: 9pt;
-        ///        }
-        ///        div.response {
-        ///            ma [rest of string was truncated]&quot;;.
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static string ConsoleHtml {
+        internal static System.Drawing.Bitmap bullet_black32 {
             get {
-                return ResourceManager.GetString("ConsoleHtml", resourceCulture);
+                object obj = ResourceManager.GetObject("bullet_black32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap bullet_key32 {
+            get {
+                object obj = ResourceManager.GetObject("bullet_key32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap control_play_blue32 {
+            get {
+                object obj = ResourceManager.GetObject("control_play_blue32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -188,6 +163,16 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap diskette32 {
+            get {
+                object obj = ResourceManager.GetObject("diskette32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Exclamation16 {
             get {
                 object obj = ResourceManager.GetObject("Exclamation16", resourceCulture);
@@ -228,20 +213,10 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap FunctionAdd {
+        internal static System.Drawing.Bitmap folder32 {
             get {
-                object obj = ResourceManager.GetObject("FunctionAdd", resourceCulture);
+                object obj = ResourceManager.GetObject("folder32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon FunctionIco {
-            get {
-                object obj = ResourceManager.GetObject("FunctionIco", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -256,13 +231,26 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap help32 {
+            get {
+                object obj = ResourceManager.GetObject("help32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to body {
-        ///    font-family: Arial;
+        ///    font-family: &quot;Segoe UI&quot;;
         ///    font-size: 11pt;
         ///    padding-bottom: 50px;
         ///    padding-left: 10px;
         ///    max-width: 800px;
         ///    line-height: 140%;
+        ///}
+        ///* {
+        ///    font-size: 11pt !important;
         ///}
         ///pre, tt, code {
         ///    font-family: &quot;Consolas&quot;;
@@ -283,9 +271,7 @@ namespace SqlNotebook.Properties {
         ///    text-align: center;
         ///}
         ///div.caption {
-        ///    font-size: 8pt;
-        ///    font-style: italic;
-        ///    color: gr [rest of string was truncated]&quot;;.
+        ///    font-size [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HelpCss {
             get {
@@ -314,6 +300,26 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap house {
+            get {
+                object obj = ResourceManager.GetObject("house", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap house32 {
+            get {
+                object obj = ResourceManager.GetObject("house32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] LinkGo32Png {
@@ -336,43 +342,60 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap NoteAdd {
+        internal static System.Drawing.Bitmap page_white_excel {
             get {
-                object obj = ResourceManager.GetObject("NoteAdd", resourceCulture);
+                object obj = ResourceManager.GetObject("page_white_excel", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///&lt;html&gt;
-        ///&lt;head&gt;&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;&lt;/head&gt;
-        ///&lt;body oncontextmenu=&quot;return false&quot;&gt;
-        ///&lt;script src=&quot;tinymce.min.js&quot;&gt;&lt;/script&gt;
-        ///&lt;textarea id=&quot;txt&quot; style=&quot;visibility: hidden&quot;&gt;&lt;!--DOCUMENT_HTML--&gt;&lt;/textarea&gt;
-        ///&lt;script&gt;
-        ///    tinymce.init({
-        ///        selector: &apos;textarea&apos;,
-        ///        height: 500,
-        ///        auto_focus: true,
-        ///        menubar: false,
-        ///        statusbar: false,
-        ///        theme: &apos;modern&apos;,
-        ///        plugins: [ &apos;lists hr table paste textcolor contextmen [rest of string was truncated]&quot;;.
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static string NoteEditorHtml {
+        internal static System.Drawing.Bitmap page_white_excel32 {
             get {
-                return ResourceManager.GetString("NoteEditorHtml", resourceCulture);
+                object obj = ResourceManager.GetObject("page_white_excel32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap page_white_text {
+            get {
+                object obj = ResourceManager.GetObject("page_white_text", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon NoteIco {
+        internal static System.Drawing.Icon page_white_text1 {
             get {
-                object obj = ResourceManager.GetObject("NoteIco", resourceCulture);
+                object obj = ResourceManager.GetObject("page_white_text1", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap page_white_text32 {
+            get {
+                object obj = ResourceManager.GetObject("page_white_text32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap page_white32 {
+            get {
+                object obj = ResourceManager.GetObject("page_white32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -409,6 +432,96 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap resultset_next {
+            get {
+                object obj = ResourceManager.GetObject("resultset_next", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap resultset_next32 {
+            get {
+                object obj = ResourceManager.GetObject("resultset_next32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap resultset_previous {
+            get {
+                object obj = ResourceManager.GetObject("resultset_previous", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap resultset_previous32 {
+            get {
+                object obj = ResourceManager.GetObject("resultset_previous32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap script_add32 {
+            get {
+                object obj = ResourceManager.GetObject("script_add32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap script_go {
+            get {
+                object obj = ResourceManager.GetObject("script_go", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap script_go32 {
+            get {
+                object obj = ResourceManager.GetObject("script_go32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap script32 {
+            get {
+                object obj = ResourceManager.GetObject("script32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon script32Ico {
+            get {
+                object obj = ResourceManager.GetObject("script32Ico", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ScriptAdd {
             get {
                 object obj = ResourceManager.GetObject("ScriptAdd", resourceCulture);
@@ -423,26 +536,6 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("ScriptIco", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] SimpleConsoleCss {
-            get {
-                object obj = ResourceManager.GetObject("SimpleConsoleCss", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] SimpleConsoleJs {
-            get {
-                object obj = ResourceManager.GetObject("SimpleConsoleJs", resourceCulture);
-                return ((byte[])(obj));
             }
         }
         
@@ -467,6 +560,16 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon SqlNotebookIcon {
+            get {
+                object obj = ResourceManager.GetObject("SqlNotebookIcon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap SqlNotebookIcon48 {
@@ -483,6 +586,36 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("Stop", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap table {
+            get {
+                object obj = ResourceManager.GetObject("table", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap table32 {
+            get {
+                object obj = ResourceManager.GetObject("table32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon table32Ico {
+            get {
+                object obj = ResourceManager.GetObject("table32Ico", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -513,6 +646,26 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("TableSheetIco", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap text_exports32 {
+            get {
+                object obj = ResourceManager.GetObject("text_exports32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap text_imports32 {
+            get {
+                object obj = ResourceManager.GetObject("text_imports32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -556,10 +709,9 @@ namespace SqlNotebook.Properties {
         ///a:hover { text-decoration: underline; }
         ///&lt;/style&gt;
         ///&lt;/head&gt;&lt;body&gt;
-        ///SQL Notebook&lt;br&gt;
-        ///&lt;a href=&quot;https://sqlnotebook.com&quot; target=&quot;_blank&quot;&gt;https://sqlnotebook.com&lt;/a&gt;&lt;br&gt;
-        ///Copyright © 2016-2018 Brian Luft&lt;br&gt;&lt;br&gt;
-        ///Permission is hereby granted, free of c [rest of string was truncated]&quot;;.
+        ///&lt;strong&gt;SQL Notebook&lt;/strong&gt;&lt;br&gt;
+        ///Copyright © 2016-2021 Brian Luft&lt;br&gt;&lt;br&gt;
+        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associa [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ThirdPartyLicensesHtml {
             get {
@@ -573,6 +725,26 @@ namespace SqlNotebook.Properties {
         internal static System.Drawing.Bitmap Warning32 {
             get {
                 object obj = ResourceManager.GetObject("Warning32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap world_go {
+            get {
+                object obj = ResourceManager.GetObject("world_go", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap world_go32 {
+            get {
+                object obj = ResourceManager.GetObject("world_go32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

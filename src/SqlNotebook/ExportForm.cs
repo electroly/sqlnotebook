@@ -25,7 +25,19 @@ namespace SqlNotebook {
 
         public ExportForm(IEnumerable<string> scripts, IEnumerable<string> tables, IEnumerable<string> views) {
             InitializeComponent();
-            _list.SmallImageList = _paddedImageList = _imageList.PadListViewIcons();
+            using var g = CreateGraphics();
+            _list.SmallImageList = _paddedImageList = _imageList.PadListViewIcons(g);
+
+            Ui ui = new(this, 75, 25);
+            ui.Init(_table);
+            ui.Init(_helpLabel);
+            ui.Init(_list);
+            ui.MarginTop(_list);
+            ui.Init(_buttonFlow);
+            ui.MarginTop(_buttonFlow);
+            ui.Init(_openBtn);
+            ui.Init(_saveBtn);
+            ui.Init(_cancelBtn);
 
             foreach (var name in scripts) {
                 var lvi = _list.Items.Add(name);

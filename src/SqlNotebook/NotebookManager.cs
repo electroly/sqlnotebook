@@ -29,7 +29,6 @@ using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {
     public enum NotebookItemType {
-        Note,
         Script,
         Table,
         View
@@ -194,11 +193,6 @@ namespace SqlNotebook {
             return NewItem(NotebookItemType.Script.ToString());
         }
 
-        public string NewNote(string name = null, string data = null) {
-            return NewItem(NotebookItemType.Note.ToString(), name,
-                data ?? "<P><FONT face=Calibri></FONT>&nbsp;</P>");
-        }
-
         private string NewItem(string type, string name = null, string data = null) {
             if (name == null) {
                 var existingNames = new HashSet<string>(Notebook.UserData.Items.Select(x => x.Name.ToLower()));
@@ -285,7 +279,6 @@ namespace SqlNotebook {
         public void DeleteItem(NotebookItem item) {
             switch (item.Type) {
                 case NotebookItemType.Script:
-                case NotebookItemType.Note:
                     Notebook.UserData.Items.RemoveWhere(x => x.Name == item.Name);
                     break;
 
@@ -305,7 +298,6 @@ namespace SqlNotebook {
             var isCaseChange = item.Name.ToLower() == lcNewName;
 
             switch (item.Type) {
-                case NotebookItemType.Note:
                 case NotebookItemType.Script:
                     if (!isCaseChange) {
                         // is the new name already in use?

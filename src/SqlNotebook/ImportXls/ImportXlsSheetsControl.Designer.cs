@@ -53,6 +53,7 @@
             this._grid.Location = new System.Drawing.Point(0, 0);
             this._grid.Name = "_grid";
             this._grid.RowHeadersVisible = false;
+            this._grid.RowHeadersWidth = 62;
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this._grid.ShowCellToolTips = false;
             this._grid.ShowEditingIcon = false;
@@ -66,39 +67,41 @@
             this._toBeImportedColumn.DataPropertyName = "ToBeImported";
             this._toBeImportedColumn.Frozen = true;
             this._toBeImportedColumn.HeaderText = "Import?";
+            this._toBeImportedColumn.MinimumWidth = 8;
             this._toBeImportedColumn.Name = "_toBeImportedColumn";
             this._toBeImportedColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this._toBeImportedColumn.Width = 60;
             // 
             // _originalNameColumn
             // 
-            this._originalNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this._originalNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this._originalNameColumn.DataPropertyName = "OriginalName";
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.WhiteSmoke;
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.WhiteSmoke;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.WindowText;
             this._originalNameColumn.DefaultCellStyle = dataGridViewCellStyle1;
             this._originalNameColumn.HeaderText = "Original worksheet name";
+            this._originalNameColumn.MinimumWidth = 8;
             this._originalNameColumn.Name = "_originalNameColumn";
             this._originalNameColumn.ReadOnly = true;
             this._originalNameColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this._originalNameColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this._originalNameColumn.Width = 300;
             // 
             // _newNameColumn
             // 
-            this._newNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this._newNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this._newNameColumn.DataPropertyName = "NewName";
             this._newNameColumn.HeaderText = "New table name";
+            this._newNameColumn.MinimumWidth = 8;
             this._newNameColumn.Name = "_newNameColumn";
             this._newNameColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this._newNameColumn.Width = 300;
             // 
             // _importTableExistsColumn
             // 
             this._importTableExistsColumn.DataPropertyName = "ImportTableExistsString";
             this._importTableExistsColumn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this._importTableExistsColumn.HeaderText = "If table exists...";
+            this._importTableExistsColumn.MinimumWidth = 8;
             this._importTableExistsColumn.Name = "_importTableExistsColumn";
             this._importTableExistsColumn.Width = 200;
             // 
@@ -107,16 +110,17 @@
             this._onErrorColumn.DataPropertyName = "ImportConversionFailString";
             this._onErrorColumn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this._onErrorColumn.HeaderText = "If data conversion fails...";
+            this._onErrorColumn.MinimumWidth = 8;
             this._onErrorColumn.Name = "_onErrorColumn";
             this._onErrorColumn.Width = 200;
             // 
             // ImportXlsSheetsControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.Controls.Add(this._grid);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Name = "ImportXlsSheetsControl";
             this.Size = new System.Drawing.Size(1122, 440);
             ((System.ComponentModel.ISupportInitialize)(this._grid)).EndInit();

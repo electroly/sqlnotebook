@@ -16,6 +16,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -31,6 +32,10 @@ namespace SqlNotebookUpdater {
 
         public UpdaterForm() {
             InitializeComponent();
+
+            using var g = CreateGraphics();
+            var x = g.MeasureString("x", Font, PointF.Empty, StringFormat.GenericTypographic);
+            Size = new((int)(x.Width * 80), (int)(x.Height * 12));
         }
 
         private void CancelBtn_Click(object sender, EventArgs e) {
@@ -48,6 +53,7 @@ namespace SqlNotebookUpdater {
 
         private async Task DoUpdate() {
             _label.Text = "Downloading version information...";
+            _progressBar.Style = ProgressBarStyle.Marquee;
             try {
                 var appversion = await _client.DownloadStringTaskAsync(
                     "https://sqlnotebook.com/appversion.txt?" + DateTime.Now.Date);
@@ -59,6 +65,8 @@ namespace SqlNotebookUpdater {
                 _msiUrl = data[1];
             } catch (Exception ex) {
                 if (!IsDisposed) {
+                    _progressBar.Visible = false;
+                    _label.Text = "Download failed.";
                     MessageBox.Show(this, $"There was a problem retrieving the update information.\r\n{ex.Message}",
                         "SQL Notebook Update", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Close();
@@ -73,6 +81,7 @@ namespace SqlNotebookUpdater {
             File.Delete(msiFilePath);
             File.AppendAllText(deleteLstFilePath, $"{msiFilePath}\r\n");
             int lastPercent = 0;
+            _progressBar.Style = ProgressBarStyle.Continuous;
             _client.DownloadProgressChanged += (sender, e) => {
                 var percent = e.ProgressPercentage;
                 if (lastPercent != percent) {
@@ -83,17 +92,23 @@ namespace SqlNotebookUpdater {
             _client.DownloadFileCompleted += (sender, e) => {
                 if (e.Error != null) {
                     if (!IsDisposed) {
+                        _progressBar.Visible = false;
+                        _label.Text = "Download failed.";
                         MessageBox.Show(this, $"There was a problem downloading the update.\r\n{e.Error.Message}",
                             "SQL Notebook Update", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 } else if (!e.Cancelled) {
-                    Process.Start(msiFilePath);
+                    _progressBar.Visible = false;
+                    _label.Text = "Running installer...";
+                    Process.Start(new ProcessStartInfo(msiFilePath) { UseShellExecute = true });
                 }
                 if (!IsDisposed) {
                     Close();
                 }
             };
-            _client.DownloadFileAsync(new Uri(_msiUrl), msiFilePath);
+            await _client.DownloadFileTaskAsync(new Uri(_msiUrl), msiFilePath);
+
+            await Task.Delay(2000);
         }
     }
 }

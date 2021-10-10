@@ -57,6 +57,23 @@ namespace SqlNotebook {
             }
 
             EnableDisableButtons();
+
+            Ui ui = new(this, 70, 30);
+            ui.Init(_csvHeaderChk);
+            ui.Init(_importTable);
+            ui.Pad(_importTable);
+            ui.Init(_renameTableBtn);
+            ui.Init(_selectAllBtn);
+            ui.MarginTop(_selectAllBtn);
+            ui.Init(_selectNoneBtn);
+            ui.Init(_methodFlow);
+            ui.Pad(_methodFlow);
+            ui.Init(_methodCopyRad);
+            ui.Init(_methodLinkRad);
+            ui.Init(_buttonFlow);
+            ui.MarginTop(_buttonFlow);
+            ui.Init(_okBtn);
+            ui.Init(_cancelBtn);
         }
 
         private void SelectNoneBtn_Click(object sender, EventArgs e) {

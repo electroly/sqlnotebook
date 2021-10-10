@@ -50,8 +50,23 @@ namespace SqlNotebook {
 
         public ImportCsvOptionsControl(DatabaseSchema schema) {
             InitializeComponent();
-            _fileInputTitle.MakeDivider();
-            _tableOutputTitle.MakeDivider();
+
+            Ui ui = new(this);
+            ui.Init(_fileInputTitle);
+            ui.Init(_skipLinesLabel);
+            ui.Init(_skipLinesTxt);
+            ui.Init(_columnNamesLabel);
+            ui.Init(_headerChk);
+            ui.Init(_encodingLabel);
+            ui.Init(_encodingCmb, 35);
+            ui.Init(_tableOutputTitle);
+            ui.MarginTop(_tableOutputTitle);
+            ui.Init(_tableLabel);
+            ui.Init(_tableCmb);
+            ui.Init(_ifTableExistsLabel);
+            ui.Init(_ifExistsCmb, 30);
+            ui.Init(_ifConversionFailsLabel);
+            ui.Init(_convertFailCmb, 30);
 
             foreach (var tableName in schema.Tables.Keys) {
                 _tableCmb.Items.Add(tableName);

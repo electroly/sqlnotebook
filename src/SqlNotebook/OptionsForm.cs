@@ -23,34 +23,24 @@ namespace SqlNotebook {
         public OptionsForm() {
             InitializeComponent();
 
-            var autoCreate = Settings.Default.AutoCreateInNewNotebooks; // 0=nothing, 1=note, 2=console, 3=script
-            if (autoCreate < 1 || autoCreate > 3) {
-                _autoCreateChk.Checked = false;
-                _autoCreateCmb.Enabled = false;
-                _autoCreateCmb.SelectedIndex = 0;
-            } else {
-                _autoCreateChk.Checked = true;
-                _autoCreateCmb.SelectedIndex = autoCreate - 1;
-            }
+            Ui ui = new(this);
+            ui.Init(_table);
+            ui.Init(_helpExternalBrowserChk);
+            ui.Init(_buttonFlow);
+            ui.MarginTop(_buttonFlow);
+            ui.Init(_okBtn);
+            ui.Init(_cancelBtn);
 
             _helpExternalBrowserChk.Checked = Settings.Default.UseExternalHelpBrowser;
+
         }
 
         private void OkBtn_Click(object sender, EventArgs e) {
-            if (_autoCreateChk.Checked) {
-                Settings.Default.AutoCreateInNewNotebooks = _autoCreateCmb.SelectedIndex + 1;
-            } else {
-                Settings.Default.AutoCreateInNewNotebooks = 0;
-            }
             Settings.Default.UseExternalHelpBrowser = _helpExternalBrowserChk.Checked;
 
             Settings.Default.Save();
             DialogResult = DialogResult.OK;
             Close();
-        }
-
-        private void AutoCreateChk_CheckedChanged(object sender, EventArgs e) {
-            _autoCreateCmb.Enabled = _autoCreateChk.Checked;
         }
     }
 }

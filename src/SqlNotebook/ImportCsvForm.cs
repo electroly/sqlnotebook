@@ -62,7 +62,7 @@ namespace SqlNotebook {
             _databaseSchema = schema;
             _manager = manager;
 
-            _dockPanel = new DockPanel {
+            _dockPanel = new() {
                 Dock = DockStyle.Fill,
                 DocumentStyle = DocumentStyle.DockingWindow,
                 Theme = new VS2012LightTheme {
@@ -73,7 +73,7 @@ namespace SqlNotebook {
                 DockTopPortion = 0.5,
                 AllowEndUserDocking = false,
                 AllowEndUserNestedDocking = false,
-                ShowDocumentIcon = true
+                ShowDocumentIcon = false
             };
             _dockPanelContainer.Controls.Add(_dockPanel);
 
@@ -104,7 +104,6 @@ namespace SqlNotebook {
                     CloseButton = false,
                     CloseButtonVisible = false,
                     ControlBox = false,
-                    Icon = Properties.Resources.PageWhiteTextIco
                 };
                 dc.Show(_dockPanel);
                 inputPreviewDc = dc;
@@ -117,7 +116,6 @@ namespace SqlNotebook {
                     CloseButton = false,
                     CloseButtonVisible = false,
                     ControlBox = false,
-                    Icon = Properties.Resources.ScriptIco
                 };
                 dc.Show(_dockPanel);
             }
@@ -129,10 +127,16 @@ namespace SqlNotebook {
                     CloseButton = false,
                     CloseButtonVisible = false,
                     ControlBox = false,
-                    Icon = Properties.Resources.TableImportIco
                 };
                 dc.Show(_dockPanel);
             }
+
+            Ui ui = new(this, 170, 40);
+            ui.Init(_table);
+            ui.Init(_buttonFlow);
+            ui.MarginTop(_buttonFlow);
+            ui.Init(_okBtn);
+            ui.Init(_cancelBtn);
 
             inputPreviewDc.Activate(); // select "Original File" tab initially
 
@@ -327,10 +331,17 @@ namespace SqlNotebook {
 
         private async Task UpdateScriptAndOutputPreview() {
             var errorMessage = GetErrorMessage();
+            string sql = "";
+            try {
+                sql = GetImportSql();
+            } catch (Exception ex) {
+                sql = $"-- Error: {ex.Message}";
+            }
+
             // Import Script pane
             if (errorMessage == null) {
                 _sqlLoadControl.ClearError();
-                _sqlControl.SqlText = GetImportSql();
+                _sqlControl.SqlText = sql;
             } else {
                 _sqlLoadControl.SetError(errorMessage);
             }
@@ -345,7 +356,12 @@ namespace SqlNotebook {
                     var dt = await Task.Run(() => {
                         var tableName = Guid.NewGuid().ToString();
                         try {
-                            _manager.ExecuteScript(GetImportSql(100, tableName));
+                            try {
+                                sql = GetImportSql(100, tableName);
+                            } catch (Exception ex) {
+                                sql = $"-- Error: {ex.Message}";
+                            }
+                            _manager.ExecuteScript(sql);
                             return _manager.ExecuteScript($"SELECT * FROM {tableName.DoubleQuote()}").DataTables[0];
                         } finally {
                             _manager.ExecuteScript($"DROP TABLE IF EXISTS {tableName.DoubleQuote()}");

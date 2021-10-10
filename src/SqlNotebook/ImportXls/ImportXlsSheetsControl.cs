@@ -35,6 +35,11 @@ namespace SqlNotebook.ImportXls {
                 default(ImportTableExistsOption).GetDescriptions().Cast<object>().ToArray());
             _onErrorColumn.Items.AddRange(
                 default(ImportConversionFailOption).GetDescriptions().Cast<object>().ToArray());
+
+            Ui ui = new(this, false);
+            ui.Init(_toBeImportedColumn, 10);
+            ui.Init(_importTableExistsColumn, 35);
+            ui.Init(_onErrorColumn, 35);
         }
 
         public void SetWorksheetInfos(IEnumerable<XlsSheetMeta> list) {

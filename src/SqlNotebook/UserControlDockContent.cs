@@ -28,7 +28,7 @@ namespace SqlNotebook {
             control.Dock = DockStyle.Fill;
             Controls.Add(control);
             Content = control as IDocumentControl;
-
+            
             // disable floating windows
             DockAreas = dockAreas;
         }

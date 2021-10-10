@@ -67,6 +67,21 @@ namespace SqlNotebook.ImportXls {
 
             _sheetOptions = new XlsSheetOptions();
             _propGrid.SelectedObject = _sheetOptions;
+
+            Load += delegate {
+                if (IsDisposed || _outerSplitContainer.IsDisposed || _bottomSplitContainer.IsDisposed) {
+                    return;
+                }
+
+                Ui ui = new(this, false);
+                ui.Init(_optionsHeaderFlow);
+
+                _outerSplitContainer.SplitterDistance = _outerSplitContainer.Height - ui.XHeight(15);
+                _outerSplitContainer.SplitterWidth = 11;
+
+                _bottomSplitContainer.SplitterDistance = ui.XWidth(65);
+                _bottomSplitContainer.SplitterWidth = 11;
+            };
         }
 
         public async Task OnTabActivated() {
@@ -74,18 +89,6 @@ namespace SqlNotebook.ImportXls {
                 _gridHasLoaded = true;
                 await LoadGrid();
             }
-        }
-
-        private void ImportXlsSheetControl_Load(object sender, EventArgs e) {
-            if (IsDisposed || _outerSplitContainer.IsDisposed || _bottomSplitContainer.IsDisposed) {
-                return;
-            }
-
-            _outerSplitContainer.SplitterDistance = _outerSplitContainer.Height - BOTTOM_PANE_HEIGHT;
-            _outerSplitContainer.SplitterWidth = 11;
-
-            _bottomSplitContainer.SplitterDistance = OPTIONS_WIDTH;
-            _bottomSplitContainer.SplitterWidth = 11;
         }
 
         public string SqlColumnList => _columnsControl.SqlColumnList;
@@ -135,6 +138,10 @@ namespace SqlNotebook.ImportXls {
                 var w = _grid.CurrentWorksheet;
                 w.SetRows(data.Count);
                 w.SetCols(columnCount);
+
+                for (var i = 0; i < data.Count; i++) {
+                    w.AutoFitRowHeight(i);
+                }
 
                 for (var i = 0; i < columnCount; i++) {
                     w.AutoFitColumnWidth(i);

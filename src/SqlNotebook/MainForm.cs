@@ -53,14 +53,8 @@ namespace SqlNotebook
         public MainForm(string filePath, bool isNew) {
             InitializeComponent();
 
-            // detect corrupted settings
-            try {
-                _ = Settings.Default.AutoCreateInNewNotebooks;
-            } catch {
-                Settings.Default.Reset();
-                Settings.Default.Save();
-            }
-
+            Icon = Resources.SqlNotebookIcon;
+            
             _menuStrip.SetMenuAppearance();
             _menuStrip.Items.Insert(0, _searchTxt = new CueToolStripTextBox {
                 Alignment = ToolStripItemAlignment.Right,
@@ -78,6 +72,20 @@ namespace SqlNotebook
                     _searchTxt.Text = "";
                 }
             };
+
+            Ui ui = new(this, 175, 50, false);
+            ui.Init(_saveBtn, Resources.Diskette, Resources.diskette32);
+            ui.Init(_newScriptBtn, Resources.ScriptAdd, Resources.script_add32);
+            ui.Init(_newMnu, Resources.PageWhite, Resources.page_white32);
+            ui.Init(_openMnu, Resources.Folder, Resources.folder32);
+            ui.Init(_saveMnu, Resources.Diskette, Resources.diskette32);
+            ui.Init(_newScriptMnu, Resources.ScriptAdd, Resources.script_add32);
+            ui.Init(_importFromFileMnu, Resources.TextImports, Resources.text_imports32);
+            ui.Init(_exportCsvMnu, Resources.TextExports, Resources.text_exports32);
+            ui.Init(_viewDocMnu, Resources.Help, Resources.help32);
+            ui.Init(_searchTxt);
+            ui.Init(_statusStrip);
+            ui.Init(_statusProgressbar);
 
             if (isNew) {
                 _notebook = new Notebook(filePath, isNew);
@@ -102,9 +110,9 @@ namespace SqlNotebook
                     ToolStripRenderer = new MenuRenderer()
                 },
                 DocumentStyle = DocumentStyle.DockingWindow,
-                DefaultFloatWindowSize = new Size(700, 700),
-                ShowDocumentIcon = true,
-                DockLeftPortion = 250
+                DefaultFloatWindowSize = ui.XSize(150, 50),
+                ShowDocumentIcon = false,
+                DockLeftPortion = ui.XWidth(35)
             };
             _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
 
@@ -131,7 +139,6 @@ namespace SqlNotebook
                     // this restarts the statusbar progress marquee from the beginning
                     _statusProgressbar.Style = ProgressBarStyle.Continuous;
                     _statusProgressbar.Style = ProgressBarStyle.Marquee;
-                    _statusProgressbar.Visible = true;
 
                     _cancelLnk.IsLink = true;
                     _cancelLnk.Text = "Cancel";
@@ -139,7 +146,8 @@ namespace SqlNotebook
                 } else if (oldValue && !newValue) {
                     _notebook.EndUserCancel();
                     this.EndTaskbarProgress();
-                    _statusProgressbar.Visible = false;
+                    _statusProgressbar.Style = ProgressBarStyle.Continuous;
+                    _statusProgressbar.Value = 0;
                     _statusLbl.Visible = false;
                     _cancelLnk.Visible = false;
                 }
@@ -168,24 +176,12 @@ namespace SqlNotebook
                 _isTransactionOpen);
 
             if (isNew) {
-                switch (Settings.Default.AutoCreateInNewNotebooks) {
-                    case 1: // New note
-                        Load += (sender, e) => {
-                            var name = _manager.NewNote();
-                            OpenItem(new NotebookItem(NotebookItemType.Note, name));
-                            _isDirty.Value = false;
-                        };
-                        break;
-
-                    case 3: // New script
-                        Load += (sender, e) => {
-                            var name = _manager.NewScript();
-                            OpenItem(new NotebookItem(NotebookItemType.Script, name));
-                            _isDirty.Value = false;
-                        };
-                        break;
-                }
-
+                // create a new script by default in a new notebook
+                Load += (sender, e) => {
+                    var name = _manager.NewScript();
+                    OpenItem(new NotebookItem(NotebookItemType.Script, name));
+                    _isDirty.Value = false;
+                };
             }
 
             Load += async (sender, e) => {
@@ -205,7 +201,6 @@ namespace SqlNotebook
                 case (Keys.Control | Keys.O): _openMnu.PerformClick(); break;
                 case (Keys.Control | Keys.S): _saveMnu.PerformClick(); break;
                 case (Keys.Alt | Keys.F4): _exitMnu.PerformClick(); break;
-                case (Keys.Control | Keys.Shift | Keys.N): _newNoteMnu.PerformClick(); break;
                 case (Keys.Control | Keys.Shift | Keys.S): _newScriptMnu.PerformClick(); break;
                 case Keys.F1: _viewDocMnu.PerformClick(); break;
                 case (Keys.Control | Keys.H): _searchDocMnu.PerformClick(); break;
@@ -279,24 +274,18 @@ namespace SqlNotebook
             UserControlDockContent f = null;
             Func<string> getName = null;
             var dockAreas = DockAreas.Document | DockAreas.Float;
-            if (item.Type == NotebookItemType.Note) {
-                var doc = new NoteDocumentControl(item.Name, _manager);
-                f = new UserControlDockContent(item.Name, doc, dockAreas) {
-                    Icon = Resources.NoteIco
-                };
-                ApplySaveOnClose(f, doc);
-                getName = () => doc.ItemName;
-            } else if (item.Type == NotebookItemType.Script) {
+            if (item.Type == NotebookItemType.Script) {
                 var doc = new QueryDocumentControl(item.Name, _manager, this, _operationInProgress);
+                
                 f = new UserControlDockContent(item.Name, doc, dockAreas) {
-                    Icon = Resources.ScriptIco
+                    Icon = Resources.script32Ico
                 };
                 ApplySaveOnClose(f, doc);
                 getName = () => doc.ItemName;
             } else if (item.Type == NotebookItemType.Table || item.Type == NotebookItemType.View) {
                 var doc = new TableDocumentControl(_manager, item.Name, this);
                 f = new UserControlDockContent(item.Name, doc, dockAreas) {
-                    Icon = Resources.TableIco
+                    Icon = Resources.table32Ico
                 };
             }
 
@@ -383,14 +372,6 @@ namespace SqlNotebook
                 OpenItem(new NotebookItem(NotebookItemType.Script, _manager.NewScript()));
             } catch (Exception ex) {
                 ErrorBox("Notebook Error", "There was a problem creating the script.", ex.Message);
-            }
-        }
-
-        private void NewNoteBtn_Click(object sender, EventArgs e) {
-            try {
-                OpenItem(new NotebookItem(NotebookItemType.Note, _manager.NewNote()));
-            } catch (Exception ex) {
-                ErrorBox("Notebook Error", "There was a problem creating the note.", ex.Message);
             }
         }
 
@@ -505,20 +486,17 @@ namespace SqlNotebook
             if (_isDirty) {
                 var shortFilename = _isNew ? "Untitled" : Path.GetFileNameWithoutExtension(_filePath);
 
-                var saveBtn = "&Save";
-                var dontSaveBtn = "Do&n't Save";
-                var cancelBtn = "Cancel";
-                var d = new MessageForm {
-                    Title = "SQL Notebook",
-                    Message = $"Do you want to save changes to {shortFilename}?",
-                    Buttons = new[] { saveBtn, dontSaveBtn, cancelBtn }
-                };
-                var btn = d.ShowDialog(this);
-                if (btn == saveBtn) {
+                var result = MessageBox.Show(this,
+                    $"Save changes to {shortFilename}?",
+                    "SQL Notebook",
+                    MessageBoxButtons.YesNoCancel,
+                    MessageBoxIcon.Question);
+                
+                if (result == DialogResult.Yes) {
                     if (!SaveOrSaveAs()) {
                         e.Cancel = true;
                     }
-                } else if (btn == null || btn == cancelBtn) {
+                } else if (result == DialogResult.Cancel) {
                     e.Cancel = true;
                 }
             }
@@ -633,7 +611,7 @@ namespace SqlNotebook
                 });
             } else {
                 // if the user selected "open", then open the CSV file directly
-                Process.Start(filePath);
+                Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
             }
         }
 
@@ -650,7 +628,7 @@ namespace SqlNotebook
         }
 
         private void ReportIssueMnu_Click(object sender, EventArgs e) {
-            Process.Start("https://github.com/electroly/sqlnotebook/issues/new");
+            Process.Start(new ProcessStartInfo("https://github.com/electroly/sqlnotebook/issues/new") { UseShellExecute = true });
         }
 
         private void OpenHelp(string path) {
@@ -663,7 +641,7 @@ namespace SqlNotebook
             }
 
             if (Settings.Default.UseExternalHelpBrowser) {
-                Process.Start(url);
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
                 return;
             }
 

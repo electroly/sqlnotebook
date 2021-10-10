@@ -59,13 +59,30 @@ namespace SqlNotebook.ImportXls {
             _databaseSchema = schema;
             _manager = manager;
 
-            _dockPanel = DockPanelUtil.CreateDockPanel(showWindowListButton: true);
-            _dockPanel.DockTopPortion = 150;
+            Ui ui = new(this, 160, 48);
+            ui.Init(_table);
+            ui.Init(_buttonFlow);
+            ui.MarginTop(_buttonFlow);
+            ui.Init(_okBtn);
+            ui.Init(_cancelBtn);
+
+            _dockPanel = new() {
+                Dock = DockStyle.Fill,
+                DocumentStyle = DocumentStyle.DockingWindow,
+                Theme = new VS2012LightTheme {
+                    ShowWindowListButton = true,
+                    ForceActiveCaptionColor = true,
+                },
+                AllowEndUserDocking = false,
+                AllowEndUserNestedDocking = false,
+                DockTopPortion = ui.XHeight(8),
+                ShowDocumentIcon = false
+            };
             _dockPanelContainer.Controls.Add(_dockPanel);
 
             Text = $"Import {Path.GetFileName(filePath)}";
 
-            // left pane - sheet names
+            // top pane - worksheets
             {
                 _sheetsControl = new ImportXlsSheetsControl();
                 _sheetsControl.ValueChanged += SheetsControl_ValueChanged;
@@ -84,7 +101,7 @@ namespace SqlNotebook.ImportXls {
                     CloseButton = false,
                     CloseButtonVisible = false,
                     ControlBox = false,
-                    Icon = Properties.Resources.ScriptIco
+                    Icon = Properties.Resources.script32Ico
                 };
             }
             
@@ -97,7 +114,7 @@ namespace SqlNotebook.ImportXls {
                     CloseButton = false,
                     CloseButtonVisible = false,
                     ControlBox = false,
-                    Icon = Properties.Resources.TableImportIco
+                    Icon = Properties.Resources.table32Ico
                 };
             }
 
@@ -108,7 +125,7 @@ namespace SqlNotebook.ImportXls {
                     CloseButton = false,
                     CloseButtonVisible = false,
                     ControlBox = false,
-                    Icon = Properties.Resources.TableSheetIco
+                    Icon = Properties.Resources.script32Ico
                 };
                 dc.Show(_dockPanel);
                 _sheetInitialLoadDockContent = dc;
@@ -275,11 +292,11 @@ namespace SqlNotebook.ImportXls {
                     foreach (var w in _xlsSheetMetas) {
                         var sheetControl = new ImportXlsSheetControl(_filePath, w);
                         sheetControl.ValueChanged += SheetControl_ValueChanged;
-                        var dc = new UserControlDockContent(w.OriginalName, sheetControl) {
+                        var dc = new UserControlDockContent($"📄 {w.OriginalName}", sheetControl) {
                             CloseButton = false,
                             CloseButtonVisible = false,
                             ControlBox = false,
-                            Icon = Properties.Resources.TableSheetIco
+                            Icon = Properties.Resources.table32Ico
                         };
 
                         dc.Show(_dockPanel);

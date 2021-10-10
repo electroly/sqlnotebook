@@ -23,6 +23,19 @@ namespace SqlNotebook {
 
         public ImportRenameTableForm(string oldName, string newName) {
             InitializeComponent();
+
+            Ui ui = new(this);
+            ui.Init(_topFlow);
+            ui.Init(_oldNameLabel);
+            ui.Init(_oldNameTxt, 60);
+            ui.Init(_newNameLabel);
+            ui.MarginTop(_newNameLabel);
+            ui.Init(_newNameTxt, 60);
+            ui.Init(_buttonFlow);
+            ui.MarginTop(_buttonFlow);
+            ui.Init(_okBtn);
+            ui.Init(_cancelBtn);
+
             _oldNameTxt.Text = oldName;
             _newNameTxt.Text = newName;
             _newNameTxt.Select();

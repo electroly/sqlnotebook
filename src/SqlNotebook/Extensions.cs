@@ -186,15 +186,16 @@ namespace SqlNotebook {
             };
         }
 
-        public static ImageList PadListViewIcons(this ImageList imageList) {
-            ImageList paddedImageList = new ImageList {
-                ImageSize = new Size(25, 17),
+        public static ImageList PadListViewIcons(this ImageList imageList, Graphics graphics) {
+            var scale = graphics.DpiX / 96;
+            ImageList paddedImageList = new() {
+                ImageSize = new Size((int)(25 * scale), (int)(17 * scale)),
                 ColorDepth = ColorDepth.Depth32Bit
             };
             foreach (Image image in imageList.Images) {
-                var newImage = new Bitmap(25, 17, image.PixelFormat);
+                Bitmap newImage = new((int)(25 * scale), (int)(17 * scale), image.PixelFormat);
                 using (var g = Graphics.FromImage(newImage)) {
-                    g.DrawImage(image, 7, 1);
+                    g.DrawImage(image, 7 * scale, 1 * scale, 16 * scale, 16 * scale);
                 }
                 paddedImageList.Images.Add(newImage);
             }

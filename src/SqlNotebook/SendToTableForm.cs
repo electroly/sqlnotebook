@@ -40,6 +40,16 @@ namespace SqlNotebook {
 
             _nameTxt.Text = defaultName;
             ValidateInput();
+
+            Ui ui = new(this);
+            ui.Init(_table);
+            ui.Pad(_picturePanel);
+            ui.Init(_nameLabel);
+            ui.Init(_nameTxt, 35);
+            ui.Init(_buttonFlow);
+            ui.MarginTop(_buttonFlow);
+            ui.Init(_okBtn);
+            ui.Init(_cancelBtn);
         }
 
         private void OkBtn_Click(object sender, EventArgs e) {

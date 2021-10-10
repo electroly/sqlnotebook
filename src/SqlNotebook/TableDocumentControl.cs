@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SqlNotebook.Properties;
 using SqlNotebookScript;
 using SqlNotebookScript.Utils;
 
@@ -69,6 +70,10 @@ namespace SqlNotebook {
                 } else {
                     MessageForm.ShowError(_mainForm, "Preview Table", "An error occurred.", exception.Message);
                 }
+
+                Ui ui = new(this, false);
+                ui.Init(_scriptBtn, Resources.script_go, Resources.script_go32);
+
             };
         }
 

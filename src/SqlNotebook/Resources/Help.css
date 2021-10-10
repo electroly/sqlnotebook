@@ -1,10 +1,13 @@
 body {
-    font-family: Arial;
+    font-family: "Segoe UI";
     font-size: 11pt;
     padding-bottom: 50px;
     padding-left: 10px;
     max-width: 800px;
     line-height: 140%;
+}
+* {
+    font-size: 11pt !important;
 }
 pre, tt, code {
     font-family: "Consolas";
@@ -25,7 +28,7 @@ div.figure {
     text-align: center;
 }
 div.caption {
-    font-size: 8pt;
+    font-size: 8pt !important;
     font-style: italic;
     color: gray;
 }

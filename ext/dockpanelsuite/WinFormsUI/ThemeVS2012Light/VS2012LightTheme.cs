@@ -15,7 +15,7 @@ namespace WeifenLuo.WinFormsUI.Docking
     {
         //CHANGED: Exposed customization options
         public bool ShowWindowListButton { get; set; } = true;
-        public bool ShowAutoHideButton { get; set; } = true;
+        public bool ShowAutoHideButton { get; set; } = false;
         public bool ForceActiveCaptionColor { get; set; } = false;
         public ToolStripRenderer ToolStripRenderer { get; set; }
         //CHANGED: End of inserted code

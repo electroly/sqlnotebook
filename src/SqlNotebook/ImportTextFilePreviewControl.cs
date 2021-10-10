@@ -14,13 +14,8 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SqlNotebookCore;
 
 namespace SqlNotebook {
     public partial class ImportTextFilePreviewControl : UserControl {
@@ -45,6 +40,9 @@ namespace SqlNotebook {
                 BorderStyle = BorderStyle.None,
                 ReadOnly = true,
                 Multiline = true,
+                BackColor = SystemColors.Window,
+                Font = new("Consolas", 11f),
+                ScrollBars = ScrollBars.Both
             };
             Controls.Add(_text);
         }

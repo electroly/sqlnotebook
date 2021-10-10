@@ -98,7 +98,7 @@
             this._list.Location = new System.Drawing.Point(0, 0);
             this._list.MultiSelect = false;
             this._list.Name = "_list";
-            this._list.Size = new System.Drawing.Size(340, 308);
+            this._list.Size = new System.Drawing.Size(340, 287);
             this._list.SmallImageList = this._imageList;
             this._list.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this._list.TabIndex = 0;
@@ -153,18 +153,16 @@
             this._imageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this._imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("_imageList.ImageStream")));
             this._imageList.TransparentColor = System.Drawing.Color.Transparent;
-            this._imageList.Images.SetKeyName(0, "note.png");
-            this._imageList.Images.SetKeyName(1, "script.png");
-            this._imageList.Images.SetKeyName(2, "table.png");
-            this._imageList.Images.SetKeyName(3, "filter.png");
-            this._imageList.Images.SetKeyName(4, "bullet_black.png");
-            this._imageList.Images.SetKeyName(5, "bullet_key.png");
-            this._imageList.Images.SetKeyName(6, "table_link.png");
+            this._imageList.Images.SetKeyName(0, "script32.png");
+            this._imageList.Images.SetKeyName(1, "table32.png");
+            this._imageList.Images.SetKeyName(2, "filter32.png");
+            this._imageList.Images.SetKeyName(3, "bullet_black32.png");
+            this._imageList.Images.SetKeyName(4, "bullet_key32.png");
+            this._imageList.Images.SetKeyName(5, "table_link32.png");
             // 
             // _splitContainer
             // 
             this._splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._splitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this._splitContainer.Location = new System.Drawing.Point(0, 0);
             this._splitContainer.Name = "_splitContainer";
             this._splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -178,7 +176,7 @@
             // 
             this._splitContainer.Panel2.Controls.Add(this._detailsLst);
             this._splitContainer.Size = new System.Drawing.Size(340, 583);
-            this._splitContainer.SplitterDistance = 308;
+            this._splitContainer.SplitterDistance = 287;
             this._splitContainer.TabIndex = 1;
             // 
             // _detailsLst
@@ -197,7 +195,7 @@
             this._detailsLst.Location = new System.Drawing.Point(0, 0);
             this._detailsLst.MultiSelect = false;
             this._detailsLst.Name = "_detailsLst";
-            this._detailsLst.Size = new System.Drawing.Size(340, 271);
+            this._detailsLst.Size = new System.Drawing.Size(340, 292);
             this._detailsLst.SmallImageList = this._imageList;
             this._detailsLst.TabIndex = 0;
             this._detailsLst.UseCompatibleStateImageBehavior = false;

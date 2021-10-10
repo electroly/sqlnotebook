@@ -22,17 +22,9 @@ namespace SqlNotebookUpdater {
     static class Program {
         [STAThread]
         static void Main() {
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-            var tempPath = Path.Combine(Path.GetTempPath(), "SqlNotebookTemp");
-            var exeDirInfo = new DirectoryInfo(Path.GetDirectoryName(Application.ExecutablePath));
-            var tempDirInfo = new DirectoryInfo(tempPath);
-            if (exeDirInfo.FullName.ToLowerInvariant() != tempDirInfo.FullName.ToLowerInvariant()) {
-                // the updater needs to be run out of temp.  the user may have attempted to run this directly.
-                return;
-            }
-
             Application.Run(new UpdaterForm());
         }
     }

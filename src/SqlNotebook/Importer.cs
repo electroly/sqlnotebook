@@ -400,13 +400,12 @@ namespace SqlNotebook
 
         private bool DoConnect(IWin32Window owner) {
             bool successfulConnect = false;
-            Action action = () => {
-                using (var connection = CreateConnection(_builder)) {
-                    connection.Open();
-                    ReadTableNames(connection);
-                }
+            void Go() {
+                using var connection = CreateConnection(_builder);
+                connection.Open();
+                ReadTableNames(connection);
             };
-            using (var f = new WaitForm("SQL Notebook", $"Accessing {ProductName}...", action)) {
+            using (var f = new WaitForm("SQL Notebook", $"Accessing {ProductName}...", Go)) {
                 f.ShowDialog(owner);
                 if (f.ResultException == null) {
                     successfulConnect = true;

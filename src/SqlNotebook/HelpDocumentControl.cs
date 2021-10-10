@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using mshtml;
+using SqlNotebook.Properties;
 
 namespace SqlNotebook {
     public partial class HelpDocumentControl : UserControl, IDocumentControl {
@@ -56,6 +57,12 @@ namespace SqlNotebook {
                     manager.HandleAppHotkeys(e.KeyData);
                 }
             };
+
+            Ui ui = new(this, false);
+            ui.Init(_homeBtn, Resources.house, Resources.house32);
+            ui.Init(_backBtn, Resources.resultset_previous, Resources.resultset_previous32);
+            ui.Init(_forwardBtn, Resources.resultset_next, Resources.resultset_next32);
+            ui.Init(_openBrowserBtn, Resources.world_go, Resources.world_go32);
         }
 
         public void Navigate(string url) {
@@ -81,7 +88,7 @@ namespace SqlNotebook {
         }
 
         private void OpenBrowserBtn_Click(object sender, EventArgs e) {
-            Process.Start(_browser.Url.AbsoluteUri);
+            Process.Start(new ProcessStartInfo(_browser.Url.AbsoluteUri) { UseShellExecute = true });
         }
 
         private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {

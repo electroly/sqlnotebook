@@ -6,8 +6,6 @@ using System.Windows.Forms;
 
 namespace SqlNotebook {
     public partial class ImportConnectionForm : Form {
-        private int _collapsedHeight;
-        private int _expandedHeight;
         private Func<DbConnectionStringBuilder, BasicOptions> _getBasicOptions;
         private Action<DbConnectionStringBuilder, BasicOptions> _setBasicOptions;
         private DbConnectionStringBuilder _builder;
@@ -23,45 +21,45 @@ namespace SqlNotebook {
         public ImportConnectionForm(string title, DbConnectionStringBuilder builder,
             Func<DbConnectionStringBuilder, BasicOptions> getBasicOptions,
             Action<DbConnectionStringBuilder, BasicOptions> setBasicOptions) {
+            InitializeComponent();
+
             _getBasicOptions = getBasicOptions;
             _setBasicOptions = setBasicOptions;
             _builder = builder;
 
-            InitializeComponent();
+            Ui ui = new(this, 75, 30);
+            ui.Init(_table);
+            ui.Init(_tabs);
+            ui.Init(_basicTable);
+            ui.Pad(_basicTable);
+            ui.Init(_addressLabel);
+            ui.Init(_serverTxt);
+            ui.Init(_databaseLabel);
+            ui.MarginTop(_databaseLabel);
+            ui.Init(_databaseTxt);
+            ui.Init(_usernameLabel);
+            ui.MarginTop(_usernameLabel);
+            ui.Init(_usernameTxt);
+            ui.Init(_passwordLabel);
+            ui.MarginTop(_passwordLabel);
+            ui.Init(_passwordTxt);
+            ui.Init(_windowsAuthChk);
+            ui.MarginTop(_windowsAuthChk);
+            ui.Init(_propertyGrid);
+            ui.Init(_buttonFlow);
+            ui.MarginTop(_buttonFlow);
+            ui.Init(_okBtn);
+            ui.Init(_cancelBtn);
+
             if (!(builder is SqlConnectionStringBuilder)) {
                 _windowsAuthChk.Visible = false;
-                _basicPnl.Height -= _windowsAuthChk.Height + 5;
-                Height -= _windowsAuthChk.Height + 5;
             }
-            _collapsedHeight = Height;
-            _expandedHeight = Height + 200;
             _propertyGrid.SelectedObject = builder;
             Text = title;
 
             UpdateBasicOptionsUi(_getBasicOptions(builder)); // populate basic options with info from builder
-        }
 
-        private void ToggleBtn_Click(object sender, EventArgs e) {
-            ToggleAdvanced();
-        }
-
-        private void ToggleAdvanced() {
-            if (_propertyGrid.Visible) {
-                // advanced -> basic
-                UpdateBasicOptionsUi(_getBasicOptions(_builder));
-                _propertyGrid.Visible = false;
-                Size = new Size(Width, _collapsedHeight);
-                _basicPnl.Visible = true;
-                _toggleBtn.Text = "Show advanced options";
-            } else {
-                // basic -> advanced
-                _setBasicOptions(_builder, ReadBasicOptionsUi());
-                _basicPnl.Visible = false;
-                Size = new Size(Width, _expandedHeight);
-                _propertyGrid.Visible = true;
-                _toggleBtn.Text = "Show basic options";
-                _propertyGrid.Refresh();
-            }
+            Load += delegate { _serverTxt.Select(); };
         }
 
         private void UpdateBasicOptionsUi(BasicOptions opt) {
@@ -83,7 +81,8 @@ namespace SqlNotebook {
         }
 
         private void OkBtn_Click(object sender, EventArgs e) {
-            if (!_propertyGrid.Visible) {
+            if (_tabs.SelectedIndex == 0) {
+                // "Basic" tab is selected.
                 _setBasicOptions(_builder, ReadBasicOptionsUi());
             }
             DialogResult = DialogResult.OK;
@@ -92,6 +91,17 @@ namespace SqlNotebook {
 
         private void WindowsAuthChk_CheckedChanged(object sender, EventArgs e) {
             _usernameTxt.Enabled = _passwordTxt.Enabled = !_windowsAuthChk.Checked;
+        }
+
+        private void Tabs_TabIndexChanged(object sender, EventArgs e) {
+            if (_tabs.SelectedIndex == 0) {
+                // "Basic" tab is now selected.
+                UpdateBasicOptionsUi(_getBasicOptions(_builder));
+            } else {
+                // "Advanced" tab is now selected.
+                _setBasicOptions(_builder, ReadBasicOptionsUi());
+                _propertyGrid.SelectedObject = _builder; // Refresh the property grid.
+            }
         }
     }
 }
