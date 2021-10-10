@@ -71,15 +71,19 @@ namespace Tests {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -- SQL Notebook
-        ///-- Copyright (C) 2016 Brian Luft
-        ///--
-        ///-- Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-        ///-- documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the
-        ///-- rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-        ///-- permit persons to whom the Software is furnished to do so, subject to the following conditions:
-        ///--
-        ///-- T [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to CREATE TABLE tbl1 (a,b,c)
+        ///CREATE TABLE other.tbl1 (a, b, c)
+        ///SELECT 1
+        ///SELECT 1 FROM sqlite_master
+        ///SELECT 1 FROM sqlite_master CROSS JOIN sqlite_master
+        ///SELECT a.*, b.* FROM sqlite_master a CROSS JOIN sqlite_master b
+        ///SELECT a.*, b.* FROM sqlite_master AS a CROSS JOIN sqlite_master AS b
+        ///SELECT * FROM other.sqlite_master
+        ///select name from sqlite_master
+        ///select name from sqlite_master as asdf
+        ///select name from sqlite_master asdf
+        ///select name from sqlite_master &quot;asdf&quot;
+        ///select name from sqlite_master as &quot;asd [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SqlTests {
             get {
