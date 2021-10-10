@@ -189,13 +189,13 @@ namespace SqlNotebook {
         public static ImageList PadListViewIcons(this ImageList imageList, Graphics graphics) {
             var scale = graphics.DpiX / 96;
             ImageList paddedImageList = new() {
-                ImageSize = new Size((int)(25 * scale), (int)(17 * scale)),
+                ImageSize = new Size((int)(18 * scale), (int)(17 * scale)),
                 ColorDepth = ColorDepth.Depth32Bit
             };
             foreach (Image image in imageList.Images) {
-                Bitmap newImage = new((int)(25 * scale), (int)(17 * scale), image.PixelFormat);
+                Bitmap newImage = new((int)(18 * scale), (int)(16 * scale), image.PixelFormat);
                 using (var g = Graphics.FromImage(newImage)) {
-                    g.DrawImage(image, 7 * scale, 1 * scale, 16 * scale, 16 * scale);
+                    g.DrawImage(image, 0, 1 * scale, 16 * scale, 16 * scale);
                 }
                 paddedImageList.Images.Add(newImage);
             }

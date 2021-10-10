@@ -74,6 +74,7 @@ namespace SqlNotebook
             };
 
             Ui ui = new(this, 175, 50, false);
+            MinimumSize = new(Size.Width / 2, Size.Height / 2);
             ui.Init(_saveBtn, Resources.Diskette, Resources.diskette32);
             ui.Init(_newScriptBtn, Resources.ScriptAdd, Resources.script_add32);
             ui.Init(_newMnu, Resources.PageWhite, Resources.page_white32);

@@ -31,7 +31,8 @@ namespace SqlNotebook {
         public ExplorerControl(NotebookManager manager, IWin32Window mainForm, Slot<bool> operationInProgress) {
             InitializeComponent();
             _list.EnableDoubleBuffer();
-            _detailsLst.EnableDoubleBuffer();
+            _detailsGrid.EnableDoubleBuffering();
+            _detailsGrid.AutoGenerateColumns = false;
 
             _mainForm = mainForm;
             _manager = manager;
@@ -40,7 +41,7 @@ namespace SqlNotebook {
             _contextMenuStrip.SetMenuAppearance();
 
             using var g = CreateGraphics();
-            _list.SmallImageList = _detailsLst.SmallImageList = _paddedImageList = _imageList.PadListViewIcons(g);
+            _list.SmallImageList = _paddedImageList = _imageList.PadListViewIcons(g);
 
             Ui ui = new(this, false);
 
@@ -89,8 +90,7 @@ namespace SqlNotebook {
 
         protected override void OnResize(EventArgs e) {
             base.OnResize(e);
-            _list.Columns[0].Width = _detailsLst.Columns[0].Width =
-                _list.Width - SystemInformation.VerticalScrollBarWidth - 5;
+            _list.Columns[0].Width = _list.Width - SystemInformation.VerticalScrollBarWidth - 5;
         }
 
         private void List_ItemActivate(object sender, EventArgs e) {
@@ -159,10 +159,9 @@ namespace SqlNotebook {
         }
 
         private void List_SelectedIndexChanged(object sender, EventArgs e) {
-            _detailsLst.BeginUpdate();
-            _detailsLst.Items.Clear();
+            _detailsGrid.DataSource = null;
+            _selectionLabel.Text = "Selected item";
             if (_list.SelectedItems.Count != 1) {
-                _detailsLst.EndUpdate();
                 return;
             }
             var lvi = _list.SelectedItems[0];
@@ -191,21 +190,23 @@ namespace SqlNotebook {
                 }
             } catch (Exception) { }
 
+            List<Row> list = new();
             foreach (var detail in details) {
-                var detailLvi = new ListViewItem(_detailsLst.Groups[0]);
                 var text = detail.Item1;
                 var extra = detail.Item2.Replace(" PRIMARY KEY", "");
                 if (extra.Any()) {
                     text += $" ({extra})";
                 }
-                detailLvi.Text = text;
-                if (detail.Item2.Contains(" PRIMARY KEY")) {
-                    detailLvi.ImageIndex = 6;
-                }
-                _detailsLst.Items.Add(detailLvi);
+                var detailRow = new Row { Name = detail.Item1, Type = extra };
+                list.Add(detailRow);
             }
-            _detailsLst.Groups[0].Header = notebookItemName;
-            _detailsLst.EndUpdate();
+            _detailsGrid.DataSource = list;
+            _selectionLabel.Text = notebookItemName;
+        }
+
+        public sealed class Row {
+            public string Name { get; set; }
+            public string Type { get; set; }
         }
 
         private void RenameMnu_Click(object sender, EventArgs e) {

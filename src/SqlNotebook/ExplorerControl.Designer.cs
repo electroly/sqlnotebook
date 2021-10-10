@@ -25,14 +25,14 @@
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ColumnHeader _nameColumn;
-            System.Windows.Forms.ColumnHeader columnHeader1;
-            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Notes", System.Windows.Forms.HorizontalAlignment.Center);
-            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Consoles", System.Windows.Forms.HorizontalAlignment.Center);
-            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Scripts", System.Windows.Forms.HorizontalAlignment.Center);
-            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Tables", System.Windows.Forms.HorizontalAlignment.Center);
-            System.Windows.Forms.ListViewGroup listViewGroup5 = new System.Windows.Forms.ListViewGroup("Views", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Scripts", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Tables", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Views", System.Windows.Forms.HorizontalAlignment.Center);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExplorerControl));
-            System.Windows.Forms.ListViewGroup listViewGroup6 = new System.Windows.Forms.ListViewGroup("Group", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this._list = new System.Windows.Forms.ListView();
             this._contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this._openMnu = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,15 +41,20 @@
             this._renameMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._imageList = new System.Windows.Forms.ImageList(this.components);
             this._splitContainer = new System.Windows.Forms.SplitContainer();
-            this._detailsLst = new System.Windows.Forms.ListView();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this._selectionLabel = new System.Windows.Forms.Label();
+            this._detailsGrid = new System.Windows.Forms.DataGridView();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.nameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.typeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             _nameColumn = new System.Windows.Forms.ColumnHeader();
-            columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this._contextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._splitContainer)).BeginInit();
             this._splitContainer.Panel1.SuspendLayout();
             this._splitContainer.Panel2.SuspendLayout();
             this._splitContainer.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._detailsGrid)).BeginInit();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
             this.SuspendLayout();
@@ -58,11 +63,6 @@
             // 
             _nameColumn.Text = "";
             // 
-            // columnHeader1
-            // 
-            columnHeader1.Text = "Name";
-            columnHeader1.Width = 157;
-            // 
             // _list
             // 
             this._list.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -70,27 +70,19 @@
             _nameColumn});
             this._list.ContextMenuStrip = this._contextMenuStrip;
             this._list.Dock = System.Windows.Forms.DockStyle.Fill;
-            listViewGroup1.Header = "Notes";
+            listViewGroup1.Header = "Scripts";
             listViewGroup1.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup1.Name = "Note";
-            listViewGroup2.Header = "Consoles";
+            listViewGroup1.Name = "Script";
+            listViewGroup2.Header = "Tables";
             listViewGroup2.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup2.Name = "Console";
-            listViewGroup3.Header = "Scripts";
+            listViewGroup2.Name = "Table";
+            listViewGroup3.Header = "Views";
             listViewGroup3.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup3.Name = "Script";
-            listViewGroup4.Header = "Tables";
-            listViewGroup4.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup4.Name = "Table";
-            listViewGroup5.Header = "Views";
-            listViewGroup5.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup5.Name = "View";
+            listViewGroup3.Name = "View";
             this._list.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
             listViewGroup1,
             listViewGroup2,
-            listViewGroup3,
-            listViewGroup4,
-            listViewGroup5});
+            listViewGroup3});
             this._list.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this._list.HideSelection = false;
             this._list.LabelEdit = true;
@@ -98,6 +90,7 @@
             this._list.Location = new System.Drawing.Point(0, 0);
             this._list.MultiSelect = false;
             this._list.Name = "_list";
+            this._list.ShowGroups = false;
             this._list.Size = new System.Drawing.Size(340, 287);
             this._list.SmallImageList = this._imageList;
             this._list.Sorting = System.Windows.Forms.SortOrder.Ascending;
@@ -174,32 +167,86 @@
             // 
             // _splitContainer.Panel2
             // 
-            this._splitContainer.Panel2.Controls.Add(this._detailsLst);
+            this._splitContainer.Panel2.Controls.Add(this.tableLayoutPanel1);
             this._splitContainer.Size = new System.Drawing.Size(340, 583);
             this._splitContainer.SplitterDistance = 287;
             this._splitContainer.TabIndex = 1;
             // 
-            // _detailsLst
+            // tableLayoutPanel1
             // 
-            this._detailsLst.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this._detailsLst.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            columnHeader1});
-            this._detailsLst.Dock = System.Windows.Forms.DockStyle.Fill;
-            listViewGroup6.Header = "Group";
-            listViewGroup6.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup6.Name = "Group";
-            this._detailsLst.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup6});
-            this._detailsLst.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this._detailsLst.HideSelection = false;
-            this._detailsLst.Location = new System.Drawing.Point(0, 0);
-            this._detailsLst.MultiSelect = false;
-            this._detailsLst.Name = "_detailsLst";
-            this._detailsLst.Size = new System.Drawing.Size(340, 292);
-            this._detailsLst.SmallImageList = this._imageList;
-            this._detailsLst.TabIndex = 0;
-            this._detailsLst.UseCompatibleStateImageBehavior = false;
-            this._detailsLst.View = System.Windows.Forms.View.Details;
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this._selectionLabel, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this._detailsGrid, 0, 1);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(340, 292);
+            this.tableLayoutPanel1.TabIndex = 1;
+            // 
+            // _selectionLabel
+            // 
+            this._selectionLabel.AutoSize = true;
+            this._selectionLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._selectionLabel.Location = new System.Drawing.Point(3, 0);
+            this._selectionLabel.Name = "_selectionLabel";
+            this._selectionLabel.Size = new System.Drawing.Size(334, 25);
+            this._selectionLabel.TabIndex = 1;
+            this._selectionLabel.Text = "Selected item";
+            // 
+            // _detailsGrid
+            // 
+            this._detailsGrid.AllowUserToAddRows = false;
+            this._detailsGrid.AllowUserToDeleteRows = false;
+            this._detailsGrid.AllowUserToResizeColumns = false;
+            this._detailsGrid.AllowUserToResizeRows = false;
+            this._detailsGrid.BackgroundColor = System.Drawing.SystemColors.Window;
+            this._detailsGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this._detailsGrid.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this._detailsGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this._detailsGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this._detailsGrid.ColumnHeadersVisible = false;
+            this._detailsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.nameColumn,
+            this.typeColumn});
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this._detailsGrid.DefaultCellStyle = dataGridViewCellStyle3;
+            this._detailsGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._detailsGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this._detailsGrid.Location = new System.Drawing.Point(3, 28);
+            this._detailsGrid.Name = "_detailsGrid";
+            this._detailsGrid.ReadOnly = true;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this._detailsGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            this._detailsGrid.RowHeadersVisible = false;
+            this._detailsGrid.RowHeadersWidth = 62;
+            this._detailsGrid.RowTemplate.Height = 33;
+            this._detailsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this._detailsGrid.Size = new System.Drawing.Size(334, 261);
+            this._detailsGrid.TabIndex = 2;
             // 
             // toolStripContainer1
             // 
@@ -219,6 +266,26 @@
             // 
             this.toolStripContainer1.TopToolStripPanel.BackColor = System.Drawing.SystemColors.Window;
             // 
+            // nameColumn
+            // 
+            this.nameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.nameColumn.DataPropertyName = "Name";
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.nameColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            this.nameColumn.HeaderText = "Name";
+            this.nameColumn.MinimumWidth = 8;
+            this.nameColumn.Name = "nameColumn";
+            this.nameColumn.ReadOnly = true;
+            // 
+            // typeColumn
+            // 
+            this.typeColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.typeColumn.DataPropertyName = "Type";
+            this.typeColumn.HeaderText = "Type";
+            this.typeColumn.MinimumWidth = 8;
+            this.typeColumn.Name = "typeColumn";
+            this.typeColumn.ReadOnly = true;
+            // 
             // ExplorerControl
             // 
             this.Controls.Add(this.toolStripContainer1);
@@ -230,6 +297,9 @@
             this._splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._splitContainer)).EndInit();
             this._splitContainer.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._detailsGrid)).EndInit();
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.ResumeLayout(false);
             this.toolStripContainer1.PerformLayout();
@@ -239,7 +309,6 @@
 
         #endregion
         private System.Windows.Forms.SplitContainer _splitContainer;
-        private System.Windows.Forms.ListView _detailsLst;
         private System.Windows.Forms.ListView _list;
         private System.Windows.Forms.ImageList _imageList;
         private System.Windows.Forms.ContextMenuStrip _contextMenuStrip;
@@ -248,5 +317,10 @@
         private System.Windows.Forms.ToolStripContainer toolStripContainer1;
         private System.Windows.Forms.ToolStripMenuItem _openMnu;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Label _selectionLabel;
+        private System.Windows.Forms.DataGridView _detailsGrid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn nameColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn typeColumn;
     }
 }

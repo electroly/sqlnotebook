@@ -111,7 +111,8 @@
             this._list.Location = new System.Drawing.Point(3, 35);
             this._list.MultiSelect = false;
             this._list.Name = "_list";
-            this._list.Size = new System.Drawing.Size(643, 444);
+            this._list.ShowGroups = false;
+            this._list.Size = new System.Drawing.Size(643, 553);
             this._list.SmallImageList = this._imageList;
             this._list.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this._list.TabIndex = 1;
@@ -147,13 +148,15 @@
             // 
             // _buttonFlow
             // 
+            this._buttonFlow.AutoSize = true;
+            this._buttonFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this._buttonFlow.Controls.Add(this._openBtn);
             this._buttonFlow.Controls.Add(this._saveBtn);
             this._buttonFlow.Controls.Add(this._cancelBtn);
             this._buttonFlow.Dock = System.Windows.Forms.DockStyle.Right;
-            this._buttonFlow.Location = new System.Drawing.Point(346, 485);
+            this._buttonFlow.Location = new System.Drawing.Point(364, 594);
             this._buttonFlow.Name = "_buttonFlow";
-            this._buttonFlow.Size = new System.Drawing.Size(300, 150);
+            this._buttonFlow.Size = new System.Drawing.Size(282, 41);
             this._buttonFlow.TabIndex = 0;
             // 
             // ExportForm
