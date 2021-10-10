@@ -1,20 +1,21 @@
 $ErrorActionPreference = "Stop"
 
+# Build machine setup:
+# - Install Wix toolset
+
 # Release procedure:
-# - Switch to Release build configuration
 # - Delete src\SqlNotebook\Resources\sqlite-doc.zip
+# - Delete src\SqlNotebook\bin\publish
 # - Bump AssemblyFileVersion in src\SqlNotebook\Properties\AssemblyInfo.cs
 # - Bump ProductVersion in SqlNotebook.wxs
-# - Delete all files in Release\
-# - Rebuild
-# - Run src\generate-release.ps1
-# - Verify version, signature, and timestamp in Release\SqlNotebook.exe and .msi
-# - Update web\download.md with new version and date, also update two download links
+# - Package
+# - PowerShell in src\:
+#   .\generate-release.ps1
+# - Verify version in SqlNotebook.exe and .msi
 # - Update web\appversion.txt with new version and MSI URL
 # - Delete web\site\
 # - Run web\generate-site.ps1
-# - Open S3 Management Console in sqlnotebook.com bucket
-# - Upload Release\SqlNotebook_X_X_X.zip and .msi to sqlnotebook.com/install.  Make public.
+# - Create release on GitHub, upload zip and msi.
 # - Upload web\site to sqlnotebook.com/. Make public.
 # - Update src\chocolatey\sqlnotebook.nuspec with version
 # - Update src\chocolatey\tools\chocolateyInstall.ps1 with MSI URL
@@ -30,8 +31,14 @@ $ErrorActionPreference = "Stop"
 $version = Read-Host -prompt "Version (like 0_6_0)"
 
 $srcdir = [System.IO.Path]::GetDirectoryName($PSCommandPath)
-$reldir = (Resolve-Path "$srcdir\..\Release")
-$wixdir = "C:\Program Files (x86)\WiX Toolset v3.10\bin"
+$reldir = (Resolve-Path "$srcdir\SqlNotebook\bin\publish")
+$wixdir = "C:\Program Files (x86)\WiX Toolset v3.11\bin"
+
+Remove-Item "$reldir\portable" -Recurse -ErrorAction SilentlyContinue
+Remove-Item "$reldir\*.pdb" -ErrorAction SilentlyContinue
+Remove-Item "$reldir\*.wixpdb" -ErrorAction SilentlyContinue
+Remove-Item "$reldir\*.wixobj" -ErrorAction SilentlyContinue
+Remove-Item "$reldir\*.wxs" -ErrorAction SilentlyContinue
 
 Push-Location $reldir
 
@@ -47,33 +54,23 @@ rm $zipFilePath -ErrorAction SilentlyContinue
 rm "$reldir\SqlNotebook.wixobj" -ErrorAction SilentlyContinue
 rm "$reldir\SqlNotebook.wxs" -ErrorAction SilentlyContinue
 
-# Replace <!--UCRT_FILES--> in the wxs file with <File> entries for the C runtime
-$crtFilesXml = ""
-$crtFileId = 1
+# Replace <!--FILES--> in the wxs file with <File> entries
+$filesXml = ""
+$fileId = 1
 
-$ucrtDllPath = "C:\Program Files (x86)\Windows Kits\10\Redist\ucrt\DLLs\x64"
-$ucrtFilenames = ls "$ucrtDllPath\*.dll" | select -expandprop Name
-foreach ($filename in $ucrtFilenames) {
-    $crtFilesXml += "<File Id=""_Crt$crtFileId"" Source=""$ucrtDllPath\$filename""/>"
-    $crtFileId++
+$filenames = ls "$reldir\*" | select -expandprop Name
+foreach ($filename in $filenames) {
+    $filesXml += "<File Id=""$filename"" Source=""$reldir/$filename""/>`r`n"
+    $fileId++
 }
 
-$vcrDllPath = "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\redist\x64\Microsoft.VC140.CRT"
-$vcrFilesXml = ""
-$vcrFilenames = ls "$vcrDllPath\*.dll" | select -expandprop Name
-foreach ($filename in $vcrFilenames) {
-    $crtFilesXml += "<File Id=""_Crt$crtFileId"" Source=""$vcrDllPath\$filename""/>"
-    $crtFileId++
-}
-
-$wxs = (Get-Content "$srcdir\SqlNotebook.wxs").Replace("<!--UCRT_FILES-->", $crtFilesXml)
+$wxs = (Get-Content "$srcdir\SqlNotebook.wxs").Replace("<!--FILES-->", $filesXml)
 Set-Content "$reldir\SqlNotebook.wxs" $wxs
 
 copy -force "$srcdir\SqlNotebook\SqlNotebookIcon.ico" "$reldir\SqlNotebookIcon.ico"
 
-& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 "$reldir\SqlNotebook.exe" | Write-Output
-
-& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 "$reldir\SqlNotebookUpdater.exe" | Write-Output
+#& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 "$reldir\SqlNotebook.exe" | Write-Output
+#& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 "$reldir\SqlNotebookUpdater.exe" | Write-Output
 
 & "$wixdir\candle.exe" -nologo -pedantic "$reldir\SqlNotebook.wxs" | Write-Output
 
@@ -90,7 +87,7 @@ if (-not (Test-Path "$reldir\SqlNotebook.msi")) {
 $msiFilePath = "$reldir\$msiFilename"
 mv "$reldir\SqlNotebook.msi" $msiFilePath
 
-& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 /d $msiFilename $msiFilePath | Write-Output
+#& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 /d $msiFilename $msiFilePath | Write-Output
 
 #
 # Part 2: Generate ZIP
@@ -100,7 +97,7 @@ Remove-Item "$reldir\portable" -Recurse -ErrorAction SilentlyContinue
 mkdir "$reldir\portable" -ErrorAction SilentlyContinue
 
 # get the list of necessary files from the .wxs file
-$fileLines = [System.IO.File]::ReadAllLines("$srcdir\SqlNotebook.wxs")
+$fileLines = [System.IO.File]::ReadAllLines("$reldir\SqlNotebook.wxs")
 foreach ($line in $fileLines) {
     if ($line.Contains("<File")) {
         $line = $line.Replace('<File Id="', "").Trim()
@@ -108,9 +105,6 @@ foreach ($line in $fileLines) {
         copy "$reldir\$filename" "$reldir\portable\$filename"
     }
 }
-
-copy "$ucrtDllPath\*.dll" "$reldir\portable\"
-copy "$vcrDllPath\*.dll" "$reldir\portable\"
 
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
