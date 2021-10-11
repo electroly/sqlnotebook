@@ -30,16 +30,18 @@
           <th style="text-align: left;">Example value</th>
         </tr>
       </thead>
-      <tr>
-        <td><code>number</code></td>
-        <td>1-based index</td>
-        <td>1</td>
-      </tr>
-      <tr>
-        <td><code>name</code></td>
-        <td>Worksheet name</td>
-        <td>"Sheet1"</td>
-      </tr>
+      <tbody>
+        <tr>
+          <td><code>number</code></td>
+          <td>1-based index</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><code>name</code></td>
+          <td>Worksheet name</td>
+          <td>"Sheet1"</td>
+        </tr>
+      </tbody>
     </table>
   </blockquote>
   <h2>Examples</h2>
@@ -49,6 +51,8 @@
     <li><code>SELECT name FROM LIST_XLS_WORKSHEETS('C:\Workbook.xls') WHERE number = 2;</code><br>
     Returns the name of the second worksheet in "Workbook.xls", or an empty table if there are fewer than 2 worksheets
     in the workbook.</li>
-  </ul><br>
+  </ul>
+  <p><br></p>
+  <ul class="examples"></ul>
 </body>
 </html>
