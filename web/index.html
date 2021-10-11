@@ -10,23 +10,6 @@
 <body>
 
 <style>
-h2 {
-	padding-top: 40px;
-	font-size: 24px;
-}
-table {
-	width: 100%;
-}
-td {
-	vertical-align: top;
-}
-td.tab {
-	font-weight: bold;
-	width: 36%;
-}
-td.tab ul {
-	padding-left: 16px;
-}
 .c-keyword {
 	color: #009688;
 }
@@ -38,14 +21,6 @@ td.tab ul {
 }
 .c-comment {
 	color: #008000;
-}
-pre {
-	line-height: 110%;
-}
-.code-block pre {
-	display: inline-block;
-	font-size: 13px;
-	margin-right: 20px;
 }
 img#index-screenshot { zoom: 0.5; }
 @media only screen and (max-width: 900px) and (min-width: 650px) {
@@ -62,7 +37,7 @@ img#index-screenshot { zoom: 0.5; }
 <a href="https://www.sqlite.org/">SQLite</a> engine, supporting both <a href="https://en.wikipedia.org/wiki/SQL-92">standard 
 SQL</a> queries and SQL Notebook-specific commands. Everything you need to answer analysis questions about your data, regardless 
 of its format or origin, is built into SQL Notebook.</p>
-<p style="text-align: center"><a href="download.html" style="border-bottom: 2px solid #4078c0; text-decoration: none; font-weight: bold;">Download SQL Notebook</a></p>
+<p style="text-align: center"><a href="https://github.com/electroly/sqlnotebook/releases" style="text-decoration: underline; font-weight: bold;">Download SQL Notebook</a></p>
 <p style="text-align: center"><img alt="Screenshot of SQL Notebook" src="art/main-screenshot-1.png" width="1499" height="1220" id="index-screenshot">&nbsp;</p>
 
 <h2>Easily import and export data</h2>
@@ -84,35 +59,35 @@ All common programming constructs from other programming languages are available
 <div style="overflow-x: auto; overflow-y: hidden;"><table>
     <tr>
         <td style="border-width: 0">
-        <pre><span class="c-keyword">for</span> <em>:i</em> <span class="c-number">= 1</span> <span class="c-keyword">to</span> <span 
+        <pre><span class="c-keyword">FOR</span> <em>:i</em> <span class="c-number">= 1</span> <span class="c-keyword">TO</span> <span 
         class="c-number">100</span><span class="c-keyword">
-begin</span>
-    <span class="c-keyword">if</span> <em>:i</em> <span class="c-keyword">%</span> 3 <span class="c-number">= 0</span> <span 
-        class="c-keyword">and</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
-        <span class="c-keyword">print</span> <span class="c-string">'FizzBuzz'</span>
-    <span class="c-keyword">else if</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">3 = 0</span>
-        <span class="c-keyword">print</span> <span class="c-string">'Fizz'</span>
-    <span class="c-keyword">else if</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
-        <span class="c-keyword">print</span> <span class="c-string">'Buzz'</span>
-    <span class="c-keyword">else</span>
-        <span class="c-keyword">print</span> <em>:i</em>
-<span class="c-keyword">end</span></pre>
+BEGIN</span>
+    <span class="c-keyword">IF</span> <em>:i</em> <span class="c-keyword">%</span> 3 <span class="c-number">= 0</span> <span 
+        class="c-keyword">AND</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
+        <span class="c-keyword">PRINT</span> <span class="c-string">'FizzBuzz'</span>
+    <span class="c-keyword">ELSE IF</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">3 = 0</span>
+        <span class="c-keyword">PRINT</span> <span class="c-string">'Fizz'</span>
+    <span class="c-keyword">ELSE IF</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
+        <span class="c-keyword">PRINT</span> <span class="c-string">'Buzz'</span>
+    <span class="c-keyword">ELSE</span>
+        <span class="c-keyword">PRINT</span> <em>:i</em>
+<span class="c-keyword">END</span></pre>
         </td>
         <td style="border-width: 0">
-        <pre><span class="c-keyword">select</span>
-    <span class="c-keyword">case</span>
-        <span class="c-keyword">when</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0</span> <span 
-        class="c-keyword">and</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
-            <span class="c-keyword">then</span> <span class="c-string">'FizzBuzz'</span>
-        <span class="c-keyword">when</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0
+        <pre><span class="c-keyword">SELECT</span>
+    <span class="c-keyword">CASE</span>
+        <span class="c-keyword">WHEN</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0</span> <span 
+        class="c-keyword">AND</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
+            <span class="c-keyword">THEN</span> <span class="c-string">'FizzBuzz'</span>
+        <span class="c-keyword">WHEN</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0
             </span><span 
-        class="c-keyword">then</span> <span class="c-string">'Fizz'</span>
-        <span class="c-keyword">when</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0
+        class="c-keyword">THEN</span> <span class="c-string">'Fizz'</span>
+        <span class="c-keyword">WHEN</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0
             </span><span 
-        class="c-keyword">then</span> <span class="c-string">'Buzz'</span>
-        <span class="c-keyword">else</span> number
-    <span class="c-keyword">end</span>
-<span class="c-keyword">from</span> range<span class="c-number">(1, 100)</span></pre>
+        class="c-keyword">THEN</span> <span class="c-string">'Buzz'</span>
+        <span class="c-keyword">ELSE</span> number
+    <span class="c-keyword">END</span>
+<span class="c-keyword">FROM</span> RANGE<span class="c-number">(1, 100)</span></pre>
         </td>
     </tr>
 </table></div>
@@ -128,23 +103,23 @@ begin</span>
 <p>SQL Notebook is a &quot;batteries included&quot; solution to everyday data analysis needs. A wide variety of functionality 
 is immediately available out of the box.</p>
 <pre style="overflow-x: auto; overflow-y: hidden;"><span class="c-comment">-- Access the filesystem</span><span class="c-keyword">
-select</span> filename <span class="c-keyword">from</span> list_files<span class="c-number">(</span><span 
-class="c-string">'C:\'</span><span class="c-number">)</span> <span class="c-keyword">where</span> extension <span 
-class="c-keyword">in</span> <span class="c-number">(</span><span 
+SELECT</span> filename <span class="c-keyword">FROM</span> list_files<span class="c-number">(</span><span 
+class="c-string">'C:\'</span><span class="c-number">)</span> <span class="c-keyword">WHERE</span> extension <span 
+class="c-keyword">IN</span> <span class="c-number">(</span><span 
 class="c-string">'.csv'</span><span class="c-number">, </span><span class="c-string">'.xls'</span><span class="c-number">);
 
 </span><span class="c-comment">-- Parse CSV and other types of files on-the-fly</span>
-<span class="c-keyword">select</span> <span class="c-number">*</span> <span class="c-keyword">from</span> read_csv<span 
+<span class="c-keyword">SELECT</span> <span class="c-number">*</span> <span class="c-keyword">FROM</span> READ_CSV<span 
 class="c-number">(</span><span class="c-string">'C:\MyData.csv'</span><span class="c-number">);
 
 </span><span class="c-comment">-- Import data files into new or existing tables</span>
-<span class="c-keyword">import xls</span> <span class="c-string">'C:\Workbook.xls'</span> <span class="c-keyword">worksheet</span> <span 
-class="c-string">'Sheet2'</span> <span class="c-keyword">into</span> my_table<span class="c-number">;
+<span class="c-keyword">IMPORT XLS</span> <span class="c-string">'C:\Workbook.xls'</span> <span class="c-keyword">WORKSHEET</span> <span 
+class="c-string">'Sheet2'</span> <span class="c-keyword">INTO</span> my_table<span class="c-number">;
 
 </span><span class="c-comment">-- Manipulate dates and times with familiar built-in functions</span>
-<span class="c-keyword">select</span> <span class="c-keyword">*</span><span 
-class="c-number">, </span>dateadd<span class="c-number">(</span><span class="c-string">'day'</span><span 
-class="c-number">, -1,</span> date_col<span class="c-number">)</span> <span class="c-keyword">as</span> previous_day <span class="c-keyword">from</span> my_table<span class="c-number">;
+<span class="c-keyword">SELECT</span> <span class="c-keyword">*</span><span 
+class="c-number">, </span>DATEADD<span class="c-number">(</span><span class="c-string">'day'</span><span 
+class="c-number">, -1,</span> date_col<span class="c-number">)</span> <span class="c-keyword">AS</span> previous_day <span class="c-keyword">FROM</span> my_table<span class="c-number">;
 
 <span class="c-comment">-- And more!</span></span></pre>
 <p>Learn more in the <a href="doc.html">documentation</a>:</p>
@@ -168,7 +143,7 @@ documentation is also available online</a>.</p>
 <h2>It's free!</h2>
 <p>SQL Notebook is free and open source software available under the popular <a href="license.html">MIT 
 license</a>.</p>
-<p><a href="download.html">Download and install SQL Notebook now!</a>&nbsp;</p>
+<p><a href="https://github.com/electroly/sqlnotebook/releases">Download and install SQL Notebook now!</a>&nbsp;</p>
 
 </body>
 

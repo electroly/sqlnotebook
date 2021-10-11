@@ -12,21 +12,31 @@ body {
     line-height: 150%;
     padding: 15px;
 }
-header > a, header > a:visited, header > a:hover, header > a:active {
-    text-decoration: none;
+a#title {
     color: black;
     font-size: 32px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
 }
-header > a > span {
+a#title:hover {
+    text-decoration: none;
+}
+ul#nav {
+    padding-left: 0px;
+    padding-top: 0px;
+    margin: 0px;
+}
+ul#nav li {
     display: inline-block;
-    padding-top: 5px;
-    font-weight: bold;
+    padding-right: 15px;
+    font-size: 20px;
+    font-weight: 500;
 }
 pre, code, tt {
     font-family: 'Consolas', 'Monaco', monospace;
 }
 a, a:visited {
-    color: #4078c0;
+    color: #2ca089;
     text-decoration: none;
 }
 a:hover {
@@ -40,24 +50,11 @@ div#footer {
     margin-bottom: 75px;
     text-align: right;
 }
-ul#nav {
-    padding-left: 0px;
-    padding-top: 0px;
-    margin: 0px;
-}
-ul#nav li {
-    display: inline-block;
-    padding-right: 15px;
-    font-size: 20px;
-}
-ul#nav li a {
-    font-weight: bold;
-}
 hr {
-    height: 1px;
+    height: 6px;
     border-width: 0;
-    color: gray;
-    background-color: gray;
+    color: #eeeeee;
+    background-color: #eeeeee;
 }
 div.figure {
     text-align: center;
@@ -101,6 +98,7 @@ h1 code {
 }
 h2 {
     font-size: 20px;
+	margin-top: 40px;
 }
 h3 {
     font-size: 18px;
@@ -119,7 +117,12 @@ span#header-doc-short {
 img.railroad {
     max-width: 100%;
 }
-@media only screen and (max-width: 750px) {
+table#nav td {
+    border: 0;
+    vertical-align: middle;
+    padding: 0;
+}
+@media only screen and (max-width: 700px) {
     iframe#github-star { display: none; }
     span#header-doc-long { display: none; }
     span#header-doc-short { display: inline; }

@@ -188,7 +188,6 @@ copy .\sitemap.txt .\site\
 
 WriteFile .\site\index.html (FormatHtmlPage "" .\index.html "Open source tool for tabular data exploration and manipulation.")
 WriteFile .\site\license.html (FormatHtmlPage "License" ..\src\SqlNotebook\Resources\ThirdPartyLicenses.html "SQL Notebook is freely available under the MIT license.")
-WriteFile .\site\download.html (FormatHtmlPage "Download & Install" .\download.html "Download and install SQL Notebook on your Windows-based computer.")
 
 # doc index page
 GenerateTempDocHtml

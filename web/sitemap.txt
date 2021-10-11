@@ -1,3 +1,2 @@
 https://sqlnotebook.com/index.html
-https://sqlnotebook.com/download.html
 https://sqlnotebook.com/doc.html
