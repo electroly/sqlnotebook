@@ -30,7 +30,6 @@
         {
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
             this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this._statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -50,7 +49,6 @@
             this._saveAsMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newScriptMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this._optionsMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._exitMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._importMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._importFromFileMnu = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,7 +80,6 @@
             this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
             this._toolStripContainer.SuspendLayout();
@@ -99,11 +96,6 @@
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
             toolStripSeparator3.Size = new System.Drawing.Size(302, 6);
-            // 
-            // toolStripSeparator6
-            // 
-            toolStripSeparator6.Name = "toolStripSeparator6";
-            toolStripSeparator6.Size = new System.Drawing.Size(302, 6);
             // 
             // _toolStripContainer
             // 
@@ -149,7 +141,7 @@
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(1, 25);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(1396, 25);
             this.toolStripStatusLabel1.Spring = true;
             // 
             // _appUpdateLbl
@@ -192,7 +184,7 @@
             this._statusLbl.Image = global::SqlNotebook.Properties.Resources.Hourglass;
             this._statusLbl.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Name = "_statusLbl";
-            this._statusLbl.Size = new System.Drawing.Size(1, 25);
+            this._statusLbl.Size = new System.Drawing.Size(664, 25);
             this._statusLbl.Spring = true;
             this._statusLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLbl.Visible = false;
@@ -273,8 +265,6 @@
             toolStripSeparator3,
             this._newScriptMnu,
             this.toolStripSeparator4,
-            this._optionsMnu,
-            toolStripSeparator6,
             this._exitMnu});
             this._notebookMnu.Margin = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this._notebookMnu.Name = "_notebookMnu";
@@ -325,13 +315,6 @@
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(302, 6);
-            // 
-            // _optionsMnu
-            // 
-            this._optionsMnu.Name = "_optionsMnu";
-            this._optionsMnu.Size = new System.Drawing.Size(305, 34);
-            this._optionsMnu.Text = "Options...";
-            this._optionsMnu.Click += new System.EventHandler(this.OptionsMnu_Click);
             // 
             // _exitMnu
             // 
@@ -629,7 +612,6 @@
         private System.Windows.Forms.ToolStripMenuItem _openMnu;
         private System.Windows.Forms.ToolStripMenuItem _saveMnu;
         private System.Windows.Forms.ToolStripMenuItem _saveAsMnu;
-        private System.Windows.Forms.ToolStripMenuItem _optionsMnu;
         private System.Windows.Forms.ToolStripMenuItem _exitMnu;
         private System.Windows.Forms.ToolStripButton _saveBtn;
         private System.Windows.Forms.ToolStripButton _newScriptBtn;

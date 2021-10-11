@@ -22,17 +22,5 @@ namespace SqlNotebook.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UseExternalHelpBrowser {
-            get {
-                return ((bool)(this["UseExternalHelpBrowser"]));
-            }
-            set {
-                this["UseExternalHelpBrowser"] = value;
-            }
-        }
     }
 }
