@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="railroad-diagram" width="639" height="227" viewBox="0 0 639 227">
+  <g transform="translate(.5 .5)">
+    <g>
+      <path d="M20 21v20m10 -20v20m-10 -10h20"></path>
+    </g>
+    <path d="M40 31h10"></path>
+    <g>
+      <path d="M50 31h0"></path>
+      <path d="M50 31h12"></path>
+      <g>
+        <path d="M62 31h10"></path>
+        <path d="M567 31h10"></path>
+        <g>
+          <path d="M72 31h0"></path>
+          <path d="M199.5 31h0"></path>
+          <path d="M72 31h24"></path>
+          <g class="terminal ">
+            <path d="M96 31h12.75"></path>
+            <path d="M162.75 31h12.75"></path>
+            <rect x="108.75" y="20" width="54" height="22" rx="10" ry="10"></rect>
+            <text x="135.75" y="35">EXEC</text>
+          </g>
+          <path d="M175.5 31h24"></path>
+          <path d="M72 31a12 12 0 0 1 12 12v8a12 12 0 0 0 12 12"></path>
+          <g class="terminal ">
+            <path d="M96 63h0"></path>
+            <path d="M175.5 63h0"></path>
+            <rect x="96" y="52" width="79.5" height="22" rx="10" ry="10"></rect>
+            <text x="135.75" y="67">EXECUTE</text>
+          </g>
+          <path d="M175.5 63a12 12 0 0 0 12 -12v-8a12 12 0 0 1 12 -12"></path>
+        </g>
+        <g>
+          <path d="M199.5 31h0"></path>
+          <path d="M443.5 31h0"></path>
+          <path d="M199.5 31h24"></path>
+          <g>
+            <path d="M223.5 31h196"></path>
+          </g>
+          <path d="M419.5 31h24"></path>
+          <path d="M199.5 31a12 12 0 0 1 12 12v0a12 12 0 0 0 12 12"></path>
+          <g>
+            <path d="M223.5 55h0"></path>
+            <path d="M419.5 55h0"></path>
+            <g class="non-terminal ">
+              <path d="M223.5 55h0"></path>
+              <path d="M371 55h0"></path>
+              <rect x="223.5" y="44" width="147.5" height="22"></rect>
+              <text x="297.25" y="59">result-variable</text>
+            </g>
+            <path d="M371 55h10"></path>
+            <path d="M381 55h10"></path>
+            <g class="terminal ">
+              <path d="M391 55h0"></path>
+              <path d="M419.5 55h0"></path>
+              <rect x="391" y="44" width="28.5" height="22" rx="10" ry="10"></rect>
+              <text x="405.25" y="59">=</text>
+            </g>
+          </g>
+          <path d="M419.5 55a12 12 0 0 0 12 -12v0a12 12 0 0 1 12 -12"></path>
+        </g>
+        <path d="M443.5 31h10"></path>
+        <g class="non-terminal ">
+          <path d="M453.5 31h0"></path>
+          <path d="M567 31h0"></path>
+          <rect x="453.5" y="20" width="113.5" height="22"></rect>
+          <text x="510.25" y="35">script-name</text>
+        </g>
+      </g>
+      <path d="M577 31a12 12 0 0 1 12 12v29a12 12 0 0 1 -12 12h-515a12 12 0 0 0 -12 12v0a12 12 0 0 0 12 12"></path>
+      <g>
+        <path d="M62 108h29.25"></path>
+        <path d="M547.75 108h29.25"></path>
+        <g>
+          <path d="M91.25 108h0"></path>
+          <path d="M547.75 108h0"></path>
+          <path d="M91.25 108h24"></path>
+          <g>
+            <path d="M115.25 108h408.5"></path>
+          </g>
+          <path d="M523.75 108h24"></path>
+          <path d="M91.25 108a12 12 0 0 1 12 12v0a12 12 0 0 0 12 12"></path>
+          <g>
+            <path d="M115.25 132h0"></path>
+            <path d="M523.75 132h0"></path>
+            <path d="M115.25 132h12"></path>
+            <g>
+              <path d="M127.25 132h0"></path>
+              <path d="M511.75 132h0"></path>
+              <g class="non-terminal ">
+                <path d="M127.25 132h0"></path>
+                <path d="M266.25 132h0"></path>
+                <rect x="127.25" y="121" width="139" height="22"></rect>
+                <text x="196.75" y="136">parameter-name</text>
+              </g>
+              <path d="M266.25 132h10"></path>
+              <path d="M276.25 132h10"></path>
+              <g class="terminal ">
+                <path d="M286.25 132h0"></path>
+                <path d="M314.75 132h0"></path>
+                <rect x="286.25" y="121" width="28.5" height="22" rx="10" ry="10"></rect>
+                <text x="300.5" y="136">=</text>
+              </g>
+              <path d="M314.75 132h10"></path>
+              <g>
+                <path d="M324.75 132h0"></path>
+                <path d="M511.75 132h0"></path>
+                <path d="M324.75 132h24"></path>
+                <g class="non-terminal ">
+                  <path d="M348.75 132h0"></path>
+                  <path d="M487.75 132h0"></path>
+                  <rect x="348.75" y="121" width="139" height="22"></rect>
+                  <text x="418.25" y="136">argument-value</text>
+                </g>
+                <path d="M487.75 132h24"></path>
+                <path d="M324.75 132a12 12 0 0 1 12 12v8a12 12 0 0 0 12 12"></path>
+                <g class="terminal ">
+                  <path d="M348.75 164h29.75"></path>
+                  <path d="M458 164h29.75"></path>
+                  <rect x="378.5" y="153" width="79.5" height="22" rx="10" ry="10"></rect>
+                  <text x="418.25" y="168">DEFAULT</text>
+                </g>
+                <path d="M487.75 164a12 12 0 0 0 12 -12v-8a12 12 0 0 1 12 -12"></path>
+              </g>
+            </g>
+            <path d="M511.75 132h12"></path>
+            <path d="M127.25 132a12 12 0 0 0 -12 12v40a12 12 0 0 0 12 12"></path>
+            <g class="terminal ">
+              <path d="M127.25 196h178"></path>
+              <path d="M333.75 196h178"></path>
+              <rect x="305.25" y="185" width="28.5" height="22" rx="10" ry="10"></rect>
+              <text x="319.5" y="200">,</text>
+            </g>
+            <path d="M511.75 196a12 12 0 0 0 12 -12v-40a12 12 0 0 0 -12 -12"></path>
+          </g>
+          <path d="M523.75 132a12 12 0 0 0 12 -12v0a12 12 0 0 1 12 -12"></path>
+        </g>
+      </g>
+      <path d="M577 108h12"></path>
+      <path d="M589 108h0"></path>
+    </g>
+    <path d="M589 108h10"></path>
+    <path d="M 599 108 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+  </g>
+  <style>
+    svg.railroad-diagram {
+      
+    }
+    svg.railroad-diagram path {
+      stroke-width: 3;
+      stroke: black;
+      fill: rgba(0, 0, 0, 0);
+    }
+    svg.railroad-diagram text {
+      font: bold 14px monospace;
+      text-anchor: middle;
+      white-space: pre;
+    }
+    svg.railroad-diagram text.diagram-text {
+      font-size: 12px;
+    }
+    svg.railroad-diagram text.diagram-arrow {
+      font-size: 16px;
+    }
+    svg.railroad-diagram text.label {
+      text-anchor: start;
+    }
+    svg.railroad-diagram text.comment {
+      font: bold 12px monospace;
+      fill: Orchid;
+    }
+    svg.railroad-diagram rect {
+      stroke-width: 3;
+      stroke: black;
+      fill: PaleGreen;
+    }
+    svg.railroad-diagram rect.group-box {
+      stroke: Plum;
+      stroke-dasharray: 10 5;
+      fill: none;
+    }
+    svg.railroad-diagram path.diagram-text {
+      stroke-width: 3;
+      stroke: black;
+      fill: white;
+      cursor: help;
+    }
+    svg.railroad-diagram g.diagram-text:hover path.diagram-text {
+      fill: #eee;
+    }
+    svg.railroad-diagram g.optional-path rect {
+      fill: PaleTurquoise;
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      .day.dark-scheme {
+        background: #333;
+        color: white;
+      }
+      .night.dark-scheme {
+        background: black;
+        color: #ddd;
+      }
+    }
+    
+    @media (prefers-color-scheme: light) {
+      svg.railroad-diagram {
+        
+      }
+      svg.railroad-diagram path {
+        stroke: black;
+        fill: rgba(0, 0, 0, 0);
+      }
+      svg.railroad-diagram text.comment {
+        fill: Orchid;
+      }
+      svg.railroad-diagram rect {
+        stroke: black;
+        fill: PaleGreen;
+      }
+      svg.railroad-diagram rect.group-box {
+        stroke: Plum;
+      }
+      svg.railroad-diagram path.diagram-text {
+        stroke: black;
+        fill: white;
+      }
+      svg.railroad-diagram g.diagram-text:hover path.diagram-text {
+        fill: #eee;
+      }
+      svg.railroad-diagram g.optional-path rect {
+        fill: PaleTurquoise;
+      }
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      svg.railroad-diagram {
+        background-color: #21222c;
+      }
+      svg.railroad-diagram path {
+        stroke: silver;
+        fill: rgba(0, 0, 0, 0);
+      }
+      svg.railroad-diagram text {
+        fill: whitesmoke;
+      }
+      svg.railroad-diagram text.comment {
+        fill: Orchid;
+      }
+      svg.railroad-diagram rect {
+        stroke: silver;
+        fill: DarkGreen;
+      }
+      svg.railroad-diagram rect.group-box {
+        stroke: Plum;
+      }
+      svg.railroad-diagram path.diagram-text {
+        stroke: silver;
+        fill: darkslategrey;
+      }
+      svg.railroad-diagram g.diagram-text:hover path.diagram-text {
+        fill: dimgray;
+      }
+      svg.railroad-diagram g.optional-path rect {
+        fill: RoyalBlue;
+      }
+    }
+  </style>
+</svg>

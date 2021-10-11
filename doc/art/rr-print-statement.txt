@@ -1,0 +1,4 @@
+Diagram(
+    'PRINT',
+    NonTerminal('expression')
+)

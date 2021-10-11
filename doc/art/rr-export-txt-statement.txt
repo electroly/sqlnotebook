@@ -1,0 +1,33 @@
+Diagram(
+    Stack(
+        Sequence(
+            'EXPORT',
+            Choice(0,
+                'TXT',
+                'TEXT'
+            ),
+            NonTerminal('filename'),
+            'FROM',
+            '(',
+            NonTerminal('select-statement'),
+            ')',
+        ),
+        Sequence(
+            Optional(
+                Sequence(
+                    'OPTIONS',
+                    '(',
+                    OneOrMore(
+                        Sequence(
+                            NonTerminal('key'),
+                            ':',
+                            NonTerminal('value')
+                        ),
+                        ','
+                    ),
+                    ')'
+                )
+            )
+        )
+    )
+)

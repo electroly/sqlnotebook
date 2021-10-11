@@ -1,0 +1,14 @@
+Diagram(
+    'WHILE',
+    NonTerminal('condition'),
+    Choice(0,
+        Sequence(
+            'BEGIN',
+            ZeroOrMore(
+                NonTerminal('statement')
+            ),
+            'END'
+        ),
+        NonTerminal('statement')
+    )
+)

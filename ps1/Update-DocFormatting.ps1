@@ -6,6 +6,12 @@ Set-StrictMode -Version 3
 $ps1Dir = $PSScriptRoot
 $docDir = Resolve-Path (Join-Path $ps1Dir "..\doc")
 
+foreach ($svgFilePath in ([System.IO.Directory]::GetFiles("$docDir/art", "*.svg"))) {
+    $svg = [System.IO.File]::ReadAllText($svgFilePath)
+    $svg = $svg.Replace("background-color: #f5f5f5;", "")
+    [System.IO.File]::WriteAllText($svgFilePath, $svg)
+}
+
 $htmlFilenames = Get-Item (Join-Path $docDir "*.html") | % { $_.Name }
 foreach ($htmlFilename in $htmlFilenames) {
     echo $htmlFilename

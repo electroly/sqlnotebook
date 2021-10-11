@@ -1,0 +1,28 @@
+Diagram(
+    Stack(
+        Sequence(
+            Choice(0, 'EXEC', 'EXECUTE'),
+            Optional(
+                Sequence(
+                    NonTerminal('result-variable'),
+                    '='
+                ),
+                'skip'
+            ),
+            NonTerminal('script-name')
+        ),
+        Sequence(
+            Optional(
+                OneOrMore(
+                    Sequence(
+                        NonTerminal('parameter-name'),
+                        '=',
+                        Choice(0, NonTerminal('argument-value'), 'DEFAULT')
+                    ),
+                    ','
+                ),
+                'skip'
+            )
+        )
+    )
+)

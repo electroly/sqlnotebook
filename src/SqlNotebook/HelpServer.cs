@@ -139,7 +139,7 @@ namespace SqlNotebook {
             using (var zipStream = new MemoryStream(Resources.SqliteDocZip))
             using (var archive = new ZipArchive(zipStream)) {
                 foreach (var entry in archive.Entries) {
-                    if (entry.Name.EndsWith(".png")) {
+                    if (entry.Name.EndsWith(".png") || entry.Name.EndsWith(".svg")) {
                         using (var entryStream = entry.Open())
                         using (var memoryStream = new MemoryStream()) {
                             entryStream.CopyTo(memoryStream);
@@ -219,6 +219,15 @@ namespace SqlNotebook {
                             return false;
                         }
                     </script>";
+
+                e.ContentType = Path.GetExtension(rawUrl) switch {
+                    ".css" => HttpContentType.Css,
+                    ".html" => HttpContentType.Html,
+                    ".js" => HttpContentType.JavaScript,
+                    ".png" => HttpContentType.Png,
+                    ".svg" => HttpContentType.Svg,
+                    _ => HttpContentType.Html
+                };
 
                 if (rawUrl.StartsWith("/sqlite-doc/") && (rawUrl.EndsWith(".jpg") || rawUrl.EndsWith(".gif") || rawUrl.EndsWith(".png"))) {
                     // we don't store images in our resources, instead we download them on-the-fly

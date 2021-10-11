@@ -1,0 +1,6 @@
+Diagram(
+    'SET',
+    NonTerminal('variable-name'),
+    '=',
+    NonTerminal('new-value')
+)

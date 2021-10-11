@@ -1,0 +1,31 @@
+Diagram(
+    Stack(
+        Sequence(
+            'FOR',
+            NonTerminal('variable-name'),
+            '=',
+            NonTerminal('first-number'),
+            'TO',
+            NonTerminal('last-number')
+        ),
+        Sequence(
+            Optional(
+                Sequence(
+                    'STEP',
+                    NonTerminal('step')
+                ),
+                'skip'
+            ),
+            Choice(0,
+                Sequence(
+                    'BEGIN',
+                    ZeroOrMore(
+                        NonTerminal('statement')
+                    ),
+                    'END'
+                ),
+                NonTerminal('statement')
+            )
+        )
+    )
+)

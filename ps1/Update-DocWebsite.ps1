@@ -180,6 +180,7 @@ copy .\appversion.txt .\site\
 copy .\sqlnotebook.css .\site\
 copy .\art\*.* .\site\art\
 copy ..\doc\art\*.png .\site\art\
+copy ..\doc\art\*.svg .\site\art\
 copy .\error.html .\site\
 copy .\favicon.ico .\site\
 copy .\robots.txt .\site\

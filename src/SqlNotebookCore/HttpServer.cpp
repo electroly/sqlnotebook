@@ -30,7 +30,8 @@ const char *version, const char *upload_data, size_t *upload_data_size, void **c
         e->ContentType == HttpContentType::Css ? "text/css" :
         e->ContentType == HttpContentType::Html ? "text/html" :
         e->ContentType == HttpContentType::JavaScript ? "text/javascript" :
-        e->ContentType == HttpContentType::Png ? "image/png" : 
+        e->ContentType == HttpContentType::Png ? "image/png" :
+        e->ContentType == HttpContentType::Svg ? "image/svg+xml" :
         "text/plain");
     int ret = MHD_queue_response(connection, resultCode, response);
     MHD_destroy_response(response);

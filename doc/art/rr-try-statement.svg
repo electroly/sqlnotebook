@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="railroad-diagram" width="682" height="156" viewBox="0 0 682 156">
+  <g transform="translate(.5 .5)">
+    <g>
+      <path d="M20 34v20m10 -20v20m-10 -10h20"></path>
+    </g>
+    <path d="M40 44h10"></path>
+    <g>
+      <path d="M50 44h0"></path>
+      <path d="M50 44h12"></path>
+      <g>
+        <path d="M62 44h35.5"></path>
+        <path d="M584.5 44h35.5"></path>
+        <g class="terminal ">
+          <path d="M97.5 44h0"></path>
+          <path d="M160 44h0"></path>
+          <rect x="97.5" y="33" width="62.5" height="22" rx="10" ry="10"></rect>
+          <text x="128.75" y="48">BEGIN</text>
+        </g>
+        <path d="M160 44h10"></path>
+        <path d="M170 44h10"></path>
+        <g class="terminal ">
+          <path d="M180 44h0"></path>
+          <path d="M225.5 44h0"></path>
+          <rect x="180" y="33" width="45.5" height="22" rx="10" ry="10"></rect>
+          <text x="202.75" y="48">TRY</text>
+        </g>
+        <path d="M225.5 44h10"></path>
+        <g>
+          <path d="M235.5 44h0"></path>
+          <path d="M463.5 44h0"></path>
+          <path d="M235.5 44a12 12 0 0 0 12 -12v0a12 12 0 0 1 12 -12"></path>
+          <g>
+            <path d="M259.5 20h180"></path>
+          </g>
+          <path d="M439.5 20a12 12 0 0 1 12 12v0a12 12 0 0 0 12 12"></path>
+          <path d="M235.5 44h24"></path>
+          <g>
+            <path d="M259.5 44h0"></path>
+            <path d="M439.5 44h0"></path>
+            <path d="M259.5 44h12"></path>
+            <g class="non-terminal ">
+              <path d="M271.5 44h0"></path>
+              <path d="M427.5 44h0"></path>
+              <rect x="271.5" y="33" width="156" height="22"></rect>
+              <text x="349.5" y="48">statement-to-try</text>
+            </g>
+            <path d="M427.5 44h12"></path>
+            <path d="M271.5 44a12 12 0 0 0 -12 12v0a12 12 0 0 0 12 12"></path>
+            <g>
+              <path d="M271.5 68h156"></path>
+            </g>
+            <path d="M427.5 68a12 12 0 0 0 12 -12v0a12 12 0 0 0 -12 -12"></path>
+          </g>
+          <path d="M439.5 44h24"></path>
+        </g>
+        <path d="M463.5 44h10"></path>
+        <g class="terminal ">
+          <path d="M473.5 44h0"></path>
+          <path d="M519 44h0"></path>
+          <rect x="473.5" y="33" width="45.5" height="22" rx="10" ry="10"></rect>
+          <text x="496.25" y="48">END</text>
+        </g>
+        <path d="M519 44h10"></path>
+        <path d="M529 44h10"></path>
+        <g class="terminal ">
+          <path d="M539 44h0"></path>
+          <path d="M584.5 44h0"></path>
+          <rect x="539" y="33" width="45.5" height="22" rx="10" ry="10"></rect>
+          <text x="561.75" y="48">TRY</text>
+        </g>
+      </g>
+      <path d="M620 44a12 12 0 0 1 12 12v10a12 12 0 0 1 -12 12h-558a12 12 0 0 0 -12 12v10a12 12 0 0 0 12 12"></path>
+      <g>
+        <path d="M62 112h10"></path>
+        <path d="M610 112h10"></path>
+        <g class="terminal ">
+          <path d="M72 112h0"></path>
+          <path d="M134.5 112h0"></path>
+          <rect x="72" y="101" width="62.5" height="22" rx="10" ry="10"></rect>
+          <text x="103.25" y="116">BEGIN</text>
+        </g>
+        <path d="M134.5 112h10"></path>
+        <path d="M144.5 112h10"></path>
+        <g class="terminal ">
+          <path d="M154.5 112h0"></path>
+          <path d="M217 112h0"></path>
+          <rect x="154.5" y="101" width="62.5" height="22" rx="10" ry="10"></rect>
+          <text x="185.75" y="116">CATCH</text>
+        </g>
+        <path d="M217 112h10"></path>
+        <g>
+          <path d="M227 112h0"></path>
+          <path d="M472 112h0"></path>
+          <path d="M227 112a12 12 0 0 0 12 -12v0a12 12 0 0 1 12 -12"></path>
+          <g>
+            <path d="M251 88h197"></path>
+          </g>
+          <path d="M448 88a12 12 0 0 1 12 12v0a12 12 0 0 0 12 12"></path>
+          <path d="M227 112h24"></path>
+          <g>
+            <path d="M251 112h0"></path>
+            <path d="M448 112h0"></path>
+            <path d="M251 112h12"></path>
+            <g class="non-terminal ">
+              <path d="M263 112h0"></path>
+              <path d="M436 112h0"></path>
+              <rect x="263" y="101" width="173" height="22"></rect>
+              <text x="349.5" y="116">statement-if-error</text>
+            </g>
+            <path d="M436 112h12"></path>
+            <path d="M263 112a12 12 0 0 0 -12 12v0a12 12 0 0 0 12 12"></path>
+            <g>
+              <path d="M263 136h173"></path>
+            </g>
+            <path d="M436 136a12 12 0 0 0 12 -12v0a12 12 0 0 0 -12 -12"></path>
+          </g>
+          <path d="M448 112h24"></path>
+        </g>
+        <path d="M472 112h10"></path>
+        <g class="terminal ">
+          <path d="M482 112h0"></path>
+          <path d="M527.5 112h0"></path>
+          <rect x="482" y="101" width="45.5" height="22" rx="10" ry="10"></rect>
+          <text x="504.75" y="116">END</text>
+        </g>
+        <path d="M527.5 112h10"></path>
+        <path d="M537.5 112h10"></path>
+        <g class="terminal ">
+          <path d="M547.5 112h0"></path>
+          <path d="M610 112h0"></path>
+          <rect x="547.5" y="101" width="62.5" height="22" rx="10" ry="10"></rect>
+          <text x="578.75" y="116">CATCH</text>
+        </g>
+      </g>
+      <path d="M620 112h12"></path>
+      <path d="M632 112h0"></path>
+    </g>
+    <path d="M632 112h10"></path>
+    <path d="M 642 112 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+  </g>
+  <style>
+    svg.railroad-diagram {
+      
+    }
+    svg.railroad-diagram path {
+      stroke-width: 3;
+      stroke: black;
+      fill: rgba(0, 0, 0, 0);
+    }
+    svg.railroad-diagram text {
+      font: bold 14px monospace;
+      text-anchor: middle;
+      white-space: pre;
+    }
+    svg.railroad-diagram text.diagram-text {
+      font-size: 12px;
+    }
+    svg.railroad-diagram text.diagram-arrow {
+      font-size: 16px;
+    }
+    svg.railroad-diagram text.label {
+      text-anchor: start;
+    }
+    svg.railroad-diagram text.comment {
+      font: bold 12px monospace;
+      fill: Orchid;
+    }
+    svg.railroad-diagram rect {
+      stroke-width: 3;
+      stroke: black;
+      fill: PaleGreen;
+    }
+    svg.railroad-diagram rect.group-box {
+      stroke: Plum;
+      stroke-dasharray: 10 5;
+      fill: none;
+    }
+    svg.railroad-diagram path.diagram-text {
+      stroke-width: 3;
+      stroke: black;
+      fill: white;
+      cursor: help;
+    }
+    svg.railroad-diagram g.diagram-text:hover path.diagram-text {
+      fill: #eee;
+    }
+    svg.railroad-diagram g.optional-path rect {
+      fill: PaleTurquoise;
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      .day.dark-scheme {
+        background: #333;
+        color: white;
+      }
+      .night.dark-scheme {
+        background: black;
+        color: #ddd;
+      }
+    }
+    
+    @media (prefers-color-scheme: light) {
+      svg.railroad-diagram {
+        
+      }
+      svg.railroad-diagram path {
+        stroke: black;
+        fill: rgba(0, 0, 0, 0);
+      }
+      svg.railroad-diagram text.comment {
+        fill: Orchid;
+      }
+      svg.railroad-diagram rect {
+        stroke: black;
+        fill: PaleGreen;
+      }
+      svg.railroad-diagram rect.group-box {
+        stroke: Plum;
+      }
+      svg.railroad-diagram path.diagram-text {
+        stroke: black;
+        fill: white;
+      }
+      svg.railroad-diagram g.diagram-text:hover path.diagram-text {
+        fill: #eee;
+      }
+      svg.railroad-diagram g.optional-path rect {
+        fill: PaleTurquoise;
+      }
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      svg.railroad-diagram {
+        background-color: #21222c;
+      }
+      svg.railroad-diagram path {
+        stroke: silver;
+        fill: rgba(0, 0, 0, 0);
+      }
+      svg.railroad-diagram text {
+        fill: whitesmoke;
+      }
+      svg.railroad-diagram text.comment {
+        fill: Orchid;
+      }
+      svg.railroad-diagram rect {
+        stroke: silver;
+        fill: DarkGreen;
+      }
+      svg.railroad-diagram rect.group-box {
+        stroke: Plum;
+      }
+      svg.railroad-diagram path.diagram-text {
+        stroke: silver;
+        fill: darkslategrey;
+      }
+      svg.railroad-diagram g.diagram-text:hover path.diagram-text {
+        fill: dimgray;
+      }
+      svg.railroad-diagram g.optional-path rect {
+        fill: RoyalBlue;
+      }
+    }
+  </style>
+</svg>

@@ -1,0 +1,36 @@
+Diagram(
+    Stack(
+        Sequence(
+            'IF',
+            NonTerminal('condition'),
+            Choice(0,
+                Sequence(
+                    'BEGIN',
+                    ZeroOrMore(
+                        NonTerminal('statement-if-true')
+                    ),
+                    'END'
+                ),
+                NonTerminal('statement-if-true')
+            )
+        ),
+        Sequence(
+            Optional(
+                Sequence(
+                    'ELSE',
+                    Choice(0,
+                        Sequence(
+                            'BEGIN',
+                            ZeroOrMore(
+                                NonTerminal('statement-if-false')
+                            ),
+                            'END'
+                        ),
+                        NonTerminal('statement-if-false')
+                    )
+                ),
+                'skip'
+            )
+        )
+    )
+)

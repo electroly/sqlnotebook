@@ -48,6 +48,16 @@ try {
 		$stream.Close()
 	}
 
+	$docArtFilenames = Get-ChildItem -file ([System.IO.Path]::Combine($artDir, (Join-Path $artDir "*.svg"))) | Select -Expand "Name"
+	ForEach ($docArtFilename in $docArtFilenames) {
+        Write-Host "Adding: $docArtFilename"
+		$data = [System.IO.File]::ReadAllBytes([System.IO.Path]::Combine($artDir, $docArtFilename))
+		$entry = $archive.CreateEntry($docArtFilename, [System.IO.Compression.CompressionLevel]::NoCompression)
+		$stream = $entry.Open()
+		$stream.Write($data, 0, $data.Length)
+		$stream.Close()
+	}
+
 	$archive.Dispose()
     Write-Host "Generated sqlite-doc.zip"
 } catch {

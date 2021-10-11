@@ -1,0 +1,22 @@
+Diagram(
+    Stack(
+        Sequence(
+            'BEGIN',
+            'TRY',
+            ZeroOrMore(
+                NonTerminal('statement-to-try')
+            ),
+            'END',
+            'TRY'
+        ),
+        Sequence(
+            'BEGIN',
+            'CATCH',
+            ZeroOrMore(
+                NonTerminal('statement-if-error')
+            ),
+            'END',
+            'CATCH'
+        )
+    )
+)

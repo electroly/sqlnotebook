@@ -1,0 +1,6 @@
+Diagram(
+    'THROW',
+    Optional(
+        NonTerminal('error-message')
+    )
+)

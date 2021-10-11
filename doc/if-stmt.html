@@ -7,20 +7,20 @@
 <body>
   <h1><code>IF</code> Statement</h1>Takes one code path or the other based on an SQL expression. The <span style=
   "font-style: italic;">condition</span> expression must evaluate to the integer 0 or 1.
-  <h2>Syntax</h2>
-  <p><img alt="Syntax for the IF statement" src="art/doc-if-stmt.png" style="width: 418px; height: 219px;"><br></p>
+  <h2>Syntax</h2><img moz-do-not-send="true" src="art/rr-if-statement.svg" alt="" width="720" height="244">
   <h2>Arguments</h2>
   <ul class="args">
     <li><span style="font-weight: bold;">condition</span> (integer, 0 or 1)<br>
-    If this expression evaluates to 1, then the <span style="font-style: italic;">stmt-if-true</span> statements are
-    executed. &nbsp;Otherwise, the <span style="font-style: italic;">stmt-if-false</span> statements are executed.</li>
-    <li><span style="font-weight: bold;">stmt-if-true</span> (statement)<br>
+    If this expression evaluates to 1, then the <span style="font-style: italic;">statement-if-true</span> statements
+    are executed. &nbsp;Otherwise, the <span style="font-style: italic;">statement-if-false</span> statements are
+    executed.</li>
+    <li><span style="font-weight: bold;">statement-if-true</span> (statement)<br>
     The statements to execute if the condition is 1. &nbsp;If more than one <span style=
-    "font-style: italic;">stmt-if-true</span> statement is desired, the <code>BEGIN</code> and <code>END</code>
+    "font-style: italic;">statement-if-true</span> statement is desired, the <code>BEGIN</code> and <code>END</code>
     keywords must be used.</li>
-    <li><span style="font-weight: bold;">stmt-if-false</span> (statement)<br>
+    <li><span style="font-weight: bold;">statement-if-false</span> (statement)<br>
     The statements to execute if the condition is 0. &nbsp;If more than one <span style=
-    "font-style: italic;">stmt-if-false</span> statement is desired, the <code>BEGIN</code> and <code>END</code>
+    "font-style: italic;">statement-if-false</span> statement is desired, the <code>BEGIN</code> and <code>END</code>
     keywords must be used.</li>
   </ul>
   <h2>Examples</h2>

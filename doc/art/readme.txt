@@ -1,6 +1,0 @@
-- Create railroad diagram at http://www.bottlecaps.de/rr/ui
-- Right-click on a diagram and click Inspect Element.  Copy the <svg> element.
-- Paste the <svg> element into a.svg in this directory.
-- Open a.svg file in Inkscape
-- Export PNG image at 72 DPI
-- Run "pngcrush -ow -brute" on the PNG image

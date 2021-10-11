@@ -36,7 +36,7 @@ namespace SqlNotebookCore {
     };
 
     public enum class HttpContentType {
-        Html, Css, Png, JavaScript
+        Html, Css, Png, Svg, JavaScript
     };
 
     public ref class HttpRequestEventArgs sealed : public EventArgs {
