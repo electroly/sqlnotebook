@@ -9,7 +9,7 @@ Use a Windows machine with at least 8GB RAM.
 - Install WSL with Ubuntu 20.04 with `tidy`, `unix2dos`, and `pwsh`.
     ```
     sudo apt-get update
-    sudo apt-get install tidy dos2unix imagemagick
+    sudo apt-get install tidy dos2unix
     sudo apt-get install -y wget apt-transport-https software-properties-common
     wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
     sudo dpkg -i packages-microsoft-prod.deb
