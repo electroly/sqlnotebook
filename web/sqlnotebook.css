@@ -116,6 +116,9 @@ ul.doc-list {
 span#header-doc-short {
     display: none;
 }
+img.railroad {
+    max-width: 100%;
+}
 @media only screen and (max-width: 750px) {
     iframe#github-star { display: none; }
     span#header-doc-long { display: none; }
