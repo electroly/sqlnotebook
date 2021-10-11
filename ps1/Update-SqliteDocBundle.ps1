@@ -8,8 +8,15 @@
 # - git commit
 # - Delete sqlite-doc.zip in src/SqlNotebook/Resources
 
-if (-not (Test-Path "sqlite-doc")) {
-    Write-Host "sqlite-doc does not exist."
+$ErrorActionPreference = "Stop"
+Set-StrictMode -Version 3
+
+$ps1Dir = $PSScriptRoot
+$rootDir = (Resolve-Path (Join-Path $ps1Dir "..\")).Path
+$sqliteDir = "$rootDir/ext/sqlite"
+
+if (-not (Test-Path "$sqliteDir/sqlite-doc")) {
+    Write-Host "Directory not found: $sqliteDir/sqlite-doc"
     break
 }
 
@@ -21,6 +28,8 @@ function DeleteIfExists($path) {
         Write-Host ("Does not exist: " + $path)
     }
 }
+
+Push-Location $sqliteDir
 
 # Remove stuff that doesn't apply to SQL Notebook
 DeleteIfExists "sqlite-doc/doc_backlink_crossref.html"
@@ -145,7 +154,7 @@ function ReadDocFile($filePath) {
     if ($startOfContent -ne -1) {
         $data = $contentTypeLine + [System.Environment]::NewLine + $titleLine + [System.Environment]::NewLine + $data.Substring($startOfContent)
     }
-    $relativePath = (Resolve-Path $filePath -Relative)
+    $relativePath = (Resolve-Path $filePath -Relative).Replace('/', '\')
     return ($relativePath + [System.Environment]::NewLine + $data)
 }
 
@@ -156,3 +165,5 @@ DeleteIfExists "sqlite-doc.txt"
 $utf8 = New-Object System.Text.UTF8Encoding($False)
 $outPath = [System.IO.Path]::Combine((Resolve-Path .).Path, "sqlite-doc.txt")
 [System.IO.File]::WriteAllText($outPath, $amalgamation, $utf8)
+
+Pop-Location

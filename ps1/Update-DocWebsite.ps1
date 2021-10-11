@@ -1,26 +1,27 @@
+# Generates the files in web/site/
+
+Set-StrictMode -Version 3
 $ErrorActionPreference = "Stop"
 
+$webDir = (Resolve-Path "$PSScriptRoot\..\web").Path
+
 function ReadFileAbsolute($filePath) {
-    Write-Host "ReadFileAbsolute($filePath)"
     $utf8 = New-Object System.Text.UTF8Encoding($False)
     return [System.IO.File]::ReadAllText($filePath, $utf8)
 }
 
 function ReadFile($filePath) {
-    Write-Host "ReadFile($filePath)"
-    $filePath = Join-Path $PSScriptRoot $filePath
+    $filePath = Join-Path $webDir $filePath
     return ReadFileAbsolute($filePath)
 }
 
 function WriteFileAbsolute($filePath, $text) {
-    Write-Host "WriteFileAbsolute($filePath)"
     $utf8 = New-Object System.Text.UTF8Encoding($False)
     [System.IO.File]::WriteAllText($filePath, $text, $utf8)
 }
 
 function WriteFile($filePath, $text) {
-    Write-Host "WriteFile($filePath)"
-    $filePath = Join-Path $PSScriptRoot $filePath
+    $filePath = Join-Path $webDir $filePath
     WriteFileAbsolute $filePath $text
 }
 
@@ -42,7 +43,7 @@ function FormatPage($title, $content, $metaDesc) {
 }
 
 function FormatHtmlPage($title, $htmlPath, $metaDesc) {
-    Write-Host "FormatHtmlPage($htmlPage)"
+    Write-Host "FormatHtmlPage($htmlPath)"
     $html = (ReadFile $htmlPath)
     $start = $html.IndexOf("<body>") + 6
     $end = $html.IndexOf("</body>")
@@ -51,7 +52,7 @@ function FormatHtmlPage($title, $htmlPath, $metaDesc) {
 }
 
 function WriteDocFiles() {
-    $docFilenames = ls -file ..\doc | select -expand Name
+    $docFilenames = Dir -file ..\doc | select -expand Name
     $docPath = (Resolve-Path ..\doc)
     $sitePath = (Resolve-Path .\site)
     foreach ($docFilename in $docFilenames) {
@@ -168,8 +169,8 @@ function GenerateTempDocHtml() {
     $obj.WriteDocHtml($docPath, $webPath)
 }
 
-Write-Host "Dir: $PSScriptRoot"
-cd $PSScriptRoot
+Write-Host "Dir: $webDir"
+Push-Location $webDir
 
 New-Item site -Type Directory -ErrorAction SilentlyContinue
 New-Item site/art -Type Directory -ErrorAction SilentlyContinue
@@ -194,3 +195,5 @@ WriteFile .\site\doc.html (FormatHtmlPage "Documentation" .\temp\doc.html "Index
 
 # individual doc article pages
 WriteDocFiles
+
+Pop-Location

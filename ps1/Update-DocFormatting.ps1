@@ -1,5 +1,5 @@
-#!/usr/bin/env pwsh
 # Formats the HTML files under doc/. Must have HTML Tidy installed (see CONTRIBUTING.md).
+
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 3
 
