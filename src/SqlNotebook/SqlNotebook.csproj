@@ -155,17 +155,6 @@
     <Content Include="SqlNotebookIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="MSHTML">
-      <Guid>{3050F1C5-98B5-11CF-BB82-00AA00BDCE0B}</Guid>
-      <VersionMajor>4</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.1.2.30" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.37" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
@@ -188,6 +177,9 @@
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="Resources\ThirdPartyLicenses.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>

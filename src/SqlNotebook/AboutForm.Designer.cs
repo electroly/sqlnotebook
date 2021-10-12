@@ -24,14 +24,15 @@
         /// </summary>
         private void InitializeComponent() {
             this._okBtn = new System.Windows.Forms.Button();
-            this._browserPanel = new System.Windows.Forms.Panel();
-            this._browser = new System.Windows.Forms.WebBrowser();
             this._table = new System.Windows.Forms.TableLayoutPanel();
             this._buttonFlow = new System.Windows.Forms.FlowLayoutPanel();
-            this._githubLnk = new System.Windows.Forms.LinkLabel();
-            this._websiteLnk = new System.Windows.Forms.LinkLabel();
             this._linkFlow = new System.Windows.Forms.FlowLayoutPanel();
-            this._browserPanel.SuspendLayout();
+            this._copyrightLabel = new System.Windows.Forms.Label();
+            this._websiteLnk = new System.Windows.Forms.LinkLabel();
+            this._githubLnk = new System.Windows.Forms.LinkLabel();
+            this._licenseLnk = new System.Windows.Forms.LinkLabel();
+            this._titleLabel = new System.Windows.Forms.Label();
+            this._versionLabel = new System.Windows.Forms.Label();
             this._table.SuspendLayout();
             this._buttonFlow.SuspendLayout();
             this._linkFlow.SuspendLayout();
@@ -49,41 +50,18 @@
             this._okBtn.UseVisualStyleBackColor = true;
             this._okBtn.Click += new System.EventHandler(this.OkBtn_Click);
             // 
-            // _browserPanel
-            // 
-            this._browserPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._browserPanel.Controls.Add(this._browser);
-            this._browserPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._browserPanel.Location = new System.Drawing.Point(3, 3);
-            this._browserPanel.Name = "_browserPanel";
-            this._browserPanel.Size = new System.Drawing.Size(662, 571);
-            this._browserPanel.TabIndex = 9;
-            // 
-            // _browser
-            // 
-            this._browser.AllowWebBrowserDrop = false;
-            this._browser.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._browser.IsWebBrowserContextMenuEnabled = false;
-            this._browser.Location = new System.Drawing.Point(0, 0);
-            this._browser.MinimumSize = new System.Drawing.Size(20, 20);
-            this._browser.Name = "_browser";
-            this._browser.ScriptErrorsSuppressed = true;
-            this._browser.Size = new System.Drawing.Size(660, 569);
-            this._browser.TabIndex = 0;
-            this._browser.WebBrowserShortcutsEnabled = false;
-            // 
             // _table
             // 
+            this._table.AutoSize = true;
+            this._table.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this._table.ColumnCount = 1;
             this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._table.Controls.Add(this._buttonFlow, 0, 2);
-            this._table.Controls.Add(this._browserPanel, 0, 0);
-            this._table.Controls.Add(this._linkFlow, 0, 1);
+            this._table.Controls.Add(this._buttonFlow, 0, 1);
+            this._table.Controls.Add(this._linkFlow, 0, 0);
             this._table.Dock = System.Windows.Forms.DockStyle.Fill;
             this._table.Location = new System.Drawing.Point(0, 0);
             this._table.Name = "_table";
-            this._table.RowCount = 3;
-            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._table.RowCount = 2;
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.Size = new System.Drawing.Size(668, 655);
@@ -99,40 +77,87 @@
             this._buttonFlow.Size = new System.Drawing.Size(94, 41);
             this._buttonFlow.TabIndex = 11;
             // 
-            // _githubLnk
+            // _linkFlow
             // 
-            this._githubLnk.AutoSize = true;
-            this._githubLnk.Location = new System.Drawing.Point(199, 0);
-            this._githubLnk.Name = "_githubLnk";
-            this._githubLnk.Size = new System.Drawing.Size(170, 25);
-            this._githubLnk.TabIndex = 6;
-            this._githubLnk.TabStop = true;
-            this._githubLnk.Text = "View GitHub project";
-            this._githubLnk.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.GithubLnk_LinkClicked);
+            this._linkFlow.Controls.Add(this._titleLabel);
+            this._linkFlow.Controls.Add(this._versionLabel);
+            this._linkFlow.Controls.Add(this._copyrightLabel);
+            this._linkFlow.Controls.Add(this._websiteLnk);
+            this._linkFlow.Controls.Add(this._githubLnk);
+            this._linkFlow.Controls.Add(this._licenseLnk);
+            this._linkFlow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._linkFlow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this._linkFlow.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this._linkFlow.Location = new System.Drawing.Point(3, 3);
+            this._linkFlow.Name = "_linkFlow";
+            this._linkFlow.Size = new System.Drawing.Size(662, 602);
+            this._linkFlow.TabIndex = 13;
+            // 
+            // _copyrightLabel
+            // 
+            this._copyrightLabel.AutoSize = true;
+            this._copyrightLabel.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this._copyrightLabel.Location = new System.Drawing.Point(3, 75);
+            this._copyrightLabel.Name = "_copyrightLabel";
+            this._copyrightLabel.Size = new System.Drawing.Size(351, 30);
+            this._copyrightLabel.TabIndex = 0;
+            this._copyrightLabel.Text = "Copyright (C) 2016-2021 Brian Luft";
             // 
             // _websiteLnk
             // 
             this._websiteLnk.AutoSize = true;
-            this._websiteLnk.Location = new System.Drawing.Point(3, 0);
+            this._websiteLnk.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this._websiteLnk.Location = new System.Drawing.Point(3, 105);
             this._websiteLnk.Name = "_websiteLnk";
-            this._websiteLnk.Size = new System.Drawing.Size(190, 25);
+            this._websiteLnk.Size = new System.Drawing.Size(227, 30);
             this._websiteLnk.TabIndex = 7;
             this._websiteLnk.TabStop = true;
             this._websiteLnk.Text = "Visit sqlnotebook.com";
             this._websiteLnk.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.WebsiteLnk_LinkClicked);
             // 
-            // _linkFlow
+            // _githubLnk
             // 
-            this._linkFlow.AutoSize = true;
-            this._linkFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this._linkFlow.Controls.Add(this._websiteLnk);
-            this._linkFlow.Controls.Add(this._githubLnk);
-            this._linkFlow.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this._linkFlow.Location = new System.Drawing.Point(3, 580);
-            this._linkFlow.Name = "_linkFlow";
-            this._linkFlow.Size = new System.Drawing.Size(662, 25);
-            this._linkFlow.TabIndex = 12;
-            this._linkFlow.WrapContents = false;
+            this._githubLnk.AutoSize = true;
+            this._githubLnk.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this._githubLnk.Location = new System.Drawing.Point(3, 135);
+            this._githubLnk.Name = "_githubLnk";
+            this._githubLnk.Size = new System.Drawing.Size(208, 30);
+            this._githubLnk.TabIndex = 6;
+            this._githubLnk.TabStop = true;
+            this._githubLnk.Text = "View GitHub project";
+            this._githubLnk.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.GithubLnk_LinkClicked);
+            // 
+            // _licenseLnk
+            // 
+            this._licenseLnk.AutoSize = true;
+            this._licenseLnk.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this._licenseLnk.Location = new System.Drawing.Point(3, 165);
+            this._licenseLnk.Name = "_licenseLnk";
+            this._licenseLnk.Size = new System.Drawing.Size(249, 30);
+            this._licenseLnk.TabIndex = 8;
+            this._licenseLnk.TabStop = true;
+            this._licenseLnk.Text = "View license information";
+            this._licenseLnk.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LicenseLnk_LinkClicked);
+            // 
+            // _titleLabel
+            // 
+            this._titleLabel.AutoSize = true;
+            this._titleLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this._titleLabel.Location = new System.Drawing.Point(3, 0);
+            this._titleLabel.Name = "_titleLabel";
+            this._titleLabel.Size = new System.Drawing.Size(233, 45);
+            this._titleLabel.TabIndex = 9;
+            this._titleLabel.Text = "SQL Notebook";
+            // 
+            // _versionLabel
+            // 
+            this._versionLabel.AutoSize = true;
+            this._versionLabel.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this._versionLabel.Location = new System.Drawing.Point(3, 45);
+            this._versionLabel.Name = "_versionLabel";
+            this._versionLabel.Size = new System.Drawing.Size(91, 30);
+            this._versionLabel.TabIndex = 10;
+            this._versionLabel.Text = "Version ";
             // 
             // AboutForm
             // 
@@ -143,16 +168,15 @@
             this.ClientSize = new System.Drawing.Size(668, 655);
             this.Controls.Add(this._table);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(484, 383);
             this.Name = "AboutForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "About SQL Notebook";
-            this._browserPanel.ResumeLayout(false);
             this._table.ResumeLayout(false);
             this._table.PerformLayout();
             this._buttonFlow.ResumeLayout(false);
@@ -160,17 +184,20 @@
             this._linkFlow.ResumeLayout(false);
             this._linkFlow.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.Panel _browserPanel;
-        private System.Windows.Forms.WebBrowser _browser;
         private System.Windows.Forms.TableLayoutPanel _table;
         private System.Windows.Forms.FlowLayoutPanel _buttonFlow;
         private System.Windows.Forms.Button _okBtn;
-        private System.Windows.Forms.FlowLayoutPanel _linkFlow;
         private System.Windows.Forms.LinkLabel _websiteLnk;
         private System.Windows.Forms.LinkLabel _githubLnk;
+        private System.Windows.Forms.FlowLayoutPanel _linkFlow;
+        private System.Windows.Forms.Label _copyrightLabel;
+        private System.Windows.Forms.LinkLabel _licenseLnk;
+        private System.Windows.Forms.Label _titleLabel;
+        private System.Windows.Forms.Label _versionLabel;
     }
 }

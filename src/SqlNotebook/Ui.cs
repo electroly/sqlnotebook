@@ -177,9 +177,9 @@ namespace SqlNotebook {
             col.Width = XWidth(width);
         }
 
-        public void MarginTop(Control control) {
+        public void MarginTop(Control control, double height = 0.75) {
             var m = control.Margin;
-            m.Top = XHeight(0.75);
+            m.Top = XHeight(height);
             control.Margin = m;
         }
 
