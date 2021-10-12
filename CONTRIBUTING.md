@@ -21,7 +21,7 @@ Use a Windows machine with at least 8GB RAM.
 
 ## How to build from source
 
-- In Windows, run `ps1/Update-DocResourceZip.ps1` to generate `sqlite-doc.zip`.
+- Run `ps1/Update-DocResourceZip.ps1` to generate `sqlite-doc.zip`.
 - Open `src\SqlNotebook.sln` and build.
 
 ## How to edit documentation
@@ -32,7 +32,7 @@ Use a Windows machine with at least 8GB RAM.
 # How to generate railroad diagram files
 
 - https://railroad.omegatower.net/generator.html
-- Copy-paste the .txt file from this directory into the page.
+- Copy-paste the .txt file from `doc/art` into the page.
 - Click "Save" to download the .svg.
 - Copy to `doc/art`.
 - Run `ps1/Update-Doc.ps1` to rebuild the website and integrated help.
