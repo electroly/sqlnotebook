@@ -60,7 +60,7 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Update="ConsoleDocumentControl.cs">
+    <Compile Update="ConsoleControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="CueToolStripTextBox.cs">

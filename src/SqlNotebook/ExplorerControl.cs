@@ -1,14 +1,12 @@
-﻿using System;
+﻿using SqlNotebookScript.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using SqlNotebook.Properties;
-using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {
     public partial class ExplorerControl : UserControl {
         private readonly NotebookManager _manager;
-        private readonly ImageList _paddedImageList;
         private readonly IWin32Window _mainForm;
         private readonly Slot<bool> _operationInProgress;
 
@@ -25,7 +23,7 @@ namespace SqlNotebook {
             _contextMenuStrip.SetMenuAppearance();
 
             using var g = CreateGraphics();
-            _list.SmallImageList = _paddedImageList = _imageList.PadListViewIcons(g);
+            _list.SmallImageList = _imageList.PadListViewIcons(g);
 
             Ui ui = new(this, false);
 
@@ -40,9 +38,12 @@ namespace SqlNotebook {
                 _manager.Rescan(notebookItemsOnly: true);
             };
 
-            Load += (sender, e) => {
-                _splitContainer.SplitterDistance = Math.Max(0, _splitContainer.Height - 300);
-            };
+            _splitContainer.SplitterDistance = Math.Max(
+                _splitContainer.Height / 2, _splitContainer.Height - ui.XHeight(10));
+        }
+
+        public void TakeFocus() {
+            _list.Select();
         }
 
         private void HandleNotebookChange(NotebookChangeEventArgs e) {

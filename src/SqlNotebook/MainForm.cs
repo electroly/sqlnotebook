@@ -19,12 +19,13 @@ namespace SqlNotebook
         private readonly DockPanel _dockPanel;
         private NotebookManager _manager;
         private Notebook _notebook;
-        private readonly UserControlDockContent _contentsPane;
+        private readonly UserControlDockContent _contentsDockContent;
+        private readonly ConsoleControl _console;
+        private readonly UserControlDockContent _consoleDockContent;
         private readonly Importer _importer;
         private readonly ExplorerControl _explorer;
         private string _filePath {  get { return _notebook.GetFilePath(); } }
         private bool _isNew;
-        private UserControlDockContent _helpDoc;
         private CueToolStripTextBox _searchTxt;
         private Slot<bool> _isDirty = new Slot<bool>();
         private Slot<bool> _operationInProgress = new Slot<bool>();
@@ -57,7 +58,7 @@ namespace SqlNotebook
                 }
             };
 
-            Ui ui = new(this, 175, 50, false);
+            Ui ui = new(this, 140, 45, false);
             MinimumSize = new(Size.Width / 2, Size.Height / 2);
             ui.Init(_saveBtn, Resources.Diskette, Resources.diskette32);
             ui.Init(_newScriptBtn, Resources.ScriptAdd, Resources.script_add32);
@@ -68,6 +69,8 @@ namespace SqlNotebook
             ui.Init(_importFromFileMnu, Resources.TextImports, Resources.text_imports32);
             ui.Init(_exportCsvMnu, Resources.TextExports, Resources.text_exports32);
             ui.Init(_viewDocMnu, Resources.Help, Resources.help32);
+            ui.Init(_contentsMnu, Resources.list, Resources.list32);
+            ui.Init(_consoleMnu, Resources.zone_select, Resources.zone_select32);
             ui.Init(_searchTxt);
             ui.Init(_statusStrip);
             ui.Init(_statusProgressbar);
@@ -101,11 +104,11 @@ namespace SqlNotebook
             };
             _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
 
-            _contentsPane = new UserControlDockContent("Table of Contents", 
+            _contentsDockContent = new("Table of Contents", 
                 _explorer = new ExplorerControl(_manager, this, _operationInProgress),
                 DockAreas.DockLeft | DockAreas.DockRight);
-            _contentsPane.CloseButtonVisible = false;
-            _contentsPane.Show(_dockPanel, DockState.DockLeft);
+            _contentsDockContent.CloseButtonVisible = false;
+            _contentsDockContent.Show(_dockPanel, DockState.DockLeftAutoHide);
 
             _manager.NotebookItemOpenRequest += Manager_NotebookItemOpenRequest;
             _manager.NotebookItemCloseRequest += Manager_NotebookItemCloseRequest;
@@ -168,6 +171,14 @@ namespace SqlNotebook
                     _isDirty.Value = false;
                 };
             }
+
+            _console = new(this, _manager, _operationInProgress);
+            _consoleDockContent = new("Console", _console, DockAreas.DockBottom);
+            _consoleDockContent.CloseButtonVisible = false;
+            _consoleDockContent.Show(_dockPanel);
+            _consoleDockContent.DockState = DockState.DockBottomAutoHide;
+            _consoleDockContent.AutoHidePortion = 0.6;
+            _dockPanel.DockBottomPortion = 0.6;
 
             Load += async (sender, e) => {
                 _manager.Rescan();
@@ -688,6 +699,25 @@ namespace SqlNotebook
             if (!IsDisposed) {
                 _appUpdateAcceptedLbl.Visible = false;
             }
+        }
+
+        private void ContentsMnu_Click(object sender, EventArgs e) {
+            switch (_contentsDockContent.DockState) {
+                case DockState.DockLeftAutoHide:
+                case DockState.DockRightAutoHide:
+                    _dockPanel.ActiveAutoHideContent = _contentsDockContent;
+                    break;
+            }
+
+            _explorer.TakeFocus();
+        }
+
+        private void ConsoleMnu_Click(object sender, EventArgs e) {
+            if (_consoleDockContent.DockState == DockState.DockBottomAutoHide) {
+                _dockPanel.ActiveAutoHideContent = _consoleDockContent;
+            }
+
+            _console.TakeFocus();
         }
     }
 }

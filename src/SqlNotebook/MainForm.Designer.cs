@@ -72,6 +72,9 @@
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripMenuItem();
+            this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._contentsMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._consoleMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._viewDocMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._searchDocMnu = new System.Windows.Forms.ToolStripMenuItem();
@@ -219,6 +222,7 @@
             this._notebookMnu,
             this._importMnu,
             this._exportMnu,
+            this.windowToolStripMenuItem,
             this.helpToolStripMenuItem});
             this._menuStrip.Location = new System.Drawing.Point(0, 0);
             this._menuStrip.Name = "_menuStrip";
@@ -497,6 +501,32 @@
             this.toolStripMenuItem13.Text = "Recent servers";
             this.toolStripMenuItem13.Visible = false;
             // 
+            // windowToolStripMenuItem
+            // 
+            this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._contentsMnu,
+            this._consoleMnu});
+            this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
+            this.windowToolStripMenuItem.Size = new System.Drawing.Size(94, 29);
+            this.windowToolStripMenuItem.Text = "&Window";
+            // 
+            // _contentsMnu
+            // 
+            this._contentsMnu.Name = "_contentsMnu";
+            this._contentsMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+            this._contentsMnu.Size = new System.Drawing.Size(312, 34);
+            this._contentsMnu.Text = "&Table of Contents";
+            this._contentsMnu.Click += new System.EventHandler(this.ContentsMnu_Click);
+            // 
+            // _consoleMnu
+            // 
+            this._consoleMnu.Name = "_consoleMnu";
+            this._consoleMnu.ShortcutKeyDisplayString = "Ctrl+`";
+            this._consoleMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Oemtilde)));
+            this._consoleMnu.Size = new System.Drawing.Size(312, 34);
+            this._consoleMnu.Text = "&Console";
+            this._consoleMnu.Click += new System.EventHandler(this.ConsoleMnu_Click);
+            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -622,6 +652,9 @@
         private System.Windows.Forms.ToolStripStatusLabel _appUpdateLbl;
         private System.Windows.Forms.ToolStripStatusLabel _appUpdateAcceptedLbl;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripMenuItem windowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem _consoleMnu;
+        private System.Windows.Forms.ToolStripMenuItem _contentsMnu;
     }
 }
 

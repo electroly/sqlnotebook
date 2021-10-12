@@ -304,4 +304,19 @@
   <data name="SQL_Mode_xshd" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\sql-mode.xshd;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="zone_select" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\zone_select.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="zone_select32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\zone_select32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="list" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\list.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="list32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\list32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="delete32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\delete32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

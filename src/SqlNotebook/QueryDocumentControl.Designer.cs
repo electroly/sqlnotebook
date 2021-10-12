@@ -85,7 +85,7 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this._grid);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(694, 277);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(694, 279);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
@@ -104,6 +104,7 @@
             this._grid.AllowUserToAddRows = false;
             this._grid.AllowUserToDeleteRows = false;
             this._grid.AllowUserToResizeRows = false;
+            this._grid.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this._grid.BackgroundColor = System.Drawing.SystemColors.Window;
             this._grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._grid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
@@ -111,7 +112,7 @@
             this._grid.Cursor = System.Windows.Forms.Cursors.Arrow;
             this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._grid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this._grid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(229)))), ((int)(((byte)(229)))));
+            this._grid.EnableHeadersVisualStyles = false;
             this._grid.Location = new System.Drawing.Point(0, 0);
             this._grid.Name = "_grid";
             this._grid.ReadOnly = true;
@@ -125,7 +126,7 @@
             this._grid.ShowCellToolTips = false;
             this._grid.ShowEditingIcon = false;
             this._grid.ShowRowErrors = false;
-            this._grid.Size = new System.Drawing.Size(694, 277);
+            this._grid.Size = new System.Drawing.Size(694, 279);
             this._grid.TabIndex = 0;
             // 
             // _resultToolStrip
@@ -145,7 +146,7 @@
             this._resultToolStrip.Name = "_resultToolStrip";
             this._resultToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this._resultToolStrip.ShowItemToolTips = false;
-            this._resultToolStrip.Size = new System.Drawing.Size(694, 32);
+            this._resultToolStrip.Size = new System.Drawing.Size(694, 30);
             this._resultToolStrip.Stretch = true;
             this._resultToolStrip.TabIndex = 0;
             // 
@@ -244,7 +245,7 @@
             this._rowCountLbl.Margin = new System.Windows.Forms.Padding(0, 1, 8, 2);
             this._rowCountLbl.Name = "_rowCountLbl";
             this._rowCountLbl.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-            this._rowCountLbl.Size = new System.Drawing.Size(5, 29);
+            this._rowCountLbl.Size = new System.Drawing.Size(5, 27);
             // 
             // QueryDocumentControl
             // 

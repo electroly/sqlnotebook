@@ -153,6 +153,16 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap delete32 {
+            get {
+                object obj = ResourceManager.GetObject("delete32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Diskette {
             get {
                 object obj = ResourceManager.GetObject("Diskette", resourceCulture);
@@ -306,6 +316,26 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("LinkGo32Png", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap list {
+            get {
+                object obj = ResourceManager.GetObject("list", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap list32 {
+            get {
+                object obj = ResourceManager.GetObject("list32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -700,8 +730,8 @@ namespace SqlNotebook.Properties {
         ///&lt;/style&gt;
         ///&lt;/head&gt;&lt;body&gt;
         ///&lt;strong&gt;SQL Notebook&lt;/strong&gt;&lt;br&gt;
-        ///Copyright © 2016-2021 Brian Luft&lt;br&gt;&lt;br&gt;
-        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associa [rest of string was truncated]&quot;;.
+        ///Copyright (C) 2016-2021 Brian Luft&lt;br&gt;&lt;br&gt;
+        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and assoc [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ThirdPartyLicensesHtml {
             get {
@@ -715,6 +745,26 @@ namespace SqlNotebook.Properties {
         internal static System.Drawing.Bitmap Warning32 {
             get {
                 object obj = ResourceManager.GetObject("Warning32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap zone_select {
+            get {
+                object obj = ResourceManager.GetObject("zone_select", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap zone_select32 {
+            get {
+                object obj = ResourceManager.GetObject("zone_select32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -270,7 +270,7 @@ namespace SqlNotebook {
             );
         }
 
-        public static DataTable ToDataTable(this SimpleDataTable self) {
+        public static DataTable ToDataTable(this SimpleDataTable self, int maxRows = int.MaxValue) {
             var dt = new DataTable();
             foreach (var col in self.Columns) {
                 dt.Columns.Add(col);
@@ -290,6 +290,10 @@ namespace SqlNotebook {
                 }
                 dtRow.ItemArray = objs;
                 dt.Rows.Add(dtRow);
+
+                if (dt.Rows.Count >= maxRows) {
+                    break;
+                }
             }
             return dt;
         }

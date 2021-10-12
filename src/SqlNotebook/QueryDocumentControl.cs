@@ -148,7 +148,7 @@ namespace SqlNotebook {
                 }
                 var source = index >= 0 && index < _results.Count ? _results[index] : null;
                 _grid.DataSource = source;
-                _grid.AutoSizeColumns();
+                _grid.AutoSizeColumns(Ui.XWidth(50, this));
                 _resultSetLbl.Text = $"{index + 1} of {_results.Count}";
                 _rowCountLbl.Text = source == null ? "" : $"{source.Rows.Count} row{(source.Rows.Count == 1 ? "" : "s")}";
             }

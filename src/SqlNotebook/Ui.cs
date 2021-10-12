@@ -46,6 +46,18 @@ namespace SqlNotebook {
         public int XWidth(double x) => (int)(_x.Width * x);
         public int XHeight(double y) => (int)(_x.Height * y);
 
+        public static int XWidth(double x, Control control) {
+            using var g = control.CreateGraphics();
+            var size = g.MeasureString("x", control.Font, PointF.Empty, StringFormat.GenericTypographic);
+            return (int)(size.Width * x);
+        }
+
+        public static int XHeight(double x, Control control) {
+            using var g = control.CreateGraphics();
+            var size = g.MeasureString("x", control.Font, PointF.Empty, StringFormat.GenericTypographic);
+            return (int)(size.Height * x);
+        }
+
         public void Init(Label label) {
             label.TabIndex = _tabIndex++;
         }
@@ -55,6 +67,11 @@ namespace SqlNotebook {
             button.AutoSize = true;
             button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             button.Padding = _buttonPadding;
+        }
+
+        public void Init(Button button, Image lodpi, Image hidpi) {
+            Init(button);
+            button.Image = GetScaledIcon(button, lodpi, hidpi, _dpi);
         }
 
         public void Init(TableLayoutPanel table) {

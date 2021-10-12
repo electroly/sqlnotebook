@@ -3,14 +3,10 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using SqlNotebook.Properties;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Xml;
-using System.Xml.Serialization;
 
 namespace SqlNotebook {
     public partial class SqlTextControl : UserControl {
