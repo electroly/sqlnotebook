@@ -77,7 +77,7 @@
             this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._grid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this._grid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(229)))), ((int)(((byte)(229)))));
+            this._grid.EnableHeadersVisualStyles = false;
             this._grid.Location = new System.Drawing.Point(0, 38);
             this._grid.Name = "_grid";
             this._grid.ReadOnly = true;

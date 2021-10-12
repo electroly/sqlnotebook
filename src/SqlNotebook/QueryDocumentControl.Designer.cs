@@ -104,7 +104,6 @@
             this._grid.AllowUserToAddRows = false;
             this._grid.AllowUserToDeleteRows = false;
             this._grid.AllowUserToResizeRows = false;
-            this._grid.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this._grid.BackgroundColor = System.Drawing.SystemColors.Window;
             this._grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._grid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;

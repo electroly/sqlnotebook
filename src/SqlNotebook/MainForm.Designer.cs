@@ -72,7 +72,7 @@
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripMenuItem();
-            this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._windowMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._contentsMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._consoleMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -222,7 +222,7 @@
             this._notebookMnu,
             this._importMnu,
             this._exportMnu,
-            this.windowToolStripMenuItem,
+            this._windowMnu,
             this.helpToolStripMenuItem});
             this._menuStrip.Location = new System.Drawing.Point(0, 0);
             this._menuStrip.Name = "_menuStrip";
@@ -501,14 +501,15 @@
             this.toolStripMenuItem13.Text = "Recent servers";
             this.toolStripMenuItem13.Visible = false;
             // 
-            // windowToolStripMenuItem
+            // _windowMnu
             // 
-            this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._windowMnu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._contentsMnu,
             this._consoleMnu});
-            this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
-            this.windowToolStripMenuItem.Size = new System.Drawing.Size(94, 29);
-            this.windowToolStripMenuItem.Text = "&Window";
+            this._windowMnu.Name = "_windowMnu";
+            this._windowMnu.Size = new System.Drawing.Size(94, 29);
+            this._windowMnu.Text = "&Window";
+            this._windowMnu.DropDownOpening += new System.EventHandler(this.WindowMnu_DropDownOpening);
             // 
             // _contentsMnu
             // 
@@ -652,7 +653,7 @@
         private System.Windows.Forms.ToolStripStatusLabel _appUpdateLbl;
         private System.Windows.Forms.ToolStripStatusLabel _appUpdateAcceptedLbl;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
-        private System.Windows.Forms.ToolStripMenuItem windowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem _windowMnu;
         private System.Windows.Forms.ToolStripMenuItem _consoleMnu;
         private System.Windows.Forms.ToolStripMenuItem _contentsMnu;
     }

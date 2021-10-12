@@ -719,6 +719,23 @@ namespace SqlNotebook
 
             _console.TakeFocus();
         }
+
+        private void WindowMnu_DropDownOpening(object sender, EventArgs e) {
+            while (_windowMnu.DropDownItems.Count > 2) {
+                _windowMnu.DropDownItems.RemoveAt(2);
+            }
+            if (_dockPanel.Documents.Any()) {
+                _windowMnu.DropDownItems.Add(new ToolStripSeparator());
+            }
+            foreach (var x in _dockPanel.Documents) {
+                var text = x.DockHandler.TabText;
+                ToolStripMenuItem item = new(text);
+                item.Click += delegate {
+                    x.DockHandler.Activate();
+                };
+                _windowMnu.DropDownItems.Add(item);
+            }
+        }
     }
 }
  
