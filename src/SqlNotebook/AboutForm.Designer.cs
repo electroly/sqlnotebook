@@ -24,12 +24,12 @@
         /// </summary>
         private void InitializeComponent() {
             this._okBtn = new System.Windows.Forms.Button();
-            this._githubLnk = new System.Windows.Forms.LinkLabel();
-            this._websiteLnk = new System.Windows.Forms.LinkLabel();
             this._browserPanel = new System.Windows.Forms.Panel();
             this._browser = new System.Windows.Forms.WebBrowser();
             this._table = new System.Windows.Forms.TableLayoutPanel();
             this._buttonFlow = new System.Windows.Forms.FlowLayoutPanel();
+            this._githubLnk = new System.Windows.Forms.LinkLabel();
+            this._websiteLnk = new System.Windows.Forms.LinkLabel();
             this._linkFlow = new System.Windows.Forms.FlowLayoutPanel();
             this._browserPanel.SuspendLayout();
             this._table.SuspendLayout();
@@ -48,6 +48,56 @@
             this._okBtn.Text = "Close";
             this._okBtn.UseVisualStyleBackColor = true;
             this._okBtn.Click += new System.EventHandler(this.OkBtn_Click);
+            // 
+            // _browserPanel
+            // 
+            this._browserPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._browserPanel.Controls.Add(this._browser);
+            this._browserPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._browserPanel.Location = new System.Drawing.Point(3, 3);
+            this._browserPanel.Name = "_browserPanel";
+            this._browserPanel.Size = new System.Drawing.Size(662, 571);
+            this._browserPanel.TabIndex = 9;
+            // 
+            // _browser
+            // 
+            this._browser.AllowWebBrowserDrop = false;
+            this._browser.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._browser.IsWebBrowserContextMenuEnabled = false;
+            this._browser.Location = new System.Drawing.Point(0, 0);
+            this._browser.MinimumSize = new System.Drawing.Size(20, 20);
+            this._browser.Name = "_browser";
+            this._browser.ScriptErrorsSuppressed = true;
+            this._browser.Size = new System.Drawing.Size(660, 569);
+            this._browser.TabIndex = 0;
+            this._browser.WebBrowserShortcutsEnabled = false;
+            // 
+            // _table
+            // 
+            this._table.ColumnCount = 1;
+            this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._table.Controls.Add(this._buttonFlow, 0, 2);
+            this._table.Controls.Add(this._browserPanel, 0, 0);
+            this._table.Controls.Add(this._linkFlow, 0, 1);
+            this._table.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._table.Location = new System.Drawing.Point(0, 0);
+            this._table.Name = "_table";
+            this._table.RowCount = 3;
+            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._table.Size = new System.Drawing.Size(668, 655);
+            this._table.TabIndex = 10;
+            // 
+            // _buttonFlow
+            // 
+            this._buttonFlow.AutoSize = true;
+            this._buttonFlow.Controls.Add(this._okBtn);
+            this._buttonFlow.Dock = System.Windows.Forms.DockStyle.Right;
+            this._buttonFlow.Location = new System.Drawing.Point(571, 611);
+            this._buttonFlow.Name = "_buttonFlow";
+            this._buttonFlow.Size = new System.Drawing.Size(94, 41);
+            this._buttonFlow.TabIndex = 11;
             // 
             // _githubLnk
             // 
@@ -71,57 +121,6 @@
             this._websiteLnk.Text = "Visit sqlnotebook.com";
             this._websiteLnk.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.WebsiteLnk_LinkClicked);
             // 
-            // _browserPanel
-            // 
-            this._browserPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._browserPanel.Controls.Add(this._browser);
-            this._browserPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._browserPanel.Location = new System.Drawing.Point(3, 34);
-            this._browserPanel.Name = "_browserPanel";
-            this._browserPanel.Size = new System.Drawing.Size(662, 462);
-            this._browserPanel.TabIndex = 9;
-            // 
-            // _browser
-            // 
-            this._browser.AllowWebBrowserDrop = false;
-            this._browser.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._browser.IsWebBrowserContextMenuEnabled = false;
-            this._browser.Location = new System.Drawing.Point(0, 0);
-            this._browser.MinimumSize = new System.Drawing.Size(20, 20);
-            this._browser.Name = "_browser";
-            this._browser.ScriptErrorsSuppressed = true;
-            this._browser.Size = new System.Drawing.Size(660, 460);
-            this._browser.TabIndex = 0;
-            this._browser.WebBrowserShortcutsEnabled = false;
-            // 
-            // _table
-            // 
-            this._table.ColumnCount = 1;
-            this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this._table.Controls.Add(this._buttonFlow, 0, 3);
-            this._table.Controls.Add(this._browserPanel, 0, 2);
-            this._table.Controls.Add(this._linkFlow, 0, 0);
-            this._table.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._table.Location = new System.Drawing.Point(0, 0);
-            this._table.Name = "_table";
-            this._table.RowCount = 4;
-            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._table.Size = new System.Drawing.Size(668, 655);
-            this._table.TabIndex = 10;
-            // 
-            // _buttonFlow
-            // 
-            this._buttonFlow.Controls.Add(this._okBtn);
-            this._buttonFlow.Dock = System.Windows.Forms.DockStyle.Right;
-            this._buttonFlow.Location = new System.Drawing.Point(448, 502);
-            this._buttonFlow.Name = "_buttonFlow";
-            this._buttonFlow.Size = new System.Drawing.Size(217, 150);
-            this._buttonFlow.TabIndex = 11;
-            // 
             // _linkFlow
             // 
             this._linkFlow.AutoSize = true;
@@ -129,7 +128,7 @@
             this._linkFlow.Controls.Add(this._websiteLnk);
             this._linkFlow.Controls.Add(this._githubLnk);
             this._linkFlow.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this._linkFlow.Location = new System.Drawing.Point(3, 3);
+            this._linkFlow.Location = new System.Drawing.Point(3, 580);
             this._linkFlow.Name = "_linkFlow";
             this._linkFlow.Size = new System.Drawing.Size(662, 25);
             this._linkFlow.TabIndex = 12;
@@ -165,13 +164,13 @@
         }
 
         #endregion
-        private System.Windows.Forms.LinkLabel _githubLnk;
-        private System.Windows.Forms.LinkLabel _websiteLnk;
         private System.Windows.Forms.Panel _browserPanel;
         private System.Windows.Forms.WebBrowser _browser;
         private System.Windows.Forms.TableLayoutPanel _table;
         private System.Windows.Forms.FlowLayoutPanel _buttonFlow;
-        private System.Windows.Forms.FlowLayoutPanel _linkFlow;
         private System.Windows.Forms.Button _okBtn;
+        private System.Windows.Forms.FlowLayoutPanel _linkFlow;
+        private System.Windows.Forms.LinkLabel _websiteLnk;
+        private System.Windows.Forms.LinkLabel _githubLnk;
     }
 }
