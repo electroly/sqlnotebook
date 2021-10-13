@@ -1,0 +1,438 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>SQLite Query Language: Date And Time Functions</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+<h1 align="center">SQL As Understood By SQLite</h1><p><a href="lang.html">[Top]</a></p><h2>Date And Time Functions</h2>
+
+<p>
+SQLite supports five date and time functions as follows:
+</p>
+
+<p>
+<ol>
+<li> <b>date(</b><i>timestring, modifier, modifier, ...</i><b>)</b> </li>
+<li> <b>time(</b><i>timestring, modifier, modifier, ...</i><b>)</b> </li>
+<li> <b>datetime(</b><i>timestring, modifier, modifier, ...</i><b>)</b> </li>
+<li> <b>julianday(</b><i>timestring, modifier, modifier, ...</i><b>)</b> </li>
+<li> <b>strftime(</b><i>format, timestring, modifier, modifier, ...</i><b>)</b> </li>
+</ol>
+
+<p>
+All five date and time functions take a time string as an argument. 
+The time string is followed by zero or more modifiers. 
+The strftime() function also takes a format string as its first argument.
+</p>
+
+<p>
+The date and time functions use a subset of
+<a href="http://en.wikipedia.org/wiki/ISO_8601">IS0-8601</a> date and time
+formats.
+The date() function returns the date in this format: YYYY-MM-DD. 
+The time() function returns the time as HH:MM:SS. 
+The datetime() function returns "YYYY-MM-DD HH:MM:SS". 
+The julianday() function returns the 
+<a href="http://en.wikipedia.org/wiki/Julian_day">Julian day</a> - the
+number of days since noon in Greenwich on November 24, 4714 B.C. 
+(<a href="http://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar">Proleptic Gregorian calendar</a>).
+The strftime() routine returns the date formatted according to 
+the format string specified as the first argument.
+The format string supports the most common substitutions found in the 
+<a href="http://opengroup.org/onlinepubs/007908799/xsh/strftime.html">strftime() function</a>
+from the standard C library plus two new substitutions, %f and %J.
+The following is a complete list of valid strftime() substitutions:
+</p>
+
+<blockquote>
+<table border="0" cellpadding="0" cellspacing="0">
+<tr><td><td width="10"><td></tr>
+
+<tr><td> %d <td><td> day of month: 00
+<tr><td> %f <td><td> fractional seconds: SS.SSS
+<tr><td> %H <td><td> hour: 00-24 
+<tr><td> %j <td><td> day of year: 001-366
+<tr><td> %J <td><td> Julian day number
+<tr><td> %m <td><td> month: 01-12
+<tr><td> %M <td><td> minute: 00-59
+<tr><td> %s <td><td> seconds since 1970-01-01
+<tr><td> %S <td><td> seconds: 00-59
+<tr><td> %w <td><td> day of week 0-6 with Sunday==0
+<tr><td> %W <td><td> week of year: 00-53
+<tr><td> %Y <td><td> year: 0000-9999
+<tr><td> %% <td><td> %
+</table>
+</blockquote>
+
+<p>
+Notice that all other date and time functions can be expressed
+in terms of strftime():
+</p>
+
+<blockquote>
+<table border="0" cellpadding="0" cellspacing="0">
+<tr><td><b>Function</b><td width="30"><td><b>Equivalent strftime()</b>
+<tr><td>   date(...)      <td><td>  strftime('%Y-%m-%d', ...)
+<tr><td>   time(...)      <td><td>  strftime('%H:%M:%S', ...)
+<tr><td>   datetime(...)  <td><td>  strftime('%Y-%m-%d %H:%M:%S', ...)
+<tr><td>   julianday(...) <td><td>  strftime('%J', ...)
+</table>
+</blockquote>
+
+<p>
+The only reasons for providing functions other than strftime() is
+for convenience and for efficiency.
+</p>
+
+<h3>Time Strings</h3>
+
+<p>A time string can be in any of the following formats:</p>
+
+<ol>
+<li> <i>YYYY-MM-DD</i>
+<li> <i>YYYY-MM-DD HH:MM</i>
+<li> <i>YYYY-MM-DD HH:MM:SS</i>
+<li> <i>YYYY-MM-DD HH:MM:SS.SSS</i>
+<li> <i>YYYY-MM-DD</i><b>T</b><i>HH:MM</i>
+<li> <i>YYYY-MM-DD</i><b>T</b><i>HH:MM:SS</i>
+<li> <i>YYYY-MM-DD</i><b>T</b><i>HH:MM:SS.SSS</i>
+<li> <i>HH:MM</i>
+<li> <i>HH:MM:SS</i>
+<li> <i>HH:MM:SS.SSS</i>
+<li> <b>now</b>
+<li> <i>DDDDDDDDDD</i>
+</ol>
+
+<p>
+In formats 5 through 7, the "T" is a literal character separating 
+the date and the time, as required by 
+<a href="http://www.w3c.org/TR/NOTE-datetime">ISO-8601</a>. 
+Formats 8 through 10 that specify only a time assume a date of 
+2000-01-01. Format 11, the string 'now', is converted into the 
+current date and time as obtained from the xCurrentTime method
+of the <a href="c3ref/vfs.html">sqlite3_vfs</a> object in use.
+The 'now' argument to date and time functions always returns exactly the
+same value for multiple invocations within the same <a href="c3ref/step.html">sqlite3_step()</a> call.
+<a href="http://en.wikipedia.org/wiki/Coordinated_Universal_Time">Universal Coordinated Time (UTC)</a> is used. 
+Format 12 is the 
+<a href="http://en.wikipedia.org/wiki/Julian_day">Julian day number</a>
+expressed as a floating point value.
+</p>
+
+<p>
+Formats 2 through 10 may be optionally followed by a timezone indicator of the form
+"<i>&#91;+-&#93;HH:MM</i>" or just "<i>Z</i>".  The date and time functions use UTC or "zulu"
+time internally, and so the "Z" suffix is a no-op.  Any non-zero "HH:MM" suffix is
+subtracted from the indicated date and time in order to compute zulu time.
+For example, all of the following time strings are equivalent:
+</p>
+
+<blockquote>
+2013-10-07 08:23:19.120<br>
+2013-10-07T08:23:19.120Z<br>
+2013-10-07 04:23:19.120-04:00<br>
+2456572.84952685
+</blockquote>
+
+<p>
+In formats 4, 7, and 10, the fractional seconds value SS.SSS can have
+one or more digits following the decimal point.  Exactly three digits are
+shown in the examples because only the first three digits are significant
+to the result, but the input string can have fewer or more than three digits
+and the date/time functions will still operate correctly.
+Similarly, format 12 is shown with 10 significant digits, but the date/time
+functions will really accept as many or as few digits as are necessary to
+represent the Julian day number.
+</p>
+
+<h3>Modifiers</h3>
+
+<p>The time string can be followed by zero or more modifiers that 
+alter date and/or time. Each modifier
+is a transformation that is applied to the time value to its left.
+Modifiers are applied from left to right; order is important.
+The available modifiers are as follows.</p>
+
+<ol>
+<li> NNN days
+<li> NNN hours
+<li> NNN minutes
+<li> NNN.NNNN seconds
+<li> NNN months
+<li> NNN years
+<li> start of month
+<li> start of year
+<li> start of day
+<li> weekday N
+<li> unixepoch
+<li> localtime
+<li> utc 
+</ol>
+
+<p>The first six modifiers (1 through 6) 
+simply add the specified amount of time to the date and time 
+specified by the preceding timestring and modifiers.
+The 's' character at the end of the modifier names is optional.
+Note that "&plusmn;NNN months" works by rendering the original date into
+the YYYY-MM-DD format, adding the &plusmn;NNN to the MM month value, then
+normalizing the result.  Thus, for example, the data 2001-03-31 modified
+by '+1 month' initially yields 2001-04-31, but April only has 30 days
+so the date is normalized to 2001-05-01.  A similar effect occurs when
+the original date is February 29 of a leapyear and the modifier is
+&plusmn;N years where N is not a multiple of four.</p>
+
+<p>The "start of" modifiers (7 through 9) shift the date backwards 
+to the beginning of the current month, year or day.</p>
+
+<p>The "weekday" modifier advances the date forward to the next date 
+where the weekday number is N. Sunday is 0, Monday is 1, and so forth.</p>
+
+<p>The "unixepoch" modifier (11) only works if it immediately follows 
+a timestring in the DDDDDDDDDD format. 
+This modifier causes the DDDDDDDDDD to be interpreted not 
+as a Julian day number as it normally would be, but as
+<a href="http://en.wikipedia.org/wiki/Unix_time">Unix Time</a> - the 
+number of seconds since 1970.  If the "unixepoch" modifier does not
+follow a timestring of the form DDDDDDDDDD which expresses the number
+of seconds since 1970 or if other modifiers
+separate the "unixepoch" modifier from prior DDDDDDDDDD then the
+behavior is undefined.
+Due to precision limitations imposed by the implementations use
+of 64-bit integers, the "unixepoch" modifier only works for
+dates between 0000-01-01 00:00:00 and 5352-11-01 10:52:47 (unix times
+of -62167219200 through 106751991167).</p>
+
+<a name="localtime"></a>
+
+<p>The "localtime" modifier (12) assumes the time string to its left is in
+Universal Coordinated Time (UTC) and adjusts the time
+string so that it displays localtime.  If "localtime"
+follows a time that is not UTC, then the behavior is undefined.
+The "utc" modifier is the opposite of "localtime".  
+"utc" assumes that the string
+to its left is in the local timezone and adjusts that string to be in UTC.
+If the prior string is not in localtime, then the result of "utc" is
+undefined.</p>
+
+<h3>Examples</h3>
+
+<p>Compute the current date.<p>
+
+<blockquote>SELECT date('now');</blockquote>
+
+<p>Compute the last day of the current month.</p>
+
+<blockquote>SELECT date('now','start of month','+1 month','-1 day');
+</blockquote>
+
+<p>Compute the date and time given a unix timestamp 1092941466.</p>
+
+<blockquote>
+    SELECT datetime(1092941466, 'unixepoch');
+</blockquote>
+
+<p>Compute the date and time given a unix timestamp 1092941466, and 
+compensate for your local timezone.</p>
+
+<blockquote>
+  SELECT datetime(1092941466, 'unixepoch', 'localtime');
+</blockquote>
+
+<p>Compute the current unix timestamp.</p>
+
+<blockquote>
+  SELECT strftime('%s','now');
+</blockquote>
+
+<p>Compute the number of days since the signing of the US Declaration
+of Independence.</p>
+
+<blockquote>
+  SELECT julianday('now') - julianday('1776-07-04');
+</blockquote>
+
+<p>Compute the number of seconds since a particular moment in 2004:</p>
+
+<blockquote>
+  SELECT strftime('%s','now') - strftime('%s','2004-01-01 02:34:56');
+</blockquote>
+
+<p>
+Compute the date of the first Tuesday in October
+for the current year.
+</p>
+
+<blockquote>
+  SELECT date('now','start of year','+9 months','weekday 2');
+</blockquote>
+
+<p>Compute the time since the unix epoch in seconds 
+(like strftime('%s','now') except includes fractional part):</p>
+
+<blockquote>
+  SELECT (julianday('now') - 2440587.5)*86400.0;
+</blockquote>
+
+<h3>Caveats And Bugs</h3>
+
+<p>The computation of local time depends heavily on the whim 
+of politicians and is thus difficult to get correct for 
+all locales. In this implementation, the standard C library 
+function localtime_r() is used to assist in the calculation of 
+local time.  The 
+localtime_r() C function normally only works for years
+between 1970 and 2037. For dates outside this range, SQLite 
+attempts to map the year into an equivalent year within 
+this range, do the calculation, then map the year back.</p>
+
+
+<p>These functions only work for dates between 0000-01-01 00:00:00
+and 9999-12-31 23:59:59 (julidan day numbers 1721059.5 through 5373484.5).
+For dates outside that range, the results of these
+functions are undefined.</p>
+
+<p>Non-Vista Windows platforms only support one set of DST rules. 
+Vista only supports two. Therefore, on these platforms, 
+historical DST calculations will be incorrect. 
+For example, in the US, in 2007 the DST rules changed. 
+Non-Vista Windows platforms apply the new 2007 DST rules 
+to all previous years as well. Vista does somewhat better
+getting results correct back to 1986, when the rules were also changed.</p>
+
+<p>All internal computations assume the 
+<a href="http://en.wikipedia.org/wiki/Gregorian_calendar">Gregorian calendar</a>
+system.  It is also assumed that every
+day is exactly 86400 seconds in duration.</p>
+
+

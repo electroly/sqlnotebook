@@ -720,26 +720,6 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///&lt;html&gt;&lt;head&gt;
-        ///&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
-        ///&lt;style&gt;
-        ///* { font-family: &quot;Segoe UI&quot;; font-size: 9pt; line-height: 130%; cursor: default; }
-        ///a, a:visited { text-decoration: none; color: blue; cursor: pointer; }
-        ///a:hover { text-decoration: underline; }
-        ///&lt;/style&gt;
-        ///&lt;/head&gt;&lt;body&gt;
-        ///&lt;strong&gt;SQL Notebook&lt;/strong&gt;&lt;br&gt;
-        ///Copyright (C) 2016-2021 Brian Luft&lt;br&gt;&lt;br&gt;
-        ///Permission is hereby granted, free of charge, to any person obtaining a copy of this software and assoc [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string ThirdPartyLicensesHtml {
-            get {
-                return ResourceManager.GetString("ThirdPartyLicensesHtml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Warning32 {

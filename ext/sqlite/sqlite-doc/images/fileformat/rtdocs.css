@@ -1,0 +1,81 @@
+  /* Style for requirements paragraph. */
+  .req       { margin: 1.0em 10ex; }
+  .req span  { color: darkblue }
+
+  .subreq    { margin: 1.0em 5ex 1.0em 15ex; color: darkblue }
+  .subsubreq { margin: 1.0em 5ex 1.0em 20ex; color: darkblue }
+
+  .req:before { color: black; content: "[" attr(id) "] "}
+  .subreq:before { color: black; content: "[" attr(id) "] "}
+  .subsubreq:before { color: black; content: "[SUBSUBREQ] " }
+
+  /* The dark-green color used for headings. */
+  h1,h2,h3,h4,#toc_header,#document_title { color: #80a796 }
+
+  .req code {display: block; margin: 0.5em 5ex}
+  code {white-space: pre}
+
+  /* Style for content headings */
+  h2           { margin-left: 10px }
+  h3           { margin-left: 20px }
+  h4           { margin-left: 30px }
+  h1,h2,h3,h4  { font-weight: normal }
+
+  /* Style for document and toc headings */
+  #toc_header      { font-size: 1.5em; margin: 1.0em; }
+  #document_title  { font-size: 2em; text-align: center }
+
+  #toc a { color: darkblue ; text-decoration: none }
+
+  /* Document font */
+  body                     { font-family: sans-serif ; font-size:14px ; }
+
+  /* Margins for block boxes that occur in the document flow. */
+  p,ul,ol                     { margin: 1em 5ex }
+  td p, td ul, td ol          { margin: 1em auto }
+
+  /* Table style */
+  table.striped, table#glossary { margin: 1em auto; width: 80% ; border-spacing: 0}
+  .striped th, #glossary th { 
+    white-space:nowrap; 
+    text-align:left;
+    border-bottom: solid 1px #444444;
+    padding: 0.2em 1ex;
+  }
+  .striped td, #glossary td { vertical-align: top }
+  .striped td, #glossary td { padding: 0.2em 1ex; }
+
+  .spacedlist li { margin-top: 0.5em ; margin-bottom: 0.5em }
+
+  li p { margin: 1em auto ; padding: 0 }
+
+  /* Style for "todo" notes. These are represented by markup like: 
+  **
+  **     <span class=todo>Fix this bit!</span>
+  **     <p class=todo>Longer todo note.</p>
+  */
+  .todo        { color: #AA3333 ; font-style : italic }
+  .todo:before { content: 'TODO:' }
+  p.todo       { border: solid #AA3333 1px; padding: 1ex }
+
+  cite a, cite a:visited { color: inherit; text-decoration: none ; font-style: normal; }
+  .defnlink, .reqlink { 
+    color: inherit;
+    text-decoration: none;
+  }
+  .defnlink { font-style: italic }
+  .defnlink:visited,.reqlink:visited { color: inherit }
+  h1 .defnlink, h2 .defnlink, h3 .defnlink, h4 .defnlink, .defn .defnlink{ font-style: inherit }
+  :link:hover,:visited:hover { background: wheat }
+
+  .defn { white-space: nowrap }
+
+  img {
+    display:block;
+  }
+
+  pre.api {
+    margin: 1em 15ex;
+    font-size: 16px;
+  }
+

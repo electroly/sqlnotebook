@@ -8,7 +8,6 @@
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Notebook.cpp" />
     <ClCompile Include="AdoModules.cpp" />
-    <ClCompile Include="HttpServer.cpp" />
     <ClCompile Include="CustomFunctions.cpp" />
     <ClCompile Include="GenericSqliteModuleImpl.cpp" />
   </ItemGroup>

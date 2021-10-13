@@ -83,6 +83,7 @@
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFiles64Folder">
                 <Directory Id="INSTALLDIR" Name="SQL Notebook">
+<!--FILES-->
                     <Component Id="ApplicationFiles" Guid="B29C9C0A-A8ED-4328-9C0F-F62759EA9408" Win64="yes">
                         <RegistryValue
                             Root="HKLM"
@@ -92,14 +93,11 @@
                             Value="1"
                             KeyPath="yes"/>
 
-<!--FILES-->
-
                         <ProgId Id="SqlNotebook.File" Description="SQL Notebook file">
                             <Extension Id="sqlnb" ContentType="application/x-vnd.sqlnotebook-file">
                                 <Verb Id="open" Command="open" TargetFile="SqlNotebook.exe" Argument="&quot;%1&quot;"/>
                             </Extension>
                         </ProgId>
-
                     </Component>
                 </Directory>
             </Directory>
@@ -133,6 +131,7 @@
         <Feature Id="DefaultFeature" Level="1">
             <ComponentRef Id="ApplicationFiles"/>
             <ComponentRef Id="ApplicationShortcuts"/>
+<!--REFS-->
         </Feature>
     </Product>
 </Wix>

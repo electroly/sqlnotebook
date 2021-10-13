@@ -1,0 +1,224 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Internal Versus External BLOBs</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+
+
+<body>
+<h1 align="center">
+Internal Versus External BLOBs in SQLite
+</h1>
+
+<p>
+If you have a database of large BLOBs, do you get better read performance
+when you store the complete
+BLOB content directly in the database or is it faster to store each BLOB
+in a separate file and store just the corresponding filename in the database?
+</p>
+
+<p>
+To try to answer this, we ran 49 test cases with various BLOB sizes and
+SQLite page sizes on a Linux workstation (Ubuntu circa 2011 with the
+Ext4 filesystem on a fast SATA disk).
+For each test case, a database was created that contains 100MB of BLOB
+content.  The sizes of the BLOBs ranged from 10KB to 1MB.  The number
+of BLOBs varied in order to keep the total BLOB content at about 100MB.
+(Hence, 100 BLOBs for the 1MB size and 10000 BLOBs for the 10K size and
+so forth.)  SQLite version 3.7.8 was used.
+</p>
+
+<p>
+The matrix below shows the time needed to read BLOBs stored in separate files
+divided by the time needed to read BLOBs stored entirely in the database.  
+Hence, for numbers larger than 1.0, it is faster to store the BLOBs directly 
+in the database.  For numbers smaller than 1.0, it is faster to store the BLOBs
+in separate files.
+</p>
+
+<p>
+In every case, the pager cache size was adjusted to keep the amount of
+cache memory at about 2MB.  
+For example, a 2000 page cache was used for 1024 byte pages
+and a 31 page cache was used for 65536 byte pages.
+The BLOB values were read in a random order.
+</p>
+
+<table border="1" cellpadding="5" cellspacing="0" align="center">
+<tr>
+<th rowspan="2">Database Page Size<th colspan="7">BLOB size
+<tr>
+<th>10k<th>20k<th>50k<th>100k<th>200k<th>500k<th>1m
+
+<tr>
+<td>1024<td bgcolor="#b1d3a8">1.535<td bgcolor="#b1d3a8">1.020<td bgcolor="#ffc0d0">0.608<td bgcolor="#ffc0d0">0.456<td bgcolor="#ffc0d0">0.330<td bgcolor="#ffc0d0">0.247<td bgcolor="#ffc0d0">0.233
+
+<tr>
+<td>2048<td bgcolor="#b1d3a8">2.004<td bgcolor="#b1d3a8">1.437<td bgcolor="#ffc0d0">0.870<td bgcolor="#ffc0d0">0.636<td bgcolor="#ffc0d0">0.483<td bgcolor="#ffc0d0">0.372<td bgcolor="#ffc0d0">0.340
+
+<tr>
+<td>4096<td bgcolor="#b1d3a8">2.261<td bgcolor="#b1d3a8">1.886<td bgcolor="#b1d3a8">1.173<td bgcolor="#ffc0d0">0.890<td bgcolor="#ffc0d0">0.701<td bgcolor="#ffc0d0">0.526<td bgcolor="#ffc0d0">0.487
+
+<tr>
+<td>8192<td bgcolor="#b1d3a8">2.240<td bgcolor="#b1d3a8">1.866<td bgcolor="#b1d3a8">1.334<td bgcolor="#b1d3a8">1.035<td bgcolor="#ffc0d0">0.830<td bgcolor="#ffc0d0">0.625<td bgcolor="#ffc0d0">0.720
+
+<tr>
+<td>16384<td bgcolor="#b1d3a8">2.439<td bgcolor="#b1d3a8">1.757<td bgcolor="#b1d3a8">1.292<td bgcolor="#b1d3a8">1.023<td bgcolor="#ffc0d0">0.829<td bgcolor="#ffc0d0">0.820<td bgcolor="#ffc0d0">0.598
+
+<tr>
+<td>32768<td bgcolor="#b1d3a8">1.878<td bgcolor="#b1d3a8">1.843<td bgcolor="#b1d3a8">1.296<td bgcolor="#ffc0d0">0.981<td bgcolor="#ffc0d0">0.976<td bgcolor="#ffc0d0">0.675<td bgcolor="#ffc0d0">0.613
+
+<tr>
+<td>65536<td bgcolor="#b1d3a8">1.256<td bgcolor="#b1d3a8">1.255<td bgcolor="#b1d3a8">1.339<td bgcolor="#ffc0d0">0.983<td bgcolor="#ffc0d0">0.769<td bgcolor="#ffc0d0">0.687<td bgcolor="#ffc0d0">0.609
+
+</table>
+
+
+<p>We deduce the following rules of thumb from the matrix above:</p>
+
+<ul>
+<li><p>
+A database page size of 8192 or 16384 gives the best performance
+for large BLOB I/O.
+
+<li><p>For BLOBs smaller than 100KB, reads are faster when
+the BLOBs are stored directly in the database file.  For BLOBs larger than
+100KB, reads from a separate file are faster.
+</ul>
+
+<p>Of course, your mileage may vary depending on hardware, filesystem,
+and operating system.  Double-check these figures on target hardware
+before committing to a particular design.
+

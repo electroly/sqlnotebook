@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>SQLite Query Language: ON CONFLICT clause</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+<h1 align="center">SQL As Understood By SQLite</h1><p><a href="lang.html">[Top]</a></p><h2>ON CONFLICT clause</h2><p><b><a href="syntax/conflict-clause.html">conflict-clause:</a></b>
+<button id='x1135' onclick='hideorshow("x1135","x1136")'>hide</button></p>
+ <blockquote id='x1136'>
+ <img alt="syntax diagram conflict-clause" src="images/syntax/conflict-clause.gif" />
+</blockquote>
+
+
+<p>The ON CONFLICT clause is not a separate SQL command.  It is a
+non-standard clause that can appear in many other SQL commands.
+It is given its own section in this document because it is not
+part of standard SQL and therefore might not be familiar.</p>
+
+<p>The syntax for the ON CONFLICT clause is as shown above for
+the CREATE TABLE command.  For the INSERT and
+UPDATE commands, the keywords "ON CONFLICT" are replaced by "OR" so that
+the syntax reads more naturally.  For example, instead of
+"INSERT ON CONFLICT IGNORE" we have "INSERT OR IGNORE".
+The keywords change but the meaning of the clause is the same
+either way.</p>
+
+<p>The ON CONFLICT clause applies to <a href="lang_createtable.html#uniqueconst">UNIQUE</a>, <a href="lang_createtable.html#notnullconst">NOT NULL</a>,
+<a href="lang_createtable.html#ckconst">CHECK</a>, and <a href="lang_createtable.html#primkeyconst">PRIMARY KEY</a> constraints.
+The ON CONFLICT algorithm does not
+apply to <a href="foreignkeys.html">FOREIGN KEY constraints</a>.
+There are five conflict resolution algorithm choices:
+ROLLBACK, ABORT, FAIL, IGNORE, and REPLACE.
+The default conflict resolution algorithm is ABORT.  This
+is what they mean:</p>
+
+<dl>
+<dt><b>ROLLBACK</b></dt>
+<dd><p> When an applicable constraint violation occurs, the ROLLBACK
+resolution algorithm aborts the current SQL statement with
+an SQLITE_CONSTRAINT error and rolls back the current transaction.
+If no transaction is
+active (other than the implied transaction that is created on every
+command) then the ROLLBACK resolution algorithm works the same as the
+ABORT algorithm.</p></dd>
+
+<dt><b>ABORT</b></dt>
+<dd><p> When an applicable constraint violation occurs, the ABORT
+resolution algorithm aborts the current SQL statement
+with an SQLITE_CONSTRAINT error and backs out any changes
+made by the current SQL statement; but changes caused
+by prior SQL statements within the same transaction are preserved and the
+transaction remains active.
+This is the default behavior and the behavior specified by the SQL
+standard.</p></dd>
+
+<dt><b>FAIL</b></dt>
+<dd><p> When an applicable constraint violation occurs, the FAIL
+resolution algorithm aborts the current SQL statement with an
+SQLITE_CONSTRAINT error.  But the FAIL resolution does not
+back out prior changes of the SQL statement that failed nor does
+it end the transaction.
+For example, if an UPDATE
+statement encountered a constraint violation on the 100th row that
+it attempts to update, then the first 99 row changes are preserved
+but changes to rows 100 and beyond never occur.</p></dd>
+
+<dt><b>IGNORE</b></dt>
+<dd><p> When an applicable constraint violation occurs, 
+the IGNORE resolution algorithm skips the one row that contains
+the constraint violation and continues processing subsequent rows
+of the SQL statement as if nothing went wrong.
+Other rows before and after the row that
+contained the constraint violation are inserted or updated
+normally. No error is returned when the IGNORE conflict resolution
+algorithm is used.</p></dd>
+
+<dt><b>REPLACE</b></dt>
+<dd><p> When a <a href="lang_createtable.html#uniqueconst">UNIQUE</a> or <a href="lang_createtable.html#primkeyconst">PRIMARY KEY</a> constraint violation occurs, 
+the REPLACE algorithm
+deletes pre-existing rows that are causing the constraint violation
+prior to inserting or updating the current row and the command continues 
+executing normally.
+If a <a href="lang_createtable.html#notnullconst">NOT NULL</a> constraint violation occurs, the REPLACE conflict
+resolution replaces the NULL value with
+the default value for that column, or if the column has no default
+value, then the ABORT algorithm is used.
+If a <a href="lang_createtable.html#ckconst">CHECK</a> constraint violation occurs, the REPLACE conflict resolution
+algorithm always works like ABORT.</p>
+
+<p>When the REPLACE conflict resolution strategy deletes rows in order to
+satisfy a constraint, <a href="lang_createtrigger.html">delete triggers</a> fire if and only if
+<a href="pragma.html#pragma_recursive_triggers">recursive triggers</a> are enabled.</p>
+
+<p>The <a href="c3ref/update_hook.html">update hook</a> is not invoked for rows that
+are deleted by the REPLACE conflict resolution strategy.  Nor does
+REPLACE increment the <a href="c3ref/changes.html">change counter</a>.
+The exceptional behaviors defined in this paragraph might change 
+in a future release.</p>
+</dl>
+
+<p>The algorithm specified in the OR clause of an INSERT or UPDATE
+overrides any algorithm specified in a CREATE TABLE.
+If no algorithm is specified anywhere, the ABORT algorithm is used.</p>
+
+

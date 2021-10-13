@@ -96,15 +96,11 @@
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="CustomFunctions.cpp" />
     <ClCompile Include="GenericSqliteModuleImpl.cpp" />
-    <ClCompile Include="HttpServer.cpp" />
     <ClCompile Include="Notebook.cpp" />
     <ClCompile Include="AdoModules.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\libmicrohttpd\libmicrohttpd.vcxproj">
-      <Project>{67448caf-d2c9-48d9-945c-13389bd4e608}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\sqlite3\sqlite3.vcxproj">
       <Project>{34743fad-099d-4db8-b8a6-c863fec91c77}</Project>
     </ProjectReference>

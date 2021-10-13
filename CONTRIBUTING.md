@@ -21,13 +21,14 @@ Use a Windows machine with at least 8GB RAM.
 
 ## How to build from source
 
-- Run `ps1/Update-DocResourceZip.ps1` to generate `sqlite-doc.zip`.
+- In PowerShell (Windows or WSL), run `ps1/Update-Docs.ps1` to generate the help files.
 - Open `src\SqlNotebook.sln` and build.
 
 ## How to edit documentation
 
 - Use SeaMonkey Composer to edit the files in `doc/`.
-- In WSL, run `ps1/Update-Doc.ps1` to rebuild the website and integrated help.
+- In WSL, run `ps1/Update-DocFormatting.ps1` to reformat the HTML.
+- In Windows or WSL, run `ps1/Update-Docs.ps1` to rebuild the website and integrated help.
 
 # How to generate railroad diagram files
 

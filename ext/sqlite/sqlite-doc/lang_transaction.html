@@ -1,0 +1,295 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>SQLite Query Language: BEGIN TRANSACTION</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+<h1 align="center">SQL As Understood By SQLite</h1><p><a href="lang.html">[Top]</a></p><h2>BEGIN TRANSACTION</h2><p><b><a href="syntax/begin-stmt.html">begin-stmt:</a></b>
+<button id='x811' onclick='hideorshow("x811","x812")'>hide</button></p>
+ <blockquote id='x812'>
+ <img alt="syntax diagram begin-stmt" src="images/syntax/begin-stmt.gif" />
+</blockquote>
+<p><b><a href="syntax/commit-stmt.html">commit-stmt:</a></b>
+<button id='x813' onclick='hideorshow("x813","x814")'>hide</button></p>
+ <blockquote id='x814'>
+ <img alt="syntax diagram commit-stmt" src="images/syntax/commit-stmt.gif" />
+</blockquote>
+<p><b><a href="syntax/rollback-stmt.html">rollback-stmt:</a></b>
+<button id='x815' onclick='hideorshow("x815","x816")'>hide</button></p>
+ <blockquote id='x816'>
+ <img alt="syntax diagram rollback-stmt" src="images/syntax/rollback-stmt.gif" />
+</blockquote>
+
+
+<p>
+No changes can be made to the database except within a transaction.
+Any command that changes the database (basically, any SQL command
+other than <a href="lang_select.html">SELECT</a>) will automatically start a transaction if
+one is not already in effect.  Automatically started transactions
+are committed when the last query finishes.
+</p>
+
+<p>
+Transactions can be started manually using the BEGIN
+command.  Such transactions usually persist until the next
+COMMIT or ROLLBACK command.  But a transaction will also 
+ROLLBACK if the database is closed or if an error occurs
+and the ROLLBACK conflict resolution algorithm is specified.
+See the documentation on the <a href="lang_conflict.html">ON CONFLICT</a>
+clause for additional information about the ROLLBACK
+conflict resolution algorithm.
+</p>
+
+<p>
+END TRANSACTION is an alias for COMMIT.
+</p>
+
+<p> Transactions created using BEGIN...COMMIT do not nest.
+For nested transactions, use the <a href="lang_savepoint.html">SAVEPOINT</a> and <a href="lang_savepoint.html">RELEASE</a> commands.
+The "TO SAVEPOINT <span class='yyterm'>name</span>" clause of the ROLLBACK command shown
+in the syntax diagram above is only applicable to <a href="lang_savepoint.html">SAVEPOINT</a>
+transactions.  An attempt to invoke the BEGIN command within
+a transaction will fail with an error, regardless of whether
+the transaction was started by <a href="lang_savepoint.html">SAVEPOINT</a> or a prior BEGIN.
+The COMMIT command and the ROLLBACK command without the TO clause
+work the same on <a href="lang_savepoint.html">SAVEPOINT</a> transactions as they do with transactions
+started by BEGIN.</p>
+
+<a name="immediate"></a>
+
+<p>
+Transactions can be deferred, immediate, or exclusive.  
+The default transaction behavior is deferred.
+Deferred means that no locks are acquired
+on the database until the database is first accessed.  Thus with a
+deferred transaction, the BEGIN statement itself does nothing to the
+filesystem.  Locks
+are not acquired until the first read or write operation.  The first read
+operation against a database creates a <a href="lockingv3.html#shared_lock">SHARED</a> lock and the first
+write operation creates a <a href="lockingv3.html#reserved_lock">RESERVED</a> lock.   Because the acquisition of
+locks is deferred until they are needed, it is possible that another
+thread or process could create a separate transaction and write to
+the database after the BEGIN on the current thread has executed.
+If the transaction is immediate, then <a href="lockingv3.html#reserved_lock">RESERVED</a> locks
+are acquired on all databases as soon as the BEGIN command is
+executed, without waiting for the
+database to be used.  After a BEGIN IMMEDIATE, 
+no other <a href="c3ref/sqlite3.html">database connection</a> will be able to write to the database or
+do a BEGIN IMMEDIATE or BEGIN EXCLUSIVE.  Other processes can continue
+to read from the database, however.  An exclusive transaction causes
+<a href="lockingv3.html#excl_lock">EXCLUSIVE</a> locks to be acquired on all databases.  After a BEGIN
+EXCLUSIVE, no other <a href="c3ref/sqlite3.html">database connection</a> except for <a href="pragma.html#pragma_read_uncommitted">read_uncommitted</a>
+connections will be able to read the database and no other connection without
+exception will be able to write the database until the transaction is
+complete.
+</p>
+
+<p>
+An implicit transaction (a transaction that is started automatically,
+not a transaction started by BEGIN) is committed automatically when
+the last active statement finishes.  A statement finishes when its
+prepared statement is <a href="c3ref/reset.html">reset</a> or
+<a href="c3ref/finalize.html">finalized</a>.  An open <a href="c3ref/blob.html">sqlite3_blob</a> used for
+incremental BLOB I/O counts as an unfinished statement.  The <a href="c3ref/blob.html">sqlite3_blob</a>
+finishes when it is <a href="c3ref/blob_close.html">closed</a>.
+</p>
+
+<p>
+The explicit COMMIT command runs immediately, even if there are
+pending <a href="lang_select.html">SELECT</a> statements.  However, if there are pending
+write operations, the COMMIT command
+will fail with an error code <a href="rescode.html#busy">SQLITE_BUSY</a>.
+</p>
+
+<p>
+An attempt to execute COMMIT might also result in an <a href="rescode.html#busy">SQLITE_BUSY</a> return code
+if an another thread or process has a <a href="lockingv3.html#shared_lock">shared lock</a> on the database
+that prevented the database from being updated.  When COMMIT fails in this
+way, the transaction remains active and the COMMIT can be retried later
+after the reader has had a chance to clear.
+</p>
+
+<p>
+In very old versions of SQLite (before version 3.7.11 circa 2012-03-20)
+the ROLLBACK will fail with an error code 
+<a href="rescode.html#busy">SQLITE_BUSY</a> if there are any pending queries.  In more recent
+versions of SQLite, the ROLLBACK will proceed and pending statements
+will often be aborted, causing them to return an <a href="rescode.html#abort">SQLITE_ABORT</a> or
+<a href="rescode.html#abort_rollback">SQLITE_ABORT_ROLLBACK</a> error.
+In SQLite version 3.8.8 and later, a pending read will continue functioning
+after the ROLLBACK as long as the ROLLBACK does not modify the database
+schema.
+</p>
+
+<p>
+If <a href="pragma.html#pragma_journal_mode">PRAGMA journal_mode</a> is set to OFF (thus disabling the rollback journal
+file) then the behavior of the ROLLBACK command is undefined.
+</p>
+
+<h3>Response To Errors Within A Transaction</h3>
+
+<p> If certain kinds of errors occur within a transaction, the
+transaction may or may not be rolled back automatically.  The
+errors that can cause an automatic rollback include:</p>
+
+<ul>
+<li> <a href="rescode.html#full">SQLITE_FULL</a>: database or disk full
+<li> <a href="rescode.html#ioerr">SQLITE_IOERR</a>: disk I/O error
+<li> <a href="rescode.html#busy">SQLITE_BUSY</a>: database in use by another process
+<li> <a href="rescode.html#nomem">SQLITE_NOMEM</a>: out or memory
+</ul>
+
+<p>
+For all of these errors, SQLite attempts to undo just the one statement
+it was working on and leave changes from prior statements within the
+same transaction intact and continue with the transaction.  However, 
+depending on the statement being evaluated and the point at which the
+error occurs, it might be necessary for SQLite to rollback and
+cancel the entire transaction.  An application can tell which
+course of action SQLite took by using the
+<a href="c3ref/get_autocommit.html">sqlite3_get_autocommit()</a> C-language interface.</p>
+
+<p>It is recommended that applications respond to the errors
+listed above by explicitly issuing a ROLLBACK command.  If the 
+transaction has already been rolled back automatically
+by the error response, then the ROLLBACK command will fail with an
+error, but no harm is caused by this.</p>
+
+<p>Future versions of SQLite may extend the list of errors which
+might cause automatic transaction rollback.  Future versions of
+SQLite might change the error response.  In particular, we may
+choose to simplify the interface in future versions of SQLite by
+causing the errors above to force an unconditional rollback.</p>
+
+

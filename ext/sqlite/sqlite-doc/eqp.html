@@ -1,0 +1,438 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>EXPLAIN QUERY PLAN</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+
+
+
+
+
+    <div class=fancy>
+    <div style="font-size:2em;text-align:center;color:#044a64">
+      EXPLAIN QUERY PLAN
+    </div>
+    <div style="font-size:1.5em;margin:1em;color:#044a64">
+      Table Of Contents</div>
+    <div id=toc> <div style="margin-left:6ex"><a href="#section_1">1. The EXPLAIN QUERY PLAN Command</a></div><div style="margin-left:12ex"><a href="#section_1_1">1.1. Table and Index Scans</a></div><div style="margin-left:12ex"><a href="#section_1_2">1.2. Temporary Sorting B-Trees</a></div><div style="margin-left:12ex"><a href="#section_1_3">1.3. Subqueries</a></div><div style="margin-left:12ex"><a href="#section_1_4">1.4. Compound Queries</a></div><div style="margin-left:6ex"><a href="#section_2">2. Sample Code</a></div> </div>
+    <div class=startsearch></div>
+  
+
+<h1 id="section_1">1. The EXPLAIN QUERY PLAN Command</h1>
+
+<p style="margin-left:10ex;margin-right:10ex">
+<b>Warning: The data returned by the EXPLAIN QUERY PLAN command is 
+intended for interactive debugging only.  The output format may change
+between SQLite releases. Applications should not depend on the output
+format of the EXPLAIN QUERY PLAN command.</b>
+
+<p>The <a href="lang_explain.html">EXPLAIN QUERY PLAN</a> SQL command is used to obtain a high-level
+description of the strategy or plan that SQLite uses to implement a specific
+SQL query.  Most significantly, EXPLAIN QUERY PLAN reports on the way in 
+which the query uses database indices. This document is a guide to
+understanding and interpreting the EXPLAIN QUERY PLAN output.  Background
+information is available separately:
+
+<ul>
+<li> Notes on the <a href="optoverview.html">query optimizer</a>.
+<li> How <a href="queryplanner.html">indexing</a> works.
+<li> The <a href="queryplanner-ng.html">next generation query planner</a>.
+</ul>
+
+<p>An EXPLAIN QUERY PLAN command returns zero or more rows of four columns
+each. The column names are "selectid", "order", "from", "detail". The
+first three columns contain an integer value. The final
+column, "detail", contains a text value which carries most of
+the useful information.
+
+<p>EXPLAIN QUERY PLAN is most useful on a SELECT statement,
+but may also be appear with other statements that read data from database
+tables (e.g. UPDATE, DELETE, INSERT INTO ... SELECT).
+
+<h2 id="section_1_1">1.1. Table and Index Scans</h2>
+
+<p>
+  When processing a SELECT (or other) statement, SQLite may retrieve data from
+  database tables in a variety of ways. It may scan through all the records in
+  a table (a full-table scan), scan a contiguous subset of the records in a
+  table based on the rowid index, scan a contiguous subset of the entries in a
+  database <a href="lang_createtable.html">index</a>, or use a combination of the above strategies
+  in a single scan. The various ways in which SQLite may retrieve data from a
+  table or index are described in detail <a href="queryplanner.html#searching">here</a>.
+
+<p>
+  For each table read by the query, the output of EXPLAIN QUERY 
+  PLAN includes a record for which the value in the "detail" column begins
+  with either "SCAN" or "SEARCH". "SCAN" is used for a full-table scan,
+  including cases where SQLite iterates through all records in a table
+  in an order defined by an index. "SEARCH" indicates that only a subset of 
+  the table rows are visited. Each SCAN or SEARCH record includes the
+  following information:
+
+<ul>
+  <li> The name of the table data is read from.
+  <li> Whether or not an index or <a href="optoverview.html#autoindex">automatic index</a> is used.
+  <li> Whether or not the <a href="queryplanner.html#covidx">covering index</a> optimization applies.
+  <li> Which terms of the WHERE clause are used for indexing.
+</ul>
+
+<p>
+  For example, the following EXPLAIN QUERY PLAN command operates on a SELECT
+  statement that is implemented by performing a full-table scan on table t1:
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">sqlite&gt; EXPLAIN QUERY PLAN SELECT a, b FROM t1 WHERE a=1; 
+0|0|0|SCAN TABLE t1
+</pre></table></div>
+
+<p>
+  The example above shows
+  SQLite estimating that the full-table scan will visit approximately 
+  100,000 records. If the query were able to use an index, then the 
+  SCAN/SEARCH record would include the name of the index and, for a
+  SEARCH record, an indication of how the subset of rows visited is
+  identified. For example:
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">sqlite&gt; CREATE INDEX i1 ON t1(a);
+sqlite&gt; EXPLAIN QUERY PLAN SELECT a, b FROM t1 WHERE a=1;
+0|0|0|SEARCH TABLE t1 USING INDEX i1
+</pre></table></div>
+
+<p>
+  The previous example, SQLite uses index "i1" to optimize
+  a WHERE clause term of the form (a=?) - in this case "a=1". SQLite 
+  estimates that about 10 records will match the "a=1" term.
+  The previous example could not use a <a href="queryplanner.html#covidx">covering index</a>, but the following
+  example can, and that fact is reflected in the output:
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">sqlite&gt; CREATE INDEX i2 ON t1(a, b);
+sqlite&gt; EXPLAIN QUERY PLAN SELECT a, b FROM t1 WHERE a=1; 
+0|0|0|SEARCH TABLE t1 USING COVERING INDEX i2 (a=?)
+</pre></table></div>
+
+<p>
+  All joins in SQLite are <a href="optoverview.html#table_order">implemented using nested scans</a>. When a
+  SELECT query that features a join is analyzed using EXPLAIN QUERY PLAN, one
+  SCAN or SEARCH record is output for each nested loop. For example:
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">sqlite&gt; EXPLAIN QUERY PLAN SELECT t1.*, t2.* FROM t1, t2 WHERE t1.a=1 AND t1.b>2;
+0|0|0|SEARCH TABLE t1 USING COVERING INDEX i2 (a=? AND b>?)
+0|1|1|SCAN TABLE t2
+</pre></table></div>
+
+<p>
+  The second column of output (column "order") indicates the nesting order. In
+  this case, the scan of table t1 using index i2 is the outer loop (order=0)
+  and the full-table scan of table t2 (order=1) is the inner loop. The third
+  column (column "from"), indicates the position in the FROM clause of the
+  SELECT statement that the table associated with each scan occurs in. In the
+  case above, table t1 occupies the first position in the FROM clause, so the
+  value of column "from" is 0 in the first record. Table t2 is in the
+  second position, so the "from" column for the corresponding SCAN record is
+  set to 1. In the following example, the positions of t1 and t2 in the FROM 
+  clause of the SELECT are reversed. The query strategy remains the same, but
+  the values in the "from" column of the output are adjusted accordingly.
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">sqlite&gt; EXPLAIN QUERY PLAN SELECT t1.*, t2.* FROM t2, t1 WHERE t1.a=1 AND t1.b>2;
+0|0|1|SEARCH TABLE t1 USING COVERING INDEX i2 (a=? AND b>?)
+0|1|0|SCAN TABLE t2
+</pre></table></div>
+
+<p>
+  If the WHERE clause of a query contains an OR expression, then SQLite might
+  use the <a href="queryplanner.html#or_in_where">"OR by union"</a> strategy (also described 
+  <a href="optoverview.html#or_opt">here</a>). In this case there will be two SEARCH records, one
+  for each index, with the same values in both the "order" and "from" columns.
+  For example: 
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">sqlite&gt; CREATE INDEX i3 ON t1(b);
+sqlite&gt; EXPLAIN QUERY PLAN SELECT * FROM t1 WHERE a=1 OR b=2;
+0|0|0|SEARCH TABLE t1 USING COVERING INDEX i2 (a=?)
+0|0|0|SEARCH TABLE t1 USING INDEX i3 (b=?)
+</pre></table></div>
+
+<h2 id="section_1_2">1.2. Temporary Sorting B-Trees</h2>
+
+<p>
+  If a SELECT query contains an ORDER BY, GROUP BY or DISTINCT clause, 
+  SQLite may need to use a temporary b-tree structure to sort the output
+  rows. Or, it might <a href="queryplanner.html#sorting">use an index</a>. Using an index is 
+  almost always much more efficient than performing a sort.
+  If a temporary b-tree is required, a record is added to the EXPLAIN
+  QUERY PLAN output with the "detail" field set to a string value of
+  the form "USE TEMP B-TREE FOR xxx", where xxx is one of "ORDER BY",
+  "GROUP BY" or "DISTINCT". For example:
+
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">sqlite&gt; EXPLAIN QUERY PLAN SELECT c, d FROM t2 ORDER BY c; 
+0|0|0|SCAN TABLE t2
+0|0|0|USE TEMP B-TREE FOR ORDER BY
+</pre></table></div>
+
+<p>
+  In this case using the temporary b-tree can be avoided by creating an index
+  on t2(c), as follows:
+
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">sqlite&gt; CREATE INDEX i4 ON t2(c);
+sqlite&gt; EXPLAIN QUERY PLAN SELECT c, d FROM t2 ORDER BY c; 
+0|0|0|SCAN TABLE t2 USING INDEX i4
+</pre></table></div>
+
+<h2 id="section_1_3">1.3. Subqueries</h2>
+
+<p>
+  In all the examples above, the first column (column "selectid") is always
+  set to 0. If a query contains sub-selects, either as part of the FROM
+  clause or as part of SQL expressions, then the output of EXPLAIN QUERY
+  PLAN also includes a report for each sub-select. Each sub-select is assigned
+  a distinct, non-zero "selectid" value. The top-level SELECT statement is
+  always assigned the selectid value 0. For example:
+
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">sqlite&gt; EXPLAIN QUERY PLAN SELECT (SELECT b FROM t1 WHERE a=0), (SELECT a FROM t1 WHERE b=t2.c) FROM t2;
+0|0|0|SCAN TABLE t2
+0|0|0|EXECUTE SCALAR SUBQUERY 1
+1|0|0|SEARCH TABLE t1 USING COVERING INDEX i2 (a=?)
+0|0|0|EXECUTE CORRELATED SCALAR SUBQUERY 2
+2|0|0|SEARCH TABLE t1 USING INDEX i3 (b=?)
+</pre></table></div>
+
+<p>
+  The example above contains a pair of scalar subqueries assigned selectid 
+  values 1 and 2. As well as a SCAN record, there are also 2 "EXECUTE" 
+  records associated with the top level subquery (selectid 0), indicating
+  that subqueries 1 and 2 are executed by the top level query in a scalar
+  context. The CORRELATED qualifier present in the EXECUTE record associated
+  with scalar subquery 2 indicates that the query must be run separately
+  for each row visited by the top level query. Its absence in the record
+  associated with subquery 1 means that the subquery is only run once and
+  the result cached. In other words, subquery 2 may be more performance
+  critical, as it may be run many times whereas subquery 1 is only ever run
+  once.
+
+<p>
+  Unless the <a href="optoverview.html#flattening">flattening optimization</a> is applied, if a subquery appears in
+  the FROM clause of a SELECT statement, SQLite executes the subquery and
+  stores the results in a temporary table. It then uses the contents of the 
+  temporary table in place of the subquery to execute the parent query. This
+  is shown in the output of EXPLAIN QUERY PLAN by substituting a 
+  "SCAN SUBQUERY" record for the "SCAN TABLE" record that normally appears
+  for each element in the FROM clause. For example:
+
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">sqlite&gt; EXPLAIN QUERY PLAN SELECT count(*) FROM (SELECT max(b) AS x FROM t1 GROUP BY a) GROUP BY x;
+1|0|0|SCAN TABLE t1 USING COVERING INDEX i2
+0|0|0|SCAN SUBQUERY 1
+0|0|0|USE TEMP B-TREE FOR GROUP BY
+</pre></table></div>
+
+<p>
+  If the <a href="optoverview.html#flattening">flattening optimization</a> is used on a subquery in the FROM clause
+  of a SELECT statement, then the output of EXPLAIN QUERY PLAN reflects this.
+  For example, in the following there is no "SCAN SUBQUERY" record even though
+  there is a subquery in the FROM clause of the top level SELECT. Instead, since
+  the flattening optimization does apply in this case, the EXPLAIN QUERY PLAN
+  report shows that the top level query is implemented using a nested loop join
+  of tables t1 and t2.
+
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">sqlite&gt; EXPLAIN QUERY PLAN SELECT * FROM (SELECT * FROM t2 WHERE c=1), t1;
+0|0|0|SEARCH TABLE t2 USING INDEX i4 (c=?)
+0|1|1|SCAN TABLE t1
+</pre></table></div>
+
+<h2 id="section_1_4">1.4. Compound Queries</h2>
+
+<p>
+  Each component query of a <a href="lang_select.html#compound">compound query</a> (UNION, UNION ALL, EXCEPT or 
+  INTERSECT) is assigned its own selectid and reported on separately. A
+  single record is output for the parent (compound query) identifying the
+  operation, and whether or not a temporary b-tree is used to implement
+  it. For example:
+
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">sqlite&gt; EXPLAIN QUERY PLAN SELECT a FROM t1 UNION SELECT c FROM t2;
+1|0|0|SCAN TABLE t1
+2|0|0|SCAN TABLE t2
+0|0|0|COMPOUND SUBQUERIES 1 AND 2 USING TEMP B-TREE (UNION)
+</pre></table></div>
+
+<p>
+  The "USING TEMP B-TREE" clause in the above output indicates that a 
+  temporary b-tree structure is used to implement the UNION of the results
+  of the two sub-selects. If the temporary b-tree were not required, as
+  in the following example, the clause is not present.
+
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">sqlite&gt; EXPLAIN QUERY PLAN SELECT a FROM t1 EXCEPT SELECT d FROM t2 ORDER BY 1;
+1|0|0|SCAN TABLE t1 USING COVERING INDEX i2
+2|0|0|SCAN TABLE t2
+2|0|0|USE TEMP B-TREE FOR ORDER BY
+0|0|0|COMPOUND SUBQUERIES 1 AND 2 (EXCEPT)
+</pre></table></div>
+
+<h1 id="section_2">2. Sample Code</h1>
+
+<p>Sometimes, within a large application, it may be inconvenient to modify
+code to generate EXPLAIN QUERY PLAN commands for the SELECT queries being
+investigated. From within an interactive debugging session, it may be almost
+impossible. In these situations, a function similar to the following may
+be useful. This particular function is passed an SQLite statement handle as an
+argument and outputs the corresponding EXPLAIN QUERY PLAN report to standard
+output. Application specific versions may output the report to an application
+log or similar.
+
+
+<div class=codeblock style="margin:0 15ex"><table width=100% style="border:1px solid #80a796;padding:0 1ex;background-color:#EEEEEE"><tr><td><pre style="font-size:1.1em">/*
+** Argument pStmt is a prepared SQL statement. This function compiles
+** an EXPLAIN QUERY PLAN command to report on the prepared statement,
+** and prints the report to stdout using printf().
+*/
+int printExplainQueryPlan(sqlite3_stmt *pStmt){
+  const char *zSql;               /* Input SQL */
+  char *zExplain;                 /* SQL with EXPLAIN QUERY PLAN prepended */
+  sqlite3_stmt *pExplain;         /* Compiled EXPLAIN QUERY PLAN command */
+  int rc;                         /* Return code from sqlite3_prepare_v2() */
+
+  zSql = sqlite3_sql(pStmt);
+  if( zSql==0 ) return SQLITE_ERROR;
+
+  zExplain = sqlite3_mprintf("EXPLAIN QUERY PLAN %s", zSql);
+  if( zExplain==0 ) return SQLITE_NOMEM;
+
+  rc = sqlite3_prepare_v2(sqlite3_db_handle(pStmt), zExplain, -1, &pExplain, 0);
+  sqlite3_free(zExplain);
+  if( rc!=SQLITE_OK ) return rc;
+
+  while( SQLITE_ROW==sqlite3_step(pExplain) ){
+    int iSelectid = sqlite3_column_int(pExplain, 0);
+    int iOrder = sqlite3_column_int(pExplain, 1);
+    int iFrom = sqlite3_column_int(pExplain, 2);
+    const char *zDetail = (const char *)sqlite3_column_text(pExplain, 3);
+
+    printf("%d %d %d %s\n", iSelectid, iOrder, iFrom, zDetail);
+  }
+
+  return sqlite3_finalize(pExplain);
+}
+</pre></table></div>
+

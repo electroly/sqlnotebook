@@ -1,0 +1,361 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>SQLite Query Language: UPDATE</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+<h1 align="center">SQL As Understood By SQLite</h1><p><a href="lang.html">[Top]</a></p><h2>UPDATE</h2><p><b><a href="syntax/update-stmt.html">update-stmt:</a></b>
+<button id='x1379' onclick='hideorshow("x1379","x1380")'>hide</button></p>
+ <blockquote id='x1380'>
+ <img alt="syntax diagram update-stmt" src="images/syntax/update-stmt.gif" />
+<p><b><a href="syntax/expr.html">expr:</a></b>
+<button id='x1381' onclick='hideorshow("x1381","x1382")'>show</button></p>
+ <blockquote id='x1382' style='display:none;'>
+ <img alt="syntax diagram expr" src="images/syntax/expr.gif" />
+<p><b><a href="syntax/literal-value.html">literal-value:</a></b>
+<button id='x1383' onclick='hideorshow("x1383","x1384")'>show</button></p>
+ <blockquote id='x1384' style='display:none;'>
+ <img alt="syntax diagram literal-value" src="images/syntax/literal-value.gif" />
+</blockquote>
+<p><b><a href="syntax/raise-function.html">raise-function:</a></b>
+<button id='x1385' onclick='hideorshow("x1385","x1386")'>show</button></p>
+ <blockquote id='x1386' style='display:none;'>
+ <img alt="syntax diagram raise-function" src="images/syntax/raise-function.gif" />
+</blockquote>
+<p><b><a href="syntax/select-stmt.html">select-stmt:</a></b>
+<button id='x1387' onclick='hideorshow("x1387","x1388")'>show</button></p>
+ <blockquote id='x1388' style='display:none;'>
+ <img alt="syntax diagram select-stmt" src="images/syntax/select-stmt.gif" />
+<p><b><a href="syntax/common-table-expression.html">common-table-expression:</a></b>
+<button id='x1389' onclick='hideorshow("x1389","x1390")'>show</button></p>
+ <blockquote id='x1390' style='display:none;'>
+ <img alt="syntax diagram common-table-expression" src="images/syntax/common-table-expression.gif" />
+</blockquote>
+<p><b><a href="syntax/compound-operator.html">compound-operator:</a></b>
+<button id='x1391' onclick='hideorshow("x1391","x1392")'>show</button></p>
+ <blockquote id='x1392' style='display:none;'>
+ <img alt="syntax diagram compound-operator" src="images/syntax/compound-operator.gif" />
+</blockquote>
+<p><b><a href="syntax/join-clause.html">join-clause:</a></b>
+<button id='x1393' onclick='hideorshow("x1393","x1394")'>show</button></p>
+ <blockquote id='x1394' style='display:none;'>
+ <img alt="syntax diagram join-clause" src="images/syntax/join-clause.gif" />
+<p><b><a href="syntax/join-constraint.html">join-constraint:</a></b>
+<button id='x1395' onclick='hideorshow("x1395","x1396")'>show</button></p>
+ <blockquote id='x1396' style='display:none;'>
+ <img alt="syntax diagram join-constraint" src="images/syntax/join-constraint.gif" />
+</blockquote>
+<p><b><a href="syntax/join-operator.html">join-operator:</a></b>
+<button id='x1397' onclick='hideorshow("x1397","x1398")'>show</button></p>
+ <blockquote id='x1398' style='display:none;'>
+ <img alt="syntax diagram join-operator" src="images/syntax/join-operator.gif" />
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/ordering-term.html">ordering-term:</a></b>
+<button id='x1399' onclick='hideorshow("x1399","x1400")'>show</button></p>
+ <blockquote id='x1400' style='display:none;'>
+ <img alt="syntax diagram ordering-term" src="images/syntax/ordering-term.gif" />
+</blockquote>
+<p><b><a href="syntax/result-column.html">result-column:</a></b>
+<button id='x1401' onclick='hideorshow("x1401","x1402")'>show</button></p>
+ <blockquote id='x1402' style='display:none;'>
+ <img alt="syntax diagram result-column" src="images/syntax/result-column.gif" />
+</blockquote>
+<p><b><a href="syntax/table-or-subquery.html">table-or-subquery:</a></b>
+<button id='x1403' onclick='hideorshow("x1403","x1404")'>show</button></p>
+ <blockquote id='x1404' style='display:none;'>
+ <img alt="syntax diagram table-or-subquery" src="images/syntax/table-or-subquery.gif" />
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/type-name.html">type-name:</a></b>
+<button id='x1405' onclick='hideorshow("x1405","x1406")'>show</button></p>
+ <blockquote id='x1406' style='display:none;'>
+ <img alt="syntax diagram type-name" src="images/syntax/type-name.gif" />
+<p><b><a href="syntax/signed-number.html">signed-number:</a></b>
+<button id='x1407' onclick='hideorshow("x1407","x1408")'>show</button></p>
+ <blockquote id='x1408' style='display:none;'>
+ <img alt="syntax diagram signed-number" src="images/syntax/signed-number.gif" />
+</blockquote>
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/qualified-table-name.html">qualified-table-name:</a></b>
+<button id='x1409' onclick='hideorshow("x1409","x1410")'>show</button></p>
+ <blockquote id='x1410' style='display:none;'>
+ <img alt="syntax diagram qualified-table-name" src="images/syntax/qualified-table-name.gif" />
+</blockquote>
+<p><b><a href="syntax/with-clause.html">with-clause:</a></b>
+<button id='x1411' onclick='hideorshow("x1411","x1412")'>show</button></p>
+ <blockquote id='x1412' style='display:none;'>
+ <img alt="syntax diagram with-clause" src="images/syntax/with-clause.gif" />
+<p><b><a href="syntax/cte-table-name.html">cte-table-name:</a></b>
+<button id='x1413' onclick='hideorshow("x1413","x1414")'>show</button></p>
+ <blockquote id='x1414' style='display:none;'>
+ <img alt="syntax diagram cte-table-name" src="images/syntax/cte-table-name.gif" />
+</blockquote>
+<p><b><a href="syntax/select-stmt.html">select-stmt:</a></b>
+<button id='x1415' onclick='hideorshow("x1415","x1416")'>show</button></p>
+ <blockquote id='x1416' style='display:none;'>
+ <img alt="syntax diagram select-stmt" src="images/syntax/select-stmt.gif" />
+<p><b><a href="syntax/common-table-expression.html">common-table-expression:</a></b>
+<button id='x1417' onclick='hideorshow("x1417","x1418")'>show</button></p>
+ <blockquote id='x1418' style='display:none;'>
+ <img alt="syntax diagram common-table-expression" src="images/syntax/common-table-expression.gif" />
+</blockquote>
+<p><b><a href="syntax/compound-operator.html">compound-operator:</a></b>
+<button id='x1419' onclick='hideorshow("x1419","x1420")'>show</button></p>
+ <blockquote id='x1420' style='display:none;'>
+ <img alt="syntax diagram compound-operator" src="images/syntax/compound-operator.gif" />
+</blockquote>
+<p><b><a href="syntax/join-clause.html">join-clause:</a></b>
+<button id='x1421' onclick='hideorshow("x1421","x1422")'>show</button></p>
+ <blockquote id='x1422' style='display:none;'>
+ <img alt="syntax diagram join-clause" src="images/syntax/join-clause.gif" />
+<p><b><a href="syntax/join-constraint.html">join-constraint:</a></b>
+<button id='x1423' onclick='hideorshow("x1423","x1424")'>show</button></p>
+ <blockquote id='x1424' style='display:none;'>
+ <img alt="syntax diagram join-constraint" src="images/syntax/join-constraint.gif" />
+</blockquote>
+<p><b><a href="syntax/join-operator.html">join-operator:</a></b>
+<button id='x1425' onclick='hideorshow("x1425","x1426")'>show</button></p>
+ <blockquote id='x1426' style='display:none;'>
+ <img alt="syntax diagram join-operator" src="images/syntax/join-operator.gif" />
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/ordering-term.html">ordering-term:</a></b>
+<button id='x1427' onclick='hideorshow("x1427","x1428")'>show</button></p>
+ <blockquote id='x1428' style='display:none;'>
+ <img alt="syntax diagram ordering-term" src="images/syntax/ordering-term.gif" />
+</blockquote>
+<p><b><a href="syntax/result-column.html">result-column:</a></b>
+<button id='x1429' onclick='hideorshow("x1429","x1430")'>show</button></p>
+ <blockquote id='x1430' style='display:none;'>
+ <img alt="syntax diagram result-column" src="images/syntax/result-column.gif" />
+</blockquote>
+<p><b><a href="syntax/table-or-subquery.html">table-or-subquery:</a></b>
+<button id='x1431' onclick='hideorshow("x1431","x1432")'>show</button></p>
+ <blockquote id='x1432' style='display:none;'>
+ <img alt="syntax diagram table-or-subquery" src="images/syntax/table-or-subquery.gif" />
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+
+
+<p>An UPDATE statement is used to modify a subset of the values stored in 
+zero or more rows of the database table identified by the 
+<a href="syntax/qualified-table-name.html">qualified-table-name</a> specified as part of the UPDATE statement.
+
+<p>If the UPDATE statement does not have a WHERE clause, all rows in the
+table are modified by the UPDATE. Otherwise, the UPDATE affects only those
+rows for which the WHERE clause
+<a href="lang_expr.html#booleanexpr">boolean expression is true</a>. It is not an error if the
+WHERE clause does not evaluate to true for any row in the table - this just
+means that the UPDATE statement affects zero rows.
+
+<p>The modifications made to each row affected by an UPDATE statement are
+determined by the list of assignments following the SET keyword. Each
+assignment specifies a <span class='yyterm'>column-name</span> to the left of the 
+equals sign and a
+scalar expression to the right. For each affected row, the named columns
+are set to the values found by evaluating the corresponding scalar 
+expressions. If a single column-name appears more than once in the list of
+assignment expressions, all but the rightmost occurrence is ignored. Columns
+that do not appear in the list of assignments are left unmodified. The scalar
+expressions may refer to columns of the row being updated. In this case all
+scalar expressions are evaluated before any assignments are made.
+
+<p>The optional "OR <i>action</i>" conflict clause that follows the
+UPDATE keyword allows the user to nominate a specific
+constraint conflict resolution algorithm to use during this one UPDATE command.
+Refer to the section entitled <a href="lang_conflict.html">ON CONFLICT</a> for additional information.
+
+<h3>Restrictions on UPDATE Statements Within CREATE TRIGGER</h3>
+
+<p>The following additional syntax restrictions apply to UPDATE statements that
+occur within the body of a <a href="lang_createtrigger.html">CREATE TRIGGER</a> statement.  
+
+<ul>
+  <li><p>The <span class='yyterm'>table-name</span> specified as part of an UPDATE 
+      statement within
+      a trigger body must be unqualified. In other words, the
+      <i>schema-name</i><b>.</b> prefix on the table name of the UPDATE is
+      not allowed within triggers. Unless the table to which the trigger
+      is attached is in the TEMP database, the table being updated by the
+      trigger program must reside in the same database as it. If the table
+      to which the trigger is attached is in the TEMP database, then the
+      unqualified name of the table being updated is resolved in the same way
+      as it is for a top-level statement (by searching first the TEMP database,
+      then the main database, then any other databases in the order they were
+      attached).
+
+  <li><p>The INDEXED BY and NOT INDEXED clauses are not allowed on UPDATE
+      statements within triggers.</p>
+
+  <li><p>The LIMIT and ORDER BY clauses for UPDATE are unsupported within
+      triggers, regardless of the compilation options used to build SQLite.
+</ul>
+
+<h3>Optional LIMIT and ORDER BY Clauses</h3>
+
+<p>If SQLite is built with the <a href="compile.html#enable_update_delete_limit">SQLITE_ENABLE_UPDATE_DELETE_LIMIT</a>
+compile-time option then the syntax of the UPDATE statement is extended
+with optional ORDER BY and LIMIT clauses as follows:</p>
+
+<p><b><a href="syntax/update-stmt-limited.html">update-stmt-limited:</a></b></p><blockquote>
+ <img alt="syntax diagram update-stmt-limited" src="images/syntax/update-stmt-limited.gif"></img>
+ </blockquote>
+
+
+<p>If an UPDATE statement has a LIMIT clause, the maximum number of rows that
+will be updated is found by evaluating the accompanying expression and casting
+it to an integer value. A negative value is interpreted as "no limit".
+
+<p>If the LIMIT expression evaluates to non-negative value <i>N</i> and the
+UPDATE statement has an ORDER BY clause, then all rows that would be updated in
+the absence of the LIMIT clause are sorted according to the ORDER BY and the
+first <i>N</i> updated. If the UPDATE statement also has an OFFSET clause,
+then it is similarly evaluated and cast to an integer value. If the OFFSET
+expression evaluates to a non-negative value <i>M</i>, then the first <i>M</i>
+rows are skipped and the following <i>N</i> rows updated instead.
+
+<p>If the UPDATE statement has no ORDER BY clause, then all rows that
+would be updated in the absence of the LIMIT clause are assembled in an
+arbitrary order before applying the LIMIT and OFFSET clauses to determine 
+which are actually updated.
+
+<p>The ORDER BY clause on an UPDATE statement is used only to determine which
+rows fall within the LIMIT. The order in which rows are modified is arbitrary
+and is not influenced by the ORDER BY clause.
+
+

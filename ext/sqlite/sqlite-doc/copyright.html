@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>SQLite Copyright</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+
+
+<h2>SQLite Is Public Domain</h2>
+
+<table align="right" vspace="0" hspace="10" border="1" cellpadding="20">
+<tr><td align="center">
+<img src="images/nocopy.gif"><br>
+SQLite is in the<br>
+<a href="http://en.wikipedia.org/wiki/Public_Domain">Public Domain</a>
+</td></tr>
+</table>
+
+<p>
+All of the code and documentation in SQLite has been dedicated to the
+<a href="http://en.wikipedia.org/wiki/Public_Domain">public domain</a>
+by the authors.
+All code authors, and representatives of the companies they work for,
+have signed affidavits dedicating their contributions to
+the public domain and originals of
+those signed affidavits are stored in a firesafe at the main offices
+of <a href="http://www.hwaci.com">Hwaci</a>.
+Anyone is free to copy, modify, publish, use, compile, sell, or distribute
+the original SQLite code, either in source code form or as a compiled binary,
+for any purpose, commercial or non-commercial, and by any means.
+</p>
+
+<p>
+The previous paragraph applies to the deliverable code and documentation
+in SQLite - those parts of the SQLite library that you actually bundle and
+ship with a larger application.  Some scripts used as part of the
+build process (for example the "configure" scripts generated by autoconf)
+might fall under other open-source licenses.  Nothing from these build 
+scripts ever reaches the final deliverable SQLite library, however, and 
+so the licenses associated with those scripts should not be 
+a factor in assessing your rights to copy and use the SQLite library.
+</p>
+
+<p>
+All of the deliverable code in SQLite has been written from scratch.
+No code has been taken from other projects or from the open
+internet.  Every line of code can be traced back to its original
+author, and all of those authors have public domain dedications
+on file.  So the SQLite code base is clean and is
+uncontaminated with licensed code from other projects.
+</p>
+
+<table border=0 align='right'>
+<tr><td>
+<form method="GET" action="http://www.hwaci.com/cgi-bin/license-step1">
+<input type="submit" value="Buy An SQLite License">
+</form>
+</table>
+
+<h2>Obtaining An License To Use SQLite</h2>
+
+<p>
+Even though SQLite is in the public domain and does not require
+a license, some users want to obtain a license anyway.  Some reasons
+for obtaining a license include:
+</p>
+
+<ul>
+<li> Your company desires warranty of title and
+     indemnity against claims of copyright infringement.
+<li> You are using SQLite in a jurisdiction that does not recognize
+     the public domain.  </li>
+<li> You are using SQLite in a jurisdiction that does not recognize
+     the right of an author to dedicate their work to the public
+     domain. </li>
+<li> You want to hold a tangible legal document
+     as evidence that you have the legal right to use and distribute
+     SQLite. </li>
+<li> Your legal department tells you that you have to purchase a license.
+     </li>
+</ul>
+
+<p>
+If you feel like you really need to purchase a license for SQLite,
+<a href="http://www.hwaci.com/">Hwaci</a>, the company that employs 
+the architect and principal developers of SQLite, will 
+<a href="http://www.hwaci.com/cgi-bin/license-step1">sell you
+one</a>.
+All proceeds from the sale of SQLite licenses are used to fund further
+improvements to SQLite.
+</p>
+
+<h2>Contributed Code</h2>
+
+<p>
+In order to keep SQLite completely free and unencumbered by copyright,
+all new contributors to the SQLite code base are asked to dedicate
+their contributions to the public domain.
+If you want to send a patch or enhancement for possible inclusion in the
+SQLite source tree, please accompany the patch with the following statement:
+</p>
+
+<blockquote><i>
+The author or authors of this code dedicate any and all copyright interest
+in this code to the public domain.  We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and successors.
+We intend this dedication to be an overt act of relinquishment in
+perpetuity of all present and future rights to this code under copyright law.
+</i></blockquote>
+
+<p>
+We are not able to accept patches or changes to 
+SQLite that are not accompanied by a statement such as the above.
+In addition, if you make
+changes or enhancements as an employee, then a simple statement such as the
+above is insufficient.  You must also send by surface mail a copyright release
+signed by a company officer.
+A signed original of the copyright release should be mailed to:</p>
+
+<blockquote>
+Hwaci<br>
+6200 Maple Cove Lane<br>
+Charlotte, NC 28269<br>
+USA
+</blockquote>
+
+<p>
+A template copyright release is available
+in <a href="copyright-release.pdf">PDF</a> or
+<a href="copyright-release.html">HTML</a>.
+You can use this release to make future changes. 
+</p>
+

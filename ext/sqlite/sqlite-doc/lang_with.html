@@ -1,0 +1,814 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>SQLite Query Language: WITH clause</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+<h1 align="center">SQL As Understood By SQLite</h1><p><a href="lang.html">[Top]</a></p><h2>WITH clause</h2><p><b><a href="syntax/with-clause.html">with-clause:</a></b>
+<button id='x1139' onclick='hideorshow("x1139","x1140")'>hide</button></p>
+ <blockquote id='x1140'>
+ <img alt="syntax diagram with-clause" src="images/syntax/with-clause.gif" />
+<p><b><a href="syntax/cte-table-name.html">cte-table-name:</a></b>
+<button id='x1141' onclick='hideorshow("x1141","x1142")'>show</button></p>
+ <blockquote id='x1142' style='display:none;'>
+ <img alt="syntax diagram cte-table-name" src="images/syntax/cte-table-name.gif" />
+</blockquote>
+<p><b><a href="syntax/select-stmt.html">select-stmt:</a></b>
+<button id='x1143' onclick='hideorshow("x1143","x1144")'>show</button></p>
+ <blockquote id='x1144' style='display:none;'>
+ <img alt="syntax diagram select-stmt" src="images/syntax/select-stmt.gif" />
+<p><b><a href="syntax/common-table-expression.html">common-table-expression:</a></b>
+<button id='x1145' onclick='hideorshow("x1145","x1146")'>show</button></p>
+ <blockquote id='x1146' style='display:none;'>
+ <img alt="syntax diagram common-table-expression" src="images/syntax/common-table-expression.gif" />
+</blockquote>
+<p><b><a href="syntax/compound-operator.html">compound-operator:</a></b>
+<button id='x1147' onclick='hideorshow("x1147","x1148")'>show</button></p>
+ <blockquote id='x1148' style='display:none;'>
+ <img alt="syntax diagram compound-operator" src="images/syntax/compound-operator.gif" />
+</blockquote>
+<p><b><a href="syntax/expr.html">expr:</a></b>
+<button id='x1149' onclick='hideorshow("x1149","x1150")'>show</button></p>
+ <blockquote id='x1150' style='display:none;'>
+ <img alt="syntax diagram expr" src="images/syntax/expr.gif" />
+<p><b><a href="syntax/literal-value.html">literal-value:</a></b>
+<button id='x1151' onclick='hideorshow("x1151","x1152")'>show</button></p>
+ <blockquote id='x1152' style='display:none;'>
+ <img alt="syntax diagram literal-value" src="images/syntax/literal-value.gif" />
+</blockquote>
+<p><b><a href="syntax/raise-function.html">raise-function:</a></b>
+<button id='x1153' onclick='hideorshow("x1153","x1154")'>show</button></p>
+ <blockquote id='x1154' style='display:none;'>
+ <img alt="syntax diagram raise-function" src="images/syntax/raise-function.gif" />
+</blockquote>
+<p><b><a href="syntax/type-name.html">type-name:</a></b>
+<button id='x1155' onclick='hideorshow("x1155","x1156")'>show</button></p>
+ <blockquote id='x1156' style='display:none;'>
+ <img alt="syntax diagram type-name" src="images/syntax/type-name.gif" />
+<p><b><a href="syntax/signed-number.html">signed-number:</a></b>
+<button id='x1157' onclick='hideorshow("x1157","x1158")'>show</button></p>
+ <blockquote id='x1158' style='display:none;'>
+ <img alt="syntax diagram signed-number" src="images/syntax/signed-number.gif" />
+</blockquote>
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/join-clause.html">join-clause:</a></b>
+<button id='x1159' onclick='hideorshow("x1159","x1160")'>show</button></p>
+ <blockquote id='x1160' style='display:none;'>
+ <img alt="syntax diagram join-clause" src="images/syntax/join-clause.gif" />
+<p><b><a href="syntax/join-constraint.html">join-constraint:</a></b>
+<button id='x1161' onclick='hideorshow("x1161","x1162")'>show</button></p>
+ <blockquote id='x1162' style='display:none;'>
+ <img alt="syntax diagram join-constraint" src="images/syntax/join-constraint.gif" />
+</blockquote>
+<p><b><a href="syntax/join-operator.html">join-operator:</a></b>
+<button id='x1163' onclick='hideorshow("x1163","x1164")'>show</button></p>
+ <blockquote id='x1164' style='display:none;'>
+ <img alt="syntax diagram join-operator" src="images/syntax/join-operator.gif" />
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/ordering-term.html">ordering-term:</a></b>
+<button id='x1165' onclick='hideorshow("x1165","x1166")'>show</button></p>
+ <blockquote id='x1166' style='display:none;'>
+ <img alt="syntax diagram ordering-term" src="images/syntax/ordering-term.gif" />
+</blockquote>
+<p><b><a href="syntax/result-column.html">result-column:</a></b>
+<button id='x1167' onclick='hideorshow("x1167","x1168")'>show</button></p>
+ <blockquote id='x1168' style='display:none;'>
+ <img alt="syntax diagram result-column" src="images/syntax/result-column.gif" />
+</blockquote>
+<p><b><a href="syntax/table-or-subquery.html">table-or-subquery:</a></b>
+<button id='x1169' onclick='hideorshow("x1169","x1170")'>show</button></p>
+ <blockquote id='x1170' style='display:none;'>
+ <img alt="syntax diagram table-or-subquery" src="images/syntax/table-or-subquery.gif" />
+</blockquote>
+</blockquote>
+</blockquote>
+
+
+<p>Common Table Expressions or CTEs act like temporary <a href="lang_createview.html">views</a> that exist
+only for the duration of a single SQL statement.  There are two kinds of
+common table expressions: "ordinary" and "recursive". Ordinary 
+common table expressions are helpful for making
+queries easier to understand by factoring
+subqueries out of the main SQL statement.
+Recursive common table expressions
+provide the ability to do hierarchical or
+recursive queries of trees and graphs, a capability
+that is not otherwise available in the SQL language.
+
+<p>All common table expressions (ordinary and recursive) are 
+created by prepending a WITH clause in front of a <a href="lang_select.html">SELECT</a>, <a href="lang_insert.html">INSERT</a>, <a href="lang_delete.html">DELETE</a>,
+or <a href="lang_update.html">UPDATE</a> statement.  A single WITH clause can specify one or more
+common table expressions, some of which are ordinary and some of which
+are recursive.
+
+<a name="ordinarycte"></a>
+
+<h3>Ordinary Common Table Expressions</h3>
+
+<p>An ordinary common table expression works as if it were a <a href="lang_createview.html">view</a> that
+exists for the duration of a single statement.  Ordinary common table
+expressions are useful for factoring out subqueries and making the overall
+SQL statement easier to read and understand.
+
+<p>A WITH clause can contain ordinary common table expressions even if
+it includes the RECURSIVE keyword.  The use of RECURSIVE does not force
+common table expressions to be recursive.
+
+<a name="recursivecte"></a>
+
+<h3>Recursive Common Table Expressions</h3>
+
+<p>A recursive common table expression can be used to write a query that
+walks a tree or graph.  A recursive common table expression has the same
+basic syntax as an ordinary common table expression, but with the following
+additional features:
+
+<ol>
+<li> The "<a href="syntax/select-stmt.html">select-stmt</a>"
+     must be a <a href="lang_select.html#compound">compound select</a> where the right-most <a href="syntax/compound-operator.html">compound-operator</a> is
+     either UNION or UNION ALL.
+<li> The table named on the left-hand side of the AS keyword must appear
+     exactly once in the FROM clause of the right-most SELECT statement
+     of the compound select, and nowhere else.
+</ol>
+
+<p>To put it another way, a recursive common table expression must
+look like the following:
+
+<p><b><a href="syntax/recursive-cte.html">recursive-cte:</a></b>
+<button id='x1171' onclick='hideorshow("x1171","x1172")'>hide</button></p>
+ <blockquote id='x1172'>
+ <img alt="syntax diagram recursive-cte" src="images/syntax/recursive-cte.gif" />
+<p><b><a href="syntax/cte-table-name.html">cte-table-name:</a></b>
+<button id='x1173' onclick='hideorshow("x1173","x1174")'>show</button></p>
+ <blockquote id='x1174' style='display:none;'>
+ <img alt="syntax diagram cte-table-name" src="images/syntax/cte-table-name.gif" />
+</blockquote>
+</blockquote>
+
+
+<p>Call the table named by the <a href="syntax/cte-table-name.html">cte-table-name</a> in a recursive
+common table expression the "recursive table".
+In the <a href="syntax/recursive-cte.html">recursive-cte</a> bubble diagram above, the recursive
+table must appear exactly once in the FROM clause of the 
+<span class='yyterm'>recursive-select</span>
+and must not appear anywhere else in either the
+<span class='yyterm'>initial-select</span> or the
+<span class='yyterm'>recursive-select</span>, including subqueries.
+The <span class='yyterm'>initial-select</span> may be
+a <a href="lang_select.html#compound">compound select</a>, but it may not include an ORDER BY, LIMIT, or OFFSET.
+The recursive-select must be a simple select, not a compound.  The
+recursive-select is allowed to include an ORDER BY, LIMIT, and/or OFFSET.
+
+<p>The basic algorithm for computing the content of the recursive table
+is as follows:
+
+<ol>
+<li> Run the <span class='yyterm'>initial-select</span> and add the results to a queue.
+<li> While the queue is not empty:
+<ol type="a">
+<li> Extract a single row from the queue.
+<li> Insert that single row into the recursive table
+<li> Pretend that the single row just extracted is the only
+     row in the recursive table and run the recursive-select,
+     adding all results to the queue.
+</ol>
+</ol>
+
+<p>The basic procedure above may modified by the following additional rules:
+
+<ul>
+<li><p>
+  If a UNION operator connects the <span class='yyterm'>initial-select</span> with the
+  <span class='yyterm'>recursive-select</span>, then only add rows to the queue if 
+  no identical row has
+  been previously added to the queue.  Repeated rows are discarded before being
+  added to the queue even if the repeated rows have already been extracted
+  from the queue by the recursion step.  If the operator is UNION ALL,
+  then all rows generated by both the <span class='yyterm'>initial-select</span> and the
+  <span class='yyterm'>recursive-select</span> are always added to the queue even if
+  they are repeats.
+  When determining if a row is repeated, NULL values compare
+  equal to one another and not equal to any other value.
+<li><p>
+  The LIMIT clause, if present, determines the maximum number of rows that
+  will ever be added to the recursive table in step 2b.
+  Once the limit is reached, the recursion stops.
+  A limit of zero means that no rows are ever added to the
+  recursive table, and a negative limit means an unlimited number of rows
+  may be added to the recursive table.
+<li><p>
+  The OFFSET clause, if it is present and has a positive value N, prevents the
+  first N rows from being added to the recursive table.
+  The first N rows are still processed
+  by the <span class='yyterm'>recursive-select</span> &mdash; they
+  just are not added to the recursive table.  Rows are not counted toward
+  fulfilling the LIMIT until all OFFSET rows have been skipped.
+<li><p>
+  If an ORDER BY clause is present, it determines the order in which rows
+  are extracted from the queue in step 2a.  If there is no ORDER BY clause,
+  then the order in which rows are extracted is undefined.  (In the current
+  implementation, the queue becomes a FIFO if the ORDER BY clause is omitted,
+  but applications should not depend on that fact since it might change.)
+</ul>
+
+<a name="rcex1"></a>
+
+<h4>Recursive Query Examples</h4>
+
+<p>The following query returns all integers between 1 and 1000000:
+
+<blockquote><pre>
+WITH RECURSIVE
+  cnt(x) AS (VALUES(1) UNION ALL SELECT x+1 FROM cnt WHERE x<1000000)
+SELECT x FROM cnt;
+</pre></blockquote>
+
+<p>Consider how this query works.  The initial-select
+runs first and returns a single row
+with a single column "1".  This one row is added to the queue.  In
+step 2a, that one row is extracted from the queue and added to "cnt".
+Then the recursive-select is run in accordance with step 2c generating
+a single new row with value "2" to add to the queue.  The queue still
+has one row, so step 2 repeats.  The "2" row is extracted and added to the
+recursive table by steps 2a and 2b.  Then the row containing 2 is used 
+as if it were the complete content of the recursive table and the 
+recursive-select is run again, resulting in a row with value "3" being added
+to the queue.  This repeats 999999 times until finally at step 2a the
+only value on the queue is a row containing 1000000.  That row is
+extracted and added to the recursive table.  But this time, the
+WHERE clause causes the recursive-select to return no rows, so the
+queue remains empty and the recursion stops.
+
+<p><b>Optimization note:</b>
+In the discussion above, statements like "insert the row into
+the recursive table" should be understood conceptually, not literally.
+It sounds as if SQLite is accumulating a huge table
+containing one million rows, then going back and scanning that table
+from top to bottom to generate the result.  What really happens
+is that the query optimizer sees that values in the
+"cnt" recursive table are only used once.  So as each row is added to
+the recursive table, that row is immediately returned as a result of the main
+SELECT statement and then discarded.  SQLite does <em>not</em> accumulate
+a temporary table containing a million rows.  Very little memory is
+needed to run the above example.  However, if the example had used
+UNION instead of UNION ALL, then SQLite would have had to keep around
+all previously generated content in order to check for duplicates.
+For this reason, programmers should strive to use UNION ALL instead
+of UNION when feasible.
+
+<p>Here is a variation on the previous example:
+
+<blockquote><pre>
+WITH RECURSIVE
+  cnt(x) AS (
+     SELECT 1
+     UNION ALL
+     SELECT x+1 FROM cnt
+      LIMIT 1000000
+  )
+SELECT x FROM cnt;
+</pre></blockquote>
+
+<p>There are two differences in this variation.  The initial-select is
+"SELECT 1" instead of "VALUES(1)".  But those are just different
+syntaxes for saying exactly the same thing.  The other change is that the
+recursion is stopped by a LIMIT rather than a WHERE clause.  The use of
+LIMIT means that when the one-millionth row is added to the "cnt" table
+(and returned by the main SELECT, thanks to the query optimizer)
+then the recursion stops immediately regardless of how many rows might be
+left in the queue.  On more complex queries, it can sometimes be
+difficult to ensure that the WHERE clause will eventually cause the
+queue to drain and the recursion to terminate.  But the LIMIT clause will
+always stop the recursion.  So it is good practice to always include a
+LIMIT clause as a safety if an upper bound on the size of the recursion 
+is known.
+
+<a name="rcex2"></a>
+
+<h4>Hierarchical Query Examples</h4>
+
+<p>Consider a table that describes the members of an organization as
+well as the chain-of-command within that organization:
+
+<blockquote><pre>
+CREATE TABLE org(
+  name TEXT PRIMARY KEY,
+  boss TEXT REFERENCES org,
+  height INT,
+  -- other content omitted
+);
+</pre></blockquote>
+
+<p>Every member in the organization has a name, and most members have
+a single boss.  (The head of the whole organization has a NULL
+"boss" field.) The rows of the "org" table form a tree.
+
+<p>Here is a query that computes the average height over everyone
+in Alice's organization, including Alice:
+
+<blockquote><pre>
+WITH RECURSIVE
+  works_for_alice(n) AS (
+    VALUES('Alice')
+    UNION
+    SELECT name FROM org, works_for_alice
+     WHERE org.boss=works_for_alice.n
+  )
+SELECT avg(height) FROM org
+ WHERE org.name IN works_for_alice;
+</pre></blockquote>
+
+<p>The next example uses two 
+common table expressions in a single WITH clause.  
+The following table records a family tree:
+
+<blockquote><pre>
+CREATE TABLE family(
+  name TEXT PRIMARY KEY,
+  mom TEXT REFERENCES family,
+  dad TEXT REFERENCES family,
+  born DATETIME,
+  died DATETIME, -- NULL if still alive
+  -- other content
+);
+</pre></blockquote>
+
+<p>The "family" table is similar to the earlier "org" table except that 
+now there are two parents to each member.
+We want to know all living ancestors of Alice, from oldest to youngest.
+An ordinary common table expression, "parent_of", is defined first.  That
+ordinary CTE is a view that can be used to find all parents of any
+individual.  That ordinary CTE is then used in the "ancestor_of_alice"
+recursive CTE.  The recursive CTE is then used in the final query:
+
+<blockquote><pre>
+WITH RECURSIVE
+  parent_of(name, parent) AS
+    (SELECT name, mom FROM family UNION SELECT name, dad FROM family),
+  ancestor_of_alice(name) AS
+    (SELECT parent FROM parent_of WHERE name='Alice'
+     UNION ALL
+     SELECT parent FROM parent_of JOIN ancestor_of_alice USING(name))
+SELECT family.name FROM ancestor_of_alice, family
+ WHERE ancestor_of_alice.name=family.name
+   AND died IS NULL
+ ORDER BY born;
+</pre></blockquote>
+
+<a name="rcex2"></a>
+
+<h4>Queries Against A Graph</h4>
+
+<p>A version control system (VCS) will typically store the evolving
+versions of a project as a directed acyclic graph (DAG).  Call each
+version of the project a "checkin".  A single
+checkin can have zero or more parents.  Most checkins (except the
+first) have a single parent, but in the case of a merge, a checkin
+might have two or three or more parents.  A schema to keep track of
+checkins and the order in which they occur might look something like
+this:
+
+<blockquote><pre>
+CREATE TABLE checkin(
+  id INTEGER PRIMARY KEY,
+  mtime INTEGER -- timestamp when this checkin occurred
+);
+CREATE TABLE derivedfrom(
+  xfrom INTEGER NOT NULL REFERENCES checkin, -- parent checkin
+  xto INTEGER NOT NULL REFERENCES checkin,   -- derived checkin
+  PRIMARY KEY(xfrom,xto)
+);
+CREATE INDEX derivedfrom_back ON derivedfrom(xto,xfrom);
+</pre></blockquote>
+
+<p>This graph is acyclic.  And we assume that the mtime of every
+child checkin is no less than the mtime of all its parents.  But
+unlike the earlier examples, this graph might have multiple paths of
+differing lengths between any two checkins.
+
+<p>We want to know the twenty most recent ancestors in time (out of
+the thousands and thousands of ancestors in the whole DAG) for
+checkin "@BASELINE".  (A query similar to this is used
+by the <a href="http://www.fossil-scm.org/">Fossil</a> VCS to
+show the N most recent ancestors of a check.  For example:
+<a href="http://www.sqlite.org/src/timeline?p=trunk&n=30">http://www.sqlite.org/src/timeline?p=trunk&n=30</a>.)
+
+<blockquote><pre>
+WITH RECURSIVE
+  ancestor(id,mtime) AS (
+    SELECT id, mtime FROM checkin WHERE id=@BASELINE
+    UNION
+    SELECT derivedfrom.xfrom, checkin.mtime
+      FROM ancestor, derivedfrom, checkin
+     WHERE ancestor.id=derivedfrom.xto
+       AND checkin.id=derivedfrom.xfrom
+     ORDER BY checkin.mtime DESC
+     LIMIT 20
+  )
+SELECT * FROM checkin JOIN ancestor USING(id);
+</pre></blockquote>
+
+<p>
+The "ORDER BY checkin.mtime DESC" term in the recursive-select makes
+the query run much faster by preventing it from following
+branches that merge checkins
+from long ago.  The ORDER BY forces the recursive-select to focus
+on the most recent checkins, the ones we want.  Without the ORDER BY
+on the recursive-select, one would be forced to compute the complete set of
+thousands of ancestors, sort them all by mtime, then take the top twenty.
+The ORDER BY essentially sets up a priority queue that
+forces the recursive query to look at the most recent ancestors first,
+allowing the use of a LIMIT clause to restrict the scope of the
+query to just the checkins of interest.
+
+<a name="withorderby"></a>
+
+<h4>Controlling Depth-First Versus Breadth-First Search Of a Tree
+Using ORDER BY</h4>
+
+<p>An ORDER BY clause on the recursive-select can be used to control
+whether the search of a tree is depth-first or breadth-first.  To
+illustrate, we will use a variation on the "org" table from an example
+above, without the "height" column, and with some real data inserted:
+
+<blockquote><pre>
+CREATE TABLE org(
+  name TEXT PRIMARY KEY,
+  boss TEXT REFERENCES org
+) WITHOUT ROWID;
+INSERT INTO org VALUES('Alice',NULL);
+INSERT INTO org VALUES('Bob','Alice');
+INSERT INTO org VALUES('Cindy','Alice');
+INSERT INTO org VALUES('Dave','Bob');
+INSERT INTO org VALUES('Emma','Bob');
+INSERT INTO org VALUES('Fred','Cindy');
+INSERT INTO org VALUES('Gail','Cindy');
+</pre></blockquote>
+
+<p>Here is a query to show the tree structure in a breadth-first pattern:
+
+<blockquote><pre>
+WITH RECURSIVE
+  under_alice(name,level) AS (
+    VALUES('Alice',0)
+    UNION ALL
+    SELECT org.name, under_alice.level+1
+      FROM org JOIN under_alice ON org.boss=under_alice.name
+     ORDER BY 2
+  )
+SELECT substr('..........',1,level*3) || name FROM under_alice;
+</pre></blockquote>
+
+<p>The "ORDER BY 2" (which means the same as "ORDER BY under_alice.level+1")
+causes higher levels in the organization chart (with smaller "level" values)
+to be processed first, resulting in a breadth-first search.  The output is:
+
+<blockquote><pre>
+Alice
+...Bob
+...Cindy
+......Dave
+......Emma
+......Fred
+......Gail
+</pre></blockquote>
+
+<p>But if we change the ORDER BY clause to add the "DESC" modifier, that will
+cause lower levels in the organization (with larger "level" values) to be
+processed first by the recursive-select, resulting in a depth-first search:
+
+<blockquote><pre>
+WITH RECURSIVE
+  under_alice(name,level) AS (
+    VALUES('Alice',0)
+    UNION ALL
+    SELECT org.name, under_alice.level+1
+      FROM org JOIN under_alice ON org.boss=under_alice.name
+     ORDER BY 2 <b>DESC</b>
+  )
+SELECT substr('..........',1,level*3) || name FROM under_alice;
+</pre></blockquote>
+
+<p>The output of this revised query is:
+
+<blockquote><pre>
+Alice
+...Bob
+......Dave
+......Emma
+...Cindy
+......Fred
+......Gail
+</pre></blockquote>
+
+<p>When the ORDER BY clause is omitted from the recursive-select, the
+queue behaves as a FIFO, which results in a breadth-first search.
+
+
+<a name="mandelbrot"></a>
+
+<h4>Outlandish Recursive Query Examples</h4>
+
+<p>The following query computes an approximation of the Mandelbrot Set
+and outputs the result as ASCII-art:
+
+<blockquote><pre>
+WITH RECURSIVE
+  xaxis(x) AS (VALUES(-2.0) UNION ALL SELECT x+0.05 FROM xaxis WHERE x&lt;1.2),
+  yaxis(y) AS (VALUES(-1.0) UNION ALL SELECT y+0.1 FROM yaxis WHERE y&lt;1.0),
+  m(iter, cx, cy, x, y) AS (
+    SELECT 0, x, y, 0.0, 0.0 FROM xaxis, yaxis
+    UNION ALL
+    SELECT iter+1, cx, cy, x*x-y*y + cx, 2.0*x*y + cy FROM m 
+     WHERE (x*x + y*y) &lt; 4.0 AND iter&lt;28
+  ),
+  m2(iter, cx, cy) AS (
+    SELECT max(iter), cx, cy FROM m GROUP BY cx, cy
+  ),
+  a(t) AS (
+    SELECT group_concat( substr(' .+*#', 1+min(iter/7,4), 1), '') 
+    FROM m2 GROUP BY cy
+  )
+SELECT group_concat(rtrim(t),x'0a') FROM a;
+</pre></blockquote>
+
+<p>In this query, the "xaxis" and "yaxis" CTEs define the grid of points for
+which the Mandelbrot Set will be approximated.  Each row in the
+"m(iter,cx,cy,x,y)" CTE means that after "iter" iterations, the Mandelbrot
+iteration starting at cx,cy has reached point x,y.  The number of iterations
+in this example is limited to 28 (which severely limits the resolution of
+the computation, but is sufficient for low-resolution ASCII-art output).
+The "m2(iter,cx,cy)" CTE holds the maximum number of iterations reached when
+starting at point cx,cy.
+Finally, each row in the "a(t)" CTE holds a string 
+which is a single line of the output ASCII-art.
+The SELECT statement at the end just queries the "a" CTE to
+retrieve all lines of ASCII-art, one by one.
+
+<p>Running the query above in an SQLite <a href="cli.html">command-line shell</a> results
+in the following output:
+
+<blockquote><pre>
+                                    ....#
+                                   ..#*..
+                                 ..+####+.
+                            .......+####....   +
+                           ..##+*##########+.++++
+                          .+.##################+.
+              .............+###################+.+
+              ..++..#.....*#####################+.
+             ...+#######++#######################.
+          ....+*################################.
+ #############################################...
+          ....+*################################.
+             ...+#######++#######################.
+              ..++..#.....*#####################+.
+              .............+###################+.+
+                          .+.##################+.
+                           ..##+*##########+.++++
+                            .......+####....   +
+                                 ..+####+.
+                                   ..#*..
+                                    ....#
+                                    +.
+</pre></blockquote>
+
+<a name="sudoku"></a>
+
+<p>This next query solves a Sudoku puzzle.  The state of the puzzle is
+defined by an 81-character string formed by reading entries from the
+puzzle box row by row from left to right and then from top to bottom.
+Blank squares in the puzzle are denoted by a "." character.  
+Thus the input string:
+
+<blockquote>
+53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79
+</blockquote>
+
+<p>Corresponds to a puzzle like this:
+
+<blockquote>
+<table border="1" cellpadding="5">
+<tr><td>5<td>3<td> <td> <td>7<td> <td> <td> <td>
+<tr><td>6<td> <td> <td>1<td>9<td>5<td> <td> <td>
+<tr><td> <td>9<td>8<td> <td> <td> <td> <td>6<td>
+<tr><td>8<td> <td> <td> <td>6<td> <td> <td> <td>3
+<tr><td>4<td> <td> <td>8<td> <td>3<td> <td> <td>1
+<tr><td>7<td> <td> <td> <td>2<td> <td> <td> <td>6
+<tr><td> <td>6<td> <td> <td> <td> <td>2<td>8<td>
+<tr><td> <td> <td> <td>4<td>1<td>9<td> <td> <td>5
+<tr><td> <td> <td> <td> <td>8<td> <td> <td>7<td>9
+</table>
+</blockquote>
+
+<p>This is the query that solves the puzzle:
+
+<blockquote><pre>
+WITH RECURSIVE
+  input(sud) AS (
+    VALUES('53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79')
+  ),
+  digits(z, lp) AS (
+    VALUES('1', 1)
+    UNION ALL SELECT
+    CAST(lp+1 AS TEXT), lp+1 FROM digits WHERE lp&lt;9
+  ),
+  x(s, ind) AS (
+    SELECT sud, instr(sud, '.') FROM input
+    UNION ALL
+    SELECT
+      substr(s, 1, ind-1) || z || substr(s, ind+1),
+      instr( substr(s, 1, ind-1) || z || substr(s, ind+1), '.' )
+     FROM x, digits AS z
+    WHERE ind>0
+      AND NOT EXISTS (
+            SELECT 1
+              FROM digits AS lp
+             WHERE z.z = substr(s, ((ind-1)/9)*9 + lp, 1)
+                OR z.z = substr(s, ((ind-1)%9) + (lp-1)*9 + 1, 1)
+                OR z.z = substr(s, (((ind-1)/3) % 3) * 3
+                        + ((ind-1)/27) * 27 + lp
+                        + ((lp-1) / 3) * 6, 1)
+         )
+  )
+SELECT s FROM x WHERE ind=0;
+</pre></blockquote>
+
+<p>The "input" CTE defines the input puzzle.
+The "digits" CTE defines a table that holds all digits between 1 and 9.
+The work of solving the puzzle is undertaken by the "x" CTE.
+An entry in x(s,ind) means that the 81-character string "s" is a valid
+sudoku puzzle (it has no conflicts) and that the first unknown character
+is at position "ind", or ind==0 if all character positions are filled in.
+The goal, then, is to compute entries for "x" with an "ind" of 0.
+
+<p>The solver works by adding new entries to the "x" recursive table.
+Given prior entries, the recursive-select tries to fill in a single new
+position with all values between 1 and 9 that actually work in that
+position.  The complicated "NOT EXISTS" subquery is the magic that
+figures out whether or not each candidate "s" string is a valid
+sudoku puzzle or not.
+
+<p>The final answer is found by looking for a string with ind==0.
+If the original sudoku problem did not have a unique solution, then
+the query will return all possible solutions.  If the original problem
+was unsolvable, then no rows will be returned.  In this case, the unique
+answer is:
+
+<blockquote>
+534678912672195348198342567859761423426853791713924856961537284287419635345286179
+</blockquote>
+
+<p>The solution was computed in less than 300 milliseconds on a modern
+workstation.
+
+<h3>Limitations And Caveats</h3>
+
+<ul>
+<li><p>
+The WITH clause cannot be used within a <a href="lang_createtrigger.html">CREATE TRIGGER</a>.
+<li><p>
+The WITH clause must appear at the beginning of a top-level <a href="lang_select.html">SELECT</a> statement
+or at the beginning of a subquery.  The WITH clause cannot be prepended to
+the second or subsequent SELECT statement of a <a href="lang_select.html#compound">compound select</a>.
+<li><p>
+The SQL:1999 spec requires that the RECURSIVE keyword follow WITH in any
+WITH clause that includes a recursive common table expression.  However, for
+compatibility with SqlServer and Oracle, SQLite does not enforce this rule.
+</ul>
+
+

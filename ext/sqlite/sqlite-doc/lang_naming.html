@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>SQLite Query Language: Database Object Name Resolution</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+<h1 align="center">SQL As Understood By SQLite</h1><p><a href="lang.html">[Top]</a></p><h2>Database Object Name Resolution</h2>
+
+<p>
+  In SQLite, a database object (a table, index, trigger or view) is identified
+  by the name of the object and the name of the database that it resides in. 
+  Database objects may reside in the main database, the temp database, or in
+  an <a href="lang_attach.html">attached database</a>.
+
+<p>
+  The syntax of the <a href="lang_droptable.html">DROP TABLE</a>, <a href="lang_dropindex.html">DROP INDEX</a>, <a href="lang_dropview.html">DROP VIEW</a>, <a href="lang_droptrigger.html">DROP TRIGGER</a>,
+  <a href="lang_reindex.html">REINDEX</a>, <a href="lang_altertable.html">ALTER TABLE</a> and many other commands all permit the user to
+  specify a database object either by its name alone, or by a combination of
+  its name and the name of its database. If no database is specified as part
+  of the object reference, then SQLite searches the main, temp and all attached
+  databases for an object with a matching name. The temp database is searched
+  first, followed by the main database, followed all attached databases in the
+  order that they were attached. The reference resolves to the first match
+  found. For example:
+
+<pre>
+      /* Add a table named 't1' to the temp, main and an attached database */
+      ATTACH 'file.db' AS aux;
+      CREATE TABLE t1(x, y);
+      CREATE TEMP TABLE t1(x, y);
+      CREATE TABLE aux.t1(x, y);
+
+      DROP TABLE t1;         /* Drop table in temp database */
+      DROP TABLE t1;         /* Drop table in main database */
+      DROP TABLE t1;         /* Drop table in aux database */
+</pre>
+
+<p>
+  If a schema name is specified as part of an object reference, it must be
+  either "main", or "temp" or the schema-name of an attached database.
+  Like other SQL identifiers, schema names are case-insensitive.
+  If a schema name is specified, then only that one schema is searched for
+  the named object.
+
+<p>
+  Most object references may only resolve to a specific type of object (for
+  example a reference that is part of a DROP TABLE statement may only resolve
+  to a table object, not an index, trigger or view). However in some contexts 
+  (e.g. <a href="lang_reindex.html">REINDEX</a>) an object reference may be resolve to more than one type
+  of object. When searching database schemas for a named object, objects of
+  types that cannot be used in the context of the reference are always 
+  ignored.
+
+

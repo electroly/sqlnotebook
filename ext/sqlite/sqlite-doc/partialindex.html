@@ -1,0 +1,423 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Partial Indexes</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+
+
+<h1 align="center">Partial Indexes</h1>
+
+<h2>1.0 Introduction</h2>
+
+<p>
+A partial index is an index over a subset of the rows of a table.
+</p>
+
+<p>
+In ordinary indexes, there is exactly one entry in the index for every
+row in the table.  In partial indexes, only some subset of the rows in the
+table have corresponding index entries.  For example, a partial index might
+omit entries for which the column being indexed is NULL.  When used 
+judiciously, partial indexes can result in smaller database files and
+improvements in both query and write performance.
+</p>
+
+<h2>2.0 Creating Partial Indexes</h2>
+
+<p>
+Create a partial index by adding a WHERE clause to the end of an 
+ordinary <a href="lang_createindex.html">CREATE INDEX</a> statement.
+</p>
+
+<p><b><a href="syntax/create-index-stmt.html">create-index-stmt:</a></b>
+<button id='x1437' onclick='hideorshow("x1437","x1438")'>hide</button></p>
+ <blockquote id='x1438'>
+ <img alt="syntax diagram create-index-stmt" src="images/syntax/create-index-stmt.gif" />
+<p><b><a href="syntax/expr.html">expr:</a></b>
+<button id='x1439' onclick='hideorshow("x1439","x1440")'>show</button></p>
+ <blockquote id='x1440' style='display:none;'>
+ <img alt="syntax diagram expr" src="images/syntax/expr.gif" />
+<p><b><a href="syntax/literal-value.html">literal-value:</a></b>
+<button id='x1441' onclick='hideorshow("x1441","x1442")'>show</button></p>
+ <blockquote id='x1442' style='display:none;'>
+ <img alt="syntax diagram literal-value" src="images/syntax/literal-value.gif" />
+</blockquote>
+<p><b><a href="syntax/raise-function.html">raise-function:</a></b>
+<button id='x1443' onclick='hideorshow("x1443","x1444")'>show</button></p>
+ <blockquote id='x1444' style='display:none;'>
+ <img alt="syntax diagram raise-function" src="images/syntax/raise-function.gif" />
+</blockquote>
+<p><b><a href="syntax/select-stmt.html">select-stmt:</a></b>
+<button id='x1445' onclick='hideorshow("x1445","x1446")'>show</button></p>
+ <blockquote id='x1446' style='display:none;'>
+ <img alt="syntax diagram select-stmt" src="images/syntax/select-stmt.gif" />
+<p><b><a href="syntax/common-table-expression.html">common-table-expression:</a></b>
+<button id='x1447' onclick='hideorshow("x1447","x1448")'>show</button></p>
+ <blockquote id='x1448' style='display:none;'>
+ <img alt="syntax diagram common-table-expression" src="images/syntax/common-table-expression.gif" />
+</blockquote>
+<p><b><a href="syntax/compound-operator.html">compound-operator:</a></b>
+<button id='x1449' onclick='hideorshow("x1449","x1450")'>show</button></p>
+ <blockquote id='x1450' style='display:none;'>
+ <img alt="syntax diagram compound-operator" src="images/syntax/compound-operator.gif" />
+</blockquote>
+<p><b><a href="syntax/join-clause.html">join-clause:</a></b>
+<button id='x1451' onclick='hideorshow("x1451","x1452")'>show</button></p>
+ <blockquote id='x1452' style='display:none;'>
+ <img alt="syntax diagram join-clause" src="images/syntax/join-clause.gif" />
+<p><b><a href="syntax/join-constraint.html">join-constraint:</a></b>
+<button id='x1453' onclick='hideorshow("x1453","x1454")'>show</button></p>
+ <blockquote id='x1454' style='display:none;'>
+ <img alt="syntax diagram join-constraint" src="images/syntax/join-constraint.gif" />
+</blockquote>
+<p><b><a href="syntax/join-operator.html">join-operator:</a></b>
+<button id='x1455' onclick='hideorshow("x1455","x1456")'>show</button></p>
+ <blockquote id='x1456' style='display:none;'>
+ <img alt="syntax diagram join-operator" src="images/syntax/join-operator.gif" />
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/ordering-term.html">ordering-term:</a></b>
+<button id='x1457' onclick='hideorshow("x1457","x1458")'>show</button></p>
+ <blockquote id='x1458' style='display:none;'>
+ <img alt="syntax diagram ordering-term" src="images/syntax/ordering-term.gif" />
+</blockquote>
+<p><b><a href="syntax/result-column.html">result-column:</a></b>
+<button id='x1459' onclick='hideorshow("x1459","x1460")'>show</button></p>
+ <blockquote id='x1460' style='display:none;'>
+ <img alt="syntax diagram result-column" src="images/syntax/result-column.gif" />
+</blockquote>
+<p><b><a href="syntax/table-or-subquery.html">table-or-subquery:</a></b>
+<button id='x1461' onclick='hideorshow("x1461","x1462")'>show</button></p>
+ <blockquote id='x1462' style='display:none;'>
+ <img alt="syntax diagram table-or-subquery" src="images/syntax/table-or-subquery.gif" />
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/type-name.html">type-name:</a></b>
+<button id='x1463' onclick='hideorshow("x1463","x1464")'>show</button></p>
+ <blockquote id='x1464' style='display:none;'>
+ <img alt="syntax diagram type-name" src="images/syntax/type-name.gif" />
+<p><b><a href="syntax/signed-number.html">signed-number:</a></b>
+<button id='x1465' onclick='hideorshow("x1465","x1466")'>show</button></p>
+ <blockquote id='x1466' style='display:none;'>
+ <img alt="syntax diagram signed-number" src="images/syntax/signed-number.gif" />
+</blockquote>
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/indexed-column.html">indexed-column:</a></b>
+<button id='x1467' onclick='hideorshow("x1467","x1468")'>show</button></p>
+ <blockquote id='x1468' style='display:none;'>
+ <img alt="syntax diagram indexed-column" src="images/syntax/indexed-column.gif" />
+</blockquote>
+</blockquote>
+
+
+<p>
+Any index that includes the WHERE clause at the end is considered to be
+a partial index.  Indexes that omit the WHERE clause (or indexes that
+are created by UNIQUE or PRIMARY KEY constraints inside of CREATE TABLE
+statements) are ordinary full indexes.
+</p>
+
+<p>
+The expression following the WHERE clause may contain operators,
+literal values, and names of columns in the table being indexed.
+The WHERE clause may <em>not</em> contain subqueries, references to other
+tables, functions, or <a href="lang_expr.html#varparam">bound parameters</a>.  The LIKE, GLOB, MATCH,
+and REGEXP operators in SQLite are implemented as functions by the same name.
+Since functions are prohibited in the 
+WHERE clause of a CREATE INDEX statement, so too are the LIKE, GLOB,
+MATCH, and REGEXP operators.</p>
+
+<p>
+Only rows of the table for which the WHERE clause evaluates to true
+are included in the index.  If the WHERE clause expression evaluates 
+to NULL or to false for some rows of the table, then those rows are omitted 
+from the index.
+</p>
+
+<p>
+The columns referenced in the WHERE clause of a partial index can be
+any of the columns in the table, not just columns that happen to be
+indexed.  However, it is very common for the WHERE clause
+expression of a partial index to be a simple expression on the column
+being indexed.  The following is a typical example:</p>
+
+<blockquote>
+CREATE INDEX po_parent ON purchaseorder(parent_po) WHERE parent_po IS NOT NULL;
+</blockquote>
+
+<p>In the example above, if most purchase orders do not have a "parent"
+purchase order, then most parent_po values will be NULL.  That means only
+a small subset of the rows in the purchaseorder table will be indexed.
+Hence the index will take up much less space.  And changes to the original
+purchaseorder table will run faster since the po_parent index only needs
+to be updated for those exceptional rows where parent_po is not NULL.
+But the index is still useful for querying.  In particular, if one wants
+to know all "children" of a particular purchase order "?1", the query
+would be:
+
+<blockquote>
+SELECT po_num FROM purchaseorder WHERE parent_po=?1;
+</blockquote>
+
+<p>The query above will use the po_parent index to help find the answer,
+since the po_parent index contains entries for all rows of interest.
+Note that since po_parent is smaller than a full index, the query will
+likely run faster too.</p>
+
+<h3>2.1 Unique Partial Indexes</h3>
+
+<p>A partial index definition may include the UNIQUE keyword.  If it
+does, then SQLite requires every entry <em>in the index</em> to be unique.
+This provides a mechanism for enforcing uniqueness across some subset of
+the rows in a table.</p>
+
+<p>For example, suppose you have a database of the members of a large
+organization where each person is assigned to a particular "team".  
+Each team has a "leader" who is also a member of that team.  The
+table might look something like this:</p>
+
+<blockquote><pre>
+CREATE TABLE person(
+  person_id       INTEGER PRIMARY KEY,
+  team_id         INTEGER REFERENCES team,
+  is_team_leader  BOOLEAN,
+  -- other fields elided
+);
+</pre></blockquote>
+
+<p>The team_id field cannot be unique because there usually multiple people
+on the same team.  One cannot make the combination of team_id and is_team_leader
+unique since there are usually multiple non-leaders on each team.  The
+solution to enforcing one leader per team is to create a unique index
+on team_id but restricted to those entries for which is_team_leader is
+true:</p>
+
+<blockquote>
+CREATE UNIQUE INDEX team_leader ON person(team_id) WHERE is_team_leader;
+</blockquote>
+
+<p>Coincidentally, that same index is useful for locating the team leader
+of a particular team:</p>
+
+<blockquote>
+SELECT person_id FROM person WHERE is_team_leader AND team_id=?1;
+</blockquote>
+
+<h2>3.0 Queries Using Partial Indexes</h2>
+
+<p>Let X be the expression in the WHERE clause of a partial
+index, and let W be the WHERE clause of a query that uses the
+table that is indexed.  Then, the query is permitted to use 
+the partial index if W&#x21d2;X, where the &#x21d2; operator
+(usually pronounced "implies") is the logic operator 
+equivalent to "X or not W".
+Hence, determining whether or not a partial index
+is usable in a particular query reduces to proving a theorem in
+first-order logic.</p>
+
+<p>SQLite does <u>not</u> have a sophisticated theorem
+prover with which to determine W&#x21d2;X.  Instead, SQLite uses 
+two simple rules to find the common cases where W&#x21d2;X is true, and
+it assumes all the other cases are false.  The rules used by SQLite
+are these:
+
+<ol>
+<li><p>If W is AND-connected terms and X is
+OR-connected terms and if any term of W
+appears as a term of X, then the partial index is usable.</p>
+
+<p>For example, let the index be
+<blockquote>
+CREATE INDEX ex1 ON tab1(a,b) WHERE a=5 OR b=6;
+</blockquote>
+<p>And let the query be:
+<blockquote>
+SELECT * FROM tab1 WHERE b=6 AND a=7; <i>-- uses partial index</i>
+</blockquote>
+<p>Then the index is usable by the query because the "b=6" term appears
+in both the index definition and in the query.  Remember: terms in the
+index should be OR-connected and terms in the query should be AND-connected.</p>
+
+<p>The terms in W and X must match exactly.  SQLite does not
+do algebra to try to get them to look the same.
+The term "b=6" does not match "b=3+3" or "b-6=0" or "b BETWEEN 6 AND 6".
+"b=6" will match to "6=b" as long as "b=6" is on the index and "6=b" is
+in the query.  If a term of the form "6=b" appears in the index, it will
+never match anything.</p>
+
+<li><p>If a term in X is of the form "z IS NOT NULL" and if a term in
+       W is a comparison operator on "z" other than "IS", then those
+       terms match.</p>
+
+<p>Example:  Let the index be
+<blockquote>
+CREATE INDEX ex2 ON tab2(b,c) WHERE c IS NOT NULL;
+</blockquote>
+<p>Then any query that uses operators =, &lt;, &gt;, &lt;=, &gt;=, &lt;&gt;,
+or IN on column "c" would be usable with the partial index because those
+comparison operators are only true if "c" is not NULL.  So the following
+query could use the partial index:
+<blockquote>
+SELECT * FROM tab2 WHERE b=456 AND c&lt;&gt;0;  <i>-- uses partial index</i>
+</blockquote>
+<p>But the next query can not use the partial index:
+<blockquote>
+SELECT * FROM tab2 WHERE b=456;  <i>-- cannot use partial index</i>
+</blockquote>
+<p>The latter query can not use the partial index because there might be
+rows in the table with b=456 and where c is NULL.  But those rows would
+not be in the partial index.
+</ol>
+
+<p>These two rules describe how the query planner for SQLite works as of
+this writing (2013-08-01).  And the rules above will always be honored.
+However, future versions of SQLite might incorporate a better theorem prover
+that can find other cases where W&#x21d2;X is true and thus may
+find more instances where partial indexes are useful.</p>
+
+<h2>4.0 Supported Versions</h2>
+
+<p>
+Partial indexes have been supported in SQLite since version 3.8.0.
+</p>
+
+<p>Database files that contain partial indices are not readable or writable
+by versions of SQLite prior to 3.8.0.  However, a database file created
+by SQLite 3.8.0 is still readable and writable by prior versions as long
+as its schema contains no partial indexes.  A database that is unreadable
+by legacy versions of SQLite can be made readable simply by running
+<a href="lang_dropindex.html">DROP INDEX</a> on the partial indexes.</p>
+

@@ -81,18 +81,10 @@ namespace SqlNotebook {
         public event EventHandler<StatusUpdateEventArgs> StatusUpdate;
         public event EventHandler<HotkeyEventArgs> HandleHotkeyRequest;
         private readonly Slot<bool> _isTransactionOpen;
-        public object HelpServerLock { get; } = new object();
-        public HelpServer HelpServer { get; private set; }
 
         public NotebookManager(Notebook notebook, Slot<bool> isTransactionOpen) {
             Notebook = notebook;
             _isTransactionOpen = isTransactionOpen;
-
-            Task.Run(() => {
-                lock (HelpServerLock) {
-                    HelpServer = new HelpServer();
-                }
-            });
         }
 
         public void CommitOpenEditors() {

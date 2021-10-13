@@ -43,7 +43,7 @@ namespace SqlNotebook {
         }
 
         private void LicenseLnk_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            var filePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Resources", "ThirdPartyLicenses.html");
+            var filePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "ThirdPartyLicenses.html");
             Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
         }
     }

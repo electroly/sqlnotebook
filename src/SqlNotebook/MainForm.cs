@@ -52,8 +52,7 @@ namespace SqlNotebook
                 if (e.KeyCode == Keys.Enter) {
                     e.Handled = true;
                     e.SuppressKeyPress = true;
-                    var text = _searchTxt.Text;
-                    OpenHelp("/search?q=" + System.Net.WebUtility.UrlEncode(text));
+                    OpenHelp(_searchTxt.Text);
                     _searchTxt.Text = "";
                 }
             };
@@ -627,20 +626,23 @@ namespace SqlNotebook
             Process.Start(new ProcessStartInfo("https://github.com/electroly/sqlnotebook/issues/new") { UseShellExecute = true });
         }
 
-        private void OpenHelp(string path) {
-            string url;
-            string homeUrl;
-            
-            lock (_manager.HelpServerLock) {
-                url = $"http://127.0.0.1:{_manager.HelpServer.PortNumber}{path}";
-                homeUrl = $"http://127.0.0.1:{_manager.HelpServer.PortNumber}/index.html";
+        private void OpenHelp(string keywords) {
+            List<HelpSearcher.Result> results = null;
+            using WaitForm waitForm = new("Help", "Searching help...", () => {
+                results = HelpSearcher.Search(keywords);
+            });
+            if (waitForm.ShowDialog(this) != DialogResult.OK) {
+                MessageForm.ShowError(this, "Help Error", waitForm.ResultException.Message);
+                return;
             }
-
-            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+            using HelpSearchResultsForm resultsForm = new(keywords, results);
+            resultsForm.ShowDialog(this);
         }
 
         private void ViewDocMnu_Click(object sender, EventArgs e) {
-            OpenHelp($"/index.html");
+            var htmlFilePath = Path.Combine(
+                Path.GetDirectoryName(Application.ExecutablePath), "doc", "doc.html");
+            Process.Start(new ProcessStartInfo(htmlFilePath) { UseShellExecute = true });
         }
 
         private void CancelLnk_Click(object sender, EventArgs e) {

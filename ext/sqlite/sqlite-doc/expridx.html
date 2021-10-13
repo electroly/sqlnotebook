@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Indexes On Expressions</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+
+
+
+<h1>Indexes On Expressions</h1>
+
+<p>
+Normally, an SQL index references columns of a table.  But an index
+can also be formed on expressions involving table columns.
+
+<p>
+As an example, consider the following table that tracks
+dollar-amount changes on various "accounts":
+
+<blockquote><pre>
+CREATE TABLE account_change(
+  chng_id INTEGER PRIMARY KEY,
+  acct_no INTEGER REFERENCES account,
+  location INTEGER REFERENCES locations,
+  amt INTEGER,  -- in cents
+  authority TEXT,
+  comment TEXT
+);
+CREATE INDEX acctchng_magnitude ON account_change(acct_no, abs(amt));
+</pre></blockquote>
+
+<p>
+Each entry in the account_change table records a deposit or a withdrawal
+into an account.  Deposits have a positive "amt" and withdrawals have
+a negative "amt".
+
+<p>
+The acctchng_magnitude index is over the account number ("acct_no") and
+on the absolute value of the amount.  This index allows one to do 
+efficient queries over the magnitude of a change to the account.
+For example, to list all changes to account number $xyz that are
+more than $100.00, one can say:
+
+
+<blockquote><pre>
+SELECT * FROM account_change WHERE acct_no=$xyz AND abs(amt)>=10000;
+</pre></blockquote>
+
+<p>
+Or, to list all changes to one particular account ($xyz) in order of
+decreasing magnitude, one can write:
+
+<blockquote><pre>
+SELECT * FROM account_change WHERE acct_no=$xyz
+ ORDER BY abs(amt) DESC;
+</pre></blockquote>
+
+<p>
+Both of the above example queries would work fine without the
+acctchng_magnitude index.
+The acctchng_magnitude index index merely helps the queries to run
+faster, especially on databases where there are many entries in
+the table for each account.
+
+<h2>How To Use Indexes On Expressions</h2>
+
+<p>
+Use a <a href="lang_createindex.html">CREATE INDEX</a> statement to create a new index on one or more
+expressions just like you would to create an index on columns.  The only
+difference is that expressions are listed as the elements to be indexed
+rather than column names.
+
+<p>
+The SQLite query planner will consider using an index on an expression
+when the expression that is indexed appears in the WHERE clause or in
+the ORDER BY clause of a query, <i>exactly</i> as it is written in the
+CREATE INDEX statement.  The query planner does not do algebra.  In order
+to match WHERE clause constraints and ORDER BY terms to indexes, SQLite
+requires that the expressions be the same, except for minor syntactic
+differences such as white-space changes.  So if you have:
+
+<blockquote><pre>
+CREATE TABLE t2(x,y,z);
+CREATE INDEX t2xy ON t2(x+y);
+</pre></blockquote>
+
+<p>
+And then you run the query:
+
+<blockquote><pre>
+SELECT * FROM t2 WHERE y+x=22;
+</pre></blockquote>
+
+<p>
+Then the index will <u>not</u> be used because 
+the expression on the CREATE INDEX
+statement (x+y) is not the same as the expression as it appears in the 
+query (y+x).  The two expressions might be mathematically equivalent, but
+the SQLite query planner insists that they be the same, not merely
+equivalent.  Consider rewriting the query thusly:
+
+<blockquote><pre>
+SELECT * FROM t2 WHERE x+y=22;
+</pre></blockquote>
+
+<p>
+This second query will likely use the index because now the expression
+in the WHERE clause (x+y) matches the expression in the index exactly.
+
+
+<h2>Restrictions</h2>
+
+<p>
+There are certain reasonable restrictions on expressions that appear in
+CREATE INDEX statements:
+
+<ol>
+<li><p>
+Expressions in CREATE INDEX statements
+may only refer to columns of the table being indexed, not to
+columns in other tables.
+
+<li><p>
+Expressions in CREATE INDEX statements
+may contain function calls, but only to functions whose output
+is always determined completely by its input parameters (a.k.a.:
+"deterministic" functions).  Obviously, functions like <a href="lang_corefunc.html#random">random()</a> will not
+work well in an index.  But also functions like <a href="lang_corefunc.html#sqlite_version">sqlite_version()</a>, though
+they are constant across any one database connection, are not constant
+across the life of the underlying database file, and hence may not be
+used in a CREATE INDEX statement.
+
+<p>
+Note that <a href="c3ref/create_function.html">application-defined SQL functions</a> are by default considered
+non-deterministic and may not be used in a CREATE INDEX statement unless
+the <a href="c3ref/c_deterministic.html">SQLITE_DETERMINISTIC</a> flag is used when the function is registered.
+
+<li><p>
+Expressions in CREATE INDEX statements may not use subqueries.
+
+<li><p>
+Expressions may only be used in CREATE INDEX statements, not within
+<a href="lang_createtable.html#uniqueconst">UNIQUE</a> or <a href="lang_createtable.html#primkeyconst">PRIMARY KEY</a> constraints within the <a href="lang_createtable.html">CREATE TABLE</a> statement.
+</ol>
+
+
+<h2>Compatibility</h2>
+
+<p>
+The ability to index expressions was added to SQLite with 
+<a href="releaselog/3_9_0.html">version 3.9.0</a> in October of 2015.  A database that uses an index on
+expressions will not be usable by earlier versions of SQLite.
+

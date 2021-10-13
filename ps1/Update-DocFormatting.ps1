@@ -1,10 +1,11 @@
-# Formats the HTML files under doc/. Must have HTML Tidy installed (see CONTRIBUTING.md).
+# Run from WSL with "tidy" installed
 
-$ErrorActionPreference = "Stop"
 Set-StrictMode -Version 3
+$ErrorActionPreference = "Stop"
 
 $ps1Dir = $PSScriptRoot
-$docDir = Resolve-Path (Join-Path $ps1Dir "..\doc")
+$rootDir = (Resolve-Path (Join-Path $ps1Dir "..\")).Path
+$docDir = (Resolve-Path "$rootDir\doc").Path
 
 foreach ($svgFilePath in ([System.IO.Directory]::GetFiles("$docDir/art", "*.svg"))) {
     $svg = [System.IO.File]::ReadAllText($svgFilePath)
@@ -24,16 +25,16 @@ foreach ($htmlFilename in $htmlFilenames) {
     if (-not (Test-Path $tempFilePath)) {
         throw "Tidy failed on `"$htmlFilePath`"!"
     }
-    $html = [System.IO.File]::ReadAllText($tempFilePath)
 
     # Remove the <meta name="generator" ...> tag that HTML Tidy inserts.
+    $html = [System.IO.File]::ReadAllText($tempFilePath)
     $indexStart = $html.IndexOf('<meta name="generator"')
     $indexStart = $html.LastIndexOf("`n", $indexStart)
     $indexEnd = $html.IndexOf('>', $indexStart)
     $html = $html.Substring(0, $indexStart) + $html.Substring($indexEnd + 1)
-
-    # Write back to $htmlFilePath
     [System.IO.File]::WriteAllText($htmlFilePath, $html)
+
+    # Fix line endings
     & unix2dos --quiet "$htmlFilePath"
     Remove-Item -Force $tempFilePath
 }

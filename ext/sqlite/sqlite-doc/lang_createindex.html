@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>SQLite Query Language: CREATE INDEX</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+<h1 align="center">SQL As Understood By SQLite</h1><p><a href="lang.html">[Top]</a></p><h2>CREATE INDEX</h2><p><b><a href="syntax/create-index-stmt.html">create-index-stmt:</a></b>
+<button id='x825' onclick='hideorshow("x825","x826")'>hide</button></p>
+ <blockquote id='x826'>
+ <img alt="syntax diagram create-index-stmt" src="images/syntax/create-index-stmt.gif" />
+<p><b><a href="syntax/expr.html">expr:</a></b>
+<button id='x827' onclick='hideorshow("x827","x828")'>show</button></p>
+ <blockquote id='x828' style='display:none;'>
+ <img alt="syntax diagram expr" src="images/syntax/expr.gif" />
+<p><b><a href="syntax/literal-value.html">literal-value:</a></b>
+<button id='x829' onclick='hideorshow("x829","x830")'>show</button></p>
+ <blockquote id='x830' style='display:none;'>
+ <img alt="syntax diagram literal-value" src="images/syntax/literal-value.gif" />
+</blockquote>
+<p><b><a href="syntax/raise-function.html">raise-function:</a></b>
+<button id='x831' onclick='hideorshow("x831","x832")'>show</button></p>
+ <blockquote id='x832' style='display:none;'>
+ <img alt="syntax diagram raise-function" src="images/syntax/raise-function.gif" />
+</blockquote>
+<p><b><a href="syntax/select-stmt.html">select-stmt:</a></b>
+<button id='x833' onclick='hideorshow("x833","x834")'>show</button></p>
+ <blockquote id='x834' style='display:none;'>
+ <img alt="syntax diagram select-stmt" src="images/syntax/select-stmt.gif" />
+<p><b><a href="syntax/common-table-expression.html">common-table-expression:</a></b>
+<button id='x835' onclick='hideorshow("x835","x836")'>show</button></p>
+ <blockquote id='x836' style='display:none;'>
+ <img alt="syntax diagram common-table-expression" src="images/syntax/common-table-expression.gif" />
+</blockquote>
+<p><b><a href="syntax/compound-operator.html">compound-operator:</a></b>
+<button id='x837' onclick='hideorshow("x837","x838")'>show</button></p>
+ <blockquote id='x838' style='display:none;'>
+ <img alt="syntax diagram compound-operator" src="images/syntax/compound-operator.gif" />
+</blockquote>
+<p><b><a href="syntax/join-clause.html">join-clause:</a></b>
+<button id='x839' onclick='hideorshow("x839","x840")'>show</button></p>
+ <blockquote id='x840' style='display:none;'>
+ <img alt="syntax diagram join-clause" src="images/syntax/join-clause.gif" />
+<p><b><a href="syntax/join-constraint.html">join-constraint:</a></b>
+<button id='x841' onclick='hideorshow("x841","x842")'>show</button></p>
+ <blockquote id='x842' style='display:none;'>
+ <img alt="syntax diagram join-constraint" src="images/syntax/join-constraint.gif" />
+</blockquote>
+<p><b><a href="syntax/join-operator.html">join-operator:</a></b>
+<button id='x843' onclick='hideorshow("x843","x844")'>show</button></p>
+ <blockquote id='x844' style='display:none;'>
+ <img alt="syntax diagram join-operator" src="images/syntax/join-operator.gif" />
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/ordering-term.html">ordering-term:</a></b>
+<button id='x845' onclick='hideorshow("x845","x846")'>show</button></p>
+ <blockquote id='x846' style='display:none;'>
+ <img alt="syntax diagram ordering-term" src="images/syntax/ordering-term.gif" />
+</blockquote>
+<p><b><a href="syntax/result-column.html">result-column:</a></b>
+<button id='x847' onclick='hideorshow("x847","x848")'>show</button></p>
+ <blockquote id='x848' style='display:none;'>
+ <img alt="syntax diagram result-column" src="images/syntax/result-column.gif" />
+</blockquote>
+<p><b><a href="syntax/table-or-subquery.html">table-or-subquery:</a></b>
+<button id='x849' onclick='hideorshow("x849","x850")'>show</button></p>
+ <blockquote id='x850' style='display:none;'>
+ <img alt="syntax diagram table-or-subquery" src="images/syntax/table-or-subquery.gif" />
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/type-name.html">type-name:</a></b>
+<button id='x851' onclick='hideorshow("x851","x852")'>show</button></p>
+ <blockquote id='x852' style='display:none;'>
+ <img alt="syntax diagram type-name" src="images/syntax/type-name.gif" />
+<p><b><a href="syntax/signed-number.html">signed-number:</a></b>
+<button id='x853' onclick='hideorshow("x853","x854")'>show</button></p>
+ <blockquote id='x854' style='display:none;'>
+ <img alt="syntax diagram signed-number" src="images/syntax/signed-number.gif" />
+</blockquote>
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/indexed-column.html">indexed-column:</a></b>
+<button id='x855' onclick='hideorshow("x855","x856")'>show</button></p>
+ <blockquote id='x856' style='display:none;'>
+ <img alt="syntax diagram indexed-column" src="images/syntax/indexed-column.gif" />
+</blockquote>
+</blockquote>
+
+
+<p>The CREATE INDEX command consists of the keywords "CREATE INDEX" followed
+by the name of the new index, the keyword "ON", the name of a previously
+created table that is to be indexed, and a parenthesized list of table column
+names and/or expressions that are used for the index key.
+If the optional WHERE clause is included, then the index is a "<a href="partialindex.html">partial index</a>".
+</p>
+
+<a name="descidx"></a>
+
+<p>Each column name or expression can be followed by one
+of the "ASC" or "DESC" keywords to indicate sort order.
+The sort order may or may not be ignored depending
+on the database file format, and in particular the <a href="fileformat2.html#schemaformat">schema format number</a>.
+The "legacy" schema format (1) ignores index
+sort order.  The descending index schema format (4) takes index sort order
+into account.  Only versions of SQLite 3.3.0 and later are able to understand
+the descending index format. For compatibility, version of SQLite between 3.3.0
+and 3.7.9 use the legacy schema format by default.  The newer schema format is
+used by default in version 3.7.10 and later.
+The <a href="pragma.html#pragma_legacy_file_format">legacy_file_format pragma</a> can be used to change set the specific
+behavior for any version of SQLite.</p>
+
+<p>The COLLATE clause optionally following each column name
+or expression defines a
+collating sequence used for text entries in that column.
+The default collating
+sequence is the collating sequence defined for that column in the
+<a href="lang_createtable.html">CREATE TABLE</a> statement.  Or if no collating sequence is otherwise defined,
+the built-in BINARY collating sequence is used.</p>
+
+<a name="indexexpr"></a>
+
+<p>Expressions in an index may not reference other tables
+and may not use subqueries nor functions whose result might
+change (ex: <a href="lang_corefunc.html#random">random()</a> or <a href="lang_corefunc.html#sqlite_version">sqlite_version()</a>).
+Expressions in an index may only refer to columns in the table
+that is being indexed.
+Indexes on expression will not work with versions of SQLite prior
+to <a href="releaselog/3_9_0.html">version 3.9.0</a>.
+See the <a href="expridx.html">Indexes On Expressions</a> document for additional information
+about using general expressions in CREATE INDEX statements.
+
+<p>There are no arbitrary limits on the number of indices that can be
+attached to a single table.  The number of columns in an index is 
+limited to the value set by
+<a href="c3ref/limit.html">sqlite3_limit</a>(<a href="c3ref/c_limit_attached.html#sqlitelimitcolumn">SQLITE_LIMIT_COLUMN</a>,...).</p>
+
+<a name="uniqueidx"></a>
+
+<p>If the UNIQUE keyword appears between CREATE and INDEX then duplicate
+index entries are not allowed.  Any attempt to insert a duplicate entry
+will result in an error.  For the purposes of unique indices, all NULL values
+are considered to different from all other NULL values and are thus unique.
+This is one of the two possible interpretations of the SQL-92 standard
+(the language in the standard is ambiguous) and is the interpretation
+followed by PostgreSQL, MySQL, Firebird, and Oracle.  Informix and
+Microsoft SQL Server follow the other interpretation of the standard.</p>
+
+<p>If the optional IF NOT EXISTS clause is present and another index
+with the same name already exists, then this command becomes a no-op.</p>
+
+<p>Indexes are removed with the <a href="lang_dropindex.html">DROP INDEX</a> command.</p>
+
+
+

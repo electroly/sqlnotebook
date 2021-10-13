@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThemeVS2012Light", "..\ext\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "sqlite3\sqlite3.vcxproj", "{34743FAD-099D-4DB8-B8A6-C863FEC91C77}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmicrohttpd", "libmicrohttpd\libmicrohttpd.vcxproj", "{67448CAF-D2C9-48D9-945C-13389BD4E608}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlNotebookScript", "SqlNotebookScript\SqlNotebookScript.csproj", "{2255C461-80D4-419C-AA57-60AF7D2C6305}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlNotebookUpdater", "SqlNotebookUpdater\SqlNotebookUpdater.csproj", "{D5F9A034-B7A9-444D-8D4E-8F8E55BAEEF1}"
@@ -49,10 +47,6 @@ Global
 		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Debug|x64.Build.0 = Debug|x64
 		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Release|x64.ActiveCfg = Release|x64
 		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Release|x64.Build.0 = Release|x64
-		{67448CAF-D2C9-48D9-945C-13389BD4E608}.Debug|x64.ActiveCfg = Debug|x64
-		{67448CAF-D2C9-48D9-945C-13389BD4E608}.Debug|x64.Build.0 = Debug|x64
-		{67448CAF-D2C9-48D9-945C-13389BD4E608}.Release|x64.ActiveCfg = Release|x64
-		{67448CAF-D2C9-48D9-945C-13389BD4E608}.Release|x64.Build.0 = Release|x64
 		{2255C461-80D4-419C-AA57-60AF7D2C6305}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{2255C461-80D4-419C-AA57-60AF7D2C6305}.Debug|x64.Build.0 = Debug|Any CPU
 		{2255C461-80D4-419C-AA57-60AF7D2C6305}.Release|x64.ActiveCfg = Release|Any CPU

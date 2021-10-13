@@ -1,0 +1,799 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>SQLite Query Language: expression</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+<h1 align="center">SQL As Understood By SQLite</h1><p><a href="lang.html">[Top]</a></p><h2>expression</h2><p><b><a href="syntax/expr.html">expr:</a></b>
+<button id='x1073' onclick='hideorshow("x1073","x1074")'>hide</button></p>
+ <blockquote id='x1074'>
+ <img alt="syntax diagram expr" src="images/syntax/expr.gif" />
+<p><b><a href="syntax/literal-value.html">literal-value:</a></b>
+<button id='x1075' onclick='hideorshow("x1075","x1076")'>show</button></p>
+ <blockquote id='x1076' style='display:none;'>
+ <img alt="syntax diagram literal-value" src="images/syntax/literal-value.gif" />
+</blockquote>
+<p><b><a href="syntax/raise-function.html">raise-function:</a></b>
+<button id='x1077' onclick='hideorshow("x1077","x1078")'>show</button></p>
+ <blockquote id='x1078' style='display:none;'>
+ <img alt="syntax diagram raise-function" src="images/syntax/raise-function.gif" />
+</blockquote>
+<p><b><a href="syntax/select-stmt.html">select-stmt:</a></b>
+<button id='x1079' onclick='hideorshow("x1079","x1080")'>show</button></p>
+ <blockquote id='x1080' style='display:none;'>
+ <img alt="syntax diagram select-stmt" src="images/syntax/select-stmt.gif" />
+<p><b><a href="syntax/common-table-expression.html">common-table-expression:</a></b>
+<button id='x1081' onclick='hideorshow("x1081","x1082")'>show</button></p>
+ <blockquote id='x1082' style='display:none;'>
+ <img alt="syntax diagram common-table-expression" src="images/syntax/common-table-expression.gif" />
+</blockquote>
+<p><b><a href="syntax/compound-operator.html">compound-operator:</a></b>
+<button id='x1083' onclick='hideorshow("x1083","x1084")'>show</button></p>
+ <blockquote id='x1084' style='display:none;'>
+ <img alt="syntax diagram compound-operator" src="images/syntax/compound-operator.gif" />
+</blockquote>
+<p><b><a href="syntax/join-clause.html">join-clause:</a></b>
+<button id='x1085' onclick='hideorshow("x1085","x1086")'>show</button></p>
+ <blockquote id='x1086' style='display:none;'>
+ <img alt="syntax diagram join-clause" src="images/syntax/join-clause.gif" />
+<p><b><a href="syntax/join-constraint.html">join-constraint:</a></b>
+<button id='x1087' onclick='hideorshow("x1087","x1088")'>show</button></p>
+ <blockquote id='x1088' style='display:none;'>
+ <img alt="syntax diagram join-constraint" src="images/syntax/join-constraint.gif" />
+</blockquote>
+<p><b><a href="syntax/join-operator.html">join-operator:</a></b>
+<button id='x1089' onclick='hideorshow("x1089","x1090")'>show</button></p>
+ <blockquote id='x1090' style='display:none;'>
+ <img alt="syntax diagram join-operator" src="images/syntax/join-operator.gif" />
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/ordering-term.html">ordering-term:</a></b>
+<button id='x1091' onclick='hideorshow("x1091","x1092")'>show</button></p>
+ <blockquote id='x1092' style='display:none;'>
+ <img alt="syntax diagram ordering-term" src="images/syntax/ordering-term.gif" />
+</blockquote>
+<p><b><a href="syntax/result-column.html">result-column:</a></b>
+<button id='x1093' onclick='hideorshow("x1093","x1094")'>show</button></p>
+ <blockquote id='x1094' style='display:none;'>
+ <img alt="syntax diagram result-column" src="images/syntax/result-column.gif" />
+</blockquote>
+<p><b><a href="syntax/table-or-subquery.html">table-or-subquery:</a></b>
+<button id='x1095' onclick='hideorshow("x1095","x1096")'>show</button></p>
+ <blockquote id='x1096' style='display:none;'>
+ <img alt="syntax diagram table-or-subquery" src="images/syntax/table-or-subquery.gif" />
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/type-name.html">type-name:</a></b>
+<button id='x1097' onclick='hideorshow("x1097","x1098")'>show</button></p>
+ <blockquote id='x1098' style='display:none;'>
+ <img alt="syntax diagram type-name" src="images/syntax/type-name.gif" />
+<p><b><a href="syntax/signed-number.html">signed-number:</a></b>
+<button id='x1099' onclick='hideorshow("x1099","x1100")'>show</button></p>
+ <blockquote id='x1100' style='display:none;'>
+ <img alt="syntax diagram signed-number" src="images/syntax/signed-number.gif" />
+</blockquote>
+</blockquote>
+</blockquote>
+
+
+<p>This section is different from the others.  Most other sections of
+this document talks about a particular SQL command.  This section does
+not talk about a standalone command but about "expressions" which are 
+subcomponents of most other commands.</p>
+
+<a name="binaryops"></a>
+
+<h3>Operators</h3>
+<p>SQLite understands the following binary operators, in order from
+highest to lowest precedence:</p>
+
+<blockquote><pre>
+<font color="#2c2cf0"><big>||
+*    /    %
++    -
+&lt;&lt;   &gt;&gt;   &amp;    |
+&lt;    &lt;=   &gt;    &gt;=
+=    ==   !=   &lt;&gt;   </big>IS   IS NOT   IN   LIKE   GLOB   MATCH   REGEXP
+AND   
+OR</font>
+</pre></blockquote>
+
+<p>Supported unary prefix operators are these:</p>
+
+<blockquote><pre>
+<font color="#2c2cf0"><big>-    +    ~    NOT</big></font>
+</pre></blockquote>
+
+<a name="collateop"></a>
+
+<p>The COLLATE operator is a unary postfix
+operator that assigns a <a href="datatype3.html#collation">collating sequence</a> to an expression.
+The COLLATE operator has a higher precedence (binds more tightly) than any
+binary operator and any unary prefix operator except "~".
+(COLLATE and "~" are associative so their binding order does not matter.)
+The collating sequence set by the COLLATE operator overrides the
+collating sequence determined by the COLLATE clause in a table
+<a href="lang_createtable.html#tablecoldef">column definition</a>.
+See the <a href="datatype3.html#collation">detailed discussion on collating sequences</a>
+in the <a href="datatype3.html">Datatype In SQLite3</a> document for additional information.
+</p>
+
+
+<p>The unary operator <font color="#2c2cf0"><big>+</big></font> is a no-op.  It can be applied
+to strings, numbers, blobs or NULL and it always returns a result
+with the same value as the operand.</p>
+
+<p>Note that there are two variations of the equals and not equals
+operators.  Equals can be either
+
+<font color="#2c2cf0"><big>=</big></font> or <font color="#2c2cf0"><big>==</big></font>.
+The non-equals operator can be either
+<font color="#2c2cf0"><big>!=</big></font> or <font color="#2c2cf0"><big>&lt;&gt;</big></font>.
+The <font color="#2c2cf0"><big>||</big></font> operator is "concatenate" - it joins together
+the two strings of its operands.
+The operator <font color="#2c2cf0"><big>%</big></font> outputs the value of its left 
+operand modulo its right operand.</p>
+
+<p>The result of any binary operator is either a numeric value or 
+NULL, except for the <font color="#2c2cf0"><big>||</big></font> concatenation operator which always 
+evaluates to either NULL or a text value.</p><a name="isisnot"></a>
+<p>The <font color="#2c2cf0"><big>IS</big></font> and <font color="#2c2cf0"><big>IS NOT</big></font> operators work
+like <font color="#2c2cf0"><big>=</big></font> and <font color="#2c2cf0"><big>!=</big></font> except when one or both of the
+operands are NULL. In this case, if both operands are NULL, then the
+IS operator evaluates to 1 (true) and the IS NOT operator evaluates
+to 0 (false). If one operand is NULL and the other is not, then the
+IS operator evaluates to 0 (false) and the IS NOT operator is 1 (true).
+It is not possible for an IS or IS NOT expression to evaluate to NULL.
+Operators <font color="#2c2cf0"><big>IS</big></font> and <font color="#2c2cf0"><big>IS NOT</big></font> have the same 
+precedence as <font color="#2c2cf0"><big>=</big></font>.<a name="litvalue"></a>
+
+<h3>Literal Values (Constants)</h3>
+<p>
+A literal value represents a constant.
+Literal values may be integers, floating point numbers, strings,
+BLOBs, or NULLs.
+<p>
+The syntax for integer and floating point literals (collectively
+"numeric literals") is shown by the following diagram:</p>
+
+<p><b><a href="syntax/numeric-literal.html">numeric-literal:</a></b></p><blockquote>
+ <img alt="syntax diagram numeric-literal" src="images/syntax/numeric-literal.gif"></img>
+ </blockquote>
+
+
+<p>
+If a numeric literal has a decimal point or an exponentiation
+clause or if its magnitude is less than -9223372036854775808 or
+greater than 9223372036854775807, then it is a floating point literal.
+Otherwise is it is an  integer literal.
+The "E" character that begins the exponentiation
+clause of a floating point literal can be either upper or lower case.
+The "." character is always used 
+as the decimal point even if the locale setting specifies "," for
+this role - the use of "," for the decimal point would result in
+syntactic ambiguity.
+
+<a name="hexint"></a>
+
+<p>Hexadecimal integer literals follow the C-language notation of
+"0x" or "0X" followed by hexadecimal digits.
+For example, 0x1234 means the same as 4660
+and 0x8000000000000000 means the same as -9223372036854775808.
+ Hexadecimal integer literals are interpreted as 64-bit
+two's-complement integers and are thus limited
+to sixteen significant digits of precision.
+Support for hexadecimal integers was added to SQLite version 3.8.6.
+For backwards compatibility, the "0x" hexadecimal integer
+notation is only understood by the SQL language parser, not by the
+type conversions routines.
+String variables that
+contain text formatted like hexadecimal integers are not
+interpreted as hexadecimal integers when coercing the string value
+into an integer due to a <a href="lang_expr.html#castexpr">CAST expression</a> or for a <a href="datatype3.html#affinity">column affinity</a>
+transformation or prior to performing a numeric operation or for
+any other run-time conversions.  When coercing a
+string value in the format of a hexadecimal integer into an integer
+value, the conversion process stops when the 'x' character is seen
+so the resulting integer value is always zero.
+SQLite only understands the hexadecimal integer notation when it
+appears in the SQL statement text, not when it appears as
+part of the content of the database.
+
+<p> A string constant is formed by enclosing the
+string in single quotes (').  A single quote within the string can
+be encoded by putting two single quotes in a row - as in Pascal.
+C-style escapes using the backslash character are not supported because
+they are not standard SQL.
+
+<p> BLOB literals are string literals containing hexadecimal data and
+preceded by a single "x" or "X" character.  Example: X'53514C697465'
+
+<p>
+A literal value can also be the token "NULL".
+</p>
+
+<a name="varparam"></a>
+
+<h3>Parameters</h3>
+<p>
+A "variable" or "parameter" token
+specifies a placeholder in the expression for a 
+value that is filled in at runtime using the
+<a href="c3ref/bind_blob.html">sqlite3_bind()</a> family of C/C++ interfaces.
+Parameters can take several forms:
+</p>
+
+<blockquote>
+<table>
+<tr>
+<td align="right" valign="top"><b>?</b><i>NNN</i></td><td width="20"></td>
+<td>A question mark followed by a number <i>NNN</i> holds a spot for the
+NNN-th parameter.  NNN must be between 1 and <a href="limits.html#max_variable_number">SQLITE_MAX_VARIABLE_NUMBER</a>.
+</td>
+</tr>
+<tr>
+<td align="right" valign="top"><b>?</b></td><td width="20"></td>
+<td>A question mark that is not followed by a number creates a parameter
+with a number one greater than the largest parameter number already assigned.
+If this means the parameter number is greater than
+<a href="limits.html#max_variable_number">SQLITE_MAX_VARIABLE_NUMBER</a>, it is an error.
+This parameter format is provided for compatibility with other database
+engines.  But because it is easy to miscount the question marks, the
+use of this parameter format is discouraged.  Programmers are encouraged
+to use one of the symbolic formats below or the ?NNN format above instead.
+</td>
+</tr>
+<tr>
+<td align="right" valign="top"><b>:</b><i>AAAA</i></td><td width="20"></td>
+<td>A colon followed by an identifier name holds a spot for a 
+<a href="c3ref/bind_parameter_name.html">named parameter</a> with the name :AAAA.  
+Named parameters are also numbered. The number assigned is one greater than
+the largest parameter number already assigned. If this means the parameter
+would be assigned a number greater than <a href="limits.html#max_variable_number">SQLITE_MAX_VARIABLE_NUMBER</a>, it is
+an error. To avoid confusion, it is best to avoid mixing named and numbered
+parameters.</td>
+</tr>
+<tr>
+<td align="right" valign="top"><b>@</b><i>AAAA</i></td><td width="20"></td>
+<td>An "at" sign works exactly like a colon, except that the name of
+the parameter created is @AAAA.</td>
+</tr>
+<tr>
+<td align="right" valign="top"><b>$</b><i>AAAA</i></td><td width="20"></td>
+<td>A dollar-sign followed by an identifier name also holds a spot for a named
+parameter with the name $AAAA.  The identifier name in this case can include
+one or more occurrences of "::" and a suffix enclosed in "(...)" containing
+any text at all.  This syntax is the form of a variable name in the
+<a href="http://www.tcl-lang.org/">Tcl programming language</a>.  The presence
+of this syntax results from the fact that SQLite is really a 
+<a href="tclsqlite.html">Tcl extension</a> that has escaped into the wild.</td>
+</tr>
+</table>
+</blockquote>
+
+<p>Parameters that are not assigned values using
+<a href="c3ref/bind_blob.html">sqlite3_bind()</a> are treated
+as NULL.  The <a href="c3ref/bind_parameter_index.html">sqlite3_bind_parameter_index()</a> interface can be used
+to translate a symbolic parameter name into its equivalent numeric index.</p>
+
+<p>The maximum parameter number is set at compile-time by
+the <a href="limits.html#max_variable_number">SQLITE_MAX_VARIABLE_NUMBER</a> macro.  An individual <a href="c3ref/sqlite3.html">database connection</a>
+D can reduce its maximum parameter number below the compile-time maximum
+using the <a href="c3ref/limit.html">sqlite3_limit</a>(D, <a href="c3ref/c_limit_attached.html#sqlitelimitvariablenumber">SQLITE_LIMIT_VARIABLE_NUMBER</a>,...) interface.
+</p>
+
+<a name="like"></a>
+
+<h3>The LIKE, GLOB, REGEXP, and MATCH operators</h3>
+<p>The LIKE operator does a pattern matching comparison. The operand
+to the right of the LIKE operator contains the pattern and the left hand
+operand contains the string to match against the pattern.
+
+A percent symbol ("%") in the LIKE pattern matches any
+sequence of zero or more characters in the string.  An underscore
+("_") in the LIKE pattern matches any single character in the
+string.  Any other character matches itself or its lower/upper case
+equivalent (i.e. case-insensitive matching).
+
+<u>Important Note:</u> SQLite only
+understands upper/lower case for ASCII characters by default.  The
+LIKE operator is case sensitive by default for unicode characters that are
+beyond the ASCII range.  For example,
+the expression <b>'a'&nbsp;LIKE&nbsp;'A'</b>
+is TRUE but <b>'&aelig;'&nbsp;LIKE&nbsp;'&AElig;'</b> is FALSE.
+The ICU extension to SQLite includes an enhanced version of the
+LIKE operator that does case folding across all unicode characters.</p>
+
+<p>If the optional ESCAPE clause is present, then the expression
+following the ESCAPE keyword must evaluate to a string consisting of
+a single character. This character may be used in the LIKE pattern
+to include literal percent or underscore characters. The escape
+character followed by a percent symbol (%), underscore (_), or a second
+instance of the escape character itself matches a
+literal percent symbol, underscore, or a single escape character,
+respectively.
+
+<p>The infix LIKE operator is implemented by calling the
+application-defined SQL functions <a href="lang_corefunc.html#like">like(<i>Y</i>,<i>X</i>)</a> or
+<a href="lang_corefunc.html#like">like(<i>Y</i>,<i>X</i>,<i>Z</i>)</a></a>.</p>
+
+<p>The LIKE operator can be made case sensitive using the
+<a href="pragma.html#pragma_case_sensitive_like">case_sensitive_like pragma</a>.</p>
+
+<a name="glob"></a>
+
+<p>The GLOB operator is similar to LIKE but uses the Unix
+file globbing syntax for its wildcards.  Also, GLOB is case
+sensitive, unlike LIKE.  Both GLOB and LIKE may be preceded by
+the NOT keyword to invert the sense of the test.  The infix GLOB 
+operator is implemented by calling the function
+<a href="lang_corefunc.html#glob">glob(<i>Y</i>,<i>X</i>)</a> and can be modified by overriding
+that function.</p>
+
+<a name="regexp"></a>
+
+<p>The REGEXP operator is a special syntax for the regexp()
+user function.  No regexp() user function is defined by default
+and so use of the REGEXP operator will normally result in an
+error message.  If an <a href="c3ref/create_function.html">application-defined SQL function</a> named "regexp"
+is added at run-time, then the "<i>X</i> REGEXP <i>Y</i>" operator will
+be implemented as a call to "regexp(<i>Y</i>,<i>X</i>)".</p>
+
+<a name="match"></a>
+
+<p>The MATCH operator is a special syntax for the match()
+application-defined function.  The default match() function implementation
+raises an exception and is not really useful for anything.
+But extensions can override the match() function with more
+helpful logic.</p>
+
+<a name="between"></a>
+
+<h3>The BETWEEN operator</h3>
+<p>The BETWEEN operator is logically equivalent to a pair of comparisons.
+"<i>x</i> <b>BETWEEN</b> <i>y</i> <b>AND</b> <i>z</i>" is 
+equivalent to 
+"<i>x</i><b>&gt;=</b><i>y</i> <b>AND</b> <i>x</i><b>&lt;=</b><i>z</i>" except
+that with BETWEEN, the <i>x</i> expression is only evaluated once.
+The precedence of the BETWEEN operator is the same as the precedence
+as operators <b>==</b> and <b>!=</b> and <b>LIKE</b> and groups left to right.
+
+<a name="case"></a>
+
+<h3>The CASE expression</h3>
+<p>A CASE expression serves a role similar to IF-THEN-ELSE in other
+programming languages.  
+
+<p>The optional expression that occurs in between the CASE keyword and the
+first WHEN keyword is called the "base" expression. There are two basic forms
+of the CASE expression: those with a base expression and those without.
+
+<p>In a CASE without a base expression, each WHEN expression is evaluated
+and the result treated as a boolean, starting with the leftmost and continuing
+to the right. The result of the CASE expression is the evaluation of the THEN
+expression that corresponds to the first WHEN expression that evaluates to
+true. Or, if none of the WHEN expressions evaluate to true, the result of
+evaluating the ELSE expression, if any. If there is no ELSE expression and
+none of the WHEN expressions are true, then the overall result is NULL.
+
+<p>A NULL result is considered untrue when evaluating WHEN terms.
+
+<p>In a CASE with a base expression, the base expression is evaluated just
+once and the result is compared against the evaluation of each WHEN 
+expression from left to right. The result of the CASE expression is the 
+evaluation of the THEN expression that corresponds to the first WHEN
+expression for which the comparison is true. Or, if none of the WHEN
+expressions evaluate to a value equal to the base expression, the result
+of evaluating the ELSE expression, if any. If there is no ELSE expression and
+none of the WHEN expressions produce a result equal to the base expression,
+the overall result is NULL.
+
+<p>When comparing a base expression against a WHEN expression, the same
+collating sequence, affinity, and NULL-handling rules apply as if the
+base expression and WHEN expression are respectively the left- and
+right-hand operands of an <big><b>=</b></big> operator.</p> If the base 
+expression is NULL then the result of the CASE is always the result 
+of evaluating the ELSE expression if it exists, or NULL if it does not.
+
+<p>Both forms of the CASE expression use lazy, or short-circuit, 
+evaluation.
+
+<p>The only difference between the following two CASE expressions is that 
+the <i>x</i> expression is evaluated exactly once in the first example but 
+might be evaluated multiple times in the second:
+
+<ul><pre>
+<li>CASE x WHEN w1 THEN r1 WHEN w2 THEN r2 ELSE r3 END
+<li>CASE WHEN x=w1 THEN r1 WHEN x=w2 THEN r2 ELSE r3 END
+</pre></ul>
+
+
+<a name="in_op"></a>
+
+<h3>The IN and NOT IN operators</h3>
+<p>The IN and NOT IN operators take a single scalar operand on the
+left and a vector operand on the right
+formed by an explicit list of zero or more scalars or by a 
+single subquery.
+When the right operand of an IN or NOT IN operator is a subquery, the
+subquery must have a single result column.
+The "subquery" on the right-hand side of an IN operator can be a
+table name or <a href="vtab.html#tabfunc2">table-valued function</a> name in which case the
+subquery is understood to be "(SELECT * FROM <i>name</i>)".
+When the right operand is an empty set, the result of IN is false and the
+result of NOT IN is true, regardless of the left operand and even if the
+left operand is NULL.
+<p>The result of an IN or NOT IN operator is determined by the following
+matrix:
+
+<center>
+<table border=1>
+<tr>
+<th>Left operand <br>is NULL
+<th>Right operand <br>contains NULL
+<th>Right operand <br>is an empty set
+<th>Left operand found <br>within right operand
+<th>Result of <br>IN operator
+<th>Result of <br>NOT IN operator
+<tr>
+<td align="center">no
+<td align="center">no
+<td align="center">no
+<td align="center">no
+<td align="center">false
+<td align="center">true
+<tr>
+<td align="center">does not matter
+<td align="center">no
+<td align="center">yes
+<td align="center">no
+<td align="center">false
+<td align="center">true
+<tr>
+<td align="center">no
+<td align="center">does not matter
+<td align="center">no
+<td align="center">yes
+<td align="center">true
+<td align="center">false
+<tr>
+<td align="center">no
+<td align="center">yes
+<td align="center">no
+<td align="center">no
+<td align="center">NULL
+<td align="center">NULL
+<tr>
+<td align="center">yes
+<td align="center">does not matter
+<td align="center">no
+<td align="center">does not matter
+<td align="center">NULL
+<td align="center">NULL
+</table>
+</center>
+
+<p>Note that SQLite allows the parenthesized list of scalar values on
+the right-hand side of an IN or NOT IN operator to be an empty list but
+most other SQL database database engines and the SQL92 standard require
+the list to contain at least one element.</p>
+
+<a name="in_op"></a>
+
+<h3>The EXISTS operator</h3>
+
+<p>The EXISTS operator always evaluates to one of the integer values 0 
+and 1. If executing the SELECT statement specified as the right-hand 
+operand of the EXISTS operator would return one or more rows, then the
+EXISTS operator evaluates to 1. If executing the SELECT would return
+no rows at all, then the EXISTS operator evaluates to 0. 
+
+<p>The number of columns in each row returned by the SELECT statement
+(if any) and the specific values returned have no effect on the results
+of the EXISTS operator. In particular, rows containing NULL values are
+not handled any differently from rows without NULL values.
+
+<h3>Scalar Subqueries</h3>
+
+<p>A <a href="lang_select.html">SELECT</a> statement enclosed in parentheses may appear as a scalar
+quantity. A <a href="lang_select.html">SELECT</a> used as a scalar quantity must return a result set
+with a single column. The result of the expression is the value of the
+only column in the first row returned by the SELECT statement. If the SELECT 
+yields more than one result row, all rows after the first are ignored. If
+the SELECT yields no rows, then the value of the expression is NULL.
+The LIMIT of a scalar subquery is always 1.
+Any other LIMIT value given in the SQL text is ignored.
+
+<p>All types of <a href="lang_select.html">SELECT</a> statement, including aggregate and <a href="lang_select.html#compound">compound SELECT</a>
+queries (queries with keywords like UNION or EXCEPT) are allowed as scalar
+subqueries.
+
+<h3>Table Column Names</h3>
+
+<p>A column name can be any of the names defined in the <a href="lang_createtable.html">CREATE TABLE</a>
+statement or one of the following special identifiers: "<b>ROWID</b>",
+"<b>OID</b>", or "<b>_ROWID_</b>".
+The three special identifiers describe the
+unique integer key (the <a href="lang_createtable.html#rowid">rowid</a>) associated with every 
+row of every table and so are not available on <a href="withoutrowid.html">WITHOUT ROWID</a> tables.
+The special identifiers only refer to the row key if the <a href="lang_createtable.html">CREATE TABLE</a>
+statement does not define a real column with the same name.
+The rowid can be used anywhere a regular
+column can be used.</p>
+
+<p>A <a href="lang_select.html">SELECT</a> statement used as either a scalar subquery or as the 
+right-hand operand of an IN, NOT IN or EXISTS expression may contain 
+references to columns in the outer query. Such a subquery is known as
+a correlated subquery. A correlated subquery is reevaluated each time
+its result is required. An uncorrelated subquery is evaluated only once
+and the result reused as necessary.
+
+<a name="castexpr"></a>
+
+<h3>CAST expressions</h3>
+
+<p>A CAST expression of the form "CAST(<i>expr</i> AS <i>type-name</i>)"
+is used to convert the value of <i>expr</i> to 
+a different <a href="datatype3.html#storageclasses">storage class</a> specified by <span class='yyterm'>type-name</span>.
+A CAST conversion is similar to the conversion that takes
+place when a <a href="datatype3.html#affinity">column affinity</a> is applied to a value except that with
+the CAST operator the conversion always takes place even if the conversion
+lossy and irreversible, whereas column affinity only changes the data type
+of a value if the change is lossless and reversible.
+
+<p>If the value of <i>expr</i> is NULL, then the result of the CAST
+expression is also NULL. Otherwise, the storage class of the result
+is determined by applying the <a href="datatype3.html#affname">rules for determining column affinity</a> to
+the <span class='yyterm'>type-name</span>.
+
+<table border=1>
+<tr>
+  <th> Affinity of <span class='yyterm'>type-name</span>
+  <th> Conversion Processing
+<tr>
+  <td> NONE 
+  <td> Casting a value to a <span class='yyterm'>type-name</span> with no affinity 
+  causes the value to
+  be converted into a BLOB.  Casting to a BLOB consists of first casting
+  the value to TEXT in the <a href="pragma.html#pragma_encoding">encoding</a> of the database connection, then
+  interpreting the resulting byte sequence as a BLOB instead of as TEXT.
+
+<tr>
+  <td> TEXT
+  <td> To cast a BLOB value to TEXT, the sequence of bytes that make up the
+  BLOB is interpreted as text encoded using the database encoding.
+  <p>
+   Casting an INTEGER or REAL value into TEXT renders the value as if via 
+    <a href="c3ref/mprintf.html">sqlite3_snprintf()</a> except that the resulting TEXT uses the <a href="pragma.html#pragma_encoding">encoding</a> of
+    the database connection.
+
+<tr>
+  <td> REAL
+  <td> When casting a BLOB value to a REAL, the value is first converted to
+        TEXT.
+       <p>When casting a TEXT value to REAL, the longest possible prefix of
+        the value that can be interpreted as a real number is extracted from
+        the TEXT value and the remainder ignored. Any leading spaces in the
+        TEXT value are ignored when converging from TEXT to REAL. If there is
+        no prefix that can be interpreted as a real number, the result of the
+        conversion is 0.0.
+
+<tr>
+  <td> INTEGER
+  <td> When casting a BLOB value to INTEGER, the value is first converted to
+        TEXT.
+       <p>When casting a TEXT value to INTEGER, the longest possible prefix of
+        the value that can be interpreted as an integer number is extracted from
+        the TEXT value and the remainder ignored. Any leading spaces in the
+        TEXT value when converting from TEXT to INTEGER are ignored. If there
+        is no prefix that can be interpreted as an integer number, the result
+        of the conversion is 0.  The CAST operator understands decimal
+        integers only &mdash; conversion of <a href="lang_expr.html#hexint">hexadecimal integers</a> stops 
+        at the "x" in the "0x" prefix of the hexadecimal integer string 
+        and thus result of the CAST is always zero.
+
+      <p>A cast of a REAL value into an INTEGER results in the integer
+      between the REAL value and zero that is closest to the REAL value.
+      If a REAL is greater than the greatest possible signed
+      integer (+9223372036854775807) then the result is the greatest possible
+      signed integer and if the REAL is less than the least possible signed
+      integer (-9223372036854775808) then the result is the least possible
+      signed integer.
+
+      <p>Prior to SQLite version 3.8.2, casting a REAL value greater than
+      +9223372036854775807.0 into an integer resulted in the most negative
+      integer, -9223372036854775808.  This behavior was meant to emulate the
+      behavior of x86/x64 hardware when doing the equivalent cast.
+
+<tr>
+  <td> NUMERIC
+  <td> Casting a TEXT or BLOB value into NUMERIC first does a forced
+   conversion into REAL but then further converts the result into INTEGER if
+   and only if the conversion from REAL to INTEGER is lossless and reversible.
+   This is the only context in SQLite where the NUMERIC and INTEGER <a href="datatype3.html#affinity">affinities</a>
+   behave differently.
+   <p> Casting a REAL or INTEGER value to NUMERIC is a no-op, even if a real
+   value could be losslessly converted to an integer.
+
+</tr>
+
+</table>
+
+<p>Note that the result from casting any non-BLOB value into a 
+BLOB and the result from casting any BLOB value into a non-BLOB value
+may be different depending on whether the database <a href="pragma.html#pragma_encoding">encoding</a> is UTF-8,
+UTF-16be, or UTF-16le.
+
+
+<a name="booleanexpr"></a>
+
+<h3>Boolean Expressions</h3>
+
+<p>The SQL language features several contexts where an expression is 
+evaluated and the result converted to a boolean (true or false) value. These
+contexts are:
+
+  <ul>
+    <li> the WHERE clause of a SELECT, UPDATE or DELETE statement,
+    <li> the ON or USING clause of a join in a SELECT statement,
+    <li> the HAVING clause of a SELECT statement,
+    <li> the WHEN clause of an SQL trigger, and
+    <li> the WHEN clause or clauses of some CASE expressions.
+  </ul>
+
+<p>To convert the results of an SQL expression to a boolean value, SQLite
+first casts the result to a NUMERIC value in the same way as a 
+<a href="lang_expr.html#castexpr">CAST expression</a>. A numeric zero value (integer value 0 or real 
+value 0.0) is considered to be false.  A NULL value is still NULL.
+All other values are considered true.
+
+<p>For example, the values NULL, 0.0, 0, 'english' and '0' are all considered
+to be false. Values 1, 1.0, 0.1, -0.1 and '1english' are considered to 
+be true.
+
+<h3>Functions</h3>
+<p>SQLite supports many <a href="lang_corefunc.html">simple</a> and <a href="lang_aggfunc.html">aggregate</a>
+SQL functions.  For presentation purposes, simple functions are further
+subdivided into <a href="lang_corefunc.html">core functions</a> and <a href="lang_datefunc.html">date-time functions</a>.
+Applications can add new functions, written in C/C++, using the
+<a href="c3ref/create_function.html">sqlite3_create_function()</a> interface.
+</p>
+
+<p>It is possible to have an aggregate function with the same name as a
+simple function, as long as the number of arguments for the two forms of the
+function are different.  For example, the <a href="lang_aggfunc.html#maxggunc">max()</a> function with a
+single argument is an aggregate and the <a href="lang_corefunc.html#maxoreunc">max()</a> function with two or more
+arguments is a simple function.
+
+

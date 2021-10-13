@@ -5,6 +5,8 @@ Debug/
 publish/
 publish-portable/
 
+src/SqlNotebook/doc
+
 *.user
 
 # Windows image file caches

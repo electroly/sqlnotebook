@@ -1,0 +1,374 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>SQLite Query Language: DELETE</title>
+<style type="text/css">
+body {
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    padding: 8px 1%;
+}
+
+a { color: #044a64 }
+a:visited { color: #734559 }
+
+.logo { position:absolute; margin:3px; }
+.tagline {
+  float:right;
+  text-align:right;
+  font-style:italic;
+  width:300px;
+  margin:12px;
+  margin-top:58px;
+}
+
+.menubar {
+  clear: both;
+  border-radius: 8px;
+  background: #044a64;
+  padding: 0px;
+  margin: 0px;
+  cell-spacing: 0px;
+}    
+.toolbar {
+  text-align: center;
+  line-height: 1.6em;
+  margin: 0;
+  padding: 0px 8px;
+}
+.toolbar a { color: white; text-decoration: none; padding: 6px 12px; }
+.toolbar a:visited { color: white; }
+.toolbar a:hover { color: #044a64; background: white; }
+
+.content    { margin: 5%; }
+.content dt { font-weight:bold; }
+.content dd { margin-bottom: 25px; margin-left:20%; }
+.content ul { padding:0px; padding-left: 15px; margin:0px; }
+
+/* Things for "fancyformat" documents start here. */
+.fancy img+p {font-style:italic}
+.fancy .codeblock i { color: darkblue; }
+.fancy h1,.fancy h2,.fancy h3,.fancy h4 {font-weight:normal;color:#044a64}
+.fancy h2 { margin-left: 10px }
+.fancy h3 { margin-left: 20px }
+.fancy h4 { margin-left: 30px }
+.fancy th {white-space:xnowrap;text-align:left;border-bottom:solid 1px #444}
+.fancy th, .fancy td {padding: 0.2em 1ex; vertical-align:top}
+.fancy #toc a        { color: darkblue ; text-decoration: none }
+.fancy .todo         { color: #AA3333 ; font-style : italic }
+.fancy .todo:before  { content: 'TODO:' }
+.fancy p.todo        { border: solid #AA3333 1px; padding: 1ex }
+.fancy img { display:block; }
+.fancy :link:hover, .fancy :visited:hover { background: wheat }
+.fancy p,.fancy ul,.fancy ol,.fancy dl { margin: 1em 5ex }
+.fancy li p { margin: 1em 0 }
+.fancy blockquote { margin-left : 10ex }
+/* End of "fancyformat" specific rules. */
+
+.yyterm {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+</style>
+  
+</head>
+<body>
+<div><!-- container div to satisfy validator -->
+
+<a href="index.html">
+<img class="logo" src="images/sqlite370_banner.gif" alt="SQLite Logo"
+ border="0"></a>
+<div><!-- IE hack to prevent disappearing logo--></div>
+<div class="tagline">Small. Fast. Reliable.<br>Choose any three.</div>
+
+<table width=100% class="menubar"><tr>
+  <td width=100%>
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="docs.html">Documentation</a>
+    <a href="download.html">Download</a>
+    <a href="copyright.html">License</a>
+    <a href="support.html">Support</a>
+    <a href="http://www.hwaci.com/sw/sqlite/prosupport.html">Purchase</a>
+  </div>
+<script>
+  gMsg = "Search SQLite Docs..."
+  function entersearch() {
+    var q = document.getElementById("q");
+    if( q.value == gMsg ) { q.value = "" }
+    q.style.color = "black"
+    q.style.fontStyle = "normal"
+  }
+  function leavesearch() {
+    var q = document.getElementById("q");
+    if( q.value == "" ) { 
+      q.value = gMsg
+      q.style.color = "#044a64"
+      q.style.fontStyle = "italic"
+    }
+  }
+  function hideorshow(btn,obj){
+    var x = document.getElementById(obj);
+    var b = document.getElementById(btn);
+    if( x.style.display!='none' ){
+      x.style.display = 'none';
+      b.innerHTML='show';
+    }else{
+      x.style.display = '';
+      b.innerHTML='hide';
+    }
+    return false;
+  }
+</script>
+<td>
+    <div style="padding:0 1em 0px 0;white-space:nowrap">
+    <form name=f method="GET" action="https://www.sqlite.org/search">
+      <input id=q name=q type=text
+       onfocus="entersearch()" onblur="leavesearch()" style="width:24ex;padding:1px 1ex; border:solid white 1px; font-size:0.9em ; font-style:italic;color:#044a64;" value="Search SQLite Docs...">
+      <input type=submit value="Go" style="border:solid white 1px;background-color:#044a64;color:white;font-size:0.9em;padding:0 1ex">
+    </form>
+    </div>
+  </table>
+
+<div class=startsearch></div>
+  
+<h1 align="center">SQL As Understood By SQLite</h1><p><a href="lang.html">[Top]</a></p><h2>DELETE</h2><p><b><a href="syntax/delete-stmt.html">delete-stmt:</a></b>
+<button id='x1009' onclick='hideorshow("x1009","x1010")'>hide</button></p>
+ <blockquote id='x1010'>
+ <img alt="syntax diagram delete-stmt" src="images/syntax/delete-stmt.gif" />
+<p><b><a href="syntax/expr.html">expr:</a></b>
+<button id='x1011' onclick='hideorshow("x1011","x1012")'>show</button></p>
+ <blockquote id='x1012' style='display:none;'>
+ <img alt="syntax diagram expr" src="images/syntax/expr.gif" />
+<p><b><a href="syntax/literal-value.html">literal-value:</a></b>
+<button id='x1013' onclick='hideorshow("x1013","x1014")'>show</button></p>
+ <blockquote id='x1014' style='display:none;'>
+ <img alt="syntax diagram literal-value" src="images/syntax/literal-value.gif" />
+</blockquote>
+<p><b><a href="syntax/raise-function.html">raise-function:</a></b>
+<button id='x1015' onclick='hideorshow("x1015","x1016")'>show</button></p>
+ <blockquote id='x1016' style='display:none;'>
+ <img alt="syntax diagram raise-function" src="images/syntax/raise-function.gif" />
+</blockquote>
+<p><b><a href="syntax/select-stmt.html">select-stmt:</a></b>
+<button id='x1017' onclick='hideorshow("x1017","x1018")'>show</button></p>
+ <blockquote id='x1018' style='display:none;'>
+ <img alt="syntax diagram select-stmt" src="images/syntax/select-stmt.gif" />
+<p><b><a href="syntax/common-table-expression.html">common-table-expression:</a></b>
+<button id='x1019' onclick='hideorshow("x1019","x1020")'>show</button></p>
+ <blockquote id='x1020' style='display:none;'>
+ <img alt="syntax diagram common-table-expression" src="images/syntax/common-table-expression.gif" />
+</blockquote>
+<p><b><a href="syntax/compound-operator.html">compound-operator:</a></b>
+<button id='x1021' onclick='hideorshow("x1021","x1022")'>show</button></p>
+ <blockquote id='x1022' style='display:none;'>
+ <img alt="syntax diagram compound-operator" src="images/syntax/compound-operator.gif" />
+</blockquote>
+<p><b><a href="syntax/join-clause.html">join-clause:</a></b>
+<button id='x1023' onclick='hideorshow("x1023","x1024")'>show</button></p>
+ <blockquote id='x1024' style='display:none;'>
+ <img alt="syntax diagram join-clause" src="images/syntax/join-clause.gif" />
+<p><b><a href="syntax/join-constraint.html">join-constraint:</a></b>
+<button id='x1025' onclick='hideorshow("x1025","x1026")'>show</button></p>
+ <blockquote id='x1026' style='display:none;'>
+ <img alt="syntax diagram join-constraint" src="images/syntax/join-constraint.gif" />
+</blockquote>
+<p><b><a href="syntax/join-operator.html">join-operator:</a></b>
+<button id='x1027' onclick='hideorshow("x1027","x1028")'>show</button></p>
+ <blockquote id='x1028' style='display:none;'>
+ <img alt="syntax diagram join-operator" src="images/syntax/join-operator.gif" />
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/ordering-term.html">ordering-term:</a></b>
+<button id='x1029' onclick='hideorshow("x1029","x1030")'>show</button></p>
+ <blockquote id='x1030' style='display:none;'>
+ <img alt="syntax diagram ordering-term" src="images/syntax/ordering-term.gif" />
+</blockquote>
+<p><b><a href="syntax/result-column.html">result-column:</a></b>
+<button id='x1031' onclick='hideorshow("x1031","x1032")'>show</button></p>
+ <blockquote id='x1032' style='display:none;'>
+ <img alt="syntax diagram result-column" src="images/syntax/result-column.gif" />
+</blockquote>
+<p><b><a href="syntax/table-or-subquery.html">table-or-subquery:</a></b>
+<button id='x1033' onclick='hideorshow("x1033","x1034")'>show</button></p>
+ <blockquote id='x1034' style='display:none;'>
+ <img alt="syntax diagram table-or-subquery" src="images/syntax/table-or-subquery.gif" />
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/type-name.html">type-name:</a></b>
+<button id='x1035' onclick='hideorshow("x1035","x1036")'>show</button></p>
+ <blockquote id='x1036' style='display:none;'>
+ <img alt="syntax diagram type-name" src="images/syntax/type-name.gif" />
+<p><b><a href="syntax/signed-number.html">signed-number:</a></b>
+<button id='x1037' onclick='hideorshow("x1037","x1038")'>show</button></p>
+ <blockquote id='x1038' style='display:none;'>
+ <img alt="syntax diagram signed-number" src="images/syntax/signed-number.gif" />
+</blockquote>
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/qualified-table-name.html">qualified-table-name:</a></b>
+<button id='x1039' onclick='hideorshow("x1039","x1040")'>show</button></p>
+ <blockquote id='x1040' style='display:none;'>
+ <img alt="syntax diagram qualified-table-name" src="images/syntax/qualified-table-name.gif" />
+</blockquote>
+<p><b><a href="syntax/with-clause.html">with-clause:</a></b>
+<button id='x1041' onclick='hideorshow("x1041","x1042")'>show</button></p>
+ <blockquote id='x1042' style='display:none;'>
+ <img alt="syntax diagram with-clause" src="images/syntax/with-clause.gif" />
+<p><b><a href="syntax/cte-table-name.html">cte-table-name:</a></b>
+<button id='x1043' onclick='hideorshow("x1043","x1044")'>show</button></p>
+ <blockquote id='x1044' style='display:none;'>
+ <img alt="syntax diagram cte-table-name" src="images/syntax/cte-table-name.gif" />
+</blockquote>
+<p><b><a href="syntax/select-stmt.html">select-stmt:</a></b>
+<button id='x1045' onclick='hideorshow("x1045","x1046")'>show</button></p>
+ <blockquote id='x1046' style='display:none;'>
+ <img alt="syntax diagram select-stmt" src="images/syntax/select-stmt.gif" />
+<p><b><a href="syntax/common-table-expression.html">common-table-expression:</a></b>
+<button id='x1047' onclick='hideorshow("x1047","x1048")'>show</button></p>
+ <blockquote id='x1048' style='display:none;'>
+ <img alt="syntax diagram common-table-expression" src="images/syntax/common-table-expression.gif" />
+</blockquote>
+<p><b><a href="syntax/compound-operator.html">compound-operator:</a></b>
+<button id='x1049' onclick='hideorshow("x1049","x1050")'>show</button></p>
+ <blockquote id='x1050' style='display:none;'>
+ <img alt="syntax diagram compound-operator" src="images/syntax/compound-operator.gif" />
+</blockquote>
+<p><b><a href="syntax/join-clause.html">join-clause:</a></b>
+<button id='x1051' onclick='hideorshow("x1051","x1052")'>show</button></p>
+ <blockquote id='x1052' style='display:none;'>
+ <img alt="syntax diagram join-clause" src="images/syntax/join-clause.gif" />
+<p><b><a href="syntax/join-constraint.html">join-constraint:</a></b>
+<button id='x1053' onclick='hideorshow("x1053","x1054")'>show</button></p>
+ <blockquote id='x1054' style='display:none;'>
+ <img alt="syntax diagram join-constraint" src="images/syntax/join-constraint.gif" />
+</blockquote>
+<p><b><a href="syntax/join-operator.html">join-operator:</a></b>
+<button id='x1055' onclick='hideorshow("x1055","x1056")'>show</button></p>
+ <blockquote id='x1056' style='display:none;'>
+ <img alt="syntax diagram join-operator" src="images/syntax/join-operator.gif" />
+</blockquote>
+</blockquote>
+<p><b><a href="syntax/ordering-term.html">ordering-term:</a></b>
+<button id='x1057' onclick='hideorshow("x1057","x1058")'>show</button></p>
+ <blockquote id='x1058' style='display:none;'>
+ <img alt="syntax diagram ordering-term" src="images/syntax/ordering-term.gif" />
+</blockquote>
+<p><b><a href="syntax/result-column.html">result-column:</a></b>
+<button id='x1059' onclick='hideorshow("x1059","x1060")'>show</button></p>
+ <blockquote id='x1060' style='display:none;'>
+ <img alt="syntax diagram result-column" src="images/syntax/result-column.gif" />
+</blockquote>
+<p><b><a href="syntax/table-or-subquery.html">table-or-subquery:</a></b>
+<button id='x1061' onclick='hideorshow("x1061","x1062")'>show</button></p>
+ <blockquote id='x1062' style='display:none;'>
+ <img alt="syntax diagram table-or-subquery" src="images/syntax/table-or-subquery.gif" />
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+
+
+<p>The DELETE command removes records from the table identified by the
+   <a href="syntax/qualified-table-name.html">qualified-table-name</a>.
+
+<p>If the WHERE clause is not present, all records in the table are deleted.
+   If a WHERE clause is supplied, then only those rows for which the
+   WHERE clause <a href="lang_expr.html#booleanexpr">boolean expression</a> is true are deleted.
+   Rows for which the expression is false or NULL are retained.
+
+<h3>Restrictions on DELETE Statements Within CREATE TRIGGER</h3>
+
+<p>The following restrictions apply to DELETE statements that occur within the
+   body of a <a href="lang_createtrigger.html">CREATE TRIGGER</a> statement:
+
+<ul>
+  <li><p>The <span class='yyterm'>table-name</span> specified as part of a 
+    DELETE statement within
+    a trigger body must be unqualified.  In other words, the
+    <i>schema-name</i><b>.</b> prefix on the table name is not allowed 
+    within triggers. If the table to which the trigger is attached is
+    not in the temp database, then DELETE statements within the trigger
+    body must operate on tables within the same database as it. If the table
+    to which the trigger is attached is in the TEMP database, then the
+    unqualified name of the table being deleted is resolved in the same way as
+    it is for a top-level statement (by searching first the TEMP database, then
+    the main database, then any other databases in the order they were
+    attached).
+    
+  <li><p>The INDEXED BY and NOT INDEXED clauses are not allowed on DELETE
+    statements within triggers.</p>
+
+  <li><p>The LIMIT and ORDER BY clauses (described below) are unsupported for
+    DELETE statements within triggers.</p>
+</ul>
+
+<h3>Optional LIMIT and ORDER BY clauses</h3>
+
+<p>If SQLite is compiled with the <a href="compile.html#enable_update_delete_limit">SQLITE_ENABLE_UPDATE_DELETE_LIMIT</a>
+compile-time option, then the syntax of the DELETE statement is
+extended by the addition of optional ORDER BY and LIMIT clauses:</p>
+
+<p><b><a href="syntax/delete-stmt-limited.html">delete-stmt-limited:</a></b></p><blockquote>
+ <img alt="syntax diagram delete-stmt-limited" src="images/syntax/delete-stmt-limited.gif"></img>
+ </blockquote>
+
+
+<p>If a DELETE statement has a LIMIT clause, the maximum number of rows that
+will be deleted is found by evaluating the accompanying expression and casting
+it to an integer value. If the result of the evaluating the LIMIT clause
+cannot be losslessly converted to an integer value, it is an error. A 
+negative LIMIT value is interpreted as "no limit". If the DELETE statement 
+also has an OFFSET clause, then it is similarly evaluated and cast to an
+integer value. Again, it is an error if the value cannot be losslessly
+converted to an integer. If there is no OFFSET clause, or the calculated
+integer value is negative, the effective OFFSET value is zero.
+
+<p>If the DELETE statement has an ORDER BY clause, then all rows that would 
+be deleted in the absence of the LIMIT clause are sorted according to the 
+ORDER BY. The first <i>M</i> rows, where <i>M</i> is the value found by
+evaluating the OFFSET clause expression, are skipped, and the following 
+<i>N</i>, where <i>N</i> is the value of the LIMIT expression, are deleted.
+If there are less than <i>N</i> rows remaining after taking the OFFSET clause
+into account, or if the LIMIT clause evaluated to a negative value, then all
+remaining rows are deleted.
+
+<p>If the DELETE statement has no ORDER BY clause, then all rows that
+would be deleted in the absence of the LIMIT clause are assembled in an
+arbitrary order before applying the LIMIT and OFFSET clauses to determine 
+the subset that are actually deleted.
+
+<p>The ORDER BY clause on a DELETE statement is used only to determine which
+rows fall within the LIMIT. The order in which rows are deleted is arbitrary
+and is not influenced by the ORDER BY clause.
+
+<a name="truncateopt"></a>
+
+<h3>The Truncate Optimization</h3>
+
+<p>When the WHERE is omitted from a DELETE statement and the table
+being deleted has no triggers,
+SQLite uses an optimization to erase the entire table content
+without having to visit each row of the table individually.
+This "truncate" optimization makes the delete run much faster.
+Prior to SQLite <a href="releaselog/3_6_5.html">version 3.6.5</a>, the truncate optimization
+also meant that the <a href="c3ref/changes.html">sqlite3_changes()</a> and
+<a href="c3ref/total_changes.html">sqlite3_total_changes()</a> interfaces
+and the <a href="pragma.html#pragma_count_changes">count_changes pragma</a>
+will not actually return the number of deleted rows.  
+That problem has been fixed as of <a href="releaselog/3_6_5.html">version 3.6.5</a>.
+
+<p>The truncate optimization can be permanently disabled for all queries
+by recompiling
+SQLite with the <a href="compile.html#omit_truncate_optimization">SQLITE_OMIT_TRUNCATE_OPTIMIZATION</a> compile-time switch.</p>
+
+<p>The truncate optimization can also be disabled at runtime using
+the <a href="c3ref/set_authorizer.html">sqlite3_set_authorizer()</a> interface.  If an authorizer callback
+returns <a href="c3ref/c_deny.html">SQLITE_IGNORE</a> for an <a href="c3ref/c_alter_table.html">SQLITE_DELETE</a> action code, then
+the DELETE operation will proceed but the truncate optimization will
+be bypassed and rows will be deleted one by one.</p>
+
+
