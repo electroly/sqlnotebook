@@ -562,16 +562,6 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] SqliteDocZip {
-            get {
-                object obj = ResourceManager.GetObject("SqliteDocZip", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] SqliteSiteErrorPlaceholderPng {
             get {
                 object obj = ResourceManager.GetObject("SqliteSiteErrorPlaceholderPng", resourceCulture);
