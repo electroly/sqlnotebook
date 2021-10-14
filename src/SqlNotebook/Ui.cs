@@ -62,6 +62,15 @@ namespace SqlNotebook {
             label.TabIndex = _tabIndex++;
         }
 
+        public void InitHeader(Label label) {
+            Init(label);
+            label.BackColor = Color.FromArgb(0, 122, 204);
+            label.ForeColor = Color.White;
+            label.Padding = new(XWidth(0.6), XHeight(0.2), XWidth(0.5), XHeight(0.2));
+            label.Margin = Padding.Empty;
+            label.Dock = DockStyle.Fill;
+        }
+
         public void Init(Button button) {
             button.TabIndex = _tabIndex++;
             button.AutoSize = true;
@@ -113,6 +122,9 @@ namespace SqlNotebook {
         public void Init(TabControl tabs) {
             tabs.TabIndex = _tabIndex++;
             tabs.Padding = new(XWidth(2), XHeight(0.25));
+        }
+
+        public void Init(TabPage tab) {
         }
 
         public void Init(PropertyGrid grid) {
@@ -175,6 +187,16 @@ namespace SqlNotebook {
 
         public void Init(DataGridViewColumn col, int width) {
             col.Width = XWidth(width);
+        }
+
+        public void Init(SplitContainer split, double dividerFraction) {
+            split.Cursor = Cursors.Default;
+            split.SplitterWidth = XWidth(1);
+            if (split.Orientation == Orientation.Horizontal) {
+                split.SplitterDistance = (int)(split.Height * dividerFraction);
+            } else {
+                split.SplitterDistance = (int)(split.Width * dividerFraction);
+            }
         }
 
         public void MarginTop(Control control, double height = 0.75) {

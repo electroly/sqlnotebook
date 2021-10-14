@@ -117,30 +117,10 @@ namespace SqlNotebook {
                         ForeColor = Color.Gray
                     });
 
-                    DataGridView grid = new() {
-                        AutoSize = true,
-                        AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells,
-                        AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells,
-                        AutoGenerateColumns = true,
-                        AllowUserToAddRows = false,
-                        AllowUserToDeleteRows = false,
-                        AllowUserToOrderColumns = false,
-                        AllowUserToResizeColumns = false,
-                        AllowUserToResizeRows = false,
-                        ReadOnly = true,
-                        BorderStyle = BorderStyle.None,
-                        BackgroundColor = Color.White,
-                        Margin = _outputTableMargin,
-                        ScrollBars = ScrollBars.None,
-                        RowHeadersVisible = false,
-                        ColumnHeadersVisible = true,
-                        ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single,
-                        EnableHeadersVisualStyles = false,
-                        SelectionMode = DataGridViewSelectionMode.CellSelect,
-                        ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
-                        RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing,
-                        ContextMenuStrip = _contextMenuStrip
-                    };
+                    DataGridView grid = NewDataGridView();
+                    grid.Margin = _outputTableMargin;
+                    grid.ContextMenuStrip = _contextMenuStrip;
+                    grid.ScrollBars = ScrollBars.None;
                     _outputFlow.Controls.Add(grid);
                     grid.DataSource = simpleDataTable.ToDataTable(MAX_GRID_ROWS);
                     grid.AutoSizeColumns(maxColWidth);
@@ -165,6 +145,32 @@ namespace SqlNotebook {
                 }
                 _outputPanel.ScrollControlIntoView(_outputFlow.Controls[_outputFlow.Controls.Count - 1]);
             }));
+        }
+
+        private static DataGridView NewDataGridView() {
+            DataGridView grid = new() {
+                AutoSize = true,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells,
+                AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells,
+                AutoGenerateColumns = true,
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                AllowUserToOrderColumns = false,
+                AllowUserToResizeColumns = false,
+                AllowUserToResizeRows = false,
+                ReadOnly = true,
+                BorderStyle = BorderStyle.None,
+                BackgroundColor = Color.White,
+                RowHeadersVisible = false,
+                ColumnHeadersVisible = true,
+                ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single,
+                EnableHeadersVisualStyles = false,
+                SelectionMode = DataGridViewSelectionMode.CellSelect,
+                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
+                RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing,
+            };
+            grid.EnableDoubleBuffering();
+            return grid;
         }
 
         private void OperationInProgress_Change(bool oldValue, bool newValue) {

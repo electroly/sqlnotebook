@@ -9,14 +9,13 @@ using WeifenLuo.WinFormsUI.Docking;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
 using System.IO;
+using SqlNotebookScript;
 
 namespace SqlNotebook {
     public partial class ImportCsvForm : Form {
         private readonly string _filePath;
         private readonly DatabaseSchema _databaseSchema;
         private readonly NotebookManager _manager;
-
-        private readonly DockPanel _dockPanel;
 
         private readonly ImportCsvOptionsControl _optionsControl;
         private readonly Slot<string> _optionsError = new Slot<string>();
@@ -31,13 +30,6 @@ namespace SqlNotebook {
         private readonly Slot<string> _inputPreviewError = new Slot<string>();
         private Guid _inputPreviewLoadId;
 
-        private readonly SqlTextControl _sqlControl;
-        private readonly LoadingContainerControl _sqlLoadControl;
-
-        private readonly ImportPreviewControl _outputPreviewControl;
-        private readonly LoadingContainerControl _outputPreviewLoadControl;
-        private Guid _outputPreviewLoadId;
-
         public string GeneratedImportSql { get; private set; } // the ultimate result of this form
 
         public ImportCsvForm(string filePath, DatabaseSchema schema, NotebookManager manager) {
@@ -46,83 +38,31 @@ namespace SqlNotebook {
             _databaseSchema = schema;
             _manager = manager;
 
-            _dockPanel = new() {
-                Dock = DockStyle.Fill,
-                DocumentStyle = DocumentStyle.DockingWindow,
-                Theme = new VS2012LightTheme {
-                    ShowWindowListButton = false,
-                    ShowAutoHideButton = false,
-                    ForceActiveCaptionColor = true
-                },
-                DockTopPortion = 0.5,
-                AllowEndUserDocking = false,
-                AllowEndUserNestedDocking = false,
-                ShowDocumentIcon = false
-            };
-            _dockPanelContainer.Controls.Add(_dockPanel);
-
             _optionsControl = new ImportCsvOptionsControl(schema) { Dock = DockStyle.Fill };
-            {
-                var dc = new UserControlDockContent("Import Options", _optionsControl, DockAreas.DockTop) {
-                    CloseButtonVisible = false
-                };
-                dc.Show(_dockPanel, DockState.DockTop);
-            }
+            _optionsPanel.Controls.Add(_optionsControl);
 
             _columnsControl = new ImportColumnsControl { Dock = DockStyle.Fill };
-            _columnsLoadControl = new LoadingContainerControl { ContainedControl = _columnsControl };
-            {
-                var dc = new UserControlDockContent("Columns", _columnsLoadControl, DockAreas.Float | DockAreas.DockTop) {
-                    CloseButtonVisible = false
-                };
-                dc.Show(_dockPanel, new Rectangle(-50000, -50000, 100, 100)); // hide brief flash of this floating window
-                dc.DockHandler.FloatPane.DockTo(_dockPanel.DockWindows[DockState.DockTop]);
-                dc.DockAreas = DockAreas.DockTop;
-            }
+            _columnsLoadControl = new LoadingContainerControl { ContainedControl = _columnsControl, Dock = DockStyle.Fill };
+            _columnsPanel.Controls.Add(_columnsLoadControl);
 
-            DockContent inputPreviewDc;
             _inputPreviewControl = new ImportTextFilePreviewControl { Dock = DockStyle.Fill };
-            _inputPreviewLoadControl = new LoadingContainerControl { ContainedControl = _inputPreviewControl };
-            {
-                var dc = new UserControlDockContent("Original File", _inputPreviewLoadControl) {
-                    CloseButton = false,
-                    CloseButtonVisible = false,
-                    ControlBox = false,
-                };
-                dc.Show(_dockPanel);
-                inputPreviewDc = dc;
-            }
-
-            _sqlControl = new SqlTextControl(readOnly: true) { Dock = DockStyle.Fill };
-            _sqlLoadControl = new LoadingContainerControl { ContainedControl = _sqlControl };
-            {
-                var dc = new UserControlDockContent("Import Script", _sqlLoadControl) {
-                    CloseButton = false,
-                    CloseButtonVisible = false,
-                    ControlBox = false,
-                };
-                dc.Show(_dockPanel);
-            }
-
-            _outputPreviewControl = new ImportPreviewControl { Dock = DockStyle.Fill };
-            _outputPreviewLoadControl = new LoadingContainerControl { ContainedControl = _outputPreviewControl };
-            {
-                var dc = new UserControlDockContent("Preview", _outputPreviewLoadControl) {
-                    CloseButton = false,
-                    CloseButtonVisible = false,
-                    ControlBox = false,
-                };
-                dc.Show(_dockPanel);
-            }
+            _inputPreviewLoadControl = new LoadingContainerControl { ContainedControl = _inputPreviewControl, Dock = DockStyle.Fill };
+            _originalFilePanel.Controls.Add(_inputPreviewLoadControl);
 
             Ui ui = new(this, 170, 40);
             ui.Init(_table);
-            ui.Init(_buttonFlow);
-            ui.MarginTop(_buttonFlow);
+            ui.Init(_outerSplit, 0.5);
+            ui.InitHeader(_originalFileLabel);
+            ui.Init(_lowerSplit, 0.5);
+            ui.InitHeader(_optionsLabel);
+            ui.InitHeader(_columnsLabel);
+            ui.Init(_buttonFlow1);
+            ui.MarginTop(_buttonFlow1);
+            ui.Init(_previewButton);
+            ui.Init(_buttonFlow2);
+            ui.MarginTop(_buttonFlow2);
             ui.Init(_okBtn);
             ui.Init(_cancelBtn);
-
-            inputPreviewDc.Activate(); // select "Original File" tab initially
 
             Load += async (sender, e) => {
                 ValidateOptions();
@@ -139,18 +79,14 @@ namespace SqlNotebook {
                 async (sender, e) => await UpdateControls(inputChange: true));
             Bind.OnChange(new Slot[] { o.IfTableExists, o.SkipLines, o.HasColumnHeaders },
                 async (sender, e) => await UpdateControls(columnsChange: true));
-            Bind.OnChange(new Slot[] { o.IfConversionFails, _columnsControl.Change, _optionsError, _columnsError,
-                _inputPreviewError },
-                async (sender, e) => await UpdateScriptAndOutputPreview());
-            Bind.BindAny(new[] { _columnsLoadControl.IsOverlayVisible, _inputPreviewLoadControl.IsOverlayVisible,
-                _outputPreviewLoadControl.IsOverlayVisible, _sqlLoadControl.IsOverlayVisible },
+            Bind.BindAny(new[] { _columnsLoadControl.IsOverlayVisible, _inputPreviewLoadControl.IsOverlayVisible },
                 x => _okBtn.Enabled = !x);
 
             Text = $"Import {Path.GetFileName(_filePath)}";
             o.TargetTableName.Value = Path.GetFileNameWithoutExtension(_filePath);
         }
 
-        private async Task UpdateControls(bool inputChange = false, bool columnsChange = false, bool scriptChange = false) {
+        private async Task UpdateControls(bool inputChange = false, bool columnsChange = false) {
             if (inputChange) {
                 await UpdateInputPreview();
                 columnsChange = true;
@@ -158,11 +94,6 @@ namespace SqlNotebook {
 
             if (columnsChange) {
                 await UpdateColumns();
-                scriptChange = true;
-            }
-
-            if (scriptChange) {
-                await UpdateScriptAndOutputPreview();
             }
         }
 
@@ -313,63 +244,6 @@ namespace SqlNotebook {
                 $");\r\n";
         }
 
-        private async Task UpdateScriptAndOutputPreview() {
-            var errorMessage = GetErrorMessage();
-            string sql = "";
-            try {
-                sql = GetImportSql();
-            } catch (Exception ex) {
-                sql = $"-- Error: {ex.Message}";
-            }
-
-            // Import Script pane
-            if (errorMessage == null) {
-                _sqlLoadControl.ClearError();
-                _sqlControl.SqlText = sql;
-            } else {
-                _sqlLoadControl.SetError(errorMessage);
-            }
-
-            // Preview pane
-            if (errorMessage == null) {
-                _outputPreviewLoadControl.ClearError();
-                var loadId = Guid.NewGuid();
-                _outputPreviewLoadId = loadId;
-                _outputPreviewLoadControl.PushLoad();
-                try {
-                    var dt = await Task.Run(() => {
-                        var tableName = Guid.NewGuid().ToString();
-                        try {
-                            try {
-                                sql = GetImportSql(100, tableName);
-                            } catch (Exception ex) {
-                                sql = $"-- Error: {ex.Message}";
-                            }
-                            _manager.ExecuteScript(sql);
-                            return _manager.ExecuteScript($"SELECT * FROM {tableName.DoubleQuote()}").DataTables[0];
-                        } finally {
-                            _manager.ExecuteScript($"DROP TABLE IF EXISTS {tableName.DoubleQuote()}");
-                        }
-                    });
-                    if (_outputPreviewLoadId == loadId) {
-                        _outputPreviewControl.SetTable(dt.ToDataTable(), disposeTable: true);
-                    }
-                } catch (UncaughtErrorScriptException ex) {
-                    if (_outputPreviewLoadId == loadId) {
-                        _outputPreviewLoadControl.SetError($"Error importing the CSV file:\r\n{ex.ErrorMessage}");
-                    }
-                } catch (Exception ex) {
-                    if (_outputPreviewLoadId == loadId) {
-                        _outputPreviewLoadControl.SetError($"Error importing the CSV file:\r\n{ex.Message}");
-                    }
-                } finally {
-                    _outputPreviewLoadControl.PopLoad();
-                }
-            } else {
-                _outputPreviewLoadControl.SetError(errorMessage);
-            }
-        }
-
         private string GetErrorMessage() { // or null
             if (_columnsError.Value != null) {
                 // this error is shown in the columns pane
@@ -393,6 +267,35 @@ namespace SqlNotebook {
             } else {
                 MessageForm.ShowError(this, "Import Error", errorMessage);
             }
+        }
+
+        private void PreviewButton_Click(object sender, EventArgs e) {
+            var errorMessage = GetErrorMessage();
+            if (errorMessage != null) {
+                MessageForm.ShowError(this, "Error", errorMessage);
+                return;
+            }
+
+            string script = null;
+            SimpleDataTable table = null;
+            using WaitForm waitForm = new("Import", "Generating preview...", () => {
+                var tableName = Guid.NewGuid().ToString();
+                script = GetImportSql();
+                try {
+                    var sql = GetImportSql(100, tableName);
+                    _manager.ExecuteScript(sql);
+                    table = _manager.ExecuteScript($"SELECT * FROM {tableName.DoubleQuote()}").DataTables[0];
+                } finally {
+                    _manager.ExecuteScript($"DROP TABLE IF EXISTS {tableName.DoubleQuote()}");
+                }
+            });
+            if (waitForm.ShowDialog(this) != DialogResult.OK) {
+                MessageForm.ShowError(this, "Error", waitForm.ResultException.Message);
+                return;
+            }
+
+            using ImportScriptForm previewForm = new(script, table);
+            previewForm.ShowDialog(this);
         }
     }
 }

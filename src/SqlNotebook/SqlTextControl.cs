@@ -25,7 +25,7 @@ namespace SqlNotebook {
 
         public event EventHandler SqlTextChanged;
 
-        public SqlTextControl(bool readOnly) {
+        public SqlTextControl(bool readOnly, bool syntaxColoring = true, bool wrap = true) {
             InitializeComponent();
 
             _text = new() {
@@ -33,7 +33,7 @@ namespace SqlNotebook {
                 FontFamily = new("Consolas"),
                 FontSize = 14,
                 HorizontalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
-                WordWrap = true,
+                WordWrap = wrap,
                 ShowLineNumbers = true,
                 LineNumbersForeground = System.Windows.Media.Brushes.LightGray,
             };
@@ -42,14 +42,15 @@ namespace SqlNotebook {
                 Child = _text,
             };
 
-            IHighlightingDefinition def;
-            using (MemoryStream stream = new(Resources.SQL_Mode_xshd)) {
-                using XmlTextReader reader = new(stream);
-                def = HighlightingLoader.Load(reader, HighlightingManager.Instance);
-            }
+            if (syntaxColoring) {
+                IHighlightingDefinition def;
+                using (MemoryStream stream = new(Resources.SQL_Mode_xshd)) {
+                    using XmlTextReader reader = new(stream);
+                    def = HighlightingLoader.Load(reader, HighlightingManager.Instance);
+                }
 
-            _text.SyntaxHighlighting = def;
-            //SearchPanel.Install(_text);
+                _text.SyntaxHighlighting = def;
+            }
 
             _text.TextChanged += (sender, e) => SqlTextChanged?.Invoke(this, EventArgs.Empty);
 
