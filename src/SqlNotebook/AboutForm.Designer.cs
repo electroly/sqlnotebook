@@ -101,7 +101,7 @@
             this._copyrightLabel.Name = "_copyrightLabel";
             this._copyrightLabel.Size = new System.Drawing.Size(351, 30);
             this._copyrightLabel.TabIndex = 0;
-            this._copyrightLabel.Text = "Copyright (C) 2016-2021 Brian Luft";
+            this._copyrightLabel.Text = "Copyright (c) 2016-2021 Brian Luft";
             // 
             // _websiteLnk
             // 
