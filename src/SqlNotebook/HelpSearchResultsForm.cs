@@ -18,7 +18,7 @@ namespace SqlNotebook {
             Font snippetFont = new("Segoe UI", 9f);
             Disposed += delegate { snippetFont.Dispose(); };
 
-            Ui ui = new(this, 150, 40);
+            Ui ui = new(this, 120, 40);
             ui.Init(_table);
             ui.Init(_resultsFlow);
             ui.Pad(_resultsFlow);
@@ -36,7 +36,7 @@ namespace SqlNotebook {
                     Text = StripTags(result.Title),
                     Font = titleFont,
                     Margin = new(ui.XWidth(1), ui.XHeight(0.75), ui.XWidth(1), ui.XHeight(0.2)),
-                    Cursor = System.Windows.Forms.Cursors.Hand,
+                    Cursor = Cursors.Hand,
                 };
                 titleLabel.Click += OnResultClick;
                 Label snippetLabel = new() {
@@ -44,7 +44,7 @@ namespace SqlNotebook {
                     Text = StripTags(result.Snippet),
                     Font = snippetFont,
                     Margin = new(ui.XWidth(1), 0, ui.XWidth(1), ui.XHeight(1)),
-                    Cursor = System.Windows.Forms.Cursors.Hand,
+                    Cursor = Cursors.Hand,
                 };
                 snippetLabel.Click += OnResultClick;
                 _resultsFlow.Controls.Add(titleLabel);

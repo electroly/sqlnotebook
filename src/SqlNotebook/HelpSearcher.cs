@@ -11,15 +11,27 @@ using System.Windows.Forms;
 
 namespace SqlNotebook {
     public static class HelpSearcher {
+        private static byte[] _cachedNotebookBytes;
+
         public static List<Result> Search(string keyword) {
             var tempFilePath = Path.GetTempFileName();
             try {
-                using Notebook notebook = new(tempFilePath, true);
-                InitHelpNotebook(notebook);
+                var hasCache = _cachedNotebookBytes != null;
+                if (hasCache) {
+                    File.WriteAllBytes(tempFilePath, _cachedNotebookBytes);
+                }
                 List<Result> results = null;
-                notebook.Invoke(() => {
-                    results = SearchQuery(notebook, keyword);
-                });
+                using (Notebook notebook = new(tempFilePath, isNew: !hasCache)) {
+                    if (!hasCache) {
+                        InitHelpNotebook(notebook);
+                    }
+                    notebook.Invoke(() => {
+                        results = SearchQuery(notebook, keyword);
+                    });
+                }
+                if (!hasCache) {
+                    _cachedNotebookBytes = File.ReadAllBytes(tempFilePath);
+                }
                 return results;
             } finally {
                 File.Delete(tempFilePath);

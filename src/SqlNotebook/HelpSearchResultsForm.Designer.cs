@@ -73,10 +73,12 @@ namespace SqlNotebook {
             this._resultsFlow.BackColor = System.Drawing.Color.White;
             this._resultsFlow.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._resultsFlow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._resultsFlow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this._resultsFlow.Location = new System.Drawing.Point(3, 3);
             this._resultsFlow.Name = "_resultsFlow";
             this._resultsFlow.Size = new System.Drawing.Size(794, 398);
             this._resultsFlow.TabIndex = 1;
+            this._resultsFlow.WrapContents = false;
             // 
             // HelpSearchResultsForm
             // 
