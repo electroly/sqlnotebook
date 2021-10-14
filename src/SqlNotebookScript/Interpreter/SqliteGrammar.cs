@@ -209,8 +209,7 @@ namespace SqlNotebookScript.Interpreter {
                         TokenType.Replace, TokenType.Restrict, TokenType.Row, TokenType.Trigger, TokenType.Vacuum,
                         TokenType.View, TokenType.Virtual, TokenType.With, TokenType.Reindex, TokenType.Rename,
                         TokenType.CtimeKw, TokenType.Any, TokenType.Rem, TokenType.Concat, TokenType.Autoincr,
-                        TokenType.Deferrable, TokenType.ToText, TokenType.ToBlob, TokenType.ToNumeric, TokenType.ToInt,
-                        TokenType.ToReal, TokenType.Isnot, TokenType.Function, TokenType.AggFunction,
+                        TokenType.Deferrable, TokenType.Isnot, TokenType.Function, TokenType.AggFunction,
                         TokenType.Register
                     )
                 )),

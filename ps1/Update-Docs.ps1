@@ -21,131 +21,6 @@ function DeleteIfExists($path) {
     }
 }
 
-function Update-SqliteDocFiles {
-    # Remove stuff that doesn't apply to SQL Notebook
-    DeleteIfExists "$sqliteDir/doc_backlink_crossref.html"
-    DeleteIfExists "$sqliteDir/doc_keyword_crossref.html"
-    DeleteIfExists "$sqliteDir/doc_pagelink_crossref.html"
-    DeleteIfExists "$sqliteDir/doc_target_crossref.html"
-    DeleteIfExists "$sqliteDir/favicon.ico"
-    DeleteIfExists "$sqliteDir/copyright-release.pdf"
-    DeleteIfExists "$sqliteDir/cvstrac.css"
-    DeleteIfExists "$sqliteDir/robots.txt"
-    DeleteIfExists "$sqliteDir/toc.db"
-    DeleteIfExists "$sqliteDir/vdbe.html"
-    DeleteIfExists "$sqliteDir/sqlanalyze.html"
-    DeleteIfExists "$sqliteDir/requirements.html"
-    DeleteIfExists "$sqliteDir/oldnews.html"
-    DeleteIfExists "$sqliteDir/pressrelease-20071212.html"
-    DeleteIfExists "$sqliteDir/c_interface.html"
-    DeleteIfExists "$sqliteDir/capi3.html"
-    DeleteIfExists "$sqliteDir/capi3ref.html"
-    DeleteIfExists "$sqliteDir/cli.html"
-    DeleteIfExists "$sqliteDir/compile.html"
-    DeleteIfExists "$sqliteDir/34to35.html"
-    DeleteIfExists "$sqliteDir/35to36.html"
-    DeleteIfExists "$sqliteDir/affcase1.html"
-    DeleteIfExists "$sqliteDir/amalgamation.html"
-    DeleteIfExists "$sqliteDir/backup.html"
-    DeleteIfExists "$sqliteDir/compile.html"
-    DeleteIfExists "$sqliteDir/changes.html"
-    DeleteIfExists "$sqliteDir/chronology.html"
-    DeleteIfExists "$sqliteDir/cintro.html"
-    DeleteIfExists "$sqliteDir/consortium.html"
-    DeleteIfExists "$sqliteDir/consortium_agreement-20071201.html"
-    DeleteIfExists "$sqliteDir/copyright-release.html"
-    DeleteIfExists "$sqliteDir/crew.html"
-    DeleteIfExists "$sqliteDir/custombuild.html"
-    DeleteIfExists "$sqliteDir/datatypes.html"
-    DeleteIfExists "$sqliteDir/dev.html"
-    DeleteIfExists "$sqliteDir/doclist.html"
-    DeleteIfExists "$sqliteDir/docs.html"
-    DeleteIfExists "$sqliteDir/download.html"
-    DeleteIfExists "$sqliteDir/fileio.html"
-    DeleteIfExists "$sqliteDir/footprint.html"
-    DeleteIfExists "$sqliteDir/howtocompile.html"
-    DeleteIfExists "$sqliteDir/hp1.html"
-    DeleteIfExists "$sqliteDir/shortnames.html"
-    DeleteIfExists "$sqliteDir/sitemap.html"
-    DeleteIfExists "$sqliteDir/sqldiff.html"
-    DeleteIfExists "$sqliteDir/support.html"
-    DeleteIfExists "$sqliteDir/btreemodule.html"
-    DeleteIfExists "$sqliteDir/keyword_index.html"
-    DeleteIfExists "$sqliteDir/news.html"
-    DeleteIfExists "$sqliteDir/opcode.html"
-    DeleteIfExists "$sqliteDir/famous.html"
-    DeleteIfExists "$sqliteDir/books.html"
-    DeleteIfExists "$sqliteDir/fts3.html"
-
-    DeleteIfExists "$sqliteDir/unlock_notify.html"
-    DeleteIfExists "$sqliteDir/index.html"
-    DeleteIfExists "$sqliteDir/sqlite.html"
-    DeleteIfExists "$sqliteDir/different.html"
-    DeleteIfExists "$sqliteDir/pgszchng2016.html"
-    DeleteIfExists "$sqliteDir/about.html"
-    DeleteIfExists "$sqliteDir/asyncvfs.html"
-    DeleteIfExists "$sqliteDir/whentouse.html"
-    DeleteIfExists "$sqliteDir/arch.html"
-    DeleteIfExists "$sqliteDir/undoredo.html"
-    DeleteIfExists "$sqliteDir/aff_short.html"
-    DeleteIfExists "$sqliteDir/malloc.html"
-    DeleteIfExists "$sqliteDir/errlog.html"
-    DeleteIfExists "$sqliteDir/features.html"
-    DeleteIfExists "$sqliteDir/formatchng.html"
-    DeleteIfExists "$sqliteDir/fileformat.html"
-    DeleteIfExists "$sqliteDir/fileformat2.html"
-    DeleteIfExists "$sqliteDir/testing.html"
-    DeleteIfExists "$sqliteDir/inmemorydb.html"
-    DeleteIfExists "$sqliteDir/mmap.html"
-    DeleteIfExists "$sqliteDir/mostdeployed.html"
-    DeleteIfExists "$sqliteDir/mingw.html"
-    DeleteIfExists "$sqliteDir/vfs.html"
-    DeleteIfExists "$sqliteDir/not-found.html"
-    DeleteIfExists "$sqliteDir/privatebranch.html"
-    DeleteIfExists "$sqliteDir/getthecode.html"
-    DeleteIfExists "$sqliteDir/rbu.html"
-    DeleteIfExists "$sqliteDir/loadext.html"
-    DeleteIfExists "$sqliteDir/appfileformat.html"
-    DeleteIfExists "$sqliteDir/quickstart.html"
-    DeleteIfExists "$sqliteDir/selfcontained.html"
-    DeleteIfExists "$sqliteDir/serverless.html"
-    DeleteIfExists "$sqliteDir/rtree.html"
-    DeleteIfExists "$sqliteDir/rescode.html"
-    DeleteIfExists "$sqliteDir/session.html"
-    DeleteIfExists "$sqliteDir/sharedcache.html"
-    DeleteIfExists "$sqliteDir/th3.html"
-    DeleteIfExists "$sqliteDir/version3.html"
-    DeleteIfExists "$sqliteDir/onefile.html"
-    DeleteIfExists "$sqliteDir/tclsqlite.html"
-    DeleteIfExists "$sqliteDir/uri.html"
-    DeleteIfExists "$sqliteDir/threadsafe.html"
-    DeleteIfExists "$sqliteDir/versionnumbers.html"
-    DeleteIfExists "$sqliteDir/vtab.html"
-    DeleteIfExists "$sqliteDir/wal.html"
-    DeleteIfExists "$sqliteDir/zeroconf.html"
-    DeleteIfExists "$sqliteDir/spellfix1.html"
-    DeleteIfExists "$sqliteDir/releaselog"
-    DeleteIfExists "$sqliteDir/c3ref"
-    DeleteIfExists "$sqliteDir/session"
-    DeleteIfExists "$sqliteDir/carray.html"
-    DeleteIfExists "$sqliteDir/csv.html"
-    DeleteIfExists "$sqliteDir/dbhash.html"
-
-    # LF -> CRLF
-    $filePaths = Dir -Recurse $sqliteDir | % { $_.FullName }
-    foreach ($filePath in $filePaths) {
-        if ($filePath.EndsWith(".html")) {
-            $html = [System.IO.File]::ReadAllText($filePath)
-            $newHtml = $html
-            $newHtml = $newHtml.Replace("`r`n", "`n")
-            $newHtml = $newHtml.Replace("`n", "`r`n")
-            if ($html -ne $newHtml) {
-                [System.IO.File]::WriteAllText($filePath, $newHtml)
-            }
-        }
-    }
-}
-
 function ReadFileAbsolute($filePath) {
     $utf8 = New-Object System.Text.UTF8Encoding($False)
     return [System.IO.File]::ReadAllText($filePath, $utf8)
@@ -322,7 +197,6 @@ function GenerateTempDocHtml() {
 }
 
 function Update-DocWebsite {
-    Write-Host "Dir: $webDir"
     Push-Location $webDir
 
     New-Item site -Type Directory -ErrorAction SilentlyContinue
@@ -371,7 +245,7 @@ function Update-DocWebsite {
 }
 
 function Update-Csproj {
-    $relativeFilePaths = Dir -Recurse $resDir | % { $_.FullName.Substring($resDir.Length + 1) }
+    $relativeFilePaths = Dir -File -Recurse $resDir | % { $_.FullName.Substring($resDir.Length + 1) }
 
     $crlf = "`r`n"
     $xml = $crlf
@@ -390,6 +264,5 @@ function Update-Csproj {
     [System.IO.File]::WriteAllText($csprojFilePath, $newCsproj)
 }
 
-Update-SqliteDocFiles
 Update-DocWebsite
 Update-Csproj

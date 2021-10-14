@@ -10,7 +10,5 @@
 - License: Creative Commons Attribution 3.0
 
 ## sqlite
-- https://www.sqlite.org/2016/sqlite-amalgamation-3140100.zip
-- https://www.sqlite.org/2016/sqlite-doc-3140100.zip
 - License: Public domain
-- The documentation bundle was extracted to `src/SqlNotebook/doc/sqlite` and processed using `ps1/Update-SqliteDocBundle.ps1`.
+- Downloaded by `ps1/Update-Deps.ps1`.

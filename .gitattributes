@@ -7,6 +7,8 @@
 *.xshd text eol=crlf
 *.md text eol=crlf
 *.html text eol=crlf
+.gitignore text eol=crlf
+.gitattributes text eol=crlf
 *.png binary
 *.bmp binary
 *.ico binary

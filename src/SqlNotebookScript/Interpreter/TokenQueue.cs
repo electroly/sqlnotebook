@@ -51,7 +51,7 @@ namespace SqlNotebookScript.Interpreter {
             if (_peekIndex < _tokens.Count) {
                 return _tokens[_peekIndex++];
             } else {
-                return new Token { Text = "", Type = TokenType.EndOfFile };
+                return new Token { Text = "", Type = EofTokenType.Value};
             }
         }
 
@@ -88,7 +88,7 @@ namespace SqlNotebookScript.Interpreter {
             if (n < _tokens.Count) {
                 return _tokens[n];
             } else {
-                return new Token { Text = "", Type = TokenType.EndOfFile };
+                return new Token { Text = "", Type = EofTokenType.Value};
             }
         }
 
