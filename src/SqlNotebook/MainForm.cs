@@ -478,6 +478,17 @@ namespace SqlNotebook
                 return;
             }
 
+            var isTransactionActive = false;
+            _notebook.Invoke(() => {
+                isTransactionActive = _notebook.IsTransactionActive();
+            });
+            if (isTransactionActive) {
+                ErrorBox("SQL Notebook", "A transaction is active.",
+                    "Execute either \"COMMIT\" or \"ROLLBACK\" to end the transaction before exiting.");
+                e.Cancel = true;
+                return;
+            }
+
             if (_isDirty) {
                 var shortFilename = _isNew ? "Untitled" : Path.GetFileNameWithoutExtension(_filePath);
 
@@ -488,7 +499,12 @@ namespace SqlNotebook
                     MessageBoxIcon.Question);
                 
                 if (result == DialogResult.Yes) {
-                    if (!SaveOrSaveAs()) {
+                    try {
+                        if (!SaveOrSaveAs()) {
+                            e.Cancel = true;
+                        }
+                    } catch (Exception ex) {
+                        MessageForm.ShowError(this, "SQL Notebook", ex.Message);
                         e.Cancel = true;
                     }
                 } else if (result == DialogResult.Cancel) {
