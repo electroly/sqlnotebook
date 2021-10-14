@@ -88,6 +88,10 @@ namespace SqlNotebookCore {
         void RegisterCustomFunction(const char* functionName, int numArgs,
             void(*func)(sqlite3_context*, int, sqlite3_value **), bool deterministic);
         void RegisterGenericFunction(CustomScalarFunction^ function);
+        void WriteFileVersionAndUserDataToDatabase();
+        void ReadUserDataFromDatabase();
+        static int GetFileVersion(String^ filePath);
+        static void MigrateFileVersion1to2(String^ filePath);
 
         internal:
         static void SqliteResult(sqlite3_context* ctx, Object^ value);

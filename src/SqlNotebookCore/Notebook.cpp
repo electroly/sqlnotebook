@@ -8,31 +8,13 @@ using namespace System::Runtime::InteropServices;
 using namespace msclr;
 using namespace System::Text::Json;
 
-#define SQLITE_ZIP_ENTRY_NAME "sqlite.db"
-#define NOTEBOOK_ZIP_ENTRY_NAME "notebook.json"
+constexpr int CURRENT_FILE_VERSION = 2;
 
 Notebook::Notebook(String^ filePath, bool isNew) {
     _workingCopyFilePath = NotebookTempFiles::GetTempFilePath(".db");
-    if (isNew) {
-        _userData = gcnew NotebookUserData();
-    } else {
+    if (!isNew) {
         try {
-            auto_handle<ZipArchive> zip(ZipFile::OpenRead(filePath));
-            // load the sqlite database
-            {
-                auto entry = zip->GetEntry(SQLITE_ZIP_ENTRY_NAME);
-                auto_handle<Stream> inStream(entry->Open());
-                FileStream outStream(_workingCopyFilePath, FileMode::Create);
-                inStream->CopyTo(%outStream);
-            }
-            // load the user items
-            {
-                auto entry = zip->GetEntry(NOTEBOOK_ZIP_ENTRY_NAME);
-                auto_handle<Stream> inStream(entry->Open());
-                StreamReader reader(inStream.get(), Encoding::UTF8, false, 8192, false);
-                auto json = reader.ReadToEnd();
-                _userData = (NotebookUserData^)JsonSerializer::Deserialize(json, NotebookUserData::typeid, gcnew JsonSerializerOptions());
-            }
+            File::Copy(filePath, _workingCopyFilePath, /* overwrite */ true);
         } catch (Exception^) {
             File::Delete(_workingCopyFilePath);
             throw;
@@ -89,6 +71,11 @@ static Tuple<List<CustomTableFunction^>^, List<CustomScalarFunction^>^>^ FindCus
 }
 
 void Notebook::Init() {
+    auto version = GetFileVersion(_workingCopyFilePath);
+    if (version == 1) {
+        MigrateFileVersion1to2(_workingCopyFilePath);
+    }
+
     auto filePathCstr = Util::CStr(_workingCopyFilePath);
     sqlite3* sqlite = nullptr;
     SqliteCall(sqlite3_open(filePathCstr.c_str(), &sqlite));
@@ -105,6 +92,158 @@ void Notebook::Init() {
         RegisterGenericFunction(genericFunction);
     }
     InstallCustomFunctions();
+
+    ReadUserDataFromDatabase();
+}
+
+/*static*/ int Notebook::GetFileVersion(String^ filePath) {
+    // Version 1 is a zip file. First two bytes are "PK".
+    {
+        auto_handle<FileStream> stream(File::OpenRead(filePath));
+        if (stream->Length > 2) {
+            auto a = stream->ReadByte();
+            auto b = stream->ReadByte();
+            if (a == (int)'P' && b == (int)'K') {
+                return 1;
+            }
+        }
+    }
+
+    // Versions 2+ are SQLite databases. Open it and read the version number inside.
+    sqlite3* sqlite{};
+    sqlite3_stmt* versionStmt{};
+    try {
+        auto filePathCStr = Util::CStr(filePath);
+        auto result = sqlite3_open(filePathCStr.c_str(), &sqlite);
+        if (result != SQLITE_OK) {
+            throw gcnew Exception("This is not an SQL Notebook file.");
+        }
+
+        std::string versionSql{ "SELECT version FROM _sqlnotebook_version" };
+        result = sqlite3_prepare_v2(sqlite, versionSql.c_str(), static_cast<int>(versionSql.size()),
+            &versionStmt, nullptr);
+        if (result != SQLITE_OK || versionStmt == nullptr) {
+            // it's ok, a plain SQLite database is a valid version 2 SQL Notebook file
+            return 2;
+        }
+        if (sqlite3_step(versionStmt) == SQLITE_ROW) {
+            return sqlite3_column_int(versionStmt, 0);
+        }
+        return 2; // missing version row; it's still a valid version 2 file
+    }
+    finally {
+        if (versionStmt != nullptr) {
+            sqlite3_finalize(versionStmt);
+        }
+        if (sqlite != nullptr) {
+            sqlite3_close(sqlite);
+        }
+    }
+}
+
+// Convert a file from version 1 (zip file, up through 0.6.0) to version 2 (sqlite db, starting 0.7.0)
+/*static*/ void Notebook::MigrateFileVersion1to2(String^ filePath) {
+    auto tempDbFilePath = NotebookTempFiles::GetTempFilePath(".db");
+    NotebookUserData^ userData = nullptr;
+
+    // read the two entries from the zip file
+    {
+        auto_handle<ZipArchive> zip(ZipFile::OpenRead(filePath));
+
+        // extract the sqlite database
+        {
+            auto entry = zip->GetEntry("sqlite.db");
+            auto_handle<Stream> inStream(entry->Open());
+            FileStream outStream(tempDbFilePath, FileMode::Create);
+            inStream->CopyTo(% outStream);
+        }
+
+        // extract the user items
+        {
+            auto entry = zip->GetEntry("notebook.json");
+            auto_handle<Stream> inStream(entry->Open());
+            StreamReader reader(inStream.get(), Encoding::UTF8, false, 8192, false);
+            auto json = reader.ReadToEnd();
+            userData = (NotebookUserData^)JsonSerializer::Deserialize(json, NotebookUserData::typeid, gcnew JsonSerializerOptions());
+        }
+    }
+
+    // remove any Note and Console items from the notebook
+    for (auto i = userData->Items->Count - 1; i >= 0; i--) {
+        auto type = userData->Items[i]->Type;
+        if (type == "Note" || type == "Console") {
+            userData->Items->RemoveAt(i);
+        }
+    }
+
+    // store the user data in the new table format
+    {
+        auto notebook = gcnew Notebook(tempDbFilePath, false);
+        notebook->_userData = userData;
+        notebook->Save();
+    }
+
+    File::Move(tempDbFilePath, filePath, /* overwrite */ true);
+}
+
+void Notebook::Save() {
+    if (IsTransactionActive()) {
+        throw gcnew Exception("A transaction is active. Execute either \"COMMIT\" or \"ROLLBACK\" to end the transaction before saving.");
+    }
+
+    WriteFileVersionAndUserDataToDatabase();
+
+    SqliteCall(sqlite3_close(_sqlite));
+    _sqlite = nullptr;
+
+    try {
+        File::Copy(_workingCopyFilePath, _originalFilePath, /* overwrite */ true);
+    }
+    finally {
+        Init();
+    }
+}
+
+void Notebook::WriteFileVersionAndUserDataToDatabase() {
+    // if there is no user data, then write a plain SQLite database without any special SQL Notebook tables
+    if (_userData->Items->Count == 0) {
+        Execute("DROP TABLE IF EXISTS _sqlnotebook_version;");
+        Execute("DROP TABLE IF EXISTS _sqlnotebook_userdata;");
+        return;
+    }
+
+    {
+        Execute("CREATE TABLE IF NOT EXISTS _sqlnotebook_version (version);");
+        Execute("DELETE FROM _sqlnotebook_version;");
+        auto args = gcnew Dictionary<String^, Object^>();
+        args["@version"] = CURRENT_FILE_VERSION;
+        Execute("INSERT INTO _sqlnotebook_version (version) VALUES (@version);", args);
+    }
+
+    {
+        Execute("CREATE TABLE IF NOT EXISTS _sqlnotebook_userdata (json);");
+        Execute("DELETE FROM _sqlnotebook_userdata;");
+        auto args = gcnew Dictionary<String^, Object^>();
+        auto json = JsonSerializer::Serialize(_userData, gcnew JsonSerializerOptions());
+        args["@json"] = json;
+        Execute("INSERT INTO _sqlnotebook_userdata (json) VALUES (@json)", args);
+    }
+}
+
+void Notebook::ReadUserDataFromDatabase() {
+    Execute("CREATE TABLE IF NOT EXISTS _sqlnotebook_userdata (json);");
+    auto table = Query("SELECT json FROM _sqlnotebook_userdata");
+    if (table->Rows->Count == 0) {
+        _userData = gcnew NotebookUserData();
+        return;
+    }
+    try {
+        auto json = (String^)table->Rows[0][0];
+        _userData = (NotebookUserData^)JsonSerializer::Deserialize(json, NotebookUserData::typeid,
+            gcnew JsonSerializerOptions());
+    } catch (Exception^) {
+        _userData = gcnew NotebookUserData();
+    }
 }
 
 void Notebook::Invoke(Action^ action) {
@@ -364,35 +503,6 @@ void g_SqliteCall(sqlite3* sqlite, int result) {
             auto msg = Util::Str((const wchar_t*)sqlite3_errmsg16(sqlite));
             throw gcnew SqliteException(msg);
         }
-    }
-}
-
-void Notebook::Save() {
-    SqliteCall(sqlite3_close(_sqlite));
-    _sqlite = nullptr;
-
-    try {
-        if (File::Exists(_originalFilePath)) {
-            File::Delete(_originalFilePath);
-        }
-        auto_handle<ZipArchive> archive(ZipFile::Open(_originalFilePath, ZipArchiveMode::Create));
-        // write the sqlite database
-        {
-            auto entry = archive->CreateEntry(SQLITE_ZIP_ENTRY_NAME, CompressionLevel::Fastest);
-            auto_handle<Stream> outStream(entry->Open());
-            FileStream inStream(_workingCopyFilePath, FileMode::Open);
-            inStream.CopyTo(outStream.get());
-        }
-        // write the notebook items
-        {
-            auto entry = archive->CreateEntry(NOTEBOOK_ZIP_ENTRY_NAME, CompressionLevel::Fastest);
-            auto_handle<Stream> outStream(entry->Open());
-            auto json = JsonSerializer::Serialize(_userData, gcnew JsonSerializerOptions());
-            StreamWriter writer(outStream.get(), Encoding::UTF8, 8192, false);
-            writer.Write(json);
-        }
-    } finally {
-        Init();
     }
 }
 

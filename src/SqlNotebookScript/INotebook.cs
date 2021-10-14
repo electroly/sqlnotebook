@@ -17,33 +17,26 @@ namespace SqlNotebookScript {
     }
 
     public sealed class NotebookItemRecord {
-        public string Name;
-        public string Type;
-        public string Data;
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public string Data { get; set; }
     }
 
     public sealed class ScriptParameterRecord {
-        public string ScriptName;
-        public List<string> ParamNames = new List<string>();
+        public string ScriptName { get; set; }
+        public List<string> ParamNames { get; set; } = new();
     }
 
     public sealed class LastErrorRecord {
-        public object ErrorNumber;
-        public object ErrorMessage;
-        public object ErrorState;
-    }
-
-    public sealed class ConsoleStateRecord {
-        public string ConsoleName;
-        public List<string> VarNames;
-        public string VarDataB64; // Base-64 encoded blob array
+        public object ErrorNumber { get; set; }
+        public object ErrorMessage { get; set; }
+        public object ErrorState { get; set; }
     }
 
     public sealed class NotebookUserData {
-        public List<NotebookItemRecord> Items = new List<NotebookItemRecord>();
-        public List<ScriptParameterRecord> ScriptParameters = new List<ScriptParameterRecord>();
-        public LastErrorRecord LastError = new LastErrorRecord();
-        public List<ConsoleStateRecord> ConsoleStates = new List<ConsoleStateRecord>();
+        public List<NotebookItemRecord> Items { get; set; } = new();
+        public List<ScriptParameterRecord> ScriptParameters { get; set; } = new();
+        public LastErrorRecord LastError { get; set; } = new();
     }
 
     public sealed class Token {

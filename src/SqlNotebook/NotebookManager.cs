@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using SqlNotebookCore;
+﻿using SqlNotebookCore;
 using SqlNotebookScript;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Interpreter.Ast;
 using SqlNotebookScript.Utils;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace SqlNotebook {
     public enum NotebookItemType {
@@ -152,11 +150,15 @@ namespace SqlNotebook {
                 for (int i = 0; i < dt.Rows.Count; i++) {
                     var type = (string)dt.Get(i, "type") == "view" ? NotebookItemType.View : NotebookItemType.Table;
                     var isVirtualTable = dt.Get(i, "sql").ToString().StartsWith("CREATE VIRTUAL TABLE");
-                    items.Add(new NotebookItem(type, (string)dt.Get(i, "name"), isVirtualTable));
+                    var name = (string)dt.Get(i, "name");
+                    if (name.StartsWith("_sqlnotebook_")) {
+                        continue;
+                    }
+                    items.Add(new NotebookItem(type, name, isVirtualTable));
                 }
             }
 
-            // notes, consoles, and scripts
+            // scripts
             items.AddRange(
                 from x in Notebook.UserData.Items
                 select new NotebookItem((NotebookItemType)Enum.Parse(typeof(NotebookItemType), x.Type), x.Name)
