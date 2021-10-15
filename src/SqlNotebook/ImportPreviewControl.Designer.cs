@@ -32,11 +32,13 @@
             this._grid.AllowUserToAddRows = false;
             this._grid.AllowUserToDeleteRows = false;
             this._grid.AllowUserToResizeRows = false;
+            this._grid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells;
             this._grid.BackgroundColor = System.Drawing.SystemColors.Window;
             this._grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._grid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._grid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this._grid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(229)))), ((int)(((byte)(229)))));
             this._grid.Location = new System.Drawing.Point(0, 0);
             this._grid.Margin = new System.Windows.Forms.Padding(0);
@@ -44,7 +46,7 @@
             this._grid.ReadOnly = true;
             this._grid.RowHeadersVisible = false;
             this._grid.RowHeadersWidth = 62;
-            this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this._grid.ShowCellErrors = false;
             this._grid.ShowCellToolTips = false;
             this._grid.ShowEditingIcon = false;
