@@ -1,6 +1,6 @@
 ﻿
 namespace SqlNotebook {
-    partial class ImportScriptForm {
+    partial class ImportScriptPreviewForm {
         /// <summary>
         /// Required designer variable.
         /// </summary>

@@ -2,8 +2,8 @@
 using System.Windows.Forms;
 
 namespace SqlNotebook {
-    public partial class ImportScriptForm : Form {
-        public ImportScriptForm(string sql, SimpleDataTable table) {
+    public partial class ImportScriptPreviewForm : Form {
+        public ImportScriptPreviewForm(string sql, SimpleDataTable table) {
             InitializeComponent();
 
             SqlTextControl textbox = new(true) {

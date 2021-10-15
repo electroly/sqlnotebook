@@ -294,7 +294,7 @@ namespace SqlNotebook {
                 return;
             }
 
-            using ImportScriptForm previewForm = new(script, table);
+            using ImportScriptPreviewForm previewForm = new(script, table);
             previewForm.ShowDialog(this);
         }
     }
