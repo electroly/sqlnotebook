@@ -151,9 +151,9 @@ namespace SqlNotebook {
             this._previewLabel.AutoSize = true;
             this._previewLabel.Location = new System.Drawing.Point(3, 0);
             this._previewLabel.Name = "_previewLabel";
-            this._previewLabel.Size = new System.Drawing.Size(72, 25);
+            this._previewLabel.Size = new System.Drawing.Size(52, 25);
             this._previewLabel.TabIndex = 0;
-            this._previewLabel.Text = "Preview";
+            this._previewLabel.Text = "Table";
             // 
             // _previewPanel
             // 

@@ -272,8 +272,8 @@
             this._exitMnu});
             this._notebookMnu.Margin = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this._notebookMnu.Name = "_notebookMnu";
-            this._notebookMnu.Size = new System.Drawing.Size(109, 29);
-            this._notebookMnu.Text = "&Notebook";
+            this._notebookMnu.Size = new System.Drawing.Size(54, 29);
+            this._notebookMnu.Text = "&File";
             // 
             // _newMnu
             // 
