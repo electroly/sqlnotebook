@@ -46,7 +46,7 @@ namespace SqlNotebook {
             ui.Init(_tableOutputTitle);
             ui.MarginTop(_tableOutputTitle);
             ui.Init(_tableLabel);
-            ui.Init(_tableCmb);
+            ui.Init(_tableCmb, 40);
             ui.Init(_ifTableExistsLabel);
             ui.Init(_ifExistsCmb, 30);
             ui.Init(_ifConversionFailsLabel);

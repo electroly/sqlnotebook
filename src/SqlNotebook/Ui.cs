@@ -10,7 +10,7 @@ namespace SqlNotebook {
         private readonly Padding _buttonPadding;
         private int _tabIndex = 1;
 
-        private static readonly Font _bigFont = new("Consolas", 11f);
+        private static readonly Font _consolas = new("Consolas", 11f);
 
         public Ui(Control control, bool padded = true) {
             using var graphics = control.CreateGraphics();
@@ -37,9 +37,13 @@ namespace SqlNotebook {
             Size maxSize = new(size.Width * 10, size.Height * 10);
 
             form.AutoSize = false;
-            form.Size = size;
+            form.SizeGripStyle = SizeGripStyle.Show;
+            form.FormBorderStyle = FormBorderStyle.Sizable;
             form.MinimumSize = size;
+            form.Size = size;
             form.MaximumSize = maxSize;
+
+            form.Controls.Add(new SizeGripControl());
         }
 
         public Size XSize(double x, double y) => new(XWidth(x), XHeight(y));
@@ -60,6 +64,8 @@ namespace SqlNotebook {
 
         public void Init(Label label) {
             label.TabIndex = _tabIndex++;
+            var margin = label.Margin;
+            label.Margin = new(0, margin.Top, margin.Right, margin.Bottom);
         }
 
         public void InitHeader(Label label) {
@@ -69,6 +75,10 @@ namespace SqlNotebook {
             label.Padding = new(XWidth(0.6), XHeight(0.2), XWidth(0.5), XHeight(0.2));
             label.Margin = Padding.Empty;
             label.Dock = DockStyle.Fill;
+        }
+
+        public void Init(LinkLabel label) {
+            Init((Label)label);
         }
 
         public void Init(Button button) {
@@ -97,6 +107,11 @@ namespace SqlNotebook {
             flow.Margin = Padding.Empty;
         }
 
+        public void Init(Panel panel) {
+            panel.Margin = Padding.Empty;
+            panel.TabIndex = _tabIndex++;
+        }
+
         public void Init(CheckBox check) {
             check.TabIndex = _tabIndex++;
             check.AutoSize = true;
@@ -111,7 +126,7 @@ namespace SqlNotebook {
             textbox.AutoSize = false;
             textbox.TabIndex = _tabIndex++;
             textbox.Width = XWidth(width);
-            textbox.Font = _bigFont;
+            textbox.Font = _consolas;
         }
 
         public void Init(ListView listView) {
@@ -125,6 +140,7 @@ namespace SqlNotebook {
         }
 
         public void Init(TabPage tab) {
+            tab.TabIndex = _tabIndex++;
         }
 
         public void Init(PropertyGrid grid) {
@@ -165,6 +181,7 @@ namespace SqlNotebook {
         }
 
         public void Init(StatusStrip strip) {
+            strip.TabIndex = _tabIndex++;
         }
 
         public void Init(ToolStripProgressBar bar) {
@@ -175,14 +192,20 @@ namespace SqlNotebook {
         public void Init(ProgressBar bar) {
             bar.AutoSize = false;
             bar.Width = XWidth(15);
+            bar.TabIndex = _tabIndex++;
         }
 
         public void Init(NumericUpDown upd, int width = 10) {
             upd.Width = XWidth(width);
+            upd.TabIndex = _tabIndex++;
         }
 
         public void Init(ComboBox cmb, int width = 50) {
             cmb.Width = XWidth(width);
+            cmb.TabIndex = _tabIndex++;
+            if (cmb.DropDownStyle != ComboBoxStyle.DropDownList) {
+                cmb.Font = _consolas;
+            }
         }
 
         public void Init(DataGridViewColumn col, int width) {
@@ -197,6 +220,7 @@ namespace SqlNotebook {
             } else {
                 split.SplitterDistance = (int)(split.Width * dividerFraction);
             }
+            split.TabIndex = _tabIndex++;
         }
 
         public void MarginTop(Control control, double height = 0.75) {
@@ -205,9 +229,28 @@ namespace SqlNotebook {
             control.Margin = m;
         }
 
+        public void MarginBottom(Control control, double height = 0.75) {
+            var m = control.Margin;
+            m.Bottom = XHeight(height);
+            control.Margin = m;
+        }
+
+        public void MarginRight(Control control, double width = 1) {
+            var m = control.Margin;
+            m.Right = XWidth(width);
+            control.Margin = m;
+        }
+
         public void Pad(Control control) {
             var x = XWidth(1);
             var y = XHeight(0.375);
+            control.Padding = new(x, y, x, y);
+        }
+
+        public void PadBig(Control control) {
+            // same as form padding
+            var x = XWidth(2);
+            var y = XHeight(0.75);
             control.Padding = new(x, y, x, y);
         }
     }

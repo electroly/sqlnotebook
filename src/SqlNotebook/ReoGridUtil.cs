@@ -35,6 +35,11 @@ namespace SqlNotebook {
             };
 
         public static void InitGrid(ReoGridControl grid, bool readOnly) {
+            grid.Cursor = Cursors.Default;
+            grid.CellsSelectionCursor = Cursors.Default;
+            grid.EntireSheetSelectionCursor = Cursors.Default;
+            grid.FullColumnSelectionCursor = Cursors.Default;
+            grid.FullRowSelectionCursor = Cursors.Default;
             grid.Dock = DockStyle.Fill;
             grid.SheetTabVisible = false;
             grid.Readonly = readOnly;

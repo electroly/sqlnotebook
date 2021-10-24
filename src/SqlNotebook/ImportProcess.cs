@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SqlNotebook.Import.Xls;
 using SqlNotebook.ImportXls;
 using SqlNotebookScript.Utils;
 
@@ -17,7 +18,7 @@ namespace SqlNotebook {
             if (schema == null)
                 return false;
 
-            var extension = Path.GetExtension(filePath).ToLower();
+            var extension = Path.GetExtension(filePath).ToLowerInvariant();
             switch (extension) {
                 case ".csv":
                 case ".txt":
@@ -49,15 +50,28 @@ namespace SqlNotebook {
 
         private static async Task<bool> ImportXls(IWin32Window owner, string filePath, NotebookManager manager,
         DatabaseSchema schema) {
-            string importSql;
-            using (var f = new ImportXlsBookForm(filePath, schema, manager)) {
-                if (f.ShowDialog(owner) != DialogResult.OK) {
-                    return false;
-                }
-                importSql = f.GeneratedImportSql;
+            XlsInput input = null;
+            using WaitForm waitForm = new("Import", "Reading workbook...", () => {
+                input = XlsInput.Load(filePath);
+            });
+            if (waitForm.ShowDialog(owner) != DialogResult.OK) {
+                MessageForm.ShowError(owner, "Import Error", waitForm.ResultException.Message);
+                return false;
             }
 
-            return await RunImportScript(importSql, owner, filePath, manager);
+            using ImportXlsForm f = new(input);
+            f.ShowDialog(owner);
+
+            //string importSql;
+            //using (var f = new ImportXlsBookForm(filePath, schema, manager)) {
+            //    if (f.ShowDialog(owner) != DialogResult.OK) {
+            //        return false;
+            //    }
+            //    importSql = f.GeneratedImportSql;
+            //}
+
+            //return await RunImportScript(importSql, owner, filePath, manager);
+            return false;
         }
 
         private static async Task<DatabaseSchema> ReadDatabaseSchema(IWin32Window owner, NotebookManager manager) {
