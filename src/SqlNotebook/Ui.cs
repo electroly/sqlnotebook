@@ -124,7 +124,7 @@ namespace SqlNotebook {
         }
 
         public void Init(TextBox textbox, int width = 25) {
-            textbox.AutoSize = false;
+            textbox.AutoSize = true;
             textbox.TabIndex = _tabIndex++;
             textbox.Width = XWidth(width);
             textbox.Font = _consolas;
@@ -138,6 +138,7 @@ namespace SqlNotebook {
         public void Init(TabControl tabs) {
             tabs.TabIndex = _tabIndex++;
             tabs.Padding = new(XWidth(2), XHeight(0.25));
+            tabs.Margin = Padding.Empty;
         }
 
         public void Init(TabPage tab) {
