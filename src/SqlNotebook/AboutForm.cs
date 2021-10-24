@@ -4,7 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
-    public partial class AboutForm : Form {
+    public partial class AboutForm : ZForm {
         public AboutForm() {
             InitializeComponent();
 

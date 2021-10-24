@@ -15,7 +15,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace SqlNotebook
 {
-    public partial class MainForm : Form {
+    public partial class MainForm : ZForm {
         private readonly DockPanel _dockPanel;
         private NotebookManager _manager;
         private Notebook _notebook;
@@ -139,28 +139,30 @@ namespace SqlNotebook
                     _cancelLnk.Visible = false;
                 }
             };
-            
-            Slot.Bind(
-                () => BeginInvoke(new MethodInvoker(() =>
-                    _importMnu.Enabled = _saveAsMnu.Enabled = !_operationInProgress && !_isTransactionOpen
-                )),
-                _operationInProgress, _isTransactionOpen);
-            Slot.Bind(
-                () => BeginInvoke(new MethodInvoker(() => 
-                    _exportMnu.Enabled = !_operationInProgress
-                )),
-                _operationInProgress);
-            Slot.Bind(
-                () => BeginInvoke(new MethodInvoker(() => 
-                    _saveBtn.Enabled = _saveMnu.Enabled = !_operationInProgress && _isDirty && !_isTransactionOpen
-                )),
-                _operationInProgress, _isDirty, _isTransactionOpen);
-            _isDirty.Change += (a, b) => SetTitle();
-            Slot.Bind(
-                () => BeginInvoke(new MethodInvoker(() =>
-                    _openTransactionLbl.Visible = _isTransactionOpen
-                )),
-                _isTransactionOpen);
+
+            Load += delegate {
+                Slot.Bind(
+                    () => BeginInvoke(new MethodInvoker(() =>
+                        _importMnu.Enabled = _saveAsMnu.Enabled = !_operationInProgress && !_isTransactionOpen
+                    )),
+                    _operationInProgress, _isTransactionOpen);
+                Slot.Bind(
+                    () => BeginInvoke(new MethodInvoker(() =>
+                        _exportMnu.Enabled = !_operationInProgress
+                    )),
+                    _operationInProgress);
+                Slot.Bind(
+                    () => BeginInvoke(new MethodInvoker(() =>
+                        _saveBtn.Enabled = _saveMnu.Enabled = !_operationInProgress && _isDirty && !_isTransactionOpen
+                    )),
+                    _operationInProgress, _isDirty, _isTransactionOpen);
+                _isDirty.Change += (a, b) => SetTitle();
+                Slot.Bind(
+                    () => BeginInvoke(new MethodInvoker(() =>
+                        _openTransactionLbl.Visible = _isTransactionOpen
+                    )),
+                    _isTransactionOpen);
+            };
 
             if (isNew) {
                 // create a new script by default in a new notebook

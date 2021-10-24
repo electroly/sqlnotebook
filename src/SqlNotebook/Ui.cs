@@ -12,7 +12,7 @@ namespace SqlNotebook {
 
         private static readonly Font _consolas = new("Consolas", 11f);
 
-        public Ui(Control control, bool padded = true) {
+        private Ui(Control control, bool padded, bool autoSize) {
             using var graphics = control.CreateGraphics();
             _x = graphics.MeasureString("x", control.Font, PointF.Empty, StringFormat.GenericTypographic);
             _dpi = graphics.DpiX;
@@ -26,24 +26,25 @@ namespace SqlNotebook {
                 control.Padding = new(formPaddingX, formPaddingY, formPaddingX, formPaddingY);
             }
 
-            if (control is Form form) {
+            if (autoSize && control is Form form) {
                 form.AutoSize = true;
                 form.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             }
         }
 
-        public Ui(Form form, double xWidth, double xHeight, bool padded = true) : this(form, padded) {
+        public Ui(Control control, bool padded = true) : this(control, padded, true) {
+        }
+
+        public Ui(Form form, double xWidth, double xHeight, bool padded = true) : this(form, padded, false) {
             Size size = new(XWidth(xWidth), XHeight(xHeight));
             Size maxSize = new(size.Width * 10, size.Height * 10);
 
             form.AutoSize = false;
             form.SizeGripStyle = SizeGripStyle.Show;
             form.FormBorderStyle = FormBorderStyle.Sizable;
-            form.MinimumSize = size;
             form.Size = size;
+            form.MinimumSize = size;
             form.MaximumSize = maxSize;
-
-            form.Controls.Add(new SizeGripControl());
         }
 
         public Size XSize(double x, double y) => new(XWidth(x), XHeight(y));

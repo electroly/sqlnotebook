@@ -12,7 +12,7 @@ using System.IO;
 using SqlNotebookScript;
 
 namespace SqlNotebook {
-    public partial class ImportCsvForm : Form {
+    public partial class ImportCsvForm : ZForm {
         private readonly string _filePath;
         private readonly DatabaseSchema _databaseSchema;
         private readonly NotebookManager _manager;

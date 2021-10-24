@@ -10,7 +10,7 @@ using SqlNotebookScript.Utils;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SqlNotebook.ImportXls {
-    public partial class ImportXlsBookForm : Form {
+    public partial class ImportXlsBookForm : ZForm {
         private readonly string _filePath;
         private readonly DatabaseSchema _databaseSchema;
         private readonly NotebookManager _manager;

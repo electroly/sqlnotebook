@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 
 namespace SqlNotebook {
-    public partial class ImportRenameTableForm : Form {
+    public partial class ImportRenameTableForm : ZForm {
         public string NewName { get; private set; }
 
         public ImportRenameTableForm(string oldName, string newName) {

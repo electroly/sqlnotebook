@@ -8,7 +8,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 namespace SqlNotebook.Import.Xls {
-    public partial class ImportXlsForm : Form {
+    public partial class ImportXlsForm : ZForm {
         private readonly Tuple<ImportTableExistsOption, string>[] _ifExistsOptions = new[] {
             Tuple.Create(ImportTableExistsOption.AppendNewRows, "Append new rows"),
             Tuple.Create(ImportTableExistsOption.DeleteExistingRows, "Delete existing rows"),

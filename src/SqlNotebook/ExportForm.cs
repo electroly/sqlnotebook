@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
-    public partial class ExportForm : Form {
+    public partial class ExportForm : ZForm {
         public NotebookItem NotebookItem { get; private set; }
         private ImageList _paddedImageList;
 

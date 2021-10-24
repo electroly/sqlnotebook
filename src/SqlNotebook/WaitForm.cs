@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
-    public partial class WaitForm : Form {
+    public partial class WaitForm : ZForm {
         public Task WaitTask;
         public Exception ResultException { get; private set; }
 

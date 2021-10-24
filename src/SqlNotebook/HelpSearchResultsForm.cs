@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
-    public partial class HelpSearchResultsForm : Form {
+    public partial class HelpSearchResultsForm : ZForm {
         public HelpSearchResultsForm(string terms, List<HelpSearcher.Result> results) {
             InitializeComponent();
             Text = $"Search results for \"{terms}\"";

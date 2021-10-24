@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
-    public partial class ImportPreviewForm : Form {
+    public partial class ImportPreviewForm : ZForm {
         public sealed class SelectedTable {
             public string SourceName;
             public string TargetName;

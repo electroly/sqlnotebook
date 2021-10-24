@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 
 namespace SqlNotebook {
-    public partial class ImportScriptPreviewForm : Form {
+    public partial class ImportScriptPreviewForm : ZForm {
         public ImportScriptPreviewForm(string sql, SimpleDataTable table) {
             InitializeComponent();
 

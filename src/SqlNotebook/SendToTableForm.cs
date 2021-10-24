@@ -5,7 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
-    public partial class SendToTableForm : Form {
+    public partial class SendToTableForm : ZForm {
         private readonly HashSet<string> _existingNames; // lowercase
 
         public string SelectedName { get; private set; }

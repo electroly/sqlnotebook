@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
-    public partial class ImportConnectionForm : Form {
+    public partial class ImportConnectionForm : ZForm {
         private Func<DbConnectionStringBuilder, BasicOptions> _getBasicOptions;
         private Action<DbConnectionStringBuilder, BasicOptions> _setBasicOptions;
         private DbConnectionStringBuilder _builder;
