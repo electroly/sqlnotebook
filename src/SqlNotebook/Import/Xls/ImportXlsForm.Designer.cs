@@ -24,6 +24,7 @@ namespace SqlNotebook.Import.Xls {
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            this.components = new System.ComponentModel.Container();
             this._previewButton = new System.Windows.Forms.Button();
             this._columnsLabel = new System.Windows.Forms.Label();
             this._columnsPanel = new System.Windows.Forms.Panel();
@@ -67,6 +68,7 @@ namespace SqlNotebook.Import.Xls {
             this._buttonFlow2 = new System.Windows.Forms.FlowLayoutPanel();
             this._okButton = new System.Windows.Forms.Button();
             this._cancelButton = new System.Windows.Forms.Button();
+            this._updateTimer = new System.Windows.Forms.Timer(this.components);
             this._columnsTable.SuspendLayout();
             this._optionsOuterTable.SuspendLayout();
             this._optionsScrollPanel.SuspendLayout();
@@ -249,6 +251,7 @@ namespace SqlNotebook.Import.Xls {
             this._rowStartText.Name = "_rowStartText";
             this._rowStartText.Size = new System.Drawing.Size(57, 31);
             this._rowStartText.TabIndex = 0;
+            this._rowStartText.TextChanged += new System.EventHandler(this.SpecificRowColumnText_TextChanged);
             // 
             // _rowToLabel
             // 
@@ -267,6 +270,7 @@ namespace SqlNotebook.Import.Xls {
             this._rowEndText.Name = "_rowEndText";
             this._rowEndText.Size = new System.Drawing.Size(39, 31);
             this._rowEndText.TabIndex = 2;
+            this._rowEndText.TextChanged += new System.EventHandler(this.SpecificRowColumnText_TextChanged);
             // 
             // _rowRangeLabel
             // 
@@ -312,6 +316,7 @@ namespace SqlNotebook.Import.Xls {
             this._columnStartText.Name = "_columnStartText";
             this._columnStartText.Size = new System.Drawing.Size(57, 31);
             this._columnStartText.TabIndex = 0;
+            this._columnStartText.TextChanged += new System.EventHandler(this.SpecificRowColumnText_TextChanged);
             // 
             // _columnToLabel
             // 
@@ -330,6 +335,7 @@ namespace SqlNotebook.Import.Xls {
             this._columnEndText.Name = "_columnEndText";
             this._columnEndText.Size = new System.Drawing.Size(39, 31);
             this._columnEndText.TabIndex = 2;
+            this._columnEndText.TextChanged += new System.EventHandler(this.SpecificRowColumnText_TextChanged);
             // 
             // _columnRangeLabel
             // 
@@ -356,6 +362,8 @@ namespace SqlNotebook.Import.Xls {
             // _columnNamesCheck
             // 
             this._columnNamesCheck.AutoSize = true;
+            this._columnNamesCheck.Checked = true;
+            this._columnNamesCheck.CheckState = System.Windows.Forms.CheckState.Checked;
             this._optionsTable.SetColumnSpan(this._columnNamesCheck, 3);
             this._columnNamesCheck.Location = new System.Drawing.Point(3, 139);
             this._columnNamesCheck.Name = "_columnNamesCheck";
@@ -363,6 +371,7 @@ namespace SqlNotebook.Import.Xls {
             this._columnNamesCheck.TabIndex = 5;
             this._columnNamesCheck.Text = "Sheet includes column &header row";
             this._columnNamesCheck.UseVisualStyleBackColor = true;
+            this._columnNamesCheck.CheckedChanged += new System.EventHandler(this.ColumnNamesCheck_CheckedChanged);
             // 
             // _targetLabel
             // 
@@ -603,6 +612,7 @@ namespace SqlNotebook.Import.Xls {
             this._okButton.TabIndex = 5;
             this._okButton.Text = "Import";
             this._okButton.UseVisualStyleBackColor = true;
+            this._okButton.Click += new System.EventHandler(this.OkButton_Click);
             // 
             // _cancelButton
             // 
@@ -615,6 +625,11 @@ namespace SqlNotebook.Import.Xls {
             this._cancelButton.TabIndex = 6;
             this._cancelButton.Text = "Cancel";
             this._cancelButton.UseVisualStyleBackColor = true;
+            // 
+            // _updateTimer
+            // 
+            this._updateTimer.Interval = 25;
+            this._updateTimer.Tick += new System.EventHandler(this.UpdateTimer_Tick);
             // 
             // ImportXlsForm
             // 
@@ -709,5 +724,6 @@ namespace SqlNotebook.Import.Xls {
         private System.Windows.Forms.Label _ifConversionFailsLabel;
         private System.Windows.Forms.ComboBox _convertFailCombo;
         private System.Windows.Forms.LinkLabel _useSelectionLink;
+        private System.Windows.Forms.Timer _updateTimer;
     }
 }

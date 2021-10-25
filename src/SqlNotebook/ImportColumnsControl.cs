@@ -50,12 +50,6 @@ namespace SqlNotebook {
                 (sender, e) => ValidateGridInput());
         }
 
-        public void SetFixedColumnWidths(int? conversionWidth = null) {
-            using var g = CreateGraphics();
-            var x = g.MeasureString("x", Font, PointF.Empty, StringFormat.GenericTypographic);
-            _conversionColumn.Width = (int)((conversionWidth ?? 25) * x.Width);
-        }
-
         public void SetSourceColumns(IReadOnlyList<string> columnNames) {
             _table.BeginLoadData();
             _table.Clear();

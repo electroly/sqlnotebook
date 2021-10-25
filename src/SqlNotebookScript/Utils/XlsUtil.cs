@@ -123,7 +123,8 @@ namespace SqlNotebookScript.Utils {
         }
 
         public static string[] ReadColumnNames(string filePath, int worksheetIndex, int? firstRowNumber,
-        string firstColumnLetter, string lastColumnLetter, bool headerRow) {
+            string firstColumnLetter, string lastColumnLetter, bool headerRow
+            ) {
             var firstRowIndex = firstRowNumber.HasValue ? firstRowNumber.Value - 1 : 0;
             var firstColumnIndex = firstColumnLetter == null ? 0 : ColumnRefToIndex(firstColumnLetter) ?? 0;
             var lastColumnIndex = lastColumnLetter == null ? null : ColumnRefToIndex(lastColumnLetter);

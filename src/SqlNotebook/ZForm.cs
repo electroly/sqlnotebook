@@ -7,7 +7,7 @@ namespace SqlNotebook {
     /// Various bug fixes in the framework's Form class. We need to draw our own size gripper because the framework's
     /// gripper is not DPI aware. We also need the actual hit box for the gripper to resize based on DPI.
     /// </summary>
-    public abstract class ZForm : Form {
+    public class ZForm : Form {
         private const int WM_NCHITTEST = 0x0084;
         private const int HTBOTTOMRIGHT = 17;
 

@@ -12,13 +12,12 @@ namespace SqlNotebook {
             textbox.SqlText = sql;
             _scriptPanel.Controls.Add(textbox);
 
-            ImportPreviewControl grid = new() { Dock = DockStyle.Fill };
-            grid.SetTable(table.ToDataTable(), true);
+            ImportPreviewControl grid = new(table.ToDataTable()) { Dock = DockStyle.Fill };
             _previewPanel.Controls.Add(grid);
 
-            Ui ui = new(this, 150, 50);
+            Ui ui = new(this, 150, 40);
             ui.Init(_table);
-            ui.Init(_split, 0.6);
+            ui.Init(_split, 0.5);
             ui.InitHeader(_scriptLabel);
             ui.InitHeader(_previewLabel);
             ui.Init(_buttonFlow);

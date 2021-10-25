@@ -1,10 +1,14 @@
 ﻿using NPOI.SS.Util;
 using SqlNotebook.Properties;
+using SqlNotebookScript.Interpreter;
+using SqlNotebookScript.Utils;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace SqlNotebook.Import.Xls {
@@ -22,15 +26,17 @@ namespace SqlNotebook.Import.Xls {
         };
 
         private readonly List<Tuple<int, string>> _sheets = new();
-
         private readonly XlsInput _input;
+        private readonly NotebookManager _manager;
         private readonly DataGridView _grid;
         private readonly int _columnWidth;
         private readonly ImportColumnsControl _columnsControl;
 
-        public ImportXlsForm(XlsInput input) {
+        public ImportXlsForm(XlsInput input, NotebookManager manager, DatabaseSchema schema) {
             InitializeComponent();
             _input = input;
+            _manager = manager;
+
             _originalFilePanel.Controls.Add(_grid = DataGridViewUtil.NewDataGridView(
                 rowHeadersVisible: true, autoGenerateColumns: false));
             _columnsPanel.Controls.Add(_columnsControl = new() {
@@ -49,6 +55,12 @@ namespace SqlNotebook.Import.Xls {
                 _grid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 _grid.SelectionMode = DataGridViewSelectionMode.ColumnHeaderSelect;
                 DataGridViewUtil.ApplyCustomRowHeaderPaint(_grid);
+
+                _tableNameCombo.Text = Path.GetFileNameWithoutExtension(input.FilePath);
+
+                foreach (var tableName in schema.Tables.Keys) {
+                    _tableNameCombo.Items.Add(tableName);
+                }
 
                 Text = $"{Path.GetFileName(input.FilePath)} - Import";
                 Icon = Resources.file_extension_xls_ico;
@@ -112,6 +124,9 @@ namespace SqlNotebook.Import.Xls {
                 _convertFailCombo.DataSource = _conversionFailOptions;
                 EnableDisableRowColumnTextboxes();
                 LoadOriginalSheetPreview();
+                LoadColumns();
+
+                _tableNameCombo.Select();
             };
         }
 
@@ -122,14 +137,12 @@ namespace SqlNotebook.Import.Xls {
 
         private void SpecificColumnsCheck_CheckedChanged(object sender, EventArgs e) {
             EnableDisableRowColumnTextboxes();
+            StartUpdateTimer();
         }
 
         private void SpecificRowsCheck_CheckedChanged(object sender, EventArgs e) {
             EnableDisableRowColumnTextboxes();
-        }
-
-        private void PreviewButton_Click(object sender, EventArgs e) {
-
+            StartUpdateTimer();
         }
 
         private void UseSelectionLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
@@ -169,10 +182,17 @@ namespace SqlNotebook.Import.Xls {
                 _columnStartText.Text = $"{CellReference.ConvertNumToColString(minColumnIndex)}";
                 _columnEndText.Text = $"{CellReference.ConvertNumToColString(maxColumnIndex)}";
             }
+
+            StartUpdateTimer();
+        }
+
+        private void SpecificRowColumnText_TextChanged(object sender, EventArgs e) {
+            StartUpdateTimer();
         }
 
         private void SheetCombo_SelectedIndexChanged(object sender, EventArgs e) {
             LoadOriginalSheetPreview();
+            StartUpdateTimer();
         }
 
         private void LoadOriginalSheetPreview() {
@@ -199,6 +219,274 @@ namespace SqlNotebook.Import.Xls {
             }
             _rowRangeLabel.Text = $"(1-{_grid.Rows.Count})";
             _columnRangeLabel.Text = $"(A-{CellReference.ConvertNumToColString(_grid.Columns.Count - 1)})";
+        }
+
+        private void LoadColumns() {
+            var sheetIndex = (int)_sheetCombo.SelectedValue;
+            var sheetInfo = _input.Worksheets[sheetIndex];
+            
+            var minRowIndex = 0;
+            if (_specificRowsCheck.Checked) {
+                try {
+                    minRowIndex = int.Parse(_rowStartText.Text) - 1;
+                } catch {
+                    // Ignore for now. We will show this error when they hit OK.
+                }
+            }
+            
+            var minColumnIndex = 0;
+            var maxColumnIndex = sheetInfo.DataTable.Columns.Count - 1;
+            if (_specificColumnsCheck.Checked) {
+                try {
+                    if (IsValidColumnString(_columnStartText.Text) && IsValidColumnString(_columnEndText.Text)) {
+                        var (min, max) = (
+                            CellReference.ConvertColStringToIndex(_columnStartText.Text),
+                            CellReference.ConvertColStringToIndex(_columnEndText.Text));
+                        minColumnIndex = min;
+                        maxColumnIndex = max;
+                    }
+                } catch {
+                    // Ignore for now. We will show this error when they hit OK.
+                }
+            }
+
+            List<string> columnNames = new();
+            for (var columnIndex = minColumnIndex; columnIndex <= maxColumnIndex; columnIndex++) {
+                var columnName = CellReference.ConvertNumToColString(columnIndex);
+                if (_columnNamesCheck.Checked) {
+                    try {
+                        columnName = sheetInfo.DataTable.Rows[minRowIndex][columnIndex].ToString();
+                    } catch {
+                        // Ignore for now. We will show this error when they hit OK.
+                    }
+                }
+                if (string.IsNullOrWhiteSpace(columnName)) {
+                    columnName = $"column{columnIndex + 1}";
+                }
+
+                // Uniquify the name.
+                while (columnNames.Contains(columnName)) {
+
+                }
+
+                columnNames.Add(columnName);
+            }
+
+            _columnsControl.SetSourceColumns(columnNames);
+            _columnsControl.SetTargetToNewTable();
+        }
+
+        private static bool IsValidColumnString(string x) =>
+            Regex.IsMatch(x, "^[A-Za-z]+$");
+
+        private void StartUpdateTimer() {
+            _updateTimer.Stop();
+            _updateTimer.Start();
+        }
+
+        private void UpdateTimer_Tick(object sender, EventArgs e) {
+            _updateTimer.Stop();
+            LoadColumns();
+        }
+
+        private void ColumnNamesCheck_CheckedChanged(object sender, EventArgs e) {
+            StartUpdateTimer();
+        }
+
+        private void PreviewButton_Click(object sender, EventArgs e) {
+            string tempSql, realSql;
+            try {
+                var tableName = GetValidatedTableName();
+
+                var tempPrefix = Guid.NewGuid().ToString().Replace("-", "") + "_";
+                StringBuilder tempSqlSb = new(GenerateSql(tempPrefix));
+                tempSqlSb.AppendLine($"SELECT * FROM {(tempPrefix + tableName).DoubleQuote()} LIMIT 1000;");
+                tempSqlSb.AppendLine($"DROP TABLE {(tempPrefix + tableName).DoubleQuote()};");
+                tempSql = tempSqlSb.ToString();
+
+                realSql = GenerateSql();
+            } catch (Exception ex) {
+                MessageForm.ShowError(this, "Preview Error", ex.Message);
+                return;
+            }
+
+            ScriptOutput output = null;
+            using WaitForm waitForm = new("Import Preview", "Generating preview...", () => {
+                output = _manager.ExecuteScriptEx(
+                    code: tempSql,
+                    args: new Dictionary<string, object>(),
+                    transactionType: NotebookManager.TransactionType.RollbackTransaction,
+                    vars: out _);
+            });
+            if (waitForm.ShowDialog(this) != DialogResult.OK) {
+                MessageForm.ShowError(this, "Preview Error", waitForm.ResultException.Message);
+                return;
+            }
+
+            if (output.DataTables.Count != 1) {
+                MessageForm.ShowError(this, "Preview Error", "The import failed due to an unknown error.");
+                return;
+            }
+
+            using ImportScriptPreviewForm previewForm = new(realSql, output.DataTables.Single());
+            previewForm.ShowDialog(this);
+        }
+
+        private string GenerateSql(string temporaryTablePrefix = null) {
+            var sheetIndex = (int)_sheetCombo.SelectedValue;
+            var sheetInfo = _input.Worksheets[sheetIndex];
+
+            var (minRowIndex, maxRowIndex) = GetValidatedMinMaxRowIndices(sheetInfo);
+            var (minColumnIndex, maxColumnIndex) = GetValidatedMinMaxColumnIndices(sheetInfo);
+            var columnHeaders = _columnNamesCheck.Checked ? ColumnHeadersOption.Present : ColumnHeadersOption.NotPresent;
+            var tableName = GetValidatedTableName();
+            var ifTableExists = (ImportTableExistsOption)_ifExistsCombo.SelectedValue;
+            var ifConversionFails = (ImportConversionFailOption)_convertFailCombo.SelectedValue;
+            var sqlColumnList = GetValidatedSqlColumnList();
+
+            StringBuilder sb = new();
+
+            if (ifTableExists == ImportTableExistsOption.DropTable) {
+                sb.AppendLine($"DROP TABLE IF EXISTS {tableName.DoubleQuote()}; -- {ifTableExists.GetDescription()}");
+                sb.AppendLine();
+            }
+
+            sb.AppendLine($"IMPORT XLS {_input.FilePath.SingleQuote()}");
+            sb.AppendLine($"WORKSHEET {sheetIndex + 1}");
+            sb.Append($"INTO {((temporaryTablePrefix ?? "") + tableName).DoubleQuote()} ");
+            sb.AppendLine("(");
+            sb.AppendLine(sqlColumnList);
+            sb.Append(") ");
+            sb.AppendLine("OPTIONS (");
+            if (temporaryTablePrefix != null) {
+                sb.AppendLine($"    TEMPORARY_TABLE: 1,");
+            }
+            if (minRowIndex.HasValue) {
+                sb.AppendLine($"    FIRST_ROW: {minRowIndex.Value + 1},");
+            }
+            if (maxRowIndex.HasValue) {
+                sb.AppendLine($"    LAST_ROW: {maxRowIndex.Value + 1},");
+            }
+            if (minColumnIndex.HasValue) {
+                sb.AppendLine($"    FIRST_COLUMN: {CellReference.ConvertNumToColString(minColumnIndex.Value).SingleQuote()},");
+            }
+            if (maxColumnIndex.HasValue) {
+                sb.AppendLine($"    LAST_COLUMN: {CellReference.ConvertNumToColString(maxColumnIndex.Value).SingleQuote()},");
+            }
+            sb.AppendLine($"    HEADER_ROW: {(columnHeaders == ColumnHeadersOption.Present ? 1 : 0)}, -- {columnHeaders.GetDescription()}");
+            sb.AppendLine($"    TRUNCATE_EXISTING_TABLE: {(ifTableExists == ImportTableExistsOption.DeleteExistingRows ? 1 : 0)}, -- {ifTableExists.GetDescription()}");
+            sb.AppendLine($"    IF_CONVERSION_FAILS: {(int)ifConversionFails} -- {ifConversionFails.GetDescription()}");
+            sb.AppendLine($");");
+
+            return sb.ToString();
+        }
+
+        private (int? Min, int? Max) GetValidatedMinMaxRowIndices(XlsWorksheetInfo sheetInfo) {
+            if (_specificRowsCheck.Checked) {
+                var numRows = sheetInfo.DataTable.Rows.Count;
+
+                if (!int.TryParse(_rowStartText.Text, out var minRowNumber)) {
+                    throw new Exception($"\"{_rowStartText.Text}\" is not a valid starting row number. " +
+                        $"Please enter a number from 1 to {numRows}.");
+                }
+                var minRowIndex = minRowNumber - 1;
+                if (minRowIndex < 0 || minRowIndex >= numRows) {
+                    throw new Exception($"The starting row number \"{_rowStartText.Text}\" is out of range. " +
+                        $"Please enter a number from 1 to {numRows}.");
+                }
+
+                if (!int.TryParse(_rowEndText.Text, out var maxRowNumber)) {
+                    throw new Exception($"\"{_rowEndText.Text}\" is not a valid ending row number. Please enter " +
+                        $"a number from 1 to {numRows}.");
+                }
+                var maxRowIndex = maxRowNumber - 1;
+                if (maxRowIndex < 0 || maxRowIndex >= numRows) {
+                    throw new Exception($"The ending row number \"{_rowEndText.Text}\" is out of range. " +
+                        $"Please enter a number from 1 to {numRows}.");
+                }
+
+                if (minRowIndex > maxRowIndex) {
+                    throw new Exception(
+                        "The ending row number must be greater than or equal to the starting row number.");
+                }
+
+                return (minRowIndex, maxRowIndex);
+            }
+
+            return (null, null);
+        }
+
+        private (int? Min, int? Max) GetValidatedMinMaxColumnIndices(XlsWorksheetInfo sheetInfo) {
+            if (_specificColumnsCheck.Checked) {
+                var numColumns = sheetInfo.DataTable.Columns.Count;
+
+                if (!IsValidColumnString(_columnStartText.Text)) {
+                    throw new Exception($"\"{_columnStartText.Text}\" is not a valid starting column. " +
+                        $"Please enter a column from A to {CellReference.ConvertNumToColString(numColumns - 1)}.");
+                }
+                var minColumnIndex = CellReference.ConvertColStringToIndex(_columnStartText.Text);
+                if (minColumnIndex < 0 || minColumnIndex >= numColumns) {
+                    throw new Exception($"The starting column \"{_columnStartText.Text}\" is out of range. " +
+                        $"Please enter a column from A to {CellReference.ConvertNumToColString(numColumns - 1)}.");
+                }
+
+                if (!IsValidColumnString(_columnEndText.Text)) {
+                    throw new Exception($"\"{_columnEndText.Text}\" is not a valid ending column. Please enter " +
+                        $"a column from A to {CellReference.ConvertNumToColString(numColumns - 1)}.");
+                }
+                var maxColumnIndex = CellReference.ConvertColStringToIndex(_columnEndText.Text);
+                if (maxColumnIndex < 0 || maxColumnIndex >= numColumns) {
+                    throw new Exception($"The ending column \"{_columnEndText.Text}\" is out of range. " +
+                        $"Please enter a column from A to {CellReference.ConvertNumToColString(numColumns - 1)}.");
+                }
+
+                if (minColumnIndex > maxColumnIndex) {
+                    throw new Exception(
+                        "The ending column must be greater than or equal to the starting column.");
+                }
+
+                return (minColumnIndex, maxColumnIndex);
+            }
+
+            return (null, null);
+        }
+
+        private string GetValidatedTableName() {
+            if (string.IsNullOrWhiteSpace(_tableNameCombo.Text)) {
+                throw new Exception("Please enter a target table name.");
+            }
+            return _tableNameCombo.Text;
+        }
+
+        private string GetValidatedSqlColumnList() {
+            var x = _columnsControl.SqlColumnList;
+            if (string.IsNullOrWhiteSpace(x)) {
+                throw new Exception("Please select at least one column for import.");
+            }
+            return x;
+        }
+
+        private void OkButton_Click(object sender, EventArgs e) {
+            string sql;
+            try {
+                sql = GenerateSql();
+            } catch (Exception ex) {
+                MessageForm.ShowError(this, "Import Error", ex.Message);
+                return;
+            }
+
+            using WaitForm waitForm = new("Import", $"Importing XLS file...", () => {
+                _manager.ExecuteScript(sql, transactionType: NotebookManager.TransactionType.Transaction);
+            });
+            if (waitForm.ShowDialog(this) != DialogResult.OK) {
+                MessageForm.ShowError(this, "Import Error", waitForm.ResultException.Message);
+                return;
+            }
+
+            _manager.Rescan();
+            _manager.SetDirty();
+            DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }

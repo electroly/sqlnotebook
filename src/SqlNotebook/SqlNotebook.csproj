@@ -81,12 +81,6 @@
     <Compile Update="ImportTextFilePreviewControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="ImportXls\ImportXlsSheetControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="ImportXls\ImportXlsSheetsControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Update="LoadingContainerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

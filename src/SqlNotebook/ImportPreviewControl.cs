@@ -3,26 +3,18 @@ using System.Windows.Forms;
 
 namespace SqlNotebook {
     public partial class ImportPreviewControl : UserControl {
-        private DataTable _table;
-        private bool _disposeTable;
+        private readonly DataGridView _grid;
 
-        public ImportPreviewControl() {
+        public ImportPreviewControl(DataTable table) {
             InitializeComponent();
-            _grid.EnableDoubleBuffering();
-            _grid.Disposed += (sender, e) => {
-                if (_disposeTable) {
-                    _table?.Dispose();
-                }
+
+            Controls.Add(_grid = DataGridViewUtil.NewDataGridView());
+            _grid.Dock = DockStyle.Fill;
+            _grid.DataSource = table;
+
+            Disposed += delegate {
+                table.Dispose();
             };
-        }
-
-        public void SetTable(DataTable table, bool disposeTable = false) {
-            if (_disposeTable) {
-                _table?.Dispose();
-            }
-
-            _disposeTable = disposeTable;
-            _grid.DataSource = _table = table;
         }
     }
 }
