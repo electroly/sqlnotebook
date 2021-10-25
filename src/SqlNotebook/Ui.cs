@@ -40,8 +40,6 @@ namespace SqlNotebook {
             Size maxSize = new(size.Width * 10, size.Height * 10);
 
             form.AutoSize = false;
-            form.SizeGripStyle = SizeGripStyle.Show;
-            form.FormBorderStyle = FormBorderStyle.Sizable;
             form.Size = size;
             form.MinimumSize = size;
             form.MaximumSize = maxSize;

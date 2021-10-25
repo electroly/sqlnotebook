@@ -260,8 +260,8 @@ namespace SqlNotebook {
             }
         }
 
-        public static void EnableDoubleBuffering(this DataGridView self) {
-            typeof(DataGridView).InvokeMember(
+        public static void EnableDoubleBuffering(this Control self) {
+            typeof(Control).InvokeMember(
                 name: "DoubleBuffered",
                 invokeAttr: BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty,
                 binder: null,
