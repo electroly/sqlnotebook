@@ -69,7 +69,7 @@
     <Compile Update="ImportColumnsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="ImportCsvOptionsControl.cs">
+    <Compile Update="Import\Csv\ImportCsvOptionsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="ImportMultiTablePreviewControl.cs">

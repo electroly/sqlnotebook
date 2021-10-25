@@ -1,17 +1,15 @@
-﻿using System;
+﻿using SqlNotebookScript;
+using SqlNotebookScript.Interpreter;
+using SqlNotebookScript.Utils;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
-using SqlNotebookScript.Interpreter;
-using SqlNotebookScript.Utils;
-using System.IO;
-using SqlNotebookScript;
 
-namespace SqlNotebook {
+namespace SqlNotebook.Import.Csv {
     public partial class ImportCsvForm : ZForm {
         private readonly string _filePath;
         private readonly DatabaseSchema _databaseSchema;

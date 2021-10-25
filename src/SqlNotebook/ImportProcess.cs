@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SqlNotebook.Import.Csv;
 using SqlNotebook.Import.Xls;
 using SqlNotebookScript.Utils;
 
@@ -28,7 +29,7 @@ namespace SqlNotebook {
                 case ".xlsx":
                 case ".xlsm":
                 case ".xlsb":
-                    await ImportXls(owner, filePath, manager, schema);
+                    ImportXls(owner, filePath, manager, schema);
                     break;
 
                 default:
@@ -50,7 +51,7 @@ namespace SqlNotebook {
             await RunImportScript(importSql, owner, filePath, manager);
         }
 
-        private static async Task ImportXls(
+        private static void ImportXls(
             IWin32Window owner, string filePath, NotebookManager manager, DatabaseSchema schema
             ) {
             XlsInput input = null;

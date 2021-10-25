@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 using SqlNotebookScript.Utils;
 
-namespace SqlNotebook {
+namespace SqlNotebook.Import.Csv {
     public partial class ImportCsvOptionsControl : UserControl {
         private readonly List<Tuple<int, string>> _encodings = new List<Tuple<int, string>> {
             Tuple.Create(0, "Unicode")
