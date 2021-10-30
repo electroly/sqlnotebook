@@ -72,9 +72,6 @@
     <Compile Update="Import\Csv\ImportCsvOptionsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="ImportMultiTablePreviewControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Update="ImportPreviewControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -116,6 +113,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\ThemeVS2012Light.csproj" />
     <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\WinFormsUI.csproj" />
+    <ProjectReference Include="..\..\ext\Windows-API-Code-Pack\source\WindowsAPICodePack\Core\Core.csproj" />
+    <ProjectReference Include="..\..\ext\Windows-API-Code-Pack\source\WindowsAPICodePack\Shell\Shell.csproj" />
     <ProjectReference Include="..\SqlNotebookCore\SqlNotebookCore.vcxproj" />
     <ProjectReference Include="..\SqlNotebookScript\SqlNotebookScript.csproj" />
     <ProjectReference Include="..\SqlNotebookUpdater\SqlNotebookUpdater.csproj" />
@@ -142,7 +141,6 @@
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
-    <PackageReference Include="unvell.ReoGrid.dll" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">

@@ -276,7 +276,7 @@ namespace SqlNotebook.Import.Csv {
 
             string script = null;
             SimpleDataTable table = null;
-            using WaitForm waitForm = new("Import", "Generating preview...", () => {
+            WaitForm.Go(this, "Import", "Generating preview...", out var success, () => {
                 var tableName = Guid.NewGuid().ToString();
                 script = GetImportSql();
                 try {
@@ -287,8 +287,7 @@ namespace SqlNotebook.Import.Csv {
                     _manager.ExecuteScript($"DROP TABLE IF EXISTS {tableName.DoubleQuote()}");
                 }
             });
-            if (waitForm.ShowDialog(this) != DialogResult.OK) {
-                MessageForm.ShowError(this, "Error", waitForm.ResultException.Message);
+            if (!success) {
                 return;
             }
 

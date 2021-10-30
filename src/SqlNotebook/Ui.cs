@@ -15,7 +15,7 @@ namespace SqlNotebook {
         private Ui(Control control, bool padded, bool autoSize) {
             using var graphics = control.CreateGraphics();
             _x = graphics.MeasureString("x", control.Font, PointF.Empty, StringFormat.GenericTypographic);
-            _dpi = graphics.DpiX;
+            _dpi = control.DeviceDpi;
             var buttonPaddingX = (int)(_x.Width * 3);
             var buttonPaddingY = (int)(_x.Height * 0.25);
             _buttonPadding = new(buttonPaddingX, buttonPaddingY, buttonPaddingX, buttonPaddingY);
@@ -43,6 +43,7 @@ namespace SqlNotebook {
             form.Size = size;
             form.MinimumSize = size;
             form.MaximumSize = maxSize;
+            form.SizeGripStyle = SizeGripStyle.Show;
         }
 
         public Size XSize(double x, double y) => new(XWidth(x), XHeight(y));
@@ -59,6 +60,10 @@ namespace SqlNotebook {
             using var g = control.CreateGraphics();
             var size = g.MeasureString("x", control.Font, PointF.Empty, StringFormat.GenericTypographic);
             return (int)(size.Height * x);
+        }
+
+        public int SizeGripHeight {
+            get => (int)(2 * _dpi / 96) * 8;
         }
 
         public void Init(Label label) {

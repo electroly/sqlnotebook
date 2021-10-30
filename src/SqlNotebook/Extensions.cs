@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SqlNotebookScript;
+using SqlNotebookScript.Utils;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,11 +10,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SqlNotebookScript;
-using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {
     public static class Extensions {
@@ -74,66 +72,6 @@ namespace SqlNotebook {
 
             [DllImport("user32.dll", EntryPoint = @"SendMessage", CharSet = CharSet.Auto)]
             public static extern int SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, ref Rectangle lParam);
-        }
-
-        public static void BeginTaskbarProgress(this IWin32Window window) {
-            try {
-                SetTaskbarProgressState(window.Handle, TaskbarStates.Indeterminate);
-            } catch (Exception) { }
-        }
-
-        public static void EndTaskbarProgress(this IWin32Window window) {
-            try {
-                SetTaskbarProgressState(window.Handle, TaskbarStates.NoProgress);
-            } catch (Exception) { }
-        }
-
-        // https://github.com/SlavaRa/flashdevelop-plugins/blob/5eb08b6b9afda8450135224c28bd0457e69504d2/External/Tools/AppMan/Utilities/TaskbarProgress.cs
-        private enum TaskbarStates {
-            NoProgress = 0,
-            Indeterminate = 0x1,
-            Normal = 0x2,
-            Error = 0x4,
-            Paused = 0x8
-        }
-
-        [ComImport, Guid("ea1afb91-9e28-4b86-90e9-9e9f8a5eefaf"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        private interface ITaskbarList3 {
-            // ITaskbarList
-            [PreserveSig]
-            void HrInit();
-            [PreserveSig]
-            void AddTab(IntPtr hwnd);
-            [PreserveSig]
-            void DeleteTab(IntPtr hwnd);
-            [PreserveSig]
-            void ActivateTab(IntPtr hwnd);
-            [PreserveSig]
-            void SetActiveAlt(IntPtr hwnd);
-            // ITaskbarList2
-            [PreserveSig]
-            void MarkFullscreenWindow(IntPtr hwnd, [MarshalAs(UnmanagedType.Bool)] bool fFullscreen);
-            // ITaskbarList3
-            [PreserveSig]
-            void SetProgressValue(IntPtr hwnd, UInt64 ullCompleted, UInt64 ullTotal);
-            [PreserveSig]
-            void SetProgressState(IntPtr hwnd, TaskbarStates state);
-        }
-
-        [ComImport, Guid("56FDF344-FD6D-11d0-958A-006097C9A090"), ClassInterface(ClassInterfaceType.None)]
-        private class TaskbarInstance { }
-
-        private static ITaskbarList3 _taskbar = (ITaskbarList3)new TaskbarInstance();
-        private static bool _taskbarSupported = Environment.OSVersion.Version >= new Version(6, 1);
-
-        private static void SetTaskbarProgressState(IntPtr hwnd, TaskbarStates state) {
-            if (_taskbarSupported)
-                _taskbar.SetProgressState(hwnd, state);
-        }
-
-        private static void SetTaskbarProgressValue(IntPtr hwnd, double value) {
-            if (_taskbarSupported)
-                _taskbar.SetProgressValue(hwnd, (ulong)(value * 1000), 1000);
         }
 
         public static void EnableDoubleBuffer(this ListView self) {

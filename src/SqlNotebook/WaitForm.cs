@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.WindowsAPICodePack.Taskbar;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,11 +14,51 @@ namespace SqlNotebook {
         private readonly Brush _brush;
         private readonly Pen _pen;
         private readonly float _penWidth;
+        private readonly System.Windows.Forms.Timer _timer;
+        
+        // Set this at startup.
+        public static Form MainAppForm { private get; set; }
 
         public Task WaitTask;
         public Exception ResultException { get; private set; }
 
-        public WaitForm(string title, string text, Action action) {
+        public static void Go(IWin32Window owner, string title, string text, out bool success, Action action) {
+            success = false;
+
+            // Try running the action briefly before pulling up the wait form, to avoid a flicker of the wait form for
+            // very fast tasks.
+            var task = Task.Run(action);
+            task.Wait(millisecondsTimeout: 20);
+
+            if (task.IsCompleted) {
+                try {
+                    task.GetAwaiter().GetResult();
+                } catch (Exception ex) {
+                    MessageForm.ShowError(owner, title, ex.Message);
+                    return;
+                }
+            } else {
+                using WaitForm f = new(title, text, () => task.GetAwaiter().GetResult());
+                var result = f.ShowDialog(owner);
+                if (result != DialogResult.OK) {
+                    MessageForm.ShowError(owner, title, f.ResultException.Message);
+                    return;
+                }
+            }
+
+            success = true;
+            return;
+        }
+
+        public static T Go<T>(IWin32Window owner, string title, string text, out bool success, Func<T> func) {
+            T result = default;
+            Go(owner, title, text, out success, action: () => {
+                result = func();
+            });
+            return result;
+        }
+
+        private WaitForm(string title, string text, Action action) {
             InitializeComponent();
             Text = title;
             _infoTxt.Text = text;
@@ -52,6 +94,34 @@ namespace SqlNotebook {
                     Close();
                 }));
             });
+
+            if (TaskbarManager.IsPlatformSupported) {
+                // It seems like the indeterminate progressbar state isn't shown on Windows 10. Let's fake a progress
+                // by asymptotically approaching 90% with a hand-tweaked curve that seems to be OK most of the time.
+                TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal, MainAppForm.Handle);
+                var stopwatch = Stopwatch.StartNew();
+                _timer = new() {
+                    Interval = 16,
+                    Enabled = true
+                };
+                var lastValue = 0;
+                _timer.Tick += delegate {
+                    try {
+                        var value = (int)(90 * (1 - Math.Exp(0.01 * stopwatch.ElapsedMilliseconds * Math.Log(0.9))));
+                        if (value != lastValue) {
+                            TaskbarManager.Instance.SetProgressValue(value, 100);
+                            lastValue = value;
+                        }
+                    } catch { }
+                };
+                FormClosed += delegate {
+                    try {
+                        _timer.Stop();
+                        TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress, MainAppForm.Handle);
+                    } catch { }
+                };
+                Disposed += delegate { _timer.Dispose(); };
+            }
         }
 
         private void Spinner_Paint(object sender, PaintEventArgs e) {

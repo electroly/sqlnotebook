@@ -14,6 +14,7 @@ namespace SqlNotebook {
             ui.Init(_titleLabel);
             ui.Init(_versionLabel);
             ui.Init(_copyrightLabel);
+            ui.MarginRight(_copyrightLabel, 10);
             ui.Init(_websiteLnk);
             ui.MarginTop(_websiteLnk);
             ui.Init(_githubLnk);

@@ -52,13 +52,6 @@ namespace SqlNotebook {
         }
     }
 
-    public sealed class StatusUpdateEventArgs : EventArgs {
-        public string Status { get; }
-        public StatusUpdateEventArgs(string status) {
-            Status = status;
-        }
-    }
-
     public sealed class HotkeyEventArgs : EventArgs {
         public Keys KeyData { get; }
         public HotkeyEventArgs(Keys keyData) {
@@ -67,7 +60,6 @@ namespace SqlNotebook {
     }
 
     public sealed class NotebookManager {
-        private readonly Stack<string> _statusStack = new Stack<string>();
         public Notebook Notebook { get; }
         public IReadOnlyList<NotebookItem> Items { get; private set; } = new NotebookItem[0];
         public event EventHandler<NotebookChangeEventArgs> NotebookChange; // informs the ExplorerControl about changes
@@ -76,7 +68,6 @@ namespace SqlNotebook {
         public event EventHandler NotebookItemsSaveRequest;
         public event EventHandler NotebookDirty;
         public event EventHandler<NotebookItemRenameEventArgs> NotebookItemRename;
-        public event EventHandler<StatusUpdateEventArgs> StatusUpdate;
         public event EventHandler<HotkeyEventArgs> HandleHotkeyRequest;
         private readonly Slot<bool> _isTransactionOpen;
 
@@ -224,7 +215,8 @@ namespace SqlNotebook {
         }
 
         public ScriptOutput ExecuteScript(string code, IReadOnlyDictionary<string, object> args = null,
-        TransactionType transactionType = TransactionType.NoTransaction) =>
+            TransactionType transactionType = TransactionType.NoTransaction
+            ) =>
             ExecuteScriptEx(code, args, transactionType, out _);
 
         public enum TransactionType {
@@ -328,16 +320,6 @@ namespace SqlNotebook {
 
             NotebookItemRename?.Invoke(this, new NotebookItemRenameEventArgs(item, newName));
             SetDirty();
-        }
-
-        public void PushStatus(string status) {
-            _statusStack.Push(status);
-            StatusUpdate?.Invoke(this, new StatusUpdateEventArgs(status));
-        }
-
-        public void PopStatus() {
-            _statusStack.Pop();
-            StatusUpdate?.Invoke(this, new StatusUpdateEventArgs(_statusStack.Any() ? _statusStack.Peek() : ""));
         }
 
         private T Invoke<T>(Func<T> func) {

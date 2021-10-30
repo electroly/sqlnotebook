@@ -8,9 +8,8 @@ namespace SqlNotebook {
     public partial class ExplorerControl : UserControl {
         private readonly NotebookManager _manager;
         private readonly IWin32Window _mainForm;
-        private readonly Slot<bool> _operationInProgress;
 
-        public ExplorerControl(NotebookManager manager, IWin32Window mainForm, Slot<bool> operationInProgress) {
+        public ExplorerControl(NotebookManager manager, IWin32Window mainForm) {
             InitializeComponent();
             _list.EnableDoubleBuffer();
             _detailsGrid.EnableDoubleBuffering();
@@ -18,7 +17,6 @@ namespace SqlNotebook {
 
             _mainForm = mainForm;
             _manager = manager;
-            _operationInProgress = operationInProgress;
             _manager.NotebookChange += (sender, e) => HandleNotebookChange(e);
             _contextMenuStrip.SetMenuAppearance();
 
@@ -26,12 +24,6 @@ namespace SqlNotebook {
             _list.SmallImageList = _imageList.PadListViewIcons(g);
 
             Ui ui = new(this, false);
-
-            _operationInProgress.Change += (a, b) => {
-                if (a && !b) {
-                    List_SelectedIndexChanged(null, EventArgs.Empty);
-                }
-            };
 
             _list.GotFocus += (sender, e) => {
                 _manager.CommitOpenEditors();
@@ -85,16 +77,6 @@ namespace SqlNotebook {
             var lvi = _list.SelectedItems[0];
             var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
 
-            // can't open tables or views if an operation is in progress
-            bool isTableOrView = type == NotebookItemType.Table || type == NotebookItemType.View;
-            if (isTableOrView && _operationInProgress) {
-                MessageForm.ShowError(_mainForm,
-                    "Open Item",
-                    "Cannot open tables or views while an operation is in progress.",
-                    "Please wait until the current operation finishes, and then try again.");
-                return;
-            }
-
             _manager.OpenItem(new NotebookItem(type, lvi.Text));
         }
 
@@ -110,16 +92,6 @@ namespace SqlNotebook {
             var name = lvi.Text;
             var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
 
-            // can't delete tables or views if an operation is in progress
-            bool isTableOrView = type == NotebookItemType.Table || type == NotebookItemType.View;
-            if (isTableOrView && _operationInProgress) {
-                MessageForm.ShowError(_mainForm,
-                    "Delete Item",
-                    "Cannot delete tables or views while an operation is in progress.",
-                    "Please wait until the current operation finishes, and then try again.");
-                return;
-            }
-
             if (MessageBox.Show(_mainForm,
                 $"Delete \"{name}\"?",
                 "Delete Item",
@@ -131,10 +103,11 @@ namespace SqlNotebook {
             var item = new NotebookItem(type, name);
             _manager.CloseItem(item);
 
-            new WaitForm("Delete", "Deleting the selected item...", () => {
+            WaitForm.Go(FindForm(), "Delete", "Deleting the selected item...", out _, () => {
                 _manager.DeleteItem(item);
-            }).ShowDialogAndDispose(this);
+            });
 
+            var isTableOrView = type == NotebookItemType.Table || type == NotebookItemType.View;
             _manager.Rescan(notebookItemsOnly: !isTableOrView);
         }
 
@@ -207,16 +180,6 @@ namespace SqlNotebook {
 
             if (e.Label == null) {
                 return; // user did not change the name
-            }
-
-            // can't delete tables or views if an operation is in progress
-            bool isTableOrView = type == NotebookItemType.Table || type == NotebookItemType.View;
-            if (isTableOrView && _operationInProgress) {
-                MessageForm.ShowError(_mainForm,
-                    "Delete Item",
-                    "Cannot rename tables or views while an operation is in progress.",
-                    "Please wait until the current operation finishes, and then try again.");
-                return;
             }
 
             try {

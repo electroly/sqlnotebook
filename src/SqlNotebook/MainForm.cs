@@ -17,20 +17,18 @@ namespace SqlNotebook
 {
     public partial class MainForm : ZForm {
         private readonly DockPanel _dockPanel;
-        private NotebookManager _manager;
+        private readonly NotebookManager _manager;
         private Notebook _notebook;
         private readonly UserControlDockContent _contentsDockContent;
         private readonly ConsoleControl _console;
         private readonly UserControlDockContent _consoleDockContent;
         private readonly Importer _importer;
         private readonly ExplorerControl _explorer;
-        private string _filePath {  get { return _notebook.GetFilePath(); } }
+        private string FilePath => _notebook.GetFilePath();
         private bool _isNew;
-        private CueToolStripTextBox _searchTxt;
-        private Slot<bool> _isDirty = new Slot<bool>();
-        private Slot<bool> _operationInProgress = new Slot<bool>();
-        private Slot<bool> _isTransactionOpen = new Slot<bool>();
-        private bool _launchUpdaterAtExit = false;
+        private readonly CueToolStripTextBox _searchTxt;
+        private readonly Slot<bool> _isDirty = new();
+        private readonly Slot<bool> _isTransactionOpen = new();
 
         private readonly Dictionary<NotebookItem, UserControlDockContent> _openItems
             = new Dictionary<NotebookItem, UserControlDockContent>();
@@ -38,6 +36,7 @@ namespace SqlNotebook
         public MainForm(string filePath, bool isNew) {
             InitializeComponent();
 
+            WaitForm.MainAppForm = this;
             Icon = Resources.SqlNotebookIcon;
             
             _menuStrip.SetMenuAppearance();
@@ -59,6 +58,7 @@ namespace SqlNotebook
 
             Ui ui = new(this, 140, 45, false);
             MinimumSize = new(Size.Width / 2, Size.Height / 2);
+            Padding = new(0, 0, 0, ui.SizeGripHeight);
             ui.Init(_saveBtn, Resources.Diskette, Resources.diskette32);
             ui.Init(_newScriptBtn, Resources.ScriptAdd, Resources.script_add32);
             ui.Init(_newMnu, Resources.PageWhite, Resources.page_white32);
@@ -71,21 +71,26 @@ namespace SqlNotebook
             ui.Init(_contentsMnu, Resources.list, Resources.list32);
             ui.Init(_consoleMnu, Resources.zone_select, Resources.zone_select32);
             ui.Init(_searchTxt);
-            ui.Init(_statusStrip);
-            ui.Init(_statusProgressbar);
+            ui.Init(_transactionCommitMenu, Resources.accept_button, Resources.accept_button32);
+
+            // Setting the ForeColor of menu items in the designer doesn't seem to work; it gets overwritten. So we do
+            // it here.
+            _updateAvailableMenu.Paint += (sender, e) => {
+                e.Graphics.DrawRectangle(Pens.Blue, new(0, 0, _updateAvailableMenu.Width - 1, _updateAvailableMenu.Height - 1));
+            };
+            _transactionMenu.Paint += (sender, e) => {
+                e.Graphics.DrawRectangle(Pens.Red, new(0, 0, _transactionMenu.Width - 1, _transactionMenu.Height - 1));
+            };
+            _updateAvailableMenu.Margin = _transactionMenu.Margin = _searchTxt.Margin =
+                new(ui.XWidth(1), 0, 0, 0);
 
             if (isNew) {
                 _notebook = new Notebook(filePath, isNew);
             } else {
-                var f = new WaitForm("SQL Notebook", $"Opening notebook \"{Path.GetFileNameWithoutExtension(filePath)}\"", () => {
-                    _notebook = new Notebook(filePath, isNew);
-                });
-                using (f) {
-                    f.StartPosition = FormStartPosition.CenterScreen;
-                    f.ShowDialog();
-                    if (f.ResultException != null) {
-                        throw f.ResultException;
-                    }
+                _notebook = WaitForm.Go(null, "SQL Notebook", $"Opening notebook \"{Path.GetFileNameWithoutExtension(filePath)}\"", out var success, () =>
+                    new Notebook(filePath, isNew));
+                if (!success) {
+                    Close();
                 }
             }
             _isNew = isNew;
@@ -104,7 +109,7 @@ namespace SqlNotebook
             _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
 
             _contentsDockContent = new("Table of Contents", 
-                _explorer = new ExplorerControl(_manager, this, _operationInProgress),
+                _explorer = new(_manager, this),
                 DockAreas.DockLeft | DockAreas.DockRight);
             _contentsDockContent.CloseButtonVisible = false;
             _contentsDockContent.Show(_dockPanel, DockState.DockLeftAutoHide);
@@ -114,52 +119,23 @@ namespace SqlNotebook
             _manager.NotebookItemsSaveRequest += Manager_NotebookItemsSaveRequest;
             _manager.NotebookDirty += (sender, e) => SetDirty();
             _manager.NotebookItemRename += Manager_NotebookItemRename;
-            _manager.StatusUpdate += Manager_StatusUpdate;
             _manager.HandleHotkeyRequest += Manager_HandleHotkeyRequest;
-
-            // show a progressbar in the taskbar button and the statusbar when a operation is in progress
-            _operationInProgress.Change += (oldValue, newValue) => {
-                if (!oldValue && newValue) {
-                    this.BeginTaskbarProgress();
-                    _statusLbl.Visible = true;
-
-                    // this restarts the statusbar progress marquee from the beginning
-                    _statusProgressbar.Style = ProgressBarStyle.Continuous;
-                    _statusProgressbar.Style = ProgressBarStyle.Marquee;
-
-                    _cancelLnk.IsLink = true;
-                    _cancelLnk.Text = "Cancel";
-                    _cancelLnk.Visible = true;
-                } else if (oldValue && !newValue) {
-                    _notebook.EndUserCancel();
-                    this.EndTaskbarProgress();
-                    _statusProgressbar.Style = ProgressBarStyle.Continuous;
-                    _statusProgressbar.Value = 0;
-                    _statusLbl.Visible = false;
-                    _cancelLnk.Visible = false;
-                }
-            };
 
             Load += delegate {
                 Slot.Bind(
                     () => BeginInvoke(new MethodInvoker(() =>
-                        _importMnu.Enabled = _saveAsMnu.Enabled = !_operationInProgress && !_isTransactionOpen
+                        _importMnu.Enabled = _saveAsMnu.Enabled = !_isTransactionOpen
                     )),
-                    _operationInProgress, _isTransactionOpen);
+                    _isTransactionOpen);
                 Slot.Bind(
                     () => BeginInvoke(new MethodInvoker(() =>
-                        _exportMnu.Enabled = !_operationInProgress
+                        _saveBtn.Enabled = _saveMnu.Enabled = _isDirty && !_isTransactionOpen
                     )),
-                    _operationInProgress);
-                Slot.Bind(
-                    () => BeginInvoke(new MethodInvoker(() =>
-                        _saveBtn.Enabled = _saveMnu.Enabled = !_operationInProgress && _isDirty && !_isTransactionOpen
-                    )),
-                    _operationInProgress, _isDirty, _isTransactionOpen);
+                    _isDirty, _isTransactionOpen);
                 _isDirty.Change += (a, b) => SetTitle();
                 Slot.Bind(
                     () => BeginInvoke(new MethodInvoker(() =>
-                        _openTransactionLbl.Visible = _isTransactionOpen
+                        _transactionMenu.Visible = _isTransactionOpen
                     )),
                     _isTransactionOpen);
             };
@@ -173,7 +149,7 @@ namespace SqlNotebook
                 };
             }
 
-            _console = new(this, _manager, _operationInProgress);
+            _console = new(this, _manager);
             _consoleDockContent = new("Console", _console, DockAreas.DockBottom);
             _consoleDockContent.CloseButtonVisible = false;
             _consoleDockContent.Show(_dockPanel);
@@ -186,7 +162,7 @@ namespace SqlNotebook
 
                 var updateAvailable = await IsUpdateAvailable();
                 if (updateAvailable) {
-                    _appUpdateLbl.Visible = true;
+                    _updateAvailableMenu.Visible = true;
                 }
             };
             SetTitle();
@@ -202,13 +178,6 @@ namespace SqlNotebook
                 case Keys.F1: _viewDocMnu.PerformClick(); break;
                 case (Keys.Control | Keys.H): _searchDocMnu.PerformClick(); break;
             }
-        }
-
-        private void Manager_StatusUpdate(object sender, StatusUpdateEventArgs e) {
-            BeginInvoke(new MethodInvoker((() => {
-                _operationInProgress.Value = e.Status.Any();
-                _statusLbl.Text = e.Status;
-            })));
         }
 
         private void Manager_NotebookItemRename(object sender, NotebookItemRenameEventArgs e) {
@@ -240,7 +209,7 @@ namespace SqlNotebook
             if (_isNew) {
                 prefix = "Untitled";
             } else {
-                prefix = Path.GetFileNameWithoutExtension(_filePath);
+                prefix = Path.GetFileNameWithoutExtension(FilePath);
             }
             var star = _isDirty ? "*" : "";
             BeginInvoke(new MethodInvoker(() => {
@@ -261,10 +230,9 @@ namespace SqlNotebook
         }
 
         private void OpenItem(NotebookItem item) {
-            UserControlDockContent wnd;
-            if (_openItems.TryGetValue(item, out wnd)) {
-                wnd.Activate();
-                wnd.Focus();
+            if (_openItems.TryGetValue(item, out var userControlDockContent)) {
+                userControlDockContent.Activate();
+                userControlDockContent.Focus();
                 return;
             }
 
@@ -272,7 +240,7 @@ namespace SqlNotebook
             Func<string> getName = null;
             var dockAreas = DockAreas.Document | DockAreas.Float;
             if (item.Type == NotebookItemType.Script) {
-                var doc = new QueryDocumentControl(item.Name, _manager, this, _operationInProgress);
+                QueryDocumentControl doc = new(item.Name, _manager, this);
                 
                 f = new UserControlDockContent(item.Name, doc, dockAreas) {
                     Icon = Resources.script32Ico
@@ -280,7 +248,7 @@ namespace SqlNotebook
                 ApplySaveOnClose(f, doc);
                 getName = () => doc.ItemName;
             } else if (item.Type == NotebookItemType.Table || item.Type == NotebookItemType.View) {
-                var doc = new TableDocumentControl(_manager, item.Name, this);
+                var doc = new TableDocumentControl(_manager, item.Name);
                 f = new UserControlDockContent(item.Name, doc, dockAreas) {
                     Icon = Resources.table32Ico
                 };
@@ -310,8 +278,8 @@ namespace SqlNotebook
             }
         }
 
-        private async void ImportFileMnu_Click(object sender, EventArgs e) {
-            var openFrm = new OpenFileDialog {
+        private void ImportFileMnu_Click(object sender, EventArgs e) {
+            using OpenFileDialog openFrm = new() {
                 AutoUpgradeEnabled = true,
                 CheckFileExists = true,
                 CheckPathExists = true,
@@ -320,41 +288,37 @@ namespace SqlNotebook
                 SupportMultiDottedExtensions = true,
                 Title = "Import from File"
             };
-            string filePath;
-            using (openFrm) {
-                if (openFrm.ShowDialog(this) == DialogResult.OK) {
-                    filePath = openFrm.FileName;
-                } else {
-                    return;
-                }
+            if (openFrm.ShowDialog(this) != DialogResult.OK) {
+                return;
             }
+            var filePath = openFrm.FileName;
 
             try {
-                await ImportProcess.Start(this, filePath, _manager);
+                ImportProcess.Start(this, filePath, _manager);
             } catch (Exception ex) {
                 MessageForm.ShowError(this, "Import Error", ex.Message);
             }
         }
 
-        private async void ImportPostgresMnu_Click(object sender, EventArgs e) {
+        private void ImportPostgresMnu_Click(object sender, EventArgs e) {
             try {
-                await _importer.DoDatabaseImport<PgImportSession>();
+                _importer.DoDatabaseImport<PgImportSession>();
             } catch (Exception ex) {
                 ErrorBox("Import Error", ex.Message);
             }
         }
 
-        private async void ImportMssqlMnu_Click(object sender, EventArgs e) {
+        private void ImportMssqlMnu_Click(object sender, EventArgs e) {
             try {
-                await _importer.DoDatabaseImport<MsImportSession>();
+                _importer.DoDatabaseImport<MsImportSession>();
             } catch (Exception ex) {
                 ErrorBox("Import Error", ex.Message);
             }
         }
 
-        private async void ImportMysqlMnu_Click(object sender, EventArgs e) {
+        private void ImportMysqlMnu_Click(object sender, EventArgs e) {
             try {
-                await _importer.DoDatabaseImport<MyImportSession>();
+                _importer.DoDatabaseImport<MyImportSession>();
             } catch (Exception ex) {
                 ErrorBox("Import Error", ex.Message);
             }
@@ -372,20 +336,17 @@ namespace SqlNotebook
             }
         }
 
-        public static bool IgnoreF5 = false;
+        private static bool _ignoreF5 = false;
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
             if (keyData == Keys.F5) {
-                if (IgnoreF5) {
+                if (_ignoreF5) {
                     return true;
                 }
-                var doc = _dockPanel.ActiveDocument as UserControlDockContent;
-                if (doc != null) {
-                    var queryDoc = doc.Content as QueryDocumentControl;
-                    if (queryDoc != null) {
-                        IgnoreF5 = true;
-                        queryDoc.Execute().ContinueWith((t) => {
-                            IgnoreF5 = false;
-                        });
+                if (_dockPanel.ActiveDocument is UserControlDockContent doc) {
+                    if (doc.Content is QueryDocumentControl queryDoc) {
+                        _ignoreF5 = true;
+                        queryDoc.Execute();
+                        _ignoreF5 = false;
                         return true;
                     }
                 }
@@ -442,18 +403,21 @@ namespace SqlNotebook
                 };
                 using (f) {
                     if (f.ShowDialog(this) == DialogResult.OK) {
-                        new WaitForm("Save", "Saving your notebook...", () => {
+                        WaitForm.Go(this, "Save", "Saving your notebook...", out var success, () => {
                             _manager.SaveAs(f.FileName);
-                        }).ShowDialogAndDispose(this);
+                        });
+                        if (!success) {
+                            return false;
+                        }
                         _isNew = false;
                     } else {
                         return false;
                     }
                 }
             } else {
-                new WaitForm("Save", "Saving your notebook...", () => {
+                WaitForm.Go(this, "Save", "Saving your notebook...", out _, () => {
                     _manager.Save();
-                }).ShowDialogAndDispose(this);
+                });
             }
 
             // set this after doing the isNew stuff above so that if you click Save and then cancel the Save As dialog,
@@ -473,13 +437,6 @@ namespace SqlNotebook
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
-            if (_operationInProgress) {
-                ErrorBox("SQL Notebook", "An operation is in progress.", 
-                    "Please cancel the operation or wait for it to complete before exiting from SQL Notebook.");
-                e.Cancel = true;
-                return;
-            }
-
             var isTransactionActive = false;
             _notebook.Invoke(() => {
                 isTransactionActive = _notebook.IsTransactionActive();
@@ -492,7 +449,7 @@ namespace SqlNotebook
             }
 
             if (_isDirty) {
-                var shortFilename = _isNew ? "Untitled" : Path.GetFileNameWithoutExtension(_filePath);
+                var shortFilename = _isNew ? "Untitled" : Path.GetFileNameWithoutExtension(FilePath);
 
                 var result = MessageBox.Show(this,
                     $"Save changes to {shortFilename}?",
@@ -534,8 +491,8 @@ namespace SqlNotebook
 
             foreach (var item in items) {
                 var tsmi = new ToolStripMenuItem(item.DisplayName);
-                tsmi.Click += async (sender2, e2) => {
-                    await new Importer(_manager, this).DoRecentImport(item);
+                tsmi.Click += delegate {
+                    new Importer(_manager, this).DoRecentImport(item);
                 };
                 menu.DropDownItems.Add(tsmi);
             }
@@ -547,7 +504,7 @@ namespace SqlNotebook
             SaveOrSaveAs(saveAs: true);
         }
 
-        private async void ExportMnu_Click(object sender, EventArgs e) {
+        private void ExportMnu_Click(object sender, EventArgs e) {
             SaveOpenItems();
 
             var scripts = _manager.Items.Where(x => x.Type == NotebookItemType.Script).Select(x => x.Name);
@@ -592,28 +549,16 @@ namespace SqlNotebook
                 filePath = GetTemporaryExportFilePath();
             }
 
-            _manager.PushStatus("Running the selected script...");
-            try {
-                string sql;
-                if (item.Type == NotebookItemType.Script) {
-                    sql = $"EXECUTE {item.Name.DoubleQuote()}";
-                } else {
-                    sql = $"SELECT * FROM {item.Name.DoubleQuote()}";
-                }
-
-                var output = await Task.Run(() => _manager.ExecuteScript(sql));
-                _manager.PopStatus();
-                _manager.PushStatus("Writing CSV file. Please wait.");
-                await Task.Run(() => {
-                    using (var stream = File.CreateText(filePath)) {
-                        output.WriteCsv(stream);
-                    }
-                });
-            } catch (Exception ex) {
-                ErrorBox("Export Error", "The data export failed.", ex.Message);
+            WaitForm.Go(this, "Export", $"Exporting to \"{Path.GetFileName(filePath)}\"...", out var success, () => {
+                var output = _manager.ExecuteScript(
+                    item.Type == NotebookItemType.Script
+                    ? $"EXECUTE {item.Name.DoubleQuote()}"
+                    : $"SELECT * FROM {item.Name.DoubleQuote()}");
+                using var stream = File.CreateText(filePath);
+                output.WriteCsv(stream);
+            });
+            if (!success) {
                 return;
-            } finally {
-                _manager.PopStatus();
             }
 
             if (doSaveAs) {
@@ -630,7 +575,7 @@ namespace SqlNotebook
 
         private static string GetTemporaryExportFilePath() {
             var tempPath = Path.GetTempPath();
-            for (int i = 1; i < 100; i++) {
+            for (var i = 1; i < 100; i++) {
                 var tempFilePath = Path.Combine(tempPath, $"Exported{(i == 1 ? "" : i.ToString())}.csv");
                 try {
                     File.Delete(tempFilePath); // make sure the file isn't in use
@@ -645,12 +590,9 @@ namespace SqlNotebook
         }
 
         private void OpenHelp(string keywords) {
-            List<HelpSearcher.Result> results = null;
-            using WaitForm waitForm = new("Help", "Searching help...", () => {
-                results = HelpSearcher.Search(keywords);
-            });
-            if (waitForm.ShowDialog(this) != DialogResult.OK) {
-                MessageForm.ShowError(this, "Help Error", waitForm.ResultException.Message);
+            var results = WaitForm.Go(this, "Help", "Searching help...", out var success, () =>
+                HelpSearcher.Search(keywords));
+            if (!success) {
                 return;
             }
             using HelpSearchResultsForm resultsForm = new(keywords, results);
@@ -663,27 +605,20 @@ namespace SqlNotebook
             Process.Start(new ProcessStartInfo(htmlFilePath) { UseShellExecute = true });
         }
 
-        private void CancelLnk_Click(object sender, EventArgs e) {
-            _notebook.BeginUserCancel();
-            _cancelLnk.IsLink = false;
-            _cancelLnk.Text = "Canceling...";
-        }
-
         private void SearchDocMnu_Click(object sender, EventArgs e) {
             _searchTxt.Select();
             _searchTxt.Focus();
         }
 
-        public async Task<bool> IsUpdateAvailable() {
+        public static async Task<bool> IsUpdateAvailable() {
             try {
-                using (var client = new WebClient()) {
-                    var appversion = await client.DownloadStringTaskAsync(
-                        "https://sqlnotebook.com/appversion.txt?" + DateTime.Now.Date);
-                    var data = appversion.Split('\n').Select(x => x.Trim()).ToList();
-                    var version = data[0];
-                    if (Application.ProductVersion != version) {
-                        return true;
-                    }
+                using var client = new WebClient();
+                var appversion = await client.DownloadStringTaskAsync(
+                    "https://sqlnotebook.com/appversion.txt?" + DateTime.Now.Date);
+                var data = appversion.Split('\n').Select(x => x.Trim()).ToList();
+                var version = data[0];
+                if (Application.ProductVersion != version) {
+                    return true;
                 }
             } catch {
                 // bummer
@@ -692,7 +627,7 @@ namespace SqlNotebook
             return false;
         }
 
-        public void LaunchUpdater() {
+        public static void LaunchUpdater() {
             var exePath = Path.GetDirectoryName(Application.ExecutablePath);
             var tempPath = Path.Combine(Path.GetTempPath(), "SqlNotebookTemp");
             var deleteLstFilePath = Path.Combine(tempPath, "delete.lst");
@@ -701,24 +636,8 @@ namespace SqlNotebook
             var tempExeFilePath = Path.Combine(tempPath, filename);
             File.AppendAllText(deleteLstFilePath, $"{tempExeFilePath}\r\n");
             File.Copy(exeFilePath, tempExeFilePath, true);
-            var process = Process.Start(tempExeFilePath);
+            Process.Start(tempExeFilePath);
             Thread.Sleep(100); // make sure the process is running so the exe won't be deleted by temp files cleanup
-        }
-
-        private void MainForm_FormClosed(object sender, FormClosedEventArgs e) {
-            if (_launchUpdaterAtExit) {
-                LaunchUpdater();
-            }
-        }
-
-        private async void AppUpdateLbl_Click(object sender, EventArgs e) {
-            _launchUpdaterAtExit = true;
-            _appUpdateLbl.Visible = false;
-            _appUpdateAcceptedLbl.Visible = true;
-            await Task.Run(() => Thread.Sleep(5000));
-            if (!IsDisposed) {
-                _appUpdateAcceptedLbl.Visible = false;
-            }
         }
 
         private void ContentsMnu_Click(object sender, EventArgs e) {
@@ -755,6 +674,24 @@ namespace SqlNotebook
                 };
                 _windowMnu.DropDownItems.Add(item);
             }
+        }
+
+        private void TransactionCommitMenu_Click(object sender, EventArgs e) {
+            WaitForm.Go(this, "Active Transaction", "Committing transaction...", out var success, () => {
+                _manager.ExecuteScript("COMMIT");
+            });
+            _manager.Rescan();
+        }
+
+        private void TransactionRollbackMenu_Click(object sender, EventArgs e) {
+            WaitForm.Go(this, "Active Transaction", "Rolling back transaction...", out var success, () => {
+                _manager.ExecuteScript("ROLLBACK");
+            });
+            _manager.Rescan();
+        }
+
+        private void UpdateAvailableMenu_Click(object sender, EventArgs e) {
+
         }
     }
 }

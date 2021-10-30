@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using SqlNotebook.Import.Csv;
+﻿using SqlNotebook.Import.Csv;
 using SqlNotebook.Import.Xls;
-using SqlNotebookScript.Utils;
+using System;
+using System.IO;
+using System.Windows.Forms;
 
 namespace SqlNotebook {
     public static class ImportProcess {
@@ -13,8 +11,8 @@ namespace SqlNotebook {
             "Comma-separated values|*.csv;*.txt",
             "Excel workbooks|*.xls;*.xlsx");
 
-        public static async Task Start(IWin32Window owner, string filePath, NotebookManager manager) {
-            var schema = await ReadDatabaseSchema(owner, manager);
+        public static void Start(IWin32Window owner, string filePath, NotebookManager manager) {
+            var schema = ReadDatabaseSchema(owner, manager);
             if (schema == null)
                 return;
 
@@ -22,7 +20,7 @@ namespace SqlNotebook {
             switch (extension) {
                 case ".csv":
                 case ".txt":
-                    await ImportCsv(owner, filePath, manager, schema);
+                    ImportCsv(owner, filePath, manager, schema);
                     break;
 
                 case ".xls":
@@ -37,7 +35,7 @@ namespace SqlNotebook {
             }
         }
 
-        private static async Task ImportCsv(IWin32Window owner, string filePath, NotebookManager manager,
+        private static void ImportCsv(IWin32Window owner, string filePath, NotebookManager manager,
             DatabaseSchema schema
             ) {
             string importSql;
@@ -48,18 +46,15 @@ namespace SqlNotebook {
                 importSql = f.GeneratedImportSql;
             }
 
-            await RunImportScript(importSql, owner, filePath, manager);
+            RunImportScript(importSql, owner, filePath, manager);
         }
 
         private static void ImportXls(
             IWin32Window owner, string filePath, NotebookManager manager, DatabaseSchema schema
             ) {
-            XlsInput input = null;
-            using WaitForm waitForm = new("Import", "Reading workbook...", () => {
-                input = XlsInput.Load(filePath);
-            });
-            if (waitForm.ShowDialog(owner) != DialogResult.OK) {
-                MessageForm.ShowError(owner, "Import Error", waitForm.ResultException.Message);
+            var input = WaitForm.Go(owner, "Import", "Reading workbook...", out var success, () =>
+                XlsInput.Load(filePath));
+            if (!success) {
                 return;
             }
 
@@ -67,41 +62,24 @@ namespace SqlNotebook {
             f.ShowDialog(owner);
         }
 
-        private static async Task<DatabaseSchema> ReadDatabaseSchema(IWin32Window owner, NotebookManager manager) {
-            DatabaseSchema schema = null;
-
-            manager.PushStatus("Reading notebook...");
-            try {
-                schema = await Task.Run(() => DatabaseSchema.FromNotebook(manager.Notebook));
-            } catch (Exception ex) {
-                manager.PopStatus();
-                MessageForm.ShowError(owner,
-                    "Import Error",
-                    "Failed to read the list of tables in the notebook.",
-                    ex.Message);
+        private static DatabaseSchema ReadDatabaseSchema(IWin32Window owner, NotebookManager manager) {
+            var schema = WaitForm.Go(owner, "Import", "Reading notebook...", out var success, () =>
+                DatabaseSchema.FromNotebook(manager.Notebook));
+            if (!success) {
                 return null;
             }
-            manager.PopStatus();
             return schema;
         }
 
-        private static async Task<bool> RunImportScript(string importSql, IWin32Window owner, string filePath,
+        private static bool RunImportScript(string importSql, IWin32Window owner, string filePath,
         NotebookManager manager) {
-            manager.PushStatus($"Importing \"{Path.GetFileName(filePath)}\"...");
-            try {
-                await Task.Run(() => {
-                    manager.ExecuteScript(importSql, transactionType: NotebookManager.TransactionType.Transaction);
-                });
-                manager.Rescan();
-            } catch (Exception ex) {
-                manager.PopStatus();
-                MessageForm.ShowError(owner, "Import Error", "The import failed.", ex.GetErrorMessage());
-                return false;
-            }
+            WaitForm.Go(owner, "Import", $"Importing \"{Path.GetFileName(filePath)}\"...", out var success, () => {
+                manager.ExecuteScript(importSql, transactionType: NotebookManager.TransactionType.Transaction);
+            });
 
+            manager.Rescan();
             manager.SetDirty();
-            manager.PopStatus();
-            return true;
+            return success;
         }
     }
 }

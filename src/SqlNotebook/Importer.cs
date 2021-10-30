@@ -39,20 +39,20 @@ namespace SqlNotebook
             return name;
         }
 
-        public async Task DoDatabaseImport<T>() where T : IDatabaseImportSession, new() {
+        public void DoDatabaseImport<T>() where T : IDatabaseImportSession, new() {
             var session = new T();
             if (session.FromConnectForm(_owner)) {
-               await DoCommonImport(session);
+               DoCommonImport(session);
             }
         }
 
-        public async Task DoRecentImport(RecentDataSource recent) {
+        public void DoRecentImport(RecentDataSource recent) {
             var session = (IImportSession)Activator.CreateInstance(recent.ImportSessionType);
             session.FromRecent(recent, _owner);
-            await DoCommonImport(session);
+            DoCommonImport(session);
         }
 
-        private async Task DoCommonImport(IImportSession session) {
+        private void DoCommonImport(IImportSession session) {
             IReadOnlyList<ImportPreviewForm.SelectedTable> selectedTables = null;
             bool csvHasHeaderRow = false, copyData = false;
 
@@ -66,17 +66,16 @@ namespace SqlNotebook
             }
 
             var fileSession = session as IFileImportSession;
-            var dbSession = session as IDatabaseImportSession;
             if (fileSession != null) {
                 fileSession.FileHasHeaderRow = csvHasHeaderRow;
             }
 
-            Action import = () => {
+            WaitForm.Go(_owner, "Import", "Importing tables...", out _, () => {
                 _notebook.Invoke(() => {
                     _notebook.Execute("BEGIN");
 
                     try {
-                        if (dbSession != null) {
+                        if (session is IDatabaseImportSession dbSession) {
                             DoDatabaseImport(selectedTables, copyData, dbSession);
                         } else if (fileSession != null) {
                             DoDatabaseImport(selectedTables, fileSession);
@@ -91,25 +90,9 @@ namespace SqlNotebook
                         throw;
                     }
                 });
-            };
-
-            _manager.PushStatus("Importing the selected tables...");
-            Exception exception = null;
-            await Task.Run(() => {
-                try {
-                    import();
-                } catch (Exception ex) {
-                    exception = ex;
-                }
             });
-            _manager.PopStatus();
             _manager.Rescan();
-
-            if (exception == null) {
-                _manager.SetDirty();
-            } else {
-                MessageForm.ShowError(_owner, "Import Error", "The import failed.", exception.Message);
-            }
+            _manager.SetDirty();
         }
 
         private void DoDatabaseImport(IReadOnlyList<ImportPreviewForm.SelectedTable> selectedTables, IFileImportSession fileSession) {
@@ -383,24 +366,12 @@ namespace SqlNotebook
         }
 
         private bool DoConnect(IWin32Window owner) {
-            bool successfulConnect = false;
-            void Go() {
+            WaitForm.Go(owner, "Database Connection", $"Accessing {ProductName}...", out var success, () => {
                 using var connection = CreateConnection(_builder);
                 connection.Open();
                 ReadTableNames(connection);
-            };
-            using (var f = new WaitForm("SQL Notebook", $"Accessing {ProductName}...", Go)) {
-                f.ShowDialog(owner);
-                if (f.ResultException == null) {
-                    successfulConnect = true;
-                } else {
-                    MessageForm.ShowError(owner,
-                        "Connection Error",
-                        $"The connection to {ProductName} failed.",
-                        f.ResultException.Message);
-                }
-            }
-            return successfulConnect;
+            });
+            return success;
         }
 
         public bool FromRecent(RecentDataSource recent, IWin32Window owner) {

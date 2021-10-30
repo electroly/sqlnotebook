@@ -13,7 +13,6 @@ namespace SqlNotebook {
 
         private readonly IWin32Window _mainForm;
         private readonly NotebookManager _manager;
-        private readonly Slot<bool> _operationInProgress;
         private readonly SqlTextControl _inputText;
         private readonly FlowLayoutPanel _outputFlow;
         private readonly Font _consolas = new("Consolas", 11f);
@@ -23,11 +22,10 @@ namespace SqlNotebook {
         private readonly Padding _outputCountMargin;
         private readonly Size _spacerSize;
 
-        public ConsoleControl(IWin32Window mainForm, NotebookManager manager, Slot<bool> operationInProgress) {
+        public ConsoleControl(IWin32Window mainForm, NotebookManager manager) {
             InitializeComponent();
             _mainForm = mainForm;
             _manager = manager;
-            _operationInProgress = operationInProgress;
 
             _inputText = new(false) {
                 Dock = DockStyle.Fill
@@ -54,7 +52,6 @@ namespace SqlNotebook {
             _outputCountMargin = new(ui.XWidth(8), 0, 0, 0);
             _spacerSize = new(0, ui.XHeight(1));
 
-            _operationInProgress.Change += OperationInProgress_Change;
             _contextMenuStrip.SetMenuAppearance();
             ui.Init(_clearHistoryMenu, Resources.Delete, Resources.delete32);
             _outputFlow.ContextMenuStrip = _contextMenuStrip;
@@ -147,10 +144,6 @@ namespace SqlNotebook {
             }));
         }
 
-        private void OperationInProgress_Change(bool oldValue, bool newValue) {
-            _executeButton.Enabled = !newValue;
-        }
-
         public void TakeFocus() {
             _inputText.TextBox.Focus();
             _inputText.TextBox.SelectAll();
@@ -161,26 +154,15 @@ namespace SqlNotebook {
         }
 
         private void Execute() {
-            if (_operationInProgress) {
-                // It shouldn't be possible for execution to get in here, because we disable the button when an
-                // operation is in progress. But just in case.
-                return;
-            }
-
             var code = _inputText.SqlText.Trim();
 
             if (string.IsNullOrWhiteSpace(code)) {
                 return;
             }
 
-            ScriptOutput output = null;
-            using WaitForm f = new("Delete", "Executing...", () => {
-                output = SqlUtil.WithTransaction(_manager.Notebook, () =>
-                    _manager.ExecuteScript(code));
-            });
-
-            if (f.ShowDialog(_mainForm) != DialogResult.OK) {
-                MessageForm.ShowError(_mainForm, "Console Error", f.ResultException.Message);
+            var output = WaitForm.Go(FindForm(), "Delete", "Executing...", out var success, () =>
+                SqlUtil.WithTransaction(_manager.Notebook, () => _manager.ExecuteScript(code)));
+            if (!success) {
                 return;
             }
 

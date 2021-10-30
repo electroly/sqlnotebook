@@ -3,7 +3,9 @@ obj/
 Release/
 Debug/
 src/SqlNotebook/doc/
+ext/Windows-API-Code-Pack/
 ext/sqlite/
+ext/downloads/
 
 *.user
 Thumbs.db

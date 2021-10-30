@@ -3,6 +3,8 @@ $sqliteCodeUrl = 'https://sqlite.org/2021/sqlite-amalgamation-3360000.zip'
 $sqliteCodeHash = '999826FE4C871F18919FDB8ED7EC9DD8217180854DD1FE21EEA96AED36186729'
 $sqliteDocUrl = 'https://sqlite.org/2021/sqlite-doc-3360000.zip'
 $sqliteDocHash = '79F03BF2B4AFD845B66E7D07C7FA08C46A30C2484A4A5F8508DB653C9DA5D32D'
+$wapiUrl = 'https://github.com/contre/Windows-API-Code-Pack-1.1/archive/a8377ef8bb6fa95ff8800dd4c79089537087d539.zip'
+$wapiHash = '38E59E6AE3BF0FD0CCB05C026F7332D3B56AF81D8C69A62882D04CABAD5EF4AE'
 
 $global:ProgressPreference = "SilentlyContinue"
 $ErrorActionPreference = "Stop"
@@ -13,6 +15,38 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 $ps1Dir = $PSScriptRoot
 $rootDir = (Resolve-Path (Join-Path $ps1Dir "..\")).Path
 $extDir = Join-Path $rootDir "ext"
+$downloadsDir = Join-Path $extDir "downloads"
+if (-not (Test-Path $downloadsDir)) {
+    mkdir $downloadsDir
+}
+
+function Update-WindowsApiCodePack {
+    $wapiDir = Join-Path $extDir "Windows-API-Code-Pack"
+    if (-not (Test-Path $wapiDir)) {
+        mkdir $wapiDir
+    }
+
+    $wapiFilename = [System.IO.Path]::GetFileName($wapiUrl)
+    $wapiFilePath = Join-Path $downloadsDir $wapiFilename
+    if (-not (Test-Path $wapiFilePath)) {
+        Write-Host "Downloading: $wapiUrl"
+        Invoke-WebRequest -UseBasicParsing -Uri $wapiUrl -OutFile $wapiFilePath
+    }
+    VerifyHash $wapiFilePath $wapiHash
+    Write-Host "Expanding: $wapiFilePath"
+    Remove-Item -Force -Recurse "$wapiDir\*" -ErrorAction SilentlyContinue
+    Expand-Archive -LiteralPath $wapiFilePath -DestinationPath $wapiDir
+    Move-Item "$wapiDir\Windows-*\*" "$wapiDir\"
+    Remove-Item "$wapiDir\Windows-*"
+
+    # Modify the target frameworks to remove targets we don't want.
+    $csprojs = [System.IO.Directory]::GetFiles("$wapiDir", "*.csproj", [System.IO.SearchOption]::AllDirectories)
+    foreach ($csproj in $csprojs) {
+        $txt = [System.IO.File]::ReadAllText($csproj)
+        $txt = $txt.Replace("net452;net462;net472;net48;netcoreapp3.1;", "")
+        [System.IO.File]::WriteAllText($csproj, $txt)
+    }
+}
 
 function Update-Sqlite {
     $sqliteDir = Join-Path $extDir "sqlite"
@@ -23,7 +57,7 @@ function Update-Sqlite {
     # code
     $sqliteCodeFilename = [System.IO.Path]::GetFileName($sqliteCodeUrl)
     $sqliteCodeDirName = [System.IO.Path]::GetFileNameWithoutExtension($sqliteCodeUrl)
-    $sqliteCodeFilePath = Join-Path $sqliteDir $sqliteCodeFilename
+    $sqliteCodeFilePath = Join-Path $downloadsDir $sqliteCodeFilename
     if (-not (Test-Path $sqliteCodeFilePath)) {
         Write-Host "Downloading: $sqliteCodeUrl"
         Invoke-WebRequest -UseBasicParsing -Uri $sqliteCodeUrl -OutFile $sqliteCodeFilePath
@@ -39,7 +73,7 @@ function Update-Sqlite {
     # doc
     $sqliteDocFilename = [System.IO.Path]::GetFileName($sqliteDocUrl)
     $sqliteDocDirName = [System.IO.Path]::GetFileNameWithoutExtension($sqliteDocUrl)
-    $sqliteDocFilePath = Join-Path $sqliteDir $sqliteDocFilename
+    $sqliteDocFilePath = Join-Path $downloadsDir $sqliteDocFilename
     if (-not (Test-Path $sqliteDocFilePath)) {
         Write-Host "Downloading: $sqliteDocUrl"
         Invoke-WebRequest -UseBasicParsing -Uri $sqliteDocUrl -OutFile $sqliteDocFilePath
@@ -230,9 +264,6 @@ function Update-Sqlite {
 function DeleteIfExists($path) {
     if (Test-Path $path) {
         Remove-Item $path -Recurse
-        Write-Host ("Deleted " + $path)
-    } else {
-        Write-Host ("Does not exist: " + $path)
     }
 }
 
@@ -244,4 +275,5 @@ function VerifyHash($filePath, $expectedHash) {
 }
 
 Update-Sqlite
+Update-WindowsApiCodePack
 & "$PSScriptRoot\Update-Docs.ps1"

@@ -31,14 +31,6 @@
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
-            this._statusStrip = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this._appUpdateLbl = new System.Windows.Forms.ToolStripStatusLabel();
-            this._appUpdateAcceptedLbl = new System.Windows.Forms.ToolStripStatusLabel();
-            this._openTransactionLbl = new System.Windows.Forms.ToolStripStatusLabel();
-            this._statusLbl = new System.Windows.Forms.ToolStripStatusLabel();
-            this._cancelLnk = new System.Windows.Forms.ToolStripStatusLabel();
-            this._statusProgressbar = new System.Windows.Forms.ToolStripProgressBar();
             this._menuStrip = new System.Windows.Forms.MenuStrip();
             this._saveBtn = new System.Windows.Forms.ToolStripButton();
             this._newScriptBtn = new System.Windows.Forms.ToolStripButton();
@@ -81,12 +73,14 @@
             this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripMenuItem();
+            this._transactionMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this._transactionCommitMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this._transactionRollbackMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this._updateAvailableMenu = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
             this._toolStripContainer.SuspendLayout();
-            this._statusStrip.SuspendLayout();
             this._menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -103,14 +97,10 @@
             // _toolStripContainer
             // 
             // 
-            // _toolStripContainer.BottomToolStripPanel
-            // 
-            this._toolStripContainer.BottomToolStripPanel.Controls.Add(this._statusStrip);
-            // 
             // _toolStripContainer.ContentPanel
             // 
             this._toolStripContainer.ContentPanel.Padding = new System.Windows.Forms.Padding(7, 7, 7, 0);
-            this._toolStripContainer.ContentPanel.Size = new System.Drawing.Size(1527, 903);
+            this._toolStripContainer.ContentPanel.Size = new System.Drawing.Size(1527, 935);
             this._toolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this._toolStripContainer.Location = new System.Drawing.Point(0, 0);
             this._toolStripContainer.Name = "_toolStripContainer";
@@ -122,94 +112,6 @@
             // 
             this._toolStripContainer.TopToolStripPanel.BackColor = System.Drawing.SystemColors.Control;
             this._toolStripContainer.TopToolStripPanel.Controls.Add(this._menuStrip);
-            // 
-            // _statusStrip
-            // 
-            this._statusStrip.BackColor = System.Drawing.SystemColors.Control;
-            this._statusStrip.Dock = System.Windows.Forms.DockStyle.None;
-            this._statusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this._statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1,
-            this._appUpdateLbl,
-            this._appUpdateAcceptedLbl,
-            this._openTransactionLbl,
-            this._statusLbl,
-            this._cancelLnk,
-            this._statusProgressbar});
-            this._statusStrip.Location = new System.Drawing.Point(0, 0);
-            this._statusStrip.Name = "_statusStrip";
-            this._statusStrip.Size = new System.Drawing.Size(1527, 32);
-            this._statusStrip.TabIndex = 0;
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(1396, 25);
-            this.toolStripStatusLabel1.Spring = true;
-            // 
-            // _appUpdateLbl
-            // 
-            this._appUpdateLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this._appUpdateLbl.IsLink = true;
-            this._appUpdateLbl.Name = "_appUpdateLbl";
-            this._appUpdateLbl.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
-            this._appUpdateLbl.Size = new System.Drawing.Size(538, 25);
-            this._appUpdateLbl.Text = "A new app version is available. Click here to install after exit.";
-            this._appUpdateLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._appUpdateLbl.Visible = false;
-            this._appUpdateLbl.Click += new System.EventHandler(this.AppUpdateLbl_Click);
-            // 
-            // _appUpdateAcceptedLbl
-            // 
-            this._appUpdateAcceptedLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this._appUpdateAcceptedLbl.ForeColor = System.Drawing.Color.Gray;
-            this._appUpdateAcceptedLbl.Name = "_appUpdateAcceptedLbl";
-            this._appUpdateAcceptedLbl.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
-            this._appUpdateAcceptedLbl.Size = new System.Drawing.Size(506, 25);
-            this._appUpdateAcceptedLbl.Text = "Cool! The update will start when you exit SQL Notebook.";
-            this._appUpdateAcceptedLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._appUpdateAcceptedLbl.Visible = false;
-            // 
-            // _openTransactionLbl
-            // 
-            this._openTransactionLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this._openTransactionLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this._openTransactionLbl.Name = "_openTransactionLbl";
-            this._openTransactionLbl.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
-            this._openTransactionLbl.Size = new System.Drawing.Size(297, 25);
-            this._openTransactionLbl.Text = "A database transaction is active.";
-            this._openTransactionLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._openTransactionLbl.Visible = false;
-            // 
-            // _statusLbl
-            // 
-            this._statusLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this._statusLbl.Image = global::SqlNotebook.Properties.Resources.Hourglass;
-            this._statusLbl.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._statusLbl.Name = "_statusLbl";
-            this._statusLbl.Size = new System.Drawing.Size(664, 25);
-            this._statusLbl.Spring = true;
-            this._statusLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._statusLbl.Visible = false;
-            // 
-            // _cancelLnk
-            // 
-            this._cancelLnk.IsLink = true;
-            this._cancelLnk.Margin = new System.Windows.Forms.Padding(0, 3, 5, 2);
-            this._cancelLnk.Name = "_cancelLnk";
-            this._cancelLnk.Size = new System.Drawing.Size(63, 27);
-            this._cancelLnk.Text = "Cancel";
-            this._cancelLnk.Visible = false;
-            this._cancelLnk.Click += new System.EventHandler(this.CancelLnk_Click);
-            // 
-            // _statusProgressbar
-            // 
-            this._statusProgressbar.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this._statusProgressbar.Margin = new System.Windows.Forms.Padding(1, 3, 15, 3);
-            this._statusProgressbar.MarqueeAnimationSpeed = 25;
-            this._statusProgressbar.Name = "_statusProgressbar";
-            this._statusProgressbar.Size = new System.Drawing.Size(100, 26);
-            this._statusProgressbar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             // 
             // _menuStrip
             // 
@@ -223,7 +125,9 @@
             this._importMnu,
             this._exportMnu,
             this._windowMnu,
-            this.helpToolStripMenuItem});
+            this.helpToolStripMenuItem,
+            this._transactionMenu,
+            this._updateAvailableMenu});
             this._menuStrip.Location = new System.Drawing.Point(0, 0);
             this._menuStrip.Name = "_menuStrip";
             this._menuStrip.Padding = new System.Windows.Forms.Padding(2, 2, 0, 2);
@@ -576,6 +480,44 @@
             this.toolStripMenuItem16.Text = "About SQL Notebook";
             this.toolStripMenuItem16.Click += new System.EventHandler(this.AboutMnu_Click);
             // 
+            // _transactionMenu
+            // 
+            this._transactionMenu.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this._transactionMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._transactionCommitMenu,
+            this._transactionRollbackMenu});
+            this._transactionMenu.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this._transactionMenu.Name = "_transactionMenu";
+            this._transactionMenu.Size = new System.Drawing.Size(186, 29);
+            this._transactionMenu.Text = "Active Transaction";
+            this._transactionMenu.Visible = false;
+            // 
+            // _transactionCommitMenu
+            // 
+            this._transactionCommitMenu.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this._transactionCommitMenu.Name = "_transactionCommitMenu";
+            this._transactionCommitMenu.Size = new System.Drawing.Size(180, 34);
+            this._transactionCommitMenu.Text = "Commit";
+            this._transactionCommitMenu.Click += new System.EventHandler(this.TransactionCommitMenu_Click);
+            // 
+            // _transactionRollbackMenu
+            // 
+            this._transactionRollbackMenu.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this._transactionRollbackMenu.Name = "_transactionRollbackMenu";
+            this._transactionRollbackMenu.Size = new System.Drawing.Size(180, 34);
+            this._transactionRollbackMenu.Text = "Rollback";
+            this._transactionRollbackMenu.Click += new System.EventHandler(this.TransactionRollbackMenu_Click);
+            // 
+            // _updateAvailableMenu
+            // 
+            this._updateAvailableMenu.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this._updateAvailableMenu.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this._updateAvailableMenu.Name = "_updateAvailableMenu";
+            this._updateAvailableMenu.Size = new System.Drawing.Size(174, 29);
+            this._updateAvailableMenu.Text = "Update Available";
+            this._updateAvailableMenu.Visible = false;
+            this._updateAvailableMenu.Click += new System.EventHandler(this.UpdateAvailableMenu_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
@@ -588,15 +530,10 @@
             this.Name = "MainForm";
             this.Text = "Untitled - SQL Notebook";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
-            this._toolStripContainer.BottomToolStripPanel.ResumeLayout(false);
-            this._toolStripContainer.BottomToolStripPanel.PerformLayout();
             this._toolStripContainer.TopToolStripPanel.ResumeLayout(false);
             this._toolStripContainer.TopToolStripPanel.PerformLayout();
             this._toolStripContainer.ResumeLayout(false);
             this._toolStripContainer.PerformLayout();
-            this._statusStrip.ResumeLayout(false);
-            this._statusStrip.PerformLayout();
             this._menuStrip.ResumeLayout(false);
             this._menuStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -606,11 +543,6 @@
         #endregion
 
         private System.Windows.Forms.ToolStripContainer _toolStripContainer;
-        private System.Windows.Forms.StatusStrip _statusStrip;
-        private System.Windows.Forms.ToolStripStatusLabel _statusLbl;
-        private System.Windows.Forms.ToolStripProgressBar _statusProgressbar;
-        private System.Windows.Forms.ToolStripStatusLabel _openTransactionLbl;
-        private System.Windows.Forms.ToolStripStatusLabel _cancelLnk;
         private System.Windows.Forms.MenuStrip _menuStrip;
         private System.Windows.Forms.ToolStripMenuItem _notebookMnu;
         private System.Windows.Forms.ToolStripMenuItem _importMnu;
@@ -650,12 +582,13 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem _searchDocMnu;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-        private System.Windows.Forms.ToolStripStatusLabel _appUpdateLbl;
-        private System.Windows.Forms.ToolStripStatusLabel _appUpdateAcceptedLbl;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripMenuItem _windowMnu;
         private System.Windows.Forms.ToolStripMenuItem _consoleMnu;
         private System.Windows.Forms.ToolStripMenuItem _contentsMnu;
+        private System.Windows.Forms.ToolStripMenuItem _transactionMenu;
+        private System.Windows.Forms.ToolStripMenuItem _transactionCommitMenu;
+        private System.Windows.Forms.ToolStripMenuItem _transactionRollbackMenu;
+        private System.Windows.Forms.ToolStripMenuItem _updateAvailableMenu;
     }
 }
 

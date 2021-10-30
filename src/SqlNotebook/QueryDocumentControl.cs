@@ -17,7 +17,6 @@ namespace SqlNotebook {
         private readonly SqlTextControl _textCtl;
         private readonly List<DataTable> _results = new List<DataTable>();
         private int _selectedResultIndex = 0;
-        private readonly Slot<bool> _operationInProgress;
 
         public string ItemName { get; set; }
 
@@ -25,13 +24,12 @@ namespace SqlNotebook {
             _manager.SetItemData(ItemName, _textCtl.SqlText);
         }
 
-        public QueryDocumentControl(string name, NotebookManager manager, IWin32Window mainForm, Slot<bool> operationInProgress) {
+        public QueryDocumentControl(string name, NotebookManager manager, IWin32Window mainForm) {
             InitializeComponent();
             ItemName = name;
             _manager = manager;
             _notebook = manager.Notebook;
             _mainForm = mainForm;
-            _operationInProgress = operationInProgress;
             _resultToolStrip.SetMenuAppearance();
 
             _grid.EnableDoubleBuffering();
@@ -54,7 +52,7 @@ namespace SqlNotebook {
             // trigger on F5, so catch it here.
             _textCtl.TextBox.KeyDown += async (sender, e) => {
                 if (e.SystemKey == System.Windows.Input.Key.F5) {
-                    await Execute();
+                    Execute();
                 }
             };
 
@@ -68,22 +66,20 @@ namespace SqlNotebook {
             ShowResult(0);
         }
 
-        public async Task Execute() {
-            await Execute(_textCtl.SqlText);
+        public void Execute() {
+            Execute(_textCtl.SqlText);
         }
 
-        private async void ExecuteBtn_Click(object sender, EventArgs e) {
-            await Execute();
+        private void ExecuteBtn_Click(object sender, EventArgs e) {
+            Execute();
         }
 
-        private async Task<bool> Execute(string sql) {
+        private bool Execute(string sql) {
             try {
-                if (_operationInProgress) {
-                    throw new Exception("Another operation is already in progress.");
-                }
-
                 _manager.CommitOpenEditors();
-                await ExecuteCore(sql);
+                if (!ExecuteCore(sql)) {
+                    return false; // Error box already shown.
+                }
                 _manager.SetDirty();
                 _manager.Rescan();
                 return true;
@@ -93,45 +89,36 @@ namespace SqlNotebook {
             }
         }
 
-        private async Task ExecuteCore(string sql) {
-            ScriptOutput output = null;
-            Exception exception = null;
-            _manager.PushStatus("Running your script...");
-            await Task.Run(() => {
-                try {
-                    output = _manager.ExecuteScript(sql);
-                } catch (Exception ex) {
-                    exception = ex;
-                }
-            });
-            _manager.PopStatus();
+        private bool ExecuteCore(string sql) {
+            var output = WaitForm.Go(FindForm(), "Script", "Running your script...", out var success, () =>
+                _manager.ExecuteScript(sql));
+            if (!success) {
+                return false;
+            };
 
-            if (exception != null) {
-                throw exception;
-            } else {
-                var resultSets = new List<DataTable>();
+            var resultSets = new List<DataTable>();
 
-                foreach (var sdt in output.DataTables) {
-                    resultSets.Add(sdt.ToDataTable());
-                }
-
-                if (output.TextOutput.Any()) {
-                    var dt = new DataTable("Output");
-                    dt.Columns.Add("printed_text", typeof(string));
-                    foreach (var line in output.TextOutput) {
-                        var row = dt.NewRow();
-                        row.ItemArray = new object[] { line };
-                        dt.Rows.Add(row);
-                    }
-                    resultSets.Insert(0, dt);
-                }
-
-                _grid.DataSource = null;
-                _results.ForEach(x => x.Dispose());
-                _results.Clear();
-                _results.AddRange(resultSets);
-                ShowResult(0);
+            foreach (var sdt in output.DataTables) {
+                resultSets.Add(sdt.ToDataTable());
             }
+
+            if (output.TextOutput.Any()) {
+                var dt = new DataTable("Output");
+                dt.Columns.Add("printed_text", typeof(string));
+                foreach (var line in output.TextOutput) {
+                    var row = dt.NewRow();
+                    row.ItemArray = new object[] { line };
+                    dt.Rows.Add(row);
+                }
+                resultSets.Insert(0, dt);
+            }
+
+            _grid.DataSource = null;
+            _results.ForEach(x => x.Dispose());
+            _results.Clear();
+            _results.AddRange(resultSets);
+            ShowResult(0);
+            return true;
         }
 
         private void ShowResult(int index) {
@@ -164,7 +151,7 @@ namespace SqlNotebook {
             ShowResult(_selectedResultIndex + 1);
         }
 
-        private async void SendTableMnu_Click(object sender, EventArgs e) {
+        private void SendTableMnu_Click(object sender, EventArgs e) {
             var f = new SendToTableForm(
                 $"{ItemName}_result",
                 _manager.Items
@@ -186,27 +173,20 @@ namespace SqlNotebook {
 
             var insertSql = SqlUtil.GetInsertSql(name, dt.Columns.Count);
 
-            Exception exception = null;
-            _manager.PushStatus($"Sending data to \"{name}\"...");
-            await Task.Run(() => {
-                try {
-                    _notebook.Invoke(() => {
-                        SqlUtil.WithTransaction(_notebook, () => {
-                            _manager.ExecuteScript(createSql);
-                            foreach (DataRow row in dt.Rows) {
-                                _notebook.Execute(insertSql, row.ItemArray);
-                            }
-                        });
+            WaitForm.Go(FindForm(), "Send Data", $"Sending data to \"{name}\"...", out var success, () => {
+                _notebook.Invoke(() => {
+                    SqlUtil.WithTransaction(_notebook, () => {
+                        _manager.ExecuteScript(createSql);
+                        foreach (DataRow row in dt.Rows) {
+                            _notebook.Execute(insertSql, row.ItemArray);
+                        }
                     });
-                    _manager.Rescan();
-                } catch (Exception ex) {
-                    exception = ex;
-                }
+                });
             });
-            _manager.PopStatus();
-            
-            if (exception != null) {
-                MessageForm.ShowError(this, "Send to Table", exception.Message);
+            _manager.Rescan();
+
+            if (!success) {
+                return;
             }
         }
 

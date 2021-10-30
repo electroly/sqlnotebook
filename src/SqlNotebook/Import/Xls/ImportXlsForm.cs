@@ -310,16 +310,13 @@ namespace SqlNotebook.Import.Xls {
                 return;
             }
 
-            ScriptOutput output = null;
-            using WaitForm waitForm = new("Import Preview", "Generating preview...", () => {
-                output = _manager.ExecuteScriptEx(
+            var output = WaitForm.Go(this, "Import Preview", "Generating preview...", out var success, () =>
+                _manager.ExecuteScriptEx(
                     code: tempSql,
                     args: new Dictionary<string, object>(),
                     transactionType: NotebookManager.TransactionType.RollbackTransaction,
-                    vars: out _);
-            });
-            if (waitForm.ShowDialog(this) != DialogResult.OK) {
-                MessageForm.ShowError(this, "Preview Error", waitForm.ResultException.Message);
+                    vars: out _));
+            if (!success) {
                 return;
             }
 
@@ -475,11 +472,10 @@ namespace SqlNotebook.Import.Xls {
                 return;
             }
 
-            using WaitForm waitForm = new("Import", $"Importing XLS file...", () => {
+            WaitForm.Go(this, "Import", $"Importing XLS file...", out var success, () => {
                 _manager.ExecuteScript(sql, transactionType: NotebookManager.TransactionType.Transaction);
             });
-            if (waitForm.ShowDialog(this) != DialogResult.OK) {
-                MessageForm.ShowError(this, "Import Error", waitForm.ResultException.Message);
+            if (!success) {
                 return;
             }
 
