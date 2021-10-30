@@ -17,7 +17,7 @@ namespace SqlNotebook {
         {
             NotebookTempFiles.Init();
 
-            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -41,7 +41,7 @@ namespace SqlNotebook {
             } catch (Exception ex) {
                 MessageBox.Show(ex.Message, "SQL Notebook", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } finally {
-                NotebookTempFiles.DeleteFiles();
+                NotebookTempFiles.DeleteFilesFromThisSession();
             }
         }
     }

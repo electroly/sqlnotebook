@@ -11,7 +11,7 @@ using namespace System::Text::Json;
 constexpr int CURRENT_FILE_VERSION = 2;
 
 Notebook::Notebook(String^ filePath, bool isNew) {
-    _workingCopyFilePath = NotebookTempFiles::GetTempFilePath(".db");
+    _workingCopyFilePath = NotebookTempFiles::GetTempFilePath(".working-copy");
     if (!isNew) {
         try {
             File::Copy(filePath, _workingCopyFilePath, /* overwrite */ true);
@@ -643,40 +643,4 @@ bool Notebook::IsTransactionActive() {
 
 bool Notebook::GetCancelling() {
     return _cancelling;
-}
-
-void NotebookTempFiles::Init() {
-    if (!_path) {
-        _path = Path::Combine(Path::GetTempPath(), "SqlNotebookTemp");
-        Directory::CreateDirectory(_path);
-        DeleteFiles();
-    }
-}
-
-String^ NotebookTempFiles::GetTempFilePath(String^ extension) {
-    Init();
-    extension = extension->TrimStart('.');
-    auto filePath = Path::Combine(_path, Guid::NewGuid().ToString() + "." + extension);
-    File::WriteAllBytes(filePath, gcnew array<Byte>(0));
-    File::AppendAllText(Path::Combine(_path, "delete.lst"), String::Format("{0}\r\n", filePath));
-    return filePath;
-}
-
-void NotebookTempFiles::DeleteFiles() {
-    auto deleteLstPath = Path::Combine(_path, "delete.lst");
-    if (File::Exists(deleteLstPath)) {
-        auto deleteFilePaths = File::ReadAllLines(deleteLstPath);
-        auto couldNotDelete = gcnew List<String^>();
-        for each (auto filePath in deleteFilePaths) {
-            if (filePath->Length > 0) {
-                try {
-                    File::Delete(filePath);
-                } catch (Exception^) {
-                    couldNotDelete->Add(filePath);
-                }
-            }
-        }
-        // try again next time with the couldNotDelete files
-        File::WriteAllLines(deleteLstPath, couldNotDelete);
-    }
 }

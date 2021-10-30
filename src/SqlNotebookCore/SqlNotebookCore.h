@@ -3,6 +3,7 @@
 #include <vector>
 #include <msclr/gcroot.h>
 #include "../sqlite3/sqlite3-ex.h"
+#include "NotebookTempFiles.h"
 using namespace SqlNotebookScript;
 using namespace System;
 using namespace System::Data;
@@ -95,15 +96,5 @@ namespace SqlNotebookCore {
 
         internal:
         static void SqliteResult(sqlite3_context* ctx, Object^ value);
-    };
-
-    public ref class NotebookTempFiles sealed abstract {
-        public:
-        static void Init();
-        static String^ GetTempFilePath(String^ extension);
-        static void DeleteFiles();
-
-        private:
-        static String^ _path;
     };
 }

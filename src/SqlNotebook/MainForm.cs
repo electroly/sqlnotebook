@@ -610,19 +610,6 @@ namespace SqlNotebook {
             return false;
         }
 
-        public static void LaunchUpdater() {
-            var exePath = Path.GetDirectoryName(Application.ExecutablePath);
-            var tempPath = Path.Combine(Path.GetTempPath(), "SqlNotebookTemp");
-            var deleteLstFilePath = Path.Combine(tempPath, "delete.lst");
-            var filename = "SqlNotebookUpdater.exe";
-            var exeFilePath = Path.Combine(exePath, filename);
-            var tempExeFilePath = Path.Combine(tempPath, filename);
-            File.AppendAllText(deleteLstFilePath, $"{tempExeFilePath}\r\n");
-            File.Copy(exeFilePath, tempExeFilePath, true);
-            Process.Start(tempExeFilePath);
-            Thread.Sleep(100); // make sure the process is running so the exe won't be deleted by temp files cleanup
-        }
-
         private void ContentsMnu_Click(object sender, EventArgs e) {
             switch (_contentsDockContent.DockState) {
                 case DockState.DockLeftAutoHide:
