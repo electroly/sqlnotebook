@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using SqlNotebookCore;
 using SqlNotebookScript.Interpreter;
+using SqlNotebook;
 
 namespace Tests {
     [TestClass]
