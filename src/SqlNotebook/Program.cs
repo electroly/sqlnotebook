@@ -1,15 +1,14 @@
-﻿using System;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using SqlNotebookCore;
+using System;
 using System.IO;
-using System.Linq;
+using System.Net.Http;
 using System.Windows.Forms;
-using SqlNotebookCore;
 
 namespace SqlNotebook {
     public static class Program
     {
+        public static HttpClient HttpClient {  get; } = new();
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>

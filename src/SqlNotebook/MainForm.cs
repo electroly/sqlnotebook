@@ -166,6 +166,9 @@ namespace SqlNotebook
                 }
             };
             SetTitle();
+
+            // No rush on this one; clean up any update MSIs we might have around
+            Task.Run(DeleteUpdateDir);
         }
 
         private void Manager_HandleHotkeyRequest(object sender, HotkeyEventArgs e) {
@@ -437,6 +440,13 @@ namespace SqlNotebook
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
+            var success = PrepareToCloseFile();
+            if (!success) {
+                e.Cancel = true;
+            }
+        }
+
+        private bool PrepareToCloseFile() {
             var isTransactionActive = false;
             _notebook.Invoke(() => {
                 isTransactionActive = _notebook.IsTransactionActive();
@@ -444,8 +454,7 @@ namespace SqlNotebook
             if (isTransactionActive) {
                 ErrorBox("SQL Notebook", "A transaction is active.",
                     "Execute either \"COMMIT\" or \"ROLLBACK\" to end the transaction before exiting.");
-                e.Cancel = true;
-                return;
+                return false;
             }
 
             if (_isDirty) {
@@ -456,20 +465,21 @@ namespace SqlNotebook
                     "SQL Notebook",
                     MessageBoxButtons.YesNoCancel,
                     MessageBoxIcon.Question);
-                
+
                 if (result == DialogResult.Yes) {
                     try {
                         if (!SaveOrSaveAs()) {
-                            e.Cancel = true;
+                            return false;
                         }
                     } catch (Exception ex) {
                         MessageForm.ShowError(this, "SQL Notebook", ex.Message);
-                        e.Cancel = true;
+                        return false;
                     }
                 } else if (result == DialogResult.Cancel) {
-                    e.Cancel = true;
+                    return false;
                 }
             }
+            return true;
         }
 
         private void RecentFilesMnu_DropDownOpening(object sender, EventArgs e) {
@@ -691,7 +701,56 @@ namespace SqlNotebook
         }
 
         private void UpdateAvailableMenu_Click(object sender, EventArgs e) {
+            var (version, msiUrl) = WaitForm.Go(this, "Software Update", "Checking for updates...", out var success, () => {
+                var appversion = Program.HttpClient.GetStringAsync(
+                    "https://sqlnotebook.com/appversion.txt?").GetAwaiter().GetResult();
+                var data = appversion.Split('\n').Select(x => x.Trim()).ToList();
+                if (data.Count < 2) {
+                    throw new Exception("The appversion.txt data is malformed.");
+                }
+                return (data[0], data[1]);
+            });
 
+            var confirmation = MessageBox.Show($"Version {version} is available. Install now?", "SQL Notebook",
+                MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+            if (confirmation != DialogResult.OK) {
+                return;
+            }
+
+            var msiFilePath = WaitForm.Go(this, "Software Update", "Downloading update...", out success, () => {
+                var dir = GetUpdateDir();
+                var msiFilePath = Path.Combine(dir, $"SQLNotebook_{version}_{DateTime.Now.Ticks}.msi");
+                using var downloadStream = Program.HttpClient.GetStreamAsync(msiUrl).GetAwaiter().GetResult();
+                using var fileStream = File.Create(msiFilePath);
+                downloadStream.CopyTo(fileStream);
+                return msiFilePath;
+            });
+            if (!success) {
+                return;
+            }
+
+            Process.Start(new ProcessStartInfo {
+                FileName = msiFilePath,
+                UseShellExecute = true,
+            });
+            Close();
+        }
+
+        private static void DeleteUpdateDir() {
+            try {
+                Directory.Delete(Path.Combine(Path.GetTempPath(), "SqlNotebookUpdate"), true);
+            } catch { }
+        }
+
+        private static string GetUpdateDir() {
+            var dir = Path.Combine(Path.GetTempPath(), "SqlNotebookUpdate");
+            Directory.CreateDirectory(dir);
+            foreach (var filePath in Directory.GetFiles(dir)) {
+                try {
+                    File.Delete(filePath);
+                } catch { }
+            }
+            return dir;
         }
     }
 }

@@ -117,7 +117,6 @@
     <ProjectReference Include="..\..\ext\Windows-API-Code-Pack\source\WindowsAPICodePack\Shell\Shell.csproj" />
     <ProjectReference Include="..\SqlNotebookCore\SqlNotebookCore.vcxproj" />
     <ProjectReference Include="..\SqlNotebookScript\SqlNotebookScript.csproj" />
-    <ProjectReference Include="..\SqlNotebookUpdater\SqlNotebookUpdater.csproj" />
   </ItemGroup>
   <ItemGroup>
     <FileAssociation Include=".sqlnb">
