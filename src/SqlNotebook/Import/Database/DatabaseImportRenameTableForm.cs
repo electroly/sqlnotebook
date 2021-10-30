@@ -27,14 +27,13 @@ namespace SqlNotebook.Import.Database {
 
         private void OkBtn_Click(object sender, EventArgs e) {
             if (_newNameTxt.Text == "") {
-                MessageBox.Show(this, "Please enter a new name.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Ui.ShowError(this, "Error", "Please enter a new name.");
                 return;
             }
-            foreach (char ch in _newNameTxt.Text) {
+            foreach (var ch in _newNameTxt.Text) {
                 if (!char.IsLetterOrDigit(ch) && ch != '_') {
-                    MessageBox.Show(this, 
-                        "The new name must contain only letters, numbers, and underscores.", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Ui.ShowError(this, "Error",
+                        "The new name must contain only letters, numbers, and underscores.");
                     return;
                 }
             }

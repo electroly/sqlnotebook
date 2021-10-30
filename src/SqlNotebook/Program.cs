@@ -39,7 +39,7 @@ namespace SqlNotebook {
             try {
                 Application.Run(new MainForm(filePath, isNew));
             } catch (Exception ex) {
-                MessageBox.Show(ex.Message, "SQL Notebook", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.GetExceptionMessage(), "SQL Notebook", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } finally {
                 NotebookTempFiles.DeleteFilesFromThisSession();
             }

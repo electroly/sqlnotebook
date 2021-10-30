@@ -92,11 +92,14 @@ namespace SqlNotebook {
             var name = lvi.Text;
             var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
 
-            if (MessageBox.Show(_mainForm,
-                $"Delete \"{name}\"?",
+            var choice = Ui.ShowTaskDialog(
+                _mainForm,
+                $"Are you sure you want to delete \"{name}\"?",
                 "Delete Item",
-                MessageBoxButtons.OKCancel,
-                MessageBoxIcon.Question) != DialogResult.OK) {
+                new[] { Ui.DELETE, Ui.CANCEL },
+                TaskDialogIcon.Warning,
+                defaultIsFirst: false);
+            if (choice != Ui.DELETE) {
                 return;
             }
 
@@ -185,7 +188,7 @@ namespace SqlNotebook {
             try {
                 _manager.RenameItem(new NotebookItem(type, lvi.Text), e.Label);
             } catch (Exception ex) {
-                MessageForm.ShowError(TopLevelControl, "Rename Error", ex.Message);
+                Ui.ShowError(TopLevelControl, "Rename Error", ex.GetExceptionMessage());
             }
         }
 

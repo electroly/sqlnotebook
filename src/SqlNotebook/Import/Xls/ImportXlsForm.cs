@@ -147,7 +147,7 @@ namespace SqlNotebook.Import.Xls {
 
         private void UseSelectionLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
             if (_grid.SelectedCells.Count == 0) {
-                MessageForm.ShowError(this, "Import Error", "Please select a range of cells in the grid.");
+                Ui.ShowError(this, "Import Error", "Please select a range of cells in the grid.");
                 return;
             }
 
@@ -306,7 +306,7 @@ namespace SqlNotebook.Import.Xls {
 
                 realSql = GenerateSql();
             } catch (Exception ex) {
-                MessageForm.ShowError(this, "Preview Error", ex.Message);
+                Ui.ShowError(this, "Preview Error", ex.GetExceptionMessage());
                 return;
             }
 
@@ -321,7 +321,7 @@ namespace SqlNotebook.Import.Xls {
             }
 
             if (output.DataTables.Count != 1) {
-                MessageForm.ShowError(this, "Preview Error", "The import failed due to an unknown error.");
+                Ui.ShowError(this, "Preview Error", "The import failed due to an unknown error.");
                 return;
             }
 
@@ -468,7 +468,7 @@ namespace SqlNotebook.Import.Xls {
             try {
                 sql = GenerateSql();
             } catch (Exception ex) {
-                MessageForm.ShowError(this, "Import Error", ex.Message);
+                Ui.ShowError(this, "Import Error", ex.GetExceptionMessage());
                 return;
             }
 

@@ -15,7 +15,7 @@ namespace SqlNotebook {
         private readonly NotebookManager _manager;
         private readonly Notebook _notebook;
         private readonly SqlTextControl _textCtl;
-        private readonly List<DataTable> _results = new List<DataTable>();
+        private readonly List<DataTable> _results = new();
         private int _selectedResultIndex = 0;
 
         public string ItemName { get; set; }
@@ -84,7 +84,7 @@ namespace SqlNotebook {
                 _manager.Rescan();
                 return true;
             } catch (Exception ex) {
-                MessageForm.ShowError(TopLevelControl, "Script Error", "An error occurred.", ex.Message);
+                Ui.ShowError(TopLevelControl, "Script Error", "An error occurred.", ex.GetExceptionMessage());
                 return false;
             }
         }

@@ -49,7 +49,7 @@ namespace Tests {
                         } catch (Exception ex) {
                             if (!stmt.ShouldFail) {
                                 errors.Add($"Should have passed, but SQLite rejected.\n{stmt.Cmd}\n" +
-                                    $"SQLite error: " + ex.Message);
+                                    $"SQLite error: " + ex.GetExceptionMessage());
                                 continue;
                             }
                         }

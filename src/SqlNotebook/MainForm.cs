@@ -300,7 +300,7 @@ namespace SqlNotebook {
             try {
                 FileImporter.Start(this, filePath, _manager);
             } catch (Exception ex) {
-                MessageForm.ShowError(this, "Import Error", ex.Message);
+                Ui.ShowError(this, "Import Error", ex.GetExceptionMessage());
             }
         }
 
@@ -308,7 +308,7 @@ namespace SqlNotebook {
             try {
                 _databaseImporter.DoDatabaseImport<PostgreSqlImportSession>();
             } catch (Exception ex) {
-                ErrorBox("Import Error", ex.Message);
+                ErrorBox("Import Error", ex.GetExceptionMessage());
             }
         }
 
@@ -316,7 +316,7 @@ namespace SqlNotebook {
             try {
                 _databaseImporter.DoDatabaseImport<SqlServerImportSession>();
             } catch (Exception ex) {
-                ErrorBox("Import Error", ex.Message);
+                ErrorBox("Import Error", ex.GetExceptionMessage());
             }
         }
 
@@ -324,19 +324,19 @@ namespace SqlNotebook {
             try {
                 _databaseImporter.DoDatabaseImport<MySqlImportSession>();
             } catch (Exception ex) {
-                ErrorBox("Import Error", ex.Message);
+                ErrorBox("Import Error", ex.GetExceptionMessage());
             }
         }
 
         private void ErrorBox(string title, string message, string details = null) {
-            MessageForm.ShowError(this, title, message, details);
+            Ui.ShowError(this, title, message, details);
         }
 
         private void NewScriptBtn_Click(object sender, EventArgs e) {
             try {
                 OpenItem(new NotebookItem(NotebookItemType.Script, _manager.NewScript()));
             } catch (Exception ex) {
-                ErrorBox("Notebook Error", "There was a problem creating the script.", ex.Message);
+                ErrorBox("Notebook Error", "There was a problem creating the script.", ex.GetExceptionMessage());
             }
         }
 
@@ -461,22 +461,21 @@ namespace SqlNotebook {
             if (_isDirty) {
                 var shortFilename = _isNew ? "Untitled" : Path.GetFileNameWithoutExtension(FilePath);
 
-                var result = MessageBox.Show(this,
-                    $"Save changes to {shortFilename}?",
+                var result = Ui.ShowTaskDialog(this,
+                    $"Do you want to save changes to {shortFilename}?",
                     "SQL Notebook",
-                    MessageBoxButtons.YesNoCancel,
-                    MessageBoxIcon.Question);
+                    new[] { Ui.SAVE, Ui.DONT_SAVE, Ui.CANCEL });
 
-                if (result == DialogResult.Yes) {
+                if (result == Ui.SAVE) {
                     try {
                         if (!SaveOrSaveAs()) {
                             return false;
                         }
                     } catch (Exception ex) {
-                        MessageForm.ShowError(this, "SQL Notebook", ex.Message);
+                        Ui.ShowError(this, "SQL Notebook", ex.GetExceptionMessage());
                         return false;
                     }
-                } else if (result == DialogResult.Cancel) {
+                } else if (result == Ui.CANCEL) {
                     return false;
                 }
             }
@@ -671,9 +670,10 @@ namespace SqlNotebook {
                 return (data[0], data[1]);
             });
 
-            var confirmation = MessageBox.Show($"Version {version} is available. Install now?", "SQL Notebook",
-                MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-            if (confirmation != DialogResult.OK) {
+            var confirmation = 
+                Ui.ShowTaskDialog(this, $"Version {version} is available. Install now?", "SQL Notebook",
+                new[] { Ui.INSTALL, Ui.CANCEL });
+            if (confirmation != Ui.INSTALL) {
                 return;
             }
 

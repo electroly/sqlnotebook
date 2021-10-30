@@ -28,20 +28,25 @@ namespace SqlNotebook {
             // Try running the action briefly before pulling up the wait form, to avoid a flicker of the wait form for
             // very fast tasks.
             var task = Task.Run(action);
-            task.Wait(millisecondsTimeout: 100);
+            try {
+                task.Wait(millisecondsTimeout: 100);
+            } catch (Exception ex) {
+                Ui.ShowError(owner, title, ex.GetExceptionMessage());
+                return;
+            }
 
             if (task.IsCompleted) {
                 try {
                     task.GetAwaiter().GetResult();
                 } catch (Exception ex) {
-                    MessageForm.ShowError(owner, title, ex.Message);
+                    Ui.ShowError(owner, title, ex.GetExceptionMessage());
                     return;
                 }
             } else {
                 using WaitForm f = new(title, text, () => task.GetAwaiter().GetResult());
                 var result = f.ShowDialog(owner);
                 if (result != DialogResult.OK) {
-                    MessageForm.ShowError(owner, title, f.ResultException.Message);
+                    Ui.ShowError(owner, title, f.ResultException.Message);
                     return;
                 }
             }

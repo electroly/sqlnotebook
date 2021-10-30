@@ -258,5 +258,42 @@ namespace SqlNotebook {
             var y = XHeight(0.75);
             control.Padding = new(x, y, x, y);
         }
+
+        public const string OK = "OK";
+        public const string CANCEL = "Cancel";
+        public const string SAVE = "Save";
+        public const string DONT_SAVE = "Don't save";
+        public const string DELETE = "Delete";
+        public const string INSTALL = "Install";
+
+        public static string ShowTaskDialog(IWin32Window owner, string heading, string caption,
+            string[] buttons, TaskDialogIcon icon = null, bool defaultIsFirst = true
+            ) {
+            TaskDialogPage taskDialogPage = new() {
+                Heading = heading,
+                Caption = caption,
+                Icon = icon,
+            };
+            foreach (var button in buttons) {
+                taskDialogPage.Buttons.Add(button);
+            }
+            taskDialogPage.DefaultButton = taskDialogPage.Buttons[defaultIsFirst ? 0 : buttons.Length - 1];
+            var result = TaskDialog.ShowDialog(owner, taskDialogPage);
+            return result.Text;
+        }
+
+        public static void ShowError(IWin32Window owner, string title, string message, string details = null) {
+            TaskDialogPage taskDialogPage = new() {
+                Heading = message,
+                Caption = title,
+                Icon = TaskDialogIcon.Error,
+            };
+            if (details != null) {
+                taskDialogPage.Text = details;
+            }
+            taskDialogPage.Buttons.Add("OK");
+            taskDialogPage.DefaultButton = taskDialogPage.Buttons[0];
+            TaskDialog.ShowDialog(owner, taskDialogPage);
+        }
     }
 }

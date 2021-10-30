@@ -164,7 +164,7 @@ namespace SqlNotebook.Import.Csv {
                 }
             } catch (Exception ex) {
                 if (_columnsLoadId == loadId) {
-                    _columnsError.Value = $"Error importing the CSV file:\r\n{ex.Message}";
+                    _columnsError.Value = $"Error importing the CSV file:\r\n{ex.GetExceptionMessage()}";
                     _columnsLoadControl.SetError(_columnsError.Value);
                 }
             } finally {
@@ -263,14 +263,14 @@ namespace SqlNotebook.Import.Csv {
                 DialogResult = DialogResult.OK;
                 GeneratedImportSql = GetImportSql();
             } else {
-                MessageForm.ShowError(this, "Import Error", errorMessage);
+                Ui.ShowError(this, "Import Error", errorMessage);
             }
         }
 
         private void PreviewButton_Click(object sender, EventArgs e) {
             var errorMessage = GetErrorMessage();
             if (errorMessage != null) {
-                MessageForm.ShowError(this, "Error", errorMessage);
+                Ui.ShowError(this, "Error", errorMessage);
                 return;
             }
 
