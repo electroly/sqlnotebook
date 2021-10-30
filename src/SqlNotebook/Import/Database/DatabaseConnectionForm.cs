@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace SqlNotebook.Import.Database {
     public partial class DatabaseConnectionForm : ZForm {
-        private Func<DbConnectionStringBuilder, BasicOptions> _getBasicOptions;
-        private Action<DbConnectionStringBuilder, BasicOptions> _setBasicOptions;
-        private DbConnectionStringBuilder _builder;
+        private readonly Func<DbConnectionStringBuilder, BasicOptions> _getBasicOptions;
+        private readonly Action<DbConnectionStringBuilder, BasicOptions> _setBasicOptions;
+        private readonly DbConnectionStringBuilder _builder;
 
         public sealed class BasicOptions {
             public string Server { get; set; } = "";
             public string Database { get; set; } = "";
             public string Username { get; set; } = "";
             public string Password { get; set; } = "";
-            public bool UseWindowsAuth { get; set; }
+            public bool UseWindowsAuth { get; set; } = true;
         }
 
         public DatabaseConnectionForm(string title, DbConnectionStringBuilder builder,

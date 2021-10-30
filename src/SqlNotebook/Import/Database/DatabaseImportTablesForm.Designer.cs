@@ -1,5 +1,5 @@
 ﻿namespace SqlNotebook.Import.Database {
-    partial class DatabaseImportForm {
+    partial class DatabaseImportTablesForm {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -25,8 +25,8 @@
         private void InitializeComponent() {
             this._methodGrp = new System.Windows.Forms.GroupBox();
             this._methodFlow = new System.Windows.Forms.FlowLayoutPanel();
-            this._methodLinkRad = new System.Windows.Forms.RadioButton();
             this._methodCopyRad = new System.Windows.Forms.RadioButton();
+            this._methodLinkRad = new System.Windows.Forms.RadioButton();
             this._tablesGrp = new System.Windows.Forms.GroupBox();
             this._importTable = new System.Windows.Forms.TableLayoutPanel();
             this._listBox = new System.Windows.Forms.CheckedListBox();
@@ -36,7 +36,6 @@
             this._selectNoneBtn = new System.Windows.Forms.Button();
             this._okBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
-            this._csvHeaderChk = new System.Windows.Forms.CheckBox();
             this._table = new System.Windows.Forms.TableLayoutPanel();
             this._buttonFlow = new System.Windows.Forms.FlowLayoutPanel();
             this._methodGrp.SuspendLayout();
@@ -76,16 +75,6 @@
             this._methodFlow.TabIndex = 2;
             this._methodFlow.WrapContents = false;
             // 
-            // _methodLinkRad
-            // 
-            this._methodLinkRad.AutoSize = true;
-            this._methodLinkRad.Location = new System.Drawing.Point(3, 38);
-            this._methodLinkRad.Name = "_methodLinkRad";
-            this._methodLinkRad.Size = new System.Drawing.Size(398, 29);
-            this._methodLinkRad.TabIndex = 0;
-            this._methodLinkRad.Text = "Create a live, read-only &link to the source data";
-            this._methodLinkRad.UseVisualStyleBackColor = true;
-            // 
             // _methodCopyRad
             // 
             this._methodCopyRad.AutoSize = true;
@@ -98,15 +87,25 @@
             this._methodCopyRad.Text = "&Copy all source data into the notebook file";
             this._methodCopyRad.UseVisualStyleBackColor = true;
             // 
+            // _methodLinkRad
+            // 
+            this._methodLinkRad.AutoSize = true;
+            this._methodLinkRad.Location = new System.Drawing.Point(3, 38);
+            this._methodLinkRad.Name = "_methodLinkRad";
+            this._methodLinkRad.Size = new System.Drawing.Size(398, 29);
+            this._methodLinkRad.TabIndex = 0;
+            this._methodLinkRad.Text = "Create a live, read-only &link to the source data";
+            this._methodLinkRad.UseVisualStyleBackColor = true;
+            // 
             // _tablesGrp
             // 
             this._tablesGrp.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this._tablesGrp.Controls.Add(this._importTable);
-            this._tablesGrp.Location = new System.Drawing.Point(3, 38);
+            this._tablesGrp.Location = new System.Drawing.Point(3, 3);
             this._tablesGrp.Name = "_tablesGrp";
-            this._tablesGrp.Size = new System.Drawing.Size(782, 706);
+            this._tablesGrp.Size = new System.Drawing.Size(782, 741);
             this._tablesGrp.TabIndex = 0;
             this._tablesGrp.TabStop = false;
             this._tablesGrp.Text = "Tables to import";
@@ -123,7 +122,7 @@
             this._importTable.Name = "_importTable";
             this._importTable.RowCount = 1;
             this._importTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._importTable.Size = new System.Drawing.Size(776, 676);
+            this._importTable.Size = new System.Drawing.Size(776, 711);
             this._importTable.TabIndex = 13;
             // 
             // _listBox
@@ -132,7 +131,7 @@
             this._listBox.IntegralHeight = false;
             this._listBox.Location = new System.Drawing.Point(3, 3);
             this._listBox.Name = "_listBox";
-            this._listBox.Size = new System.Drawing.Size(645, 670);
+            this._listBox.Size = new System.Drawing.Size(645, 705);
             this._listBox.TabIndex = 6;
             this._listBox.SelectedIndexChanged += new System.EventHandler(this.ListBox_SelectedIndexChanged);
             // 
@@ -209,34 +208,21 @@
             this._cancelBtn.Text = "Cancel";
             this._cancelBtn.UseVisualStyleBackColor = true;
             // 
-            // _csvHeaderChk
-            // 
-            this._csvHeaderChk.AutoSize = true;
-            this._csvHeaderChk.Checked = true;
-            this._csvHeaderChk.CheckState = System.Windows.Forms.CheckState.Checked;
-            this._csvHeaderChk.Location = new System.Drawing.Point(3, 3);
-            this._csvHeaderChk.Name = "_csvHeaderChk";
-            this._csvHeaderChk.Size = new System.Drawing.Size(237, 29);
-            this._csvHeaderChk.TabIndex = 5;
-            this._csvHeaderChk.Text = "This file has a &header row";
-            this._csvHeaderChk.UseVisualStyleBackColor = true;
-            // 
             // _table
             // 
             this._table.ColumnCount = 1;
             this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._table.Controls.Add(this._csvHeaderChk, 0, 0);
-            this._table.Controls.Add(this._methodGrp, 0, 2);
-            this._table.Controls.Add(this._tablesGrp, 0, 1);
-            this._table.Controls.Add(this._buttonFlow, 0, 3);
+            this._table.Controls.Add(this._methodGrp, 0, 1);
+            this._table.Controls.Add(this._tablesGrp, 0, 0);
+            this._table.Controls.Add(this._buttonFlow, 0, 2);
             this._table.Dock = System.Windows.Forms.DockStyle.Fill;
             this._table.Location = new System.Drawing.Point(0, 0);
             this._table.Name = "_table";
-            this._table.RowCount = 4;
-            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._table.RowCount = 3;
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this._table.Size = new System.Drawing.Size(788, 900);
             this._table.TabIndex = 6;
             // 
@@ -252,7 +238,7 @@
             this._buttonFlow.Size = new System.Drawing.Size(188, 41);
             this._buttonFlow.TabIndex = 6;
             // 
-            // ImportPreviewForm
+            // DatabaseImportTablesForm
             // 
             this.AcceptButton = this._okBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
@@ -264,7 +250,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(321, 379);
-            this.Name = "ImportPreviewForm";
+            this.Name = "DatabaseImportTablesForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
@@ -296,7 +282,6 @@
         private System.Windows.Forms.RadioButton _methodCopyRad;
         private System.Windows.Forms.Button _selectNoneBtn;
         private System.Windows.Forms.Button _selectAllBtn;
-        private System.Windows.Forms.CheckBox _csvHeaderChk;
         private System.Windows.Forms.GroupBox _tablesGrp;
         private System.Windows.Forms.GroupBox _methodGrp;
         private System.Windows.Forms.TableLayoutPanel _table;

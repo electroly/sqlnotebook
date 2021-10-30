@@ -22,5 +22,41 @@ namespace SqlNotebook.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SqlServerLastConnectionString {
+            get {
+                return ((string)(this["SqlServerLastConnectionString"]));
+            }
+            set {
+                this["SqlServerLastConnectionString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PostgreSqlLastConnectionString {
+            get {
+                return ((string)(this["PostgreSqlLastConnectionString"]));
+            }
+            set {
+                this["PostgreSqlLastConnectionString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MySqlLastConnectionString {
+            get {
+                return ((string)(this["MySqlLastConnectionString"]));
+            }
+            set {
+                this["MySqlLastConnectionString"] = value;
+            }
+        }
     }
 }

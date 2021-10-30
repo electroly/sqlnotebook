@@ -1,35 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace SqlNotebook.Import.Database {
-    public partial class DatabaseImportForm : ZForm {
+    public partial class DatabaseImportTablesForm : ZForm {
         public sealed class SelectedTable {
             public string SourceName;
             public string TargetName;
         }
 
         public IReadOnlyList<SelectedTable> SelectedTables { get; private set; }
-        public bool CsvHasHeaderRow { get; private set; }
         public bool CopyData { get; private set; }
 
         private readonly IReadOnlyList<string> _sourceTableNames;
         private readonly List<string> _targetTableNames;
 
-        public DatabaseImportForm(IImportSession session) {
+        public DatabaseImportTablesForm(IImportSession session) {
             InitializeComponent();
-
-            // hide the "This file has a header row" checkbox for non-CSV sources
-            _csvHeaderChk.Visible = false;
-            _tablesGrp.Height += (_tablesGrp.Top - _csvHeaderChk.Top);
-            _tablesGrp.Top = _csvHeaderChk.Top;
-
-            // always copy instead of link for file sources
-            if (session is IFileImportSession) {
-                _methodGrp.Enabled = false;
-                _methodCopyRad.Checked = true;
-            }
 
             _sourceTableNames = session.TableNames;
             _targetTableNames = new List<string>(session.TableNames);
@@ -43,7 +30,6 @@ namespace SqlNotebook.Import.Database {
             EnableDisableButtons();
 
             Ui ui = new(this, 70, 30);
-            ui.Init(_csvHeaderChk);
             ui.Init(_importTable);
             ui.Pad(_importTable);
             ui.Init(_renameTableBtn);
@@ -107,7 +93,6 @@ namespace SqlNotebook.Import.Database {
                 }
             }
             SelectedTables = tables;
-            CsvHasHeaderRow = _csvHeaderChk.Checked;
             CopyData = _methodCopyRad.Checked;
             DialogResult = DialogResult.OK;
             Close();

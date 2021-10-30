@@ -306,7 +306,7 @@ namespace SqlNotebook {
 
         private void ImportPostgresMnu_Click(object sender, EventArgs e) {
             try {
-                _databaseImporter.DoDatabaseImport<PgImportSession>();
+                _databaseImporter.DoDatabaseImport<PostgreSqlImportSession>();
             } catch (Exception ex) {
                 ErrorBox("Import Error", ex.Message);
             }
@@ -314,7 +314,7 @@ namespace SqlNotebook {
 
         private void ImportMssqlMnu_Click(object sender, EventArgs e) {
             try {
-                _databaseImporter.DoDatabaseImport<MsImportSession>();
+                _databaseImporter.DoDatabaseImport<SqlServerImportSession>();
             } catch (Exception ex) {
                 ErrorBox("Import Error", ex.Message);
             }
@@ -322,7 +322,7 @@ namespace SqlNotebook {
 
         private void ImportMysqlMnu_Click(object sender, EventArgs e) {
             try {
-                _databaseImporter.DoDatabaseImport<MyImportSession>();
+                _databaseImporter.DoDatabaseImport<MySqlImportSession>();
             } catch (Exception ex) {
                 ErrorBox("Import Error", ex.Message);
             }
@@ -481,34 +481,6 @@ namespace SqlNotebook {
                 }
             }
             return true;
-        }
-
-        private void RecentFilesMnu_DropDownOpening(object sender, EventArgs e) {
-            PopulateRecentMenu(typeof(IFileImportSession), _recentFilesMnu, _recentFilesNoneMnu);
-        }
-
-        private void RecentServersMnu_DropDownOpening(object sender, EventArgs e) {
-            PopulateRecentMenu(typeof(IDatabaseImportSession), _recentServersMnu, _recentServersNoneMnu);
-        }
-
-        private void PopulateRecentMenu(Type sessionType, ToolStripMenuItem menu, ToolStripMenuItem noneMenu) {
-            while (menu.DropDownItems.Count > 1) {
-                menu.DropDownItems.RemoveAt(1);
-            }
-
-            var items = RecentDataSources.List
-                .Where(x => x.ImportSessionType.GetInterfaces().Contains(sessionType))
-                .Reverse();
-
-            foreach (var item in items) {
-                var tsmi = new ToolStripMenuItem(item.DisplayName);
-                tsmi.Click += delegate {
-                    new DatabaseImporter(_manager, this).DoRecentImport(item);
-                };
-                menu.DropDownItems.Add(tsmi);
-            }
-
-            noneMenu.Visible = !items.Any();
         }
 
         private void SaveAsMnu_Click(object sender, EventArgs e) {
