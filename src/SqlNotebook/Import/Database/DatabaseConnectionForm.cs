@@ -14,7 +14,7 @@ namespace SqlNotebook.Import.Database {
             public string Database { get; set; } = "";
             public string Username { get; set; } = "";
             public string Password { get; set; } = "";
-            public bool UseWindowsAuth { get; set; } = true;
+            public bool UseWindowsAuth { get; set; } = false;
         }
 
         public DatabaseConnectionForm(string title, DbConnectionStringBuilder builder,
