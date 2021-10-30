@@ -28,7 +28,7 @@ namespace SqlNotebook {
             // Try running the action briefly before pulling up the wait form, to avoid a flicker of the wait form for
             // very fast tasks.
             var task = Task.Run(action);
-            task.Wait(millisecondsTimeout: 20);
+            task.Wait(millisecondsTimeout: 100);
 
             if (task.IsCompleted) {
                 try {
