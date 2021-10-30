@@ -1,4 +1,4 @@
-﻿namespace SqlNotebook {
+﻿namespace SqlNotebook.Import {
     partial class ImportColumnsControl {
         /// <summary> 
         /// Required designer variable.

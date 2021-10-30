@@ -24,7 +24,7 @@ namespace SqlNotebook.Import.Csv {
         private Guid _columnsLoadId;
 
         private readonly LoadingContainerControl _inputPreviewLoadControl;
-        private readonly ImportTextFilePreviewControl _inputPreviewControl;
+        private readonly ImportCsvPreviewControl _inputPreviewControl;
         private readonly Slot<string> _inputPreviewError = new Slot<string>();
         private Guid _inputPreviewLoadId;
 
@@ -43,7 +43,7 @@ namespace SqlNotebook.Import.Csv {
             _columnsLoadControl = new LoadingContainerControl { ContainedControl = _columnsControl, Dock = DockStyle.Fill };
             _columnsPanel.Controls.Add(_columnsLoadControl);
 
-            _inputPreviewControl = new ImportTextFilePreviewControl { Dock = DockStyle.Fill };
+            _inputPreviewControl = new ImportCsvPreviewControl { Dock = DockStyle.Fill };
             _inputPreviewLoadControl = new LoadingContainerControl { ContainedControl = _inputPreviewControl, Dock = DockStyle.Fill };
             _originalFilePanel.Controls.Add(_inputPreviewLoadControl);
 

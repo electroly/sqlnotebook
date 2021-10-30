@@ -1,5 +1,5 @@
-﻿namespace SqlNotebook {
-    partial class ImportRenameTableForm {
+﻿namespace SqlNotebook.Import.Database {
+    partial class DatabaseImportRenameTableForm {
         /// <summary>
         /// Required designer variable.
         /// </summary>

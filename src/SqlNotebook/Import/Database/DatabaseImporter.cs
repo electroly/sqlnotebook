@@ -8,23 +8,21 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SqlNotebook
-{
+namespace SqlNotebook.Import.Database {
     public sealed class RecentDataSource {
         public Type ImportSessionType;
         public string DisplayName;
         public string ConnectionString;
     }
 
-    public sealed class Importer {
+    public sealed class DatabaseImporter {
         private readonly NotebookManager _manager;
         private readonly Notebook _notebook;
         private readonly IWin32Window _owner;
 
-        public Importer(NotebookManager manager, IWin32Window owner) {
+        public DatabaseImporter(NotebookManager manager, IWin32Window owner) {
             _manager = manager;
             _notebook = manager.Notebook;
             _owner = owner;
@@ -53,10 +51,10 @@ namespace SqlNotebook
         }
 
         private void DoCommonImport(IImportSession session) {
-            IReadOnlyList<ImportPreviewForm.SelectedTable> selectedTables = null;
+            IReadOnlyList<DatabaseImportForm.SelectedTable> selectedTables = null;
             bool csvHasHeaderRow = false, copyData = false;
 
-            using (var frm = new ImportPreviewForm(session)) {
+            using (var frm = new DatabaseImportForm(session)) {
                 if (frm.ShowDialog(_owner) != DialogResult.OK) {
                     return;
                 }
@@ -95,7 +93,7 @@ namespace SqlNotebook
             _manager.SetDirty();
         }
 
-        private void DoDatabaseImport(IReadOnlyList<ImportPreviewForm.SelectedTable> selectedTables, IFileImportSession fileSession) {
+        private void DoDatabaseImport(IReadOnlyList<DatabaseImportForm.SelectedTable> selectedTables, IFileImportSession fileSession) {
             fileSession.PerformImport(
                 _notebook,
                 selectedTables.Select(x => x.SourceName).ToList(),
@@ -103,7 +101,7 @@ namespace SqlNotebook
             );
         }
 
-        private void DoDatabaseImport(IReadOnlyList<ImportPreviewForm.SelectedTable> selectedTables, bool copyData, IDatabaseImportSession dbSession) {
+        private void DoDatabaseImport(IReadOnlyList<DatabaseImportForm.SelectedTable> selectedTables, bool copyData, IDatabaseImportSession dbSession) {
             foreach (var selectedTable in selectedTables) {
                 if (copyData) {
                     if (_notebook.QueryValue("SELECT name FROM sqlite_master WHERE name = '__temp_import'") != null) {
@@ -196,8 +194,8 @@ namespace SqlNotebook
             return $"{_builder.Database} on {_builder.Host} (PostgreSQL)";
         }
 
-        protected override ImportConnectionForm.BasicOptions GetBasicOptions(NpgsqlConnectionStringBuilder builder) {
-            return new ImportConnectionForm.BasicOptions {
+        protected override DatabaseConnectionForm.BasicOptions GetBasicOptions(NpgsqlConnectionStringBuilder builder) {
+            return new DatabaseConnectionForm.BasicOptions {
                 Server = builder.Host,
                 Database = builder.Database,
                 Username = builder.Username,
@@ -205,7 +203,7 @@ namespace SqlNotebook
             };
         }
 
-        protected override void SetBasicOptions(NpgsqlConnectionStringBuilder builder, ImportConnectionForm.BasicOptions opt) {
+        protected override void SetBasicOptions(NpgsqlConnectionStringBuilder builder, DatabaseConnectionForm.BasicOptions opt) {
             builder.Host = opt.Server;
             builder.Database = opt.Database;
             builder.Username = opt.Username;
@@ -261,8 +259,8 @@ namespace SqlNotebook
             return $"{_builder.InitialCatalog} on {_builder.DataSource} (Microsoft SQL Server)";
         }
 
-        protected override ImportConnectionForm.BasicOptions GetBasicOptions(SqlConnectionStringBuilder builder) {
-            return new ImportConnectionForm.BasicOptions {
+        protected override DatabaseConnectionForm.BasicOptions GetBasicOptions(SqlConnectionStringBuilder builder) {
+            return new DatabaseConnectionForm.BasicOptions {
                 Server = builder.DataSource,
                 Database = builder.InitialCatalog,
                 Username = builder.UserID,
@@ -271,7 +269,7 @@ namespace SqlNotebook
             };
         }
 
-        protected override void SetBasicOptions(SqlConnectionStringBuilder builder, ImportConnectionForm.BasicOptions opt) {
+        protected override void SetBasicOptions(SqlConnectionStringBuilder builder, DatabaseConnectionForm.BasicOptions opt) {
             builder.DataSource = opt.Server;
             builder.InitialCatalog = opt.Database;
             builder.UserID = opt.Username;
@@ -312,8 +310,8 @@ namespace SqlNotebook
             return $"{_builder.Database} on {_builder.Server} (MySQL)";
         }
 
-        protected override ImportConnectionForm.BasicOptions GetBasicOptions(MySqlConnectionStringBuilder builder) {
-            return new ImportConnectionForm.BasicOptions {
+        protected override DatabaseConnectionForm.BasicOptions GetBasicOptions(MySqlConnectionStringBuilder builder) {
+            return new DatabaseConnectionForm.BasicOptions {
                 Server = builder.Server,
                 Database = builder.Database,
                 Username = builder.UserID,
@@ -321,7 +319,7 @@ namespace SqlNotebook
             };
         }
 
-        protected override void SetBasicOptions(MySqlConnectionStringBuilder builder, ImportConnectionForm.BasicOptions opt) {
+        protected override void SetBasicOptions(MySqlConnectionStringBuilder builder, DatabaseConnectionForm.BasicOptions opt) {
             builder.Server = opt.Server;
             builder.Database = opt.Database;
             builder.UserID = opt.Username;
@@ -338,8 +336,8 @@ namespace SqlNotebook
         protected abstract void ReadTableNames(IDbConnection connection);
         protected abstract TConnectionStringBuilder CreateBuilder(string connStr);
         protected abstract string GetDisplayName();
-        protected abstract ImportConnectionForm.BasicOptions GetBasicOptions(TConnectionStringBuilder builder);
-        protected abstract void SetBasicOptions(TConnectionStringBuilder builder, ImportConnectionForm.BasicOptions opt);
+        protected abstract DatabaseConnectionForm.BasicOptions GetBasicOptions(TConnectionStringBuilder builder);
+        protected abstract void SetBasicOptions(TConnectionStringBuilder builder, DatabaseConnectionForm.BasicOptions opt);
 
         protected TConnectionStringBuilder _builder = new TConnectionStringBuilder();
 
@@ -347,7 +345,7 @@ namespace SqlNotebook
             var successfulConnect = false;
 
             do {
-                var f = new ImportConnectionForm(
+                var f = new DatabaseConnectionForm(
                     $"Connect to {ProductName}", 
                     _builder,
                     b => GetBasicOptions((TConnectionStringBuilder)b),

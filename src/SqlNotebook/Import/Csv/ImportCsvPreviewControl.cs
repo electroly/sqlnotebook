@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 
-namespace SqlNotebook {
-    public partial class ImportTextFilePreviewControl : UserControl {
+namespace SqlNotebook.Import.Csv {
+    public partial class ImportCsvPreviewControl : UserControl {
         private readonly SqlTextControl _text;
 
         public string PreviewText {
@@ -13,7 +13,7 @@ namespace SqlNotebook {
             }
         }
 
-        public ImportTextFilePreviewControl() {
+        public ImportCsvPreviewControl() {
             InitializeComponent();
 
             _text = new(true, false, false) {

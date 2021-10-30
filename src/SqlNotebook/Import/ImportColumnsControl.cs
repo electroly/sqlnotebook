@@ -6,7 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using SqlNotebookScript.Utils;
 
-namespace SqlNotebook {
+namespace SqlNotebook.Import {
     public partial class ImportColumnsControl : UserControl {
         private static class GridColumn {
             public static readonly string Import = "import";

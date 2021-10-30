@@ -1,5 +1,5 @@
-﻿namespace SqlNotebook {
-    partial class ImportPreviewControl {
+﻿namespace SqlNotebook.Import.Csv {
+    partial class ImportCsvPreviewControl {
         /// <summary> 
         /// Required designer variable.
         /// </summary>
@@ -25,14 +25,14 @@
         private void InitializeComponent() {
             this.SuspendLayout();
             // 
-            // ImportPreviewControl
+            // ImportTextFilePreviewControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.Name = "ImportPreviewControl";
-            this.Size = new System.Drawing.Size(758, 721);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Name = "ImportTextFilePreviewControl";
+            this.Size = new System.Drawing.Size(619, 439);
             this.ResumeLayout(false);
 
         }

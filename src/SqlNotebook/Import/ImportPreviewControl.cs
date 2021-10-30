@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Windows.Forms;
 
-namespace SqlNotebook {
+namespace SqlNotebook.Import {
     public partial class ImportPreviewControl : UserControl {
         private readonly DataGridView _grid;
 

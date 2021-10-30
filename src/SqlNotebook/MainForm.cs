@@ -1,4 +1,6 @@
-﻿using SqlNotebook.Properties;
+﻿using SqlNotebook.Import;
+using SqlNotebook.Import.Database;
+using SqlNotebook.Properties;
 using SqlNotebookCore;
 using SqlNotebookScript.Utils;
 using System;
@@ -13,8 +15,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace SqlNotebook
-{
+namespace SqlNotebook {
     public partial class MainForm : ZForm {
         private readonly DockPanel _dockPanel;
         private readonly NotebookManager _manager;
@@ -22,7 +23,7 @@ namespace SqlNotebook
         private readonly UserControlDockContent _contentsDockContent;
         private readonly ConsoleControl _console;
         private readonly UserControlDockContent _consoleDockContent;
-        private readonly Importer _importer;
+        private readonly DatabaseImporter _databaseImporter;
         private readonly ExplorerControl _explorer;
         private string FilePath => _notebook.GetFilePath();
         private bool _isNew;
@@ -95,7 +96,7 @@ namespace SqlNotebook
             }
             _isNew = isNew;
             _manager = new NotebookManager(_notebook, _isTransactionOpen);
-            _importer = new Importer(_manager, this);
+            _databaseImporter = new DatabaseImporter(_manager, this);
             _dockPanel = new DockPanel {
                 Dock = DockStyle.Fill,
                 Theme = new VS2012LightTheme {
@@ -287,7 +288,7 @@ namespace SqlNotebook
                 CheckFileExists = true,
                 CheckPathExists = true,
                 DereferenceLinks = true,
-                Filter = ImportProcess.Filter,
+                Filter = FileImporter.Filter,
                 SupportMultiDottedExtensions = true,
                 Title = "Import from File"
             };
@@ -297,7 +298,7 @@ namespace SqlNotebook
             var filePath = openFrm.FileName;
 
             try {
-                ImportProcess.Start(this, filePath, _manager);
+                FileImporter.Start(this, filePath, _manager);
             } catch (Exception ex) {
                 MessageForm.ShowError(this, "Import Error", ex.Message);
             }
@@ -305,7 +306,7 @@ namespace SqlNotebook
 
         private void ImportPostgresMnu_Click(object sender, EventArgs e) {
             try {
-                _importer.DoDatabaseImport<PgImportSession>();
+                _databaseImporter.DoDatabaseImport<PgImportSession>();
             } catch (Exception ex) {
                 ErrorBox("Import Error", ex.Message);
             }
@@ -313,7 +314,7 @@ namespace SqlNotebook
 
         private void ImportMssqlMnu_Click(object sender, EventArgs e) {
             try {
-                _importer.DoDatabaseImport<MsImportSession>();
+                _databaseImporter.DoDatabaseImport<MsImportSession>();
             } catch (Exception ex) {
                 ErrorBox("Import Error", ex.Message);
             }
@@ -321,7 +322,7 @@ namespace SqlNotebook
 
         private void ImportMysqlMnu_Click(object sender, EventArgs e) {
             try {
-                _importer.DoDatabaseImport<MyImportSession>();
+                _databaseImporter.DoDatabaseImport<MyImportSession>();
             } catch (Exception ex) {
                 ErrorBox("Import Error", ex.Message);
             }
@@ -502,7 +503,7 @@ namespace SqlNotebook
             foreach (var item in items) {
                 var tsmi = new ToolStripMenuItem(item.DisplayName);
                 tsmi.Click += delegate {
-                    new Importer(_manager, this).DoRecentImport(item);
+                    new DatabaseImporter(_manager, this).DoRecentImport(item);
                 };
                 menu.DropDownItems.Add(tsmi);
             }

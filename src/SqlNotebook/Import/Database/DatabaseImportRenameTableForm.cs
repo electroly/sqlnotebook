@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace SqlNotebook {
-    public partial class ImportRenameTableForm : ZForm {
+namespace SqlNotebook.Import.Database {
+    public partial class DatabaseImportRenameTableForm : ZForm {
         public string NewName { get; private set; }
 
-        public ImportRenameTableForm(string oldName, string newName) {
+        public DatabaseImportRenameTableForm(string oldName, string newName) {
             InitializeComponent();
 
             Ui ui = new(this);

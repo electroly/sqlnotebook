@@ -1,5 +1,5 @@
-﻿namespace SqlNotebook {
-    partial class ImportConnectionForm {
+﻿namespace SqlNotebook.Import.Database {
+    partial class DatabaseConnectionForm {
         /// <summary>
         /// Required designer variable.
         /// </summary>

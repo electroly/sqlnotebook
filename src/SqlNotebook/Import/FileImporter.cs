@@ -4,8 +4,8 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-namespace SqlNotebook {
-    public static class ImportProcess {
+namespace SqlNotebook.Import {
+    public static class FileImporter {
         public static string Filter => string.Join("|",
             "All data files|*.csv;*.txt;*.xls;*.xlsx",
             "Comma-separated values|*.csv;*.txt",

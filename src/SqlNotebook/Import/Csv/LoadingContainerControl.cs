@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SqlNotebookScript.Utils;
 
-namespace SqlNotebook {
+namespace SqlNotebook.Import.Csv {
     public partial class LoadingContainerControl : UserControl {
         private Control _control;
         private int _loadCount = 0;

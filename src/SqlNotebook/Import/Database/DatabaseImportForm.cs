@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace SqlNotebook {
-    public partial class ImportPreviewForm : ZForm {
+namespace SqlNotebook.Import.Database {
+    public partial class DatabaseImportForm : ZForm {
         public sealed class SelectedTable {
             public string SourceName;
             public string TargetName;
@@ -17,7 +17,7 @@ namespace SqlNotebook {
         private readonly IReadOnlyList<string> _sourceTableNames;
         private readonly List<string> _targetTableNames;
 
-        public ImportPreviewForm(IImportSession session) {
+        public DatabaseImportForm(IImportSession session) {
             InitializeComponent();
 
             // hide the "This file has a header row" checkbox for non-CSV sources
@@ -84,7 +84,7 @@ namespace SqlNotebook {
         private void RenameTableBtn_Click(object sender, EventArgs e) {
             int i = _listBox.SelectedIndex;
             var oldName = _sourceTableNames[i];
-            using (var f = new ImportRenameTableForm(oldName, _targetTableNames[i])) {
+            using (var f = new DatabaseImportRenameTableForm(oldName, _targetTableNames[i])) {
                 if (f.ShowDialog(this) == DialogResult.OK) {
                     _targetTableNames[i] = f.NewName;
                     if (oldName != f.NewName) {

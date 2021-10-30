@@ -4,8 +4,8 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace SqlNotebook {
-    public partial class ImportConnectionForm : ZForm {
+namespace SqlNotebook.Import.Database {
+    public partial class DatabaseConnectionForm : ZForm {
         private Func<DbConnectionStringBuilder, BasicOptions> _getBasicOptions;
         private Action<DbConnectionStringBuilder, BasicOptions> _setBasicOptions;
         private DbConnectionStringBuilder _builder;
@@ -18,7 +18,7 @@ namespace SqlNotebook {
             public bool UseWindowsAuth { get; set; }
         }
 
-        public ImportConnectionForm(string title, DbConnectionStringBuilder builder,
+        public DatabaseConnectionForm(string title, DbConnectionStringBuilder builder,
             Func<DbConnectionStringBuilder, BasicOptions> getBasicOptions,
             Action<DbConnectionStringBuilder, BasicOptions> setBasicOptions) {
             InitializeComponent();

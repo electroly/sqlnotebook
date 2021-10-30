@@ -1,4 +1,4 @@
-﻿namespace SqlNotebook {
+﻿namespace SqlNotebook.Import.Csv {
     partial class LoadingContainerControl {
         /// <summary> 
         /// Required designer variable.

@@ -1,5 +1,5 @@
 ﻿
-namespace SqlNotebook {
+namespace SqlNotebook.Import {
     partial class ImportScriptPreviewForm {
         /// <summary>
         /// Required designer variable.

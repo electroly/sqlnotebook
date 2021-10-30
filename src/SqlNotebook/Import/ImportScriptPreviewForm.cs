@@ -1,7 +1,8 @@
-﻿using SqlNotebookScript;
+﻿using SqlNotebook.Import;
+using SqlNotebookScript;
 using System.Windows.Forms;
 
-namespace SqlNotebook {
+namespace SqlNotebook.Import {
     public partial class ImportScriptPreviewForm : ZForm {
         public ImportScriptPreviewForm(string sql, SimpleDataTable table) {
             InitializeComponent();

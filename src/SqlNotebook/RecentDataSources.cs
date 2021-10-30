@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SqlNotebook.Import;
+using SqlNotebook.Import.Database;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
