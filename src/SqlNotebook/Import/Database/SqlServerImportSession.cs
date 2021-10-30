@@ -1,4 +1,5 @@
-﻿using SqlNotebookScript.Utils;
+﻿using SqlNotebook.Properties;
+using SqlNotebookScript.Utils;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -69,5 +70,8 @@ namespace SqlNotebook.Import.Database {
             builder.Password = opt.Password;
             builder.IntegratedSecurity = opt.UseWindowsAuth;
         }
+
+        protected override string GetDefaultConnectionString() => Settings.Default.SqlServerLastConnectionString;
+        protected override void SetDefaultConnectionString(string str) => Settings.Default.SqlServerLastConnectionString = str;
     }
 }

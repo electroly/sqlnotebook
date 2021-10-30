@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SqlNotebook.Properties;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Windows.Forms;
@@ -15,22 +16,35 @@ namespace SqlNotebook.Import.Database {
         protected abstract string GetDisplayName();
         protected abstract DatabaseConnectionForm.BasicOptions GetBasicOptions(TConnectionStringBuilder builder);
         protected abstract void SetBasicOptions(TConnectionStringBuilder builder, DatabaseConnectionForm.BasicOptions opt);
+        protected abstract string GetDefaultConnectionString();
+        protected abstract void SetDefaultConnectionString(string str);
 
-        protected TConnectionStringBuilder _builder = new TConnectionStringBuilder();
+        protected TConnectionStringBuilder _builder = new();
 
         public bool FromConnectForm(IWin32Window owner) {
             var successfulConnect = false;
 
             do {
+                var initialConnectionString = GetDefaultConnectionString();
+                if (!string.IsNullOrWhiteSpace(initialConnectionString)) {
+                    try {
+                        _builder.ConnectionString = initialConnectionString;
+                    } catch { }
+                }
 
                 using DatabaseConnectionForm f = new(
                     $"Connect to {ProductName}", 
                     _builder,
                     b => GetBasicOptions((TConnectionStringBuilder)b),
                     (b, o) => SetBasicOptions((TConnectionStringBuilder)b, o));
+                
                 if (f.ShowDialog(owner) != DialogResult.OK) {
                     return false;
                 }
+
+                // Save the connection string for next time, even if it fails.
+                SetDefaultConnectionString(_builder.ConnectionString);
+                Settings.Default.Save();
 
                 successfulConnect = DoConnect(owner);
             } while (!successfulConnect);

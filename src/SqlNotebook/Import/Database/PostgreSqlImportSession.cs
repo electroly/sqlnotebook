@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using SqlNotebook.Properties;
 using SqlNotebookScript.Utils;
 using System.Collections.Generic;
 using System.Data;
@@ -51,5 +52,8 @@ namespace SqlNotebook.Import.Database {
             builder.Username = opt.Username;
             builder.Password = opt.Password;
         }
+
+        protected override string GetDefaultConnectionString() => Settings.Default.PostgreSqlLastConnectionString;
+        protected override void SetDefaultConnectionString(string str) => Settings.Default.PostgreSqlLastConnectionString = str;
     }
 }
