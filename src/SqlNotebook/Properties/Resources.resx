@@ -169,18 +169,6 @@
   <data name="Help" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\help.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="HelpCss" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Help.css;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="BookPicture32Png" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\ext\fatcow\book_picture32.png.binary;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="PageWhiteTextPng" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\ext\fatcow\page_white_text.png.binary;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="LinkGo32Png" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\ext\fatcow\link_go32.png.binary;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="HelpIco" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\help.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -193,9 +181,6 @@
   <data name="TableImportIco" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\table_import.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="SqliteSiteErrorPlaceholderPng" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\SqliteSiteErrorPlaceholder.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="Warning32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\warning.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -204,9 +189,6 @@
   </data>
   <data name="Exclamation16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\exclamation16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="FaviconIco" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\favicon.ico.binary;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="TableSheetIco" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\table_sheet.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

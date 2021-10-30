@@ -91,16 +91,6 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] BookPicture32Png {
-            get {
-                object obj = ResourceManager.GetObject("BookPicture32Png", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap bullet_black32 {
@@ -221,16 +211,6 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] FaviconIco {
-            get {
-                object obj = ResourceManager.GetObject("FaviconIco", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon file_extension_xls_ico {
@@ -281,45 +261,6 @@ namespace SqlNotebook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to body {
-        ///    font-family: &quot;Segoe UI&quot;;
-        ///    font-size: 11pt;
-        ///    padding-bottom: 50px;
-        ///    padding-left: 10px;
-        ///    max-width: 800px;
-        ///    line-height: 140%;
-        ///}
-        ///* {
-        ///    font-size: 11pt !important;
-        ///}
-        ///pre, tt, code {
-        ///    font-family: &quot;Consolas&quot;;
-        ///}
-        ///a {
-        ///    text-decoration: none;
-        ///}
-        ///a:hover {
-        ///    text-decoration: underline;
-        ///}
-        ///img.diagram {
-        ///    border: 1px solid white;
-        ///}
-        ///a img.diagram:hover {
-        ///    border: 1px solid #4078c0;
-        ///}
-        ///div.figure {
-        ///    text-align: center;
-        ///}
-        ///div.caption {
-        ///    font-size [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string HelpCss {
-            get {
-                return ResourceManager.GetString("HelpCss", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon HelpIco {
@@ -336,16 +277,6 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("Hourglass", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] LinkGo32Png {
-            get {
-                object obj = ResourceManager.GetObject("LinkGo32Png", resourceCulture);
-                return ((byte[])(obj));
             }
         }
         
@@ -456,16 +387,6 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("PageWhiteTextIco", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] PageWhiteTextPng {
-            get {
-                object obj = ResourceManager.GetObject("PageWhiteTextPng", resourceCulture);
-                return ((byte[])(obj));
             }
         }
         
@@ -585,16 +506,6 @@ namespace SqlNotebook.Properties {
         internal static byte[] SQL_Mode_xshd {
             get {
                 object obj = ResourceManager.GetObject("SQL_Mode_xshd", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] SqliteSiteErrorPlaceholderPng {
-            get {
-                object obj = ResourceManager.GetObject("SqliteSiteErrorPlaceholderPng", resourceCulture);
                 return ((byte[])(obj));
             }
         }
