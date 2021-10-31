@@ -683,7 +683,10 @@ namespace SqlNotebookScript.Interpreter {
                 Or(
                     // expr ::= function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* | "*" ] ")"
                     Prod($"{p}.function-call", 2,
-                        Id("function name"),
+                        Or(
+                            Id("function name"),
+                            Tok(TokenType.Replace)
+                        ),
                         Tok(TokenType.Lp),
                         Opt(Or(
                             Prod($"{p}.star", 1, Tok(TokenType.Star)),
