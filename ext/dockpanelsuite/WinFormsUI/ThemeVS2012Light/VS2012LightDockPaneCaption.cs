@@ -457,8 +457,8 @@ namespace WeifenLuo.WinFormsUI.Docking
         {
             // set the size and location for close and auto-hide buttons
             Rectangle rectCaption = ClientRectangle;
-            int buttonWidth = ButtonClose.Image.Width;
-            int buttonHeight = ButtonClose.Image.Height;
+            int buttonWidth = (int)(ButtonClose.Image.Width * ((double)DeviceDpi / 96));
+            int buttonHeight = (int)(ButtonClose.Image.Height * ((double)DeviceDpi / 96));
             int height = rectCaption.Height - ButtonGapTop - ButtonGapBottom;
             if (buttonHeight < height)
             {

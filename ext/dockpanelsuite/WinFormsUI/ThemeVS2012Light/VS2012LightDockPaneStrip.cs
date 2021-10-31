@@ -92,7 +92,7 @@ namespace WeifenLuo.WinFormsUI.Docking
         private const int _ToolWindowStripGapLeft = 0;
         private const int _ToolWindowStripGapRight = 0;
         private const int _ToolWindowImageHeight = 16;
-        private const int _ToolWindowImageWidth = 0;//16;
+        private const int _ToolWindowImageWidth = 16;
         private const int _ToolWindowImageGapTop = 3;
         private const int _ToolWindowImageGapBottom = 1;
         private const int _ToolWindowImageGapLeft = 2;
@@ -230,6 +230,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                     m_buttonClose = new InertButton(ImageButtonClose, ImageButtonClose);
                     m_toolTip.SetToolTip(m_buttonClose, ToolTipClose);
                     m_buttonClose.Click += new EventHandler(Close_Click);
+                    // Commented out because this seems to cover up the window list button?
                     //Controls.Add(m_buttonClose);
                 }
 
@@ -989,7 +990,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                 width = sizeText.Width + DocumentIconGapLeft + DocumentTextGapRight;
 
             if (content.DockHandler.CloseButtonVisible)
-                width += TAB_CLOSE_BUTTON_WIDTH;
+                width += (int)(TAB_CLOSE_BUTTON_WIDTH * (double)DeviceDpi / 96);
 
             return width;
         }
@@ -1309,8 +1310,8 @@ namespace WeifenLuo.WinFormsUI.Docking
                 return Rectangle.Empty;
             }
 
-            const int gap = 3;
-            const int imageSize = 15;
+            var gap = (int)(5 * (double)DeviceDpi / 96);
+            var imageSize = (int)(15 * (double)DeviceDpi / 96);
             return new Rectangle(rectTab.X + rectTab.Width - imageSize - gap - 1, rectTab.Y + gap, imageSize, imageSize);
         }
 

@@ -129,33 +129,8 @@
     <Compile Remove="Docking\VS2005Theme.cs" />
     <Compile Remove="Docking\Win32\Enums.cs" />
     <Compile Remove="Docking\Win32\NativeMethods.cs" />
-    <Compile Remove="ThemeVS2003\Resources.Designer.cs" />
-    <Compile Remove="ThemeVS2003\Strings.Designer.cs" />
-    <Compile Remove="ThemeVS2003\VS2003AutoHideStrip.cs" />
-    <Compile Remove="ThemeVS2003\VS2003DockPaneCaption.cs" />
-    <Compile Remove="ThemeVS2003\VS2003DockPaneStrip.cs" />
-    <Compile Remove="ThemeVS2003\VS2003Theme.cs" />
-    <Compile Remove="ThemeVS2005Multithreading\Resources.Designer.cs" />
-    <Compile Remove="ThemeVS2005Multithreading\Strings.Designer.cs" />
-    <Compile Remove="ThemeVS2005Multithreading\VS2005MultithreadingAutoHideStrip.cs" />
-    <Compile Remove="ThemeVS2005Multithreading\VS2005MultithreadingDockPaneCaption.cs" />
-    <Compile Remove="ThemeVS2005Multithreading\VS2005MultithreadingDockPaneStrip.cs" />
-    <Compile Remove="ThemeVS2005Multithreading\VS2005MultithreadingPaneIndicator.cs" />
-    <Compile Remove="ThemeVS2005Multithreading\VS2005MultithreadingPanelIndicator.cs" />
-    <Compile Remove="ThemeVS2005Multithreading\VS2005MultithreadingTheme.cs" />
-    <Compile Remove="ThemeVS2013Blue\Resources.Designer.cs" />
-    <Compile Remove="ThemeVS2013Blue\Strings.Designer.cs" />
-    <Compile Remove="ThemeVS2013Blue\VS2013BlueDockPaneStrip.cs" />
-    <Compile Remove="ThemeVS2013Blue\VS2013BlueSplitterControl.cs" />
-    <Compile Remove="ThemeVS2013Blue\VS2013BlueTheme.cs" />
     <EmbeddedResource Remove="Docking\Resources.resx" />
     <EmbeddedResource Remove="Docking\Strings.resx" />
-    <EmbeddedResource Remove="ThemeVS2003\Resources.resx" />
-    <EmbeddedResource Remove="ThemeVS2003\Strings.resx" />
-    <EmbeddedResource Remove="ThemeVS2005Multithreading\Resources.resx" />
-    <EmbeddedResource Remove="ThemeVS2005Multithreading\Strings.resx" />
-    <EmbeddedResource Remove="ThemeVS2013Blue\Resources.resx" />
-    <EmbeddedResource Remove="ThemeVS2013Blue\Strings.resx" />
   </ItemGroup>
   <UsingTask Condition=" '$(Configuration)' == 'Release' AND '$(OS)' == 'Windows_NT' AND Exists('..\gendarme\GendarmeMsBuild.dll')" AssemblyFile="..\gendarme\GendarmeMsBuild.dll" TaskName="GendarmeMsBuild.Gendarme" />
   <Target Name="AfterBuild">

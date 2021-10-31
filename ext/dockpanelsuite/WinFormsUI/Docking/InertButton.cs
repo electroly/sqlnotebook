@@ -463,7 +463,9 @@ namespace WeifenLuo.WinFormsUI.Docking
                 imageAttr.SetRemapTable(colorMap);
             }
 
-            Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
+            var scaledWidth = (int)(image.Width * (double)DeviceDpi / 96);
+            var scaledHeight = (int)(image.Height * (double)DeviceDpi / 96);
+            Rectangle rect = new Rectangle(0, 0, scaledWidth, scaledHeight);
 
             if ((!Enabled) && (null == ImageDisabled))
             {
@@ -473,7 +475,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                     {
                         using (Graphics gMono = Graphics.FromImage(bitmapMono))
                         {
-                            gMono.DrawImage(image, new Point[3] { new Point(0, 0), new Point(image.Width - 1, 0), new Point(0, image.Height - 1) }, rect, GraphicsUnit.Pixel, imageAttr);
+                            gMono.DrawImage(image, new Point[3] {new Point(0, 0), new Point(scaledWidth - 1, 0), new Point(0, scaledHeight - 1) }, rect, GraphicsUnit.Pixel, imageAttr);
                         }
                     }
                     ControlPaint.DrawImageDisabled(g, bitmapMono, 0, 0, this.BackColor);

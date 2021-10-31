@@ -344,44 +344,44 @@ namespace WeifenLuo.WinFormsUI.Docking
             Matrix matrixRotate = g.Transform;
             g.Transform = MatrixIdentity;
 
-            // Draw the icon
-            Rectangle rectImage = rectTabOrigin;
-            rectImage.X += ImageGapLeft;
-            rectImage.Y += ImageGapTop;
-            int imageHeight = rectTabOrigin.Height - ImageGapTop - ImageGapBottom;
-            int imageWidth = ImageWidth;
-            if (imageHeight > ImageHeight)
-                imageWidth = ImageWidth * (imageHeight / ImageHeight);
-            rectImage.Height = imageHeight;
-            rectImage.Width = imageWidth;
-            rectImage = GetTransformedRectangle(dockState, rectImage);
-
-            if (dockState == DockState.DockLeftAutoHide || dockState == DockState.DockRightAutoHide)
-            {
-                // The DockState is DockLeftAutoHide or DockRightAutoHide, so rotate the image 90 degrees to the right. 
-                Rectangle rectTransform = RtlTransform(rectImage, dockState);
-                Point[] rotationPoints =
-                { 
-                    new Point(rectTransform.X + rectTransform.Width, rectTransform.Y), 
-                    new Point(rectTransform.X + rectTransform.Width, rectTransform.Y + rectTransform.Height), 
-                    new Point(rectTransform.X, rectTransform.Y)
-                };
-
-                using (Icon rotatedIcon = new Icon(((Form)content).Icon, 16, 16))
-                {
-                    g.DrawImage(rotatedIcon.ToBitmap(), rotationPoints);
-                }
-            }
-            else
-            {
-                // Draw the icon normally without any rotation.
-                g.DrawIcon(((Form)content).Icon, RtlTransform(rectImage, dockState));
-            }
+            // High-DPI display of auto-hide icons is not implemented!
+            //// Draw the icon
+            //Rectangle rectImage = rectTabOrigin;
+            //rectImage.X += ImageGapLeft;
+            //rectImage.Y += ImageGapTop;
+            //int imageHeight = rectTabOrigin.Height - ImageGapTop - ImageGapBottom;
+            //int imageWidth = ImageWidth;
+            //if (imageHeight > ImageHeight)
+            //    imageWidth = ImageWidth * (imageHeight / ImageHeight);
+            //rectImage.Height = imageHeight;
+            //rectImage.Width = imageWidth;
+            //rectImage = GetTransformedRectangle(dockState, rectImage);
+            //
+            //if (dockState == DockState.DockLeftAutoHide || dockState == DockState.DockRightAutoHide)
+            //{
+            //    // The DockState is DockLeftAutoHide or DockRightAutoHide, so rotate the image 90 degrees to the right. 
+            //    Rectangle rectTransform = RtlTransform(rectImage, dockState);
+            //    Point[] rotationPoints =
+            //    {
+            //        new Point(rectTransform.X + rectTransform.Width, rectTransform.Y),
+            //        new Point(rectTransform.X + rectTransform.Width, rectTransform.Y + rectTransform.Height),
+            //        new Point(rectTransform.X, rectTransform.Y)
+            //    };
+            //
+            //    using (Icon rotatedIcon = new Icon(((Form)content).Icon, 16, 16)) {
+            //        g.DrawImage(rotatedIcon.ToBitmap(), rotationPoints);
+            //    }
+            //}
+            //else
+            //{
+            //    // Draw the icon normally without any rotation.
+            //    g.DrawIcon(((Form)content).Icon, RtlTransform(rectImage, dockState));
+            //}
 
             // Draw the text
             Rectangle rectText = rectTabOrigin;
-            rectText.X += ImageGapLeft + imageWidth + ImageGapRight + TextGapLeft;
-            rectText.Width -= ImageGapLeft + imageWidth + ImageGapRight + TextGapLeft;
+            rectText.X += ImageGapLeft + /*imageWidth +*/ ImageGapRight + TextGapLeft;
+            rectText.Width -= ImageGapLeft + /*imageWidth +*/ ImageGapRight + TextGapLeft;
             rectText = RtlTransform(GetTransformedRectangle(dockState, rectText), dockState);
 
             if (DockPanel.ActiveContent == content || tab.IsMouseOver)

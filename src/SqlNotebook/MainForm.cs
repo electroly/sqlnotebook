@@ -105,7 +105,7 @@ namespace SqlNotebook {
                 DocumentStyle = DocumentStyle.DockingWindow,
                 DefaultFloatWindowSize = ui.XSize(150, 50),
                 ShowDocumentIcon = false,
-                DockLeftPortion = ui.XWidth(35)
+                DockLeftPortion = ui.XWidth(35),
             };
             _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
 
@@ -698,7 +698,10 @@ namespace SqlNotebook {
 
         private static void DeleteUpdateDir() {
             try {
-                Directory.Delete(Path.Combine(Path.GetTempPath(), "SqlNotebookUpdate"), true);
+                var dir = Path.Combine(Path.GetTempPath(), "SqlNotebookUpdate");
+                if (Directory.Exists(dir)) {
+                    Directory.Delete(dir, true);
+                }
             } catch { }
         }
 
