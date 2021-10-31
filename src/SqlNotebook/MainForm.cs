@@ -662,7 +662,7 @@ namespace SqlNotebook {
         private void UpdateAvailableMenu_Click(object sender, EventArgs e) {
             var (version, msiUrl) = WaitForm.Go(this, "Software Update", "Checking for updates...", out var success, () => {
                 var appversion = Program.HttpClient.GetStringAsync(
-                    "https://sqlnotebook.com/appversion.txt?").GetAwaiter().GetResult();
+                    "https://sqlnotebook.com/appversion.txt").GetAwaiter().GetResult();
                 var data = appversion.Split('\n').Select(x => x.Trim()).ToList();
                 if (data.Count < 2) {
                     throw new Exception("The appversion.txt data is malformed.");
@@ -672,8 +672,11 @@ namespace SqlNotebook {
 
             var confirmation = 
                 Ui.ShowTaskDialog(this, $"Version {version} is available. Install now?", "SQL Notebook",
-                new[] { Ui.INSTALL, Ui.CANCEL });
-            if (confirmation != Ui.INSTALL) {
+                new[] { Ui.INSTALL, Ui.RELEASE_NOTES, Ui.CANCEL });
+            if (confirmation == Ui.RELEASE_NOTES) {
+                ShowReleaseNotes();
+                return;
+            } else if (confirmation != Ui.INSTALL) {
                 return;
             }
 
@@ -715,6 +718,16 @@ namespace SqlNotebook {
             }
             return dir;
         }
+
+        private void ReleaseNotesMenu_Click(object sender, EventArgs e) {
+            ShowReleaseNotes();
+        }
+
+        private static void ShowReleaseNotes() =>
+            Process.Start(new ProcessStartInfo {
+                FileName = "https://github.com/electroly/sqlnotebook/releases",
+                UseShellExecute = true
+            });
     }
 }
  

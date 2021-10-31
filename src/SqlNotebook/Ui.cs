@@ -265,6 +265,7 @@ namespace SqlNotebook {
         public const string DONT_SAVE = "Don't save";
         public const string DELETE = "Delete";
         public const string INSTALL = "Install";
+        public const string RELEASE_NOTES = "View release notes";
 
         public static string ShowTaskDialog(IWin32Window owner, string heading, string caption,
             string[] buttons, TaskDialogIcon icon = null, bool defaultIsFirst = true

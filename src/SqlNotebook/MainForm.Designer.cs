@@ -72,6 +72,7 @@
             this._transactionCommitMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._transactionRollbackMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._updateAvailableMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this._releaseNotesMenu = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
@@ -394,6 +395,7 @@
             toolStripSeparator1,
             this.toolStripMenuItem15,
             this.toolStripSeparator5,
+            this._releaseNotesMenu,
             this.toolStripMenuItem16});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(65, 29);
@@ -472,6 +474,13 @@
             this._updateAvailableMenu.Visible = false;
             this._updateAvailableMenu.Click += new System.EventHandler(this.UpdateAvailableMenu_Click);
             // 
+            // _releaseNotesMenu
+            // 
+            this._releaseNotesMenu.Name = "_releaseNotesMenu";
+            this._releaseNotesMenu.Size = new System.Drawing.Size(308, 34);
+            this._releaseNotesMenu.Text = "View release notes";
+            this._releaseNotesMenu.Click += new System.EventHandler(this.ReleaseNotesMenu_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
@@ -538,6 +547,7 @@
         private System.Windows.Forms.ToolStripMenuItem _transactionCommitMenu;
         private System.Windows.Forms.ToolStripMenuItem _transactionRollbackMenu;
         private System.Windows.Forms.ToolStripMenuItem _updateAvailableMenu;
+        private System.Windows.Forms.ToolStripMenuItem _releaseNotesMenu;
     }
 }
 
