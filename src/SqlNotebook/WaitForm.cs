@@ -3,7 +3,6 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -19,10 +18,26 @@ namespace SqlNotebook {
         // Set this at startup.
         public static Form MainAppForm { private get; set; }
 
-        public Task WaitTask;
+        public event EventHandler CancelRequested;
+        public Task WaitTask { get; }
         public Exception ResultException { get; private set; }
 
-        public static void Go(IWin32Window owner, string title, string text, out bool success, Action action) {
+        public static void Go(IWin32Window owner, string title, string text, out bool success, Action action) =>
+            GoCore(owner, title, text, out success, action);
+
+        public static T Go<T>(IWin32Window owner, string title, string text, out bool success, Func<T> func) {
+            T result = default;
+            Go(owner, title, text, out success, action: () => {
+                result = func();
+            });
+            return result;
+        }
+
+        // The action is uncancelable, so just let it finish and forget about it. This is the worst kind of
+        // cancellation so we give it an irritating name to discourage its use.
+        public static void GoWithCancelByWalkingAway(
+            IWin32Window owner, string title, string text, out bool success, Action action
+            ) {
             success = false;
 
             // Try running the action briefly before pulling up the wait form, to avoid a flicker of the wait form for
@@ -43,7 +58,50 @@ namespace SqlNotebook {
                     return;
                 }
             } else {
-                using WaitForm f = new(title, text, () => task.GetAwaiter().GetResult());
+                using CancellationTokenSource cts = new();
+                using WaitForm f = new(title, text, () => {
+                    task.Wait(cts.Token);
+                    cts.Token.ThrowIfCancellationRequested();
+                    task.GetAwaiter().GetResult();
+                }, allowCancel: true);
+                f.CancelRequested += delegate {
+                    cts.Cancel();
+                };
+                var result = f.ShowDialog(owner);
+                if (result != DialogResult.OK) {
+                    if (!(f.ResultException is OperationCanceledException)) {
+                        Ui.ShowError(owner, title, f.ResultException.Message);
+                    }
+                    return;
+                }
+            }
+
+            success = true;
+            return;
+        }
+
+        private static void GoCore(IWin32Window owner, string title, string text, out bool success, Action action) {
+            success = false;
+
+            // Try running the action briefly before pulling up the wait form, to avoid a flicker of the wait form for
+            // very fast tasks.
+            var task = Task.Run(action);
+            try {
+                task.Wait(millisecondsTimeout: 100);
+            } catch (Exception ex) {
+                Ui.ShowError(owner, title, ex.GetExceptionMessage());
+                return;
+            }
+
+            if (task.IsCompleted) {
+                try {
+                    task.GetAwaiter().GetResult();
+                } catch (Exception ex) {
+                    Ui.ShowError(owner, title, ex.GetExceptionMessage());
+                    return;
+                }
+            } else {
+                using WaitForm f = new(title, text, () => task.GetAwaiter().GetResult(), allowCancel: false);
                 var result = f.ShowDialog(owner);
                 if (result != DialogResult.OK) {
                     Ui.ShowError(owner, title, f.ResultException.Message);
@@ -55,25 +113,23 @@ namespace SqlNotebook {
             return;
         }
 
-        public static T Go<T>(IWin32Window owner, string title, string text, out bool success, Func<T> func) {
-            T result = default;
-            Go(owner, title, text, out success, action: () => {
-                result = func();
-            });
-            return result;
-        }
-
-        private WaitForm(string title, string text, Action action) {
+        private WaitForm(string title, string text, Action action, bool allowCancel) {
             InitializeComponent();
             Text = title;
             _infoTxt.Text = text;
             _stopwatch = Stopwatch.StartNew();
 
-            Ui ui = new(this, 65, 8);
+            Ui ui = new(this, 75, allowCancel ? 10 : 8);
             ui.Init(_table);
             ui.Init(_infoTxt);
             ui.Init(_spinner);
             ui.MarginRight(_spinner, 2);
+            if (allowCancel) {
+                ui.Init(_buttonFlow);
+                ui.Init(_cancelButton);
+            } else {
+                _buttonFlow.Visible = false;
+            }
             _spinner.Size = new(ui.XWidth(4), ui.XWidth(4));
             _spinner.EnableDoubleBuffering();
 
@@ -136,11 +192,10 @@ namespace SqlNotebook {
 
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-            e.Graphics.FillRectangle(Brushes.White, e.ClipRectangle);
+            e.Graphics.FillRectangle(SystemBrushes.Control, e.ClipRectangle);
 
             var size = _spinner.ClientSize;
             RectangleF rect = new(_penWidth, _penWidth, size.Width - 2 * _penWidth, size.Height - 2 * _penWidth);
-
             e.Graphics.DrawArc(_pen, rect, (float)degrees, 100);
 
             degrees += 180;
@@ -151,6 +206,10 @@ namespace SqlNotebook {
 
         private void SpinnerTimer_Tick(object sender, EventArgs e) {
             _spinner.Invalidate();
+        }
+
+        private void CancelButton_Click(object sender, EventArgs e) {
+            CancelRequested?.Invoke(this, EventArgs.Empty);
         }
     }
 }

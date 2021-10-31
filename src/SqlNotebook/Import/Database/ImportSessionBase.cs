@@ -37,7 +37,6 @@ namespace SqlNotebook.Import.Database {
                     _builder,
                     b => GetBasicOptions((TConnectionStringBuilder)b),
                     (b, o) => SetBasicOptions((TConnectionStringBuilder)b, o));
-                
                 if (f.ShowDialog(owner) != DialogResult.OK) {
                     return false;
                 }
@@ -53,7 +52,9 @@ namespace SqlNotebook.Import.Database {
         }
 
         private bool DoConnect(IWin32Window owner) {
-            WaitForm.Go(owner, "Database Connection", $"Accessing {ProductName}...", out var success, () => {
+            WaitForm.GoWithCancelByWalkingAway(
+                owner, "Database Connection", $"Accessing {ProductName}...", out var success,
+                () => {
                 using var connection = CreateConnection(_builder);
                 connection.Open();
                 ReadTableNames(connection);
