@@ -9,7 +9,7 @@ using SqlNotebookScript.Utils;
 namespace SqlNotebook.Import.Csv {
     public partial class ImportCsvOptionsControl : UserControl {
         private readonly List<Tuple<int, string>> _encodings = new List<Tuple<int, string>> {
-            Tuple.Create(0, "Unicode")
+            Tuple.Create(0, "Auto detect")
             // populated in constructor
         };
 
@@ -37,19 +37,24 @@ namespace SqlNotebook.Import.Csv {
 
             Ui ui = new(this);
             ui.Init(_fileInputTitle);
+            ui.MarginBottom(_fileInputTitle);
             ui.Init(_skipLinesLabel);
             ui.Init(_skipLinesTxt);
-            ui.Init(_columnNamesLabel);
+            ui.MarginRight(_skipLinesTxt);
             ui.Init(_headerChk);
+            ui.MarginTop(_headerChk);
             ui.Init(_encodingLabel);
             ui.Init(_encodingCmb, 35);
             ui.Init(_tableOutputTitle);
             ui.MarginTop(_tableOutputTitle);
+            ui.MarginBottom(_tableOutputTitle);
             ui.Init(_tableLabel);
             ui.Init(_tableCmb, 40);
+            ui.MarginRight(_tableCmb);
             ui.Init(_ifTableExistsLabel);
             ui.Init(_ifExistsCmb, 30);
             ui.Init(_ifConversionFailsLabel);
+            ui.MarginTop(_ifConversionFailsLabel);
             ui.Init(_convertFailCmb, 30);
 
             foreach (var tableName in schema.Tables.Keys) {
@@ -59,11 +64,13 @@ namespace SqlNotebook.Import.Csv {
             // rename some misleadingly named system encodings
             var customEncodingNames = new Dictionary<int, string> {
                 [1200] = "Unicode (UTF-16)",
-                [1201] = "Unicode (UTF-16 Big-Endian)"
             };
             _encodings.AddRange(
                 from encoding in Encoding.GetEncodings()
-                where encoding.CodePage > 0
+                where encoding.CodePage > 0 &&
+                    // nobody wants these big endian encodings
+                    encoding.CodePage != 1201 && // UTF-16 Big-Endian
+                    encoding.CodePage != 12001 // UTF-32 Big-Endian
                 let name = customEncodingNames.GetValueOrDefault(encoding.CodePage) ?? encoding.DisplayName
                 orderby name
                 select Tuple.Create(encoding.CodePage, name)

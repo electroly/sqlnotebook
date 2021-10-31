@@ -36,7 +36,7 @@ namespace SqlNotebook.Import.Csv {
             _databaseSchema = schema;
             _manager = manager;
 
-            _optionsControl = new ImportCsvOptionsControl(schema) { Dock = DockStyle.Fill };
+            _optionsControl = new ImportCsvOptionsControl(schema) { AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink };
             _optionsPanel.Controls.Add(_optionsControl);
 
             _columnsControl = new ImportColumnsControl { Dock = DockStyle.Fill };
@@ -47,9 +47,9 @@ namespace SqlNotebook.Import.Csv {
             _inputPreviewLoadControl = new LoadingContainerControl { ContainedControl = _inputPreviewControl, Dock = DockStyle.Fill };
             _originalFilePanel.Controls.Add(_inputPreviewLoadControl);
 
-            Ui ui = new(this, 170, 40);
+            Ui ui = new(this, 170, 45);
             ui.Init(_table);
-            ui.Init(_outerSplit, 0.5);
+            ui.Init(_outerSplit, 0.48);
             ui.InitHeader(_originalFileLabel);
             ui.Init(_lowerSplit, 0.5);
             ui.InitHeader(_optionsLabel);

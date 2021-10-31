@@ -209,6 +209,8 @@
             // 
             // _optionsPanel
             // 
+            this._optionsPanel.AutoScroll = true;
+            this._optionsPanel.BackColor = System.Drawing.Color.White;
             this._optionsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._optionsPanel.Location = new System.Drawing.Point(0, 25);
             this._optionsPanel.Margin = new System.Windows.Forms.Padding(0);
