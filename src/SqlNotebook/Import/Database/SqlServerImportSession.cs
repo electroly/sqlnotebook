@@ -32,7 +32,7 @@ namespace SqlNotebook.Import.Database {
         protected override void ReadTableNames(IDbConnection connection) {
             var tableNames = new List<string>();
             using (var cmd = connection.CreateCommand()) {
-                cmd.CommandText = "SELECT table_name, table_schema FROM information_schema.tables ORDER BY table_name";
+                cmd.CommandText = "SELECT table_name, table_schema FROM INFORMATION_SCHEMA.TABLES ORDER BY table_name";
                 using (var reader = cmd.ExecuteReader()) {
                     while (reader.Read()) {
                         var tableName = reader.GetString(0);
