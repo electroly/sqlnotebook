@@ -120,7 +120,7 @@ namespace SqlNotebookScript.ScalarFunctions {
                 throw new Exception($"{Name.ToUpper()}: The argument \"which-substring\" must not be negative.");
             }
             var splitted = text.Split(new[] { separator }, StringSplitOptions.None);
-            return whichSubstring < splitted.Length ? ArrayUtil.ConvertToSqlArray(splitted) : null;
+            return whichSubstring < splitted.Length ? splitted[whichSubstring] : null;
         }
     }
 
