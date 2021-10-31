@@ -45,8 +45,11 @@ namespace SqlNotebook.Import.Database {
             ui.Init(_windowsAuthChk);
             ui.MarginTop(_windowsAuthChk);
             ui.Init(_propertyGrid);
-            ui.Init(_buttonFlow);
-            ui.MarginTop(_buttonFlow);
+            ui.Init(_buttonFlow1);
+            ui.MarginTop(_buttonFlow1);
+            ui.Init(_clearButton);
+            ui.Init(_buttonFlow2);
+            ui.MarginTop(_buttonFlow2);
             ui.Init(_okBtn);
             ui.Init(_cancelBtn);
 
@@ -101,6 +104,11 @@ namespace SqlNotebook.Import.Database {
                 _setBasicOptions(_builder, ReadBasicOptionsUi());
                 _propertyGrid.SelectedObject = _builder; // Refresh the property grid.
             }
+        }
+
+        private void ClearButton_Click(object sender, EventArgs e) {
+            _builder.Clear();
+            UpdateBasicOptionsUi(_getBasicOptions(_builder)); // populate basic options with info from builder
         }
     }
 }

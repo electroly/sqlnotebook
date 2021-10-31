@@ -40,13 +40,16 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this._table = new System.Windows.Forms.TableLayoutPanel();
-            this._buttonFlow = new System.Windows.Forms.FlowLayoutPanel();
+            this._buttonFlow2 = new System.Windows.Forms.FlowLayoutPanel();
+            this._buttonFlow1 = new System.Windows.Forms.FlowLayoutPanel();
+            this._clearButton = new System.Windows.Forms.Button();
             this._basicTable.SuspendLayout();
             this._tabs.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this._table.SuspendLayout();
-            this._buttonFlow.SuspendLayout();
+            this._buttonFlow2.SuspendLayout();
+            this._buttonFlow1.SuspendLayout();
             this.SuspendLayout();
             // 
             // _passwordLabel
@@ -205,6 +208,7 @@
             // 
             // _tabs
             // 
+            this._table.SetColumnSpan(this._tabs, 2);
             this._tabs.Controls.Add(this.tabPage1);
             this._tabs.Controls.Add(this.tabPage2);
             this._tabs.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -239,10 +243,12 @@
             // 
             // _table
             // 
-            this._table.ColumnCount = 1;
+            this._table.ColumnCount = 2;
             this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._table.Controls.Add(this._buttonFlow, 0, 1);
+            this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this._table.Controls.Add(this._buttonFlow2, 1, 1);
             this._table.Controls.Add(this._tabs, 0, 0);
+            this._table.Controls.Add(this._buttonFlow1, 0, 1);
             this._table.Dock = System.Windows.Forms.DockStyle.Fill;
             this._table.Location = new System.Drawing.Point(0, 0);
             this._table.Name = "_table";
@@ -252,17 +258,36 @@
             this._table.Size = new System.Drawing.Size(765, 907);
             this._table.TabIndex = 15;
             // 
-            // _buttonFlow
+            // _buttonFlow2
             // 
-            this._buttonFlow.Controls.Add(this._okBtn);
-            this._buttonFlow.Controls.Add(this._cancelBtn);
-            this._buttonFlow.Dock = System.Windows.Forms.DockStyle.Right;
-            this._buttonFlow.Location = new System.Drawing.Point(462, 754);
-            this._buttonFlow.Name = "_buttonFlow";
-            this._buttonFlow.Size = new System.Drawing.Size(300, 150);
-            this._buttonFlow.TabIndex = 0;
+            this._buttonFlow2.Controls.Add(this._okBtn);
+            this._buttonFlow2.Controls.Add(this._cancelBtn);
+            this._buttonFlow2.Dock = System.Windows.Forms.DockStyle.Right;
+            this._buttonFlow2.Location = new System.Drawing.Point(513, 754);
+            this._buttonFlow2.Name = "_buttonFlow2";
+            this._buttonFlow2.Size = new System.Drawing.Size(249, 150);
+            this._buttonFlow2.TabIndex = 0;
+            this._buttonFlow2.WrapContents = false;
             // 
-            // ImportConnectionForm
+            // _buttonFlow1
+            // 
+            this._buttonFlow1.Controls.Add(this._clearButton);
+            this._buttonFlow1.Location = new System.Drawing.Point(3, 754);
+            this._buttonFlow1.Name = "_buttonFlow1";
+            this._buttonFlow1.Size = new System.Drawing.Size(300, 150);
+            this._buttonFlow1.TabIndex = 15;
+            // 
+            // _clearButton
+            // 
+            this._clearButton.Location = new System.Drawing.Point(3, 3);
+            this._clearButton.Name = "_clearButton";
+            this._clearButton.Size = new System.Drawing.Size(112, 34);
+            this._clearButton.TabIndex = 0;
+            this._clearButton.Text = "Clear";
+            this._clearButton.UseVisualStyleBackColor = true;
+            this._clearButton.Click += new System.EventHandler(this.ClearButton_Click);
+            // 
+            // DatabaseConnectionForm
             // 
             this.AcceptButton = this._okBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
@@ -273,7 +298,7 @@
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ImportConnectionForm";
+            this.Name = "DatabaseConnectionForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -285,8 +310,9 @@
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this._table.ResumeLayout(false);
-            this._buttonFlow.ResumeLayout(false);
-            this._buttonFlow.PerformLayout();
+            this._buttonFlow2.ResumeLayout(false);
+            this._buttonFlow2.PerformLayout();
+            this._buttonFlow1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -306,10 +332,12 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TableLayoutPanel _table;
-        private System.Windows.Forms.FlowLayoutPanel _buttonFlow;
+        private System.Windows.Forms.FlowLayoutPanel _buttonFlow2;
         private System.Windows.Forms.Label _passwordLabel;
         private System.Windows.Forms.Label _usernameLabel;
         private System.Windows.Forms.Label _databaseLabel;
         private System.Windows.Forms.Label _addressLabel;
+        private System.Windows.Forms.FlowLayoutPanel _buttonFlow1;
+        private System.Windows.Forms.Button _clearButton;
     }
 }
