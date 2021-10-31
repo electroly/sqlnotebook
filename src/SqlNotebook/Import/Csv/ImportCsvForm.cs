@@ -51,7 +51,7 @@ namespace SqlNotebook.Import.Csv {
             ui.Init(_table);
             ui.Init(_outerSplit, 0.48);
             ui.InitHeader(_originalFileLabel);
-            ui.Init(_lowerSplit, 0.5);
+            ui.Init(_lowerSplit, 0.52);
             ui.InitHeader(_optionsLabel);
             ui.InitHeader(_columnsLabel);
             ui.Init(_buttonFlow1);
@@ -65,6 +65,7 @@ namespace SqlNotebook.Import.Csv {
             Load += async (sender, e) => {
                 ValidateOptions();
                 await UpdateControls(inputChange: true);
+                _optionsControl.SelectTableCombo();
             };
 
             var o = _optionsControl;
@@ -75,7 +76,7 @@ namespace SqlNotebook.Import.Csv {
                 });
             Bind.OnChange(new Slot[] { o.FileEncoding },
                 async (sender, e) => await UpdateControls(inputChange: true));
-            Bind.OnChange(new Slot[] { o.IfTableExists, o.SkipLines, o.HasColumnHeaders },
+            Bind.OnChange(new Slot[] { o.IfTableExists, o.SkipLines, o.HasColumnHeaders, o.Separator },
                 async (sender, e) => await UpdateControls(columnsChange: true));
             Bind.BindAny(new[] { _columnsLoadControl.IsOverlayVisible, _inputPreviewLoadControl.IsOverlayVisible },
                 x => _okBtn.Enabled = !x);
@@ -178,14 +179,16 @@ namespace SqlNotebook.Import.Csv {
                 var headerRow = _optionsControl.HasColumnHeaders.Value;
                 var fileEncoding = _optionsControl.FileEncoding.Value;
                 var skipLines = _optionsControl.SkipLines.Value;
+                var separator = _optionsControl.Separator.Value;
                 return await Task.Run(() => {
                     var importSql =
-                        @"IMPORT CSV @filePath INTO @tableName 
+                        @"IMPORT CSV @filePath INTO @tableName SEPARATOR @sep
                         OPTIONS (SKIP_LINES: @skipLines, TAKE_LINES: 0, HEADER_ROW: @headerRow, TEMPORARY_TABLE: 1, 
                             FILE_ENCODING: @encoding);";
                     _manager.ExecuteScript(importSql, new Dictionary<string, object> {
                         ["@filePath"] = _filePath,
                         ["@tableName"] = tempTableName,
+                        ["@sep"] = separator,
                         ["@headerRow"] = headerRow ? 1 : 0,
                         ["@encoding"] = fileEncoding,
                         ["@skipLines"] = skipLines
@@ -224,6 +227,7 @@ namespace SqlNotebook.Import.Csv {
             var truncate = _optionsControl.IfTableExists.Value != ImportTableExistsOption.AppendNewRows;
             var drop = _optionsControl.IfTableExists.Value == ImportTableExistsOption.DropTable;
             var tableName = temporaryTableName ?? _optionsControl.TargetTableName.Value;
+            var separator = _optionsControl.Separator.Value;
 
             return
                 (drop ? $"DROP TABLE IF EXISTS {_optionsControl.TargetTableName.Value.DoubleQuote()};\r\n\r\n" : "") +
@@ -231,6 +235,7 @@ namespace SqlNotebook.Import.Csv {
                 $"INTO {tableName.DoubleQuote()} (\r\n" +
                 _columnsControl.SqlColumnList + "\r\n" +
                 $")\r\n" +
+                $"SEPARATOR {separator.SingleQuote()}\r\n" +
                 $"OPTIONS (\r\n" +
                 $"    SKIP_LINES: {_optionsControl.SkipLines.Value},\r\n" +
                 (takeRows >= 0 ? $"TAKE_LINES: {takeRows}," : "") +

@@ -202,8 +202,9 @@ namespace SqlNotebook {
         }
 
         public void Init(NumericUpDown upd, int width = 10) {
-            upd.Width = XWidth(width);
             upd.TabIndex = _tabIndex++;
+            upd.Font = _consolas;
+            upd.Width = XWidth(width);
         }
 
         public void Init(ComboBox cmb, int width = 50) {
@@ -241,7 +242,7 @@ namespace SqlNotebook {
             control.Margin = m;
         }
 
-        public void MarginRight(Control control, double width = 1) {
+        public void MarginRight(Control control, double width = 2) {
             var m = control.Margin;
             m.Right = XWidth(width);
             control.Margin = m;

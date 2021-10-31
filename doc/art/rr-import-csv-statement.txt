@@ -32,6 +32,12 @@ Diagram(
                 )
             ),
         ),
+        Optional(
+            Sequence(
+                'SEPARATOR',
+                NonTerminal('sep')
+            )
+        ),
         Sequence(
             Optional(
                 Sequence(

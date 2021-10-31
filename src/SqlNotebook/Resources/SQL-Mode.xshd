@@ -63,6 +63,7 @@
 			<Word>date</Word>
 			<Word>datetime</Word>
 			<Word>datetimeoffset</Word>
+      <Word>separator</Word>
 
 			<!-- SQLite tokens -->
 			<Word>abort</Word>

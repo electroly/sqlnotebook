@@ -14,6 +14,8 @@ namespace SqlNotebookScript.Interpreter {
         private readonly ScriptRunner _runner;
         private readonly Ast.ImportCsvStmt _stmt;
 
+        private string _separator = ",";
+
         // option values
         private readonly long _skipLines;
         private readonly long? _takeLines;
@@ -73,10 +75,18 @@ namespace SqlNotebookScript.Interpreter {
         }
 
         private void Import() {
+            string separator = ",";
+            if (_stmt.SeparatorExpr != null) {
+                separator = _runner.EvaluateExpr(_stmt.SeparatorExpr, _env).ToString();
+                if (separator.Equals("Tab", StringComparison.OrdinalIgnoreCase)) {
+                    separator = "\t";
+                }
+            }
+
             var filePath = GetFilePath();
             using (var stream = File.OpenRead(filePath))
             using (var bufferedStream = new BufferedStream(stream))
-            using (var parser = NewParser(bufferedStream)) {
+            using (var parser = NewParser(bufferedStream, separator)) {
                 var parserBuffer = new TextFieldParserBuffer(parser);
 
                 // skip the specified number of initial file lines
@@ -167,12 +177,15 @@ namespace SqlNotebookScript.Interpreter {
             }
         }
 
-        private TextFieldParser NewParser(Stream stream) {
+        private TextFieldParser NewParser(Stream stream, string separator) {
             var x = _fileEncoding == null
                 ? new TextFieldParser(stream)
                 : new TextFieldParser(stream, _fileEncoding, false);
             x.HasFieldsEnclosedInQuotes = true;
-            x.SetDelimiters(",");
+            if (separator == "") {
+                separator = ",";
+            }
+            x.SetDelimiters(separator);
             return x;
         }
 

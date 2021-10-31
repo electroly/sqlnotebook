@@ -195,7 +195,8 @@ namespace SqlNotebookScript.Interpreter.Ast {
         public Expr FilenameExpr { get; set; }
         public ImportTable ImportTable { get; set; }
         public OptionsList OptionsList { get; set; }
-        protected override IEnumerable<Node> GetChildren() => new Node[] { FilenameExpr, ImportTable, OptionsList };
+        public Expr SeparatorExpr { get; set; }
+        protected override IEnumerable<Node> GetChildren() => new Node[] { FilenameExpr, SeparatorExpr, ImportTable, OptionsList };
     }
 
     // options-list

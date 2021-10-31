@@ -8,8 +8,8 @@
   <h1><code>IMPORT</code> <code>CSV</code> Statement</h1>
   <p>Imports a CSV (comma-separated values) file from disk into a notebook table. This statement is the scripting
   equivalent of the visual import wizard accessed via the Import menu.</p>
-  <h2>Syntax</h2><img moz-do-not-send="true" src="art/rr-import-csv-statement.svg" alt="" class="railroad" width="859"
-  height="263">
+  <h2>Syntax</h2><img src="art/rr-import-csv-statement.svg" alt="" class="railroad" moz-do-not-send="true" width="859"
+  height="321"><br>
   <h2>Arguments</h2>
   <ul class="args">
     <li><b>filename</b> (string expression)<br>
@@ -18,6 +18,9 @@
     The name of the notebook table to import the CSV file into. If the table does not exist, it will be created. If it
     does exist, by default new rows will be appended, but the <code>TRUNCATE_EXISTING_TABLE</code> option can be used
     to overwrite the existing table data.</li>
+    <li><b>sep</b> (string expression)<br>
+    The separator between values in a row. By default this is a comma for CSV files, but semicolons and tabs are
+    popular. The string "Tab" is interpreted as a tab character.<br></li>
     <li><b>column-name</b> (identifier or string expression)<br>
     The name of a column in the source file to import. If this column name is not found in the source file, then the
     import operation fails with an error. If no column list is provided, then all columns are imported.</li>
@@ -114,6 +117,8 @@
     <li><code>IMPORT CSV @filename INTO @tablename (@old_col AS @new_col);</code><br>
     Various arguments to <code>IMPORT CSV</code> are provided in variables rather than using literal strings. This
     allows these names to be dynamically generated or otherwise determined at script runtime.</li>
+    <li><tt>IMPORT CSV 'C:\MyFile.csv' INTO mytable SEPARATOR ';' (foo TEXT);</tt><br>
+    Imports a semicolon-separated file.<br></li>
   </ol>
   <p><br></p>
   <ol class="examples"></ol>

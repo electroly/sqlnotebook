@@ -25,12 +25,13 @@ namespace SqlNotebook.Import.Csv {
             Tuple.Create(ImportConversionFailOption.Abort, "Stop import with error")
         };
 
-        public Slot<int> SkipLines { get; } = new Slot<int>();
-        public Slot<bool> HasColumnHeaders { get; } = new Slot<bool>();
-        public Slot<int> FileEncoding { get; } = new Slot<int>();
-        public Slot<string> TargetTableName { get; } = new Slot<string>();
-        public Slot<ImportTableExistsOption> IfTableExists { get; } = new Slot<ImportTableExistsOption>();
-        public Slot<ImportConversionFailOption> IfConversionFails { get; } = new Slot<ImportConversionFailOption>();
+        public Slot<int> SkipLines { get; } = new();
+        public Slot<bool> HasColumnHeaders { get; } = new();
+        public Slot<int> FileEncoding { get; } = new();
+        public Slot<string> TargetTableName { get; } = new();
+        public Slot<ImportTableExistsOption> IfTableExists { get; } = new();
+        public Slot<ImportConversionFailOption> IfConversionFails { get; } = new();
+        public Slot<string> Separator { get; } = new();
 
         public ImportCsvOptionsControl(DatabaseSchema schema) {
             InitializeComponent();
@@ -38,21 +39,32 @@ namespace SqlNotebook.Import.Csv {
             Ui ui = new(this);
             ui.Init(_fileInputTitle);
             ui.MarginBottom(_fileInputTitle);
+            ui.Init(_sourceFlow);
+            ui.Init(_skipLinesFlow);
             ui.Init(_skipLinesLabel);
             ui.Init(_skipLinesTxt);
             ui.MarginRight(_skipLinesTxt);
             ui.Init(_headerChk);
             ui.MarginTop(_headerChk);
+            ui.Init(_encodingFlow);
             ui.Init(_encodingLabel);
             ui.Init(_encodingCmb, 35);
+            ui.MarginRight(_encodingCmb);
+            ui.Init(_separatorFlow);
+            ui.Init(_separatorLabel);
+            ui.Init(_separatorCombo, 10);
             ui.Init(_tableOutputTitle);
             ui.MarginTop(_tableOutputTitle);
             ui.MarginBottom(_tableOutputTitle);
             ui.Init(_tableLabel);
+            ui.Init(_targetFlow);
+            ui.Init(_tableNameFlow);
             ui.Init(_tableCmb, 40);
             ui.MarginRight(_tableCmb);
             ui.Init(_ifTableExistsLabel);
+            ui.Init(_ifExistsFlow);
             ui.Init(_ifExistsCmb, 30);
+            ui.Init(_convertFailFlow);
             ui.Init(_ifConversionFailsLabel);
             ui.MarginTop(_ifConversionFailsLabel);
             ui.Init(_convertFailCmb, 30);
@@ -93,7 +105,13 @@ namespace SqlNotebook.Import.Csv {
             _tableCmb.BindText(TargetTableName);
             _ifExistsCmb.BindSelectedValue(IfTableExists);
             _convertFailCmb.BindSelectedValue(IfConversionFails);
+            _separatorCombo.BindText(Separator);
+
+            _separatorCombo.SelectionLength = 0;
+        }
+
+        public void SelectTableCombo() {
+            _tableCmb.Select();
         }
     }
-
 }

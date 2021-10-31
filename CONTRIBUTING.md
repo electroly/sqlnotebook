@@ -21,14 +21,14 @@ Use a Windows machine with at least 8GB RAM.
 
 ## How to build from source
 
-- In PowerShell (Windows or WSL), run `ps1/Update-Deps.ps1` to download non-NuGet deps and generate the doc files.
+- In PowerShell on Windows, run `ps1/Update-Deps.ps1` to download non-NuGet deps and generate the doc files.
 - Open `src\SqlNotebook.sln` in Visual Studio and build.
 
 ## How to edit documentation
 
 - Use SeaMonkey Composer to edit the files in `doc/`.
 - In WSL, run `ps1/Update-DocFormatting.ps1` to reformat the HTML.
-- In Windows or WSL, run `ps1/Update-Docs.ps1` to rebuild the website and integrated help.
+- In Windows, run `ps1/Update-Docs.ps1` to rebuild the website and integrated help.
 
 ## How to generate railroad diagram files
 
@@ -36,7 +36,8 @@ Use a Windows machine with at least 8GB RAM.
 - Copy-paste the .txt file from `doc/art` into the page.
 - Click "Save" to download the .svg.
 - Copy to `doc/art`.
-- Run `ps1/Update-Doc.ps1` to rebuild the website and integrated help.
+- Use SeaMonkey Composer to delete the image in the corresponding HTML page, then re-add it. Set its `class="railroad"` attribute.
+- Run `ps1/Update-Docs.ps1` to rebuild the website and integrated help.
 
 ## How to update SQLite
 

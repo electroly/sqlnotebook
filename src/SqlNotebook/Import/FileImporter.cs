@@ -7,8 +7,8 @@ using System.Windows.Forms;
 namespace SqlNotebook.Import {
     public static class FileImporter {
         public static string Filter => string.Join("|",
-            "All data files|*.csv;*.txt;*.xls;*.xlsx",
-            "Comma-separated values|*.csv;*.txt",
+            "All data files|*.csv;*.txt;*.tsv;*.xls;*.xlsx",
+            "Comma-separated values|*.csv;*.tsv;*.txt",
             "Excel workbooks|*.xls;*.xlsx");
 
         public static void Start(IWin32Window owner, string filePath, NotebookManager manager) {
@@ -19,6 +19,7 @@ namespace SqlNotebook.Import {
             var extension = Path.GetExtension(filePath).ToLowerInvariant();
             switch (extension) {
                 case ".csv":
+                case ".tsv":
                 case ".txt":
                     ImportCsv(owner, filePath, manager, schema);
                     break;
