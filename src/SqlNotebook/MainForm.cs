@@ -10,7 +10,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
@@ -56,7 +56,7 @@ namespace SqlNotebook {
                     _searchTxt.Text = "";
                 }
             };
-
+             
             Ui ui = new(this, 140, 45, false);
             MinimumSize = new(Size.Width / 2, Size.Height / 2);
             Padding = new(0, 0, 0, ui.SizeGripHeight);
@@ -73,6 +73,9 @@ namespace SqlNotebook {
             ui.Init(_consoleMnu, Resources.zone_select, Resources.zone_select32);
             ui.Init(_searchTxt);
             ui.Init(_transactionCommitMenu, Resources.accept_button, Resources.accept_button32);
+
+            var userLayout = RestoreUserLayout();
+            var userLayoutScale = userLayout == null ? 1 : (double)DeviceDpi / userLayout.Dpi;
 
             // Setting the ForeColor of menu items in the designer doesn't seem to work; it gets overwritten. So we do
             // it here.
@@ -97,6 +100,10 @@ namespace SqlNotebook {
             _isNew = isNew;
             _manager = new NotebookManager(_notebook, _isTransactionOpen);
             _databaseImporter = new DatabaseImporter(_manager, this);
+            var dockLeftPortion = userLayout?.GetDockLeftPortion();
+            var dockRightPortion = userLayout?.GetDockRightPortion();
+            var dockTopPortion = userLayout?.GetDockTopPortion();
+            var dockBottomPortion = userLayout?.GetDockBottomPortion();
             _dockPanel = new DockPanel {
                 Dock = DockStyle.Fill,
                 Theme = new VS2012LightTheme {
@@ -105,15 +112,38 @@ namespace SqlNotebook {
                 DocumentStyle = DocumentStyle.DockingWindow,
                 DefaultFloatWindowSize = ui.XSize(150, 50),
                 ShowDocumentIcon = false,
-                DockLeftPortion = ui.XWidth(35),
+                DockLeftPortion =
+                    dockLeftPortion.HasValue
+                    ? dockLeftPortion.Value * userLayoutScale
+                    : ui.XWidth(35),
+                DockRightPortion =
+                    dockRightPortion.HasValue
+                    ? dockRightPortion.Value * userLayoutScale
+                    : ui.XWidth(35),
+                DockTopPortion =
+                    dockTopPortion.HasValue
+                    ? dockTopPortion.Value * userLayoutScale
+                    : ui.XHeight(20),
+                DockBottomPortion =
+                    dockBottomPortion.HasValue
+                    ? dockBottomPortion.Value * userLayoutScale
+                    : ui.XHeight(20),
             };
             _toolStripContainer.ContentPanel.Controls.Add(_dockPanel);
 
+            var tocAutoHidePortion = userLayout?.GetTableOfContentsAutoHidePortion();
             _contentsDockContent = new("Table of Contents", 
                 _explorer = new(_manager, this),
-                DockAreas.DockLeft | DockAreas.DockRight);
-            _contentsDockContent.CloseButtonVisible = false;
-            _contentsDockContent.Show(_dockPanel, DockState.DockLeftAutoHide);
+                DockAreas.DockLeft | DockAreas.DockRight
+                ) {
+                CloseButtonVisible = false,
+            };
+            _contentsDockContent.Show(_dockPanel,
+                userLayout?.GetTableOfContentsDockState() ?? DockState.DockLeftAutoHide);
+            _contentsDockContent.AutoHidePortion =
+                    tocAutoHidePortion.HasValue
+                    ? tocAutoHidePortion.Value * userLayoutScale
+                    : ui.XWidth(35);
 
             _manager.NotebookItemOpenRequest += Manager_NotebookItemOpenRequest;
             _manager.NotebookItemCloseRequest += Manager_NotebookItemCloseRequest;
@@ -154,9 +184,12 @@ namespace SqlNotebook {
             _consoleDockContent = new("Console", _console, DockAreas.DockBottom);
             _consoleDockContent.CloseButtonVisible = false;
             _consoleDockContent.Show(_dockPanel);
-            _consoleDockContent.DockState = DockState.DockBottomAutoHide;
-            _consoleDockContent.AutoHidePortion = 0.6;
-            _dockPanel.DockBottomPortion = 0.6;
+            _consoleDockContent.DockState = userLayout?.GetConsoleDockState() ?? DockState.DockBottomAutoHide;
+            var consoleAutoHidePortion = userLayout?.GetConsoleAutoHidePortion();
+            _consoleDockContent.AutoHidePortion =
+                consoleAutoHidePortion.HasValue
+                ? consoleAutoHidePortion.Value * userLayoutScale
+                : ui.XHeight(20);
 
             Load += async (sender, e) => {
                 _manager.Rescan();
@@ -363,11 +396,12 @@ namespace SqlNotebook {
         }
 
         private void NewMnu_Click(object sender, EventArgs e) {
+            SaveUserLayout(offset: true);
             Process.Start(Application.ExecutablePath);
         }
 
         private void OpenMnu_Click(object sender, EventArgs e) {
-            var f = new OpenFileDialog {
+            using OpenFileDialog f = new() {
                 AutoUpgradeEnabled = true,
                 CheckFileExists = true,
                 CheckPathExists = true,
@@ -379,10 +413,9 @@ namespace SqlNotebook {
                 Title = "Open Notebook",
                 ValidateNames = true
             };
-            using (f) {
-                if (f.ShowDialog(this) == DialogResult.OK) {
-                    Process.Start(Application.ExecutablePath, $"\"{f.FileName}");
-                }
+            if (f.ShowDialog(this) == DialogResult.OK) {
+                SaveUserLayout(offset: true);
+                Process.Start(Application.ExecutablePath, $"\"{f.FileName}");
             }
         }
 
@@ -444,7 +477,10 @@ namespace SqlNotebook {
             var success = PrepareToCloseFile();
             if (!success) {
                 e.Cancel = true;
+                return;
             }
+
+            SaveUserLayout();
         }
 
         private bool PrepareToCloseFile() {
@@ -728,6 +764,121 @@ namespace SqlNotebook {
                 FileName = "https://github.com/electroly/sqlnotebook/releases",
                 UseShellExecute = true
             });
+
+        public sealed class UserLayout {
+            public int Left { get; set; }
+            public int Top { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public int Dpi { get; set; }
+            public int WindowState { get; set; }
+
+            public int TableOfContentsDockState { get; set; }
+            public DockState? GetTableOfContentsDockState() {
+                return (DockState)TableOfContentsDockState switch {
+                    DockState.DockLeft or DockState.DockLeftAutoHide or
+                        DockState.DockRight or DockState.DockRightAutoHide
+                        => (DockState)TableOfContentsDockState,
+                    _ => null,
+                };
+            }
+
+            public double TableOfContentsAutoHidePortion { get; set; }
+            public double? GetTableOfContentsAutoHidePortion() =>
+                TableOfContentsAutoHidePortion > 0 ? TableOfContentsAutoHidePortion : null;
+
+            public double DockLeftPortion { get; set; }
+            public double? GetDockLeftPortion() => DockLeftPortion > 0 ? DockLeftPortion : null;
+
+            public double DockRightPortion { get; set; }
+            public double? GetDockRightPortion() => DockRightPortion > 0 ? DockRightPortion : null;
+
+            public double DockTopPortion { get; set; }
+            public double? GetDockTopPortion() => DockTopPortion > 0 ? DockTopPortion : null;
+
+            public double DockBottomPortion { get; set; }
+            public double? GetDockBottomPortion() => DockBottomPortion > 0 ? DockBottomPortion : null;
+
+            public int ConsoleDockState { get; set; }
+            public DockState? GetConsoleDockState() {
+                return (DockState)ConsoleDockState switch {
+                    DockState.DockBottom or DockState.DockBottomAutoHide => (DockState)ConsoleDockState,
+                    _ => null,
+                };
+            }
+
+            public double ConsoleAutoHidePortion { get; set; }
+            public double? GetConsoleAutoHidePortion() => ConsoleAutoHidePortion > 0 ? ConsoleAutoHidePortion : null;
+        }
+
+        private void SaveUserLayout(bool offset = false) {
+            try {
+                var offsetAmount = (int)(32 * (double)DeviceDpi / 96);
+
+                UserLayout layout = new() {
+                    Left = Left + (offset ? offsetAmount : 0),
+                    Top = Top + (offset ? offsetAmount : 0),
+                    Width = Width,
+                    Height = Height,
+                    Dpi = DeviceDpi,
+                    WindowState = (int)WindowState,
+                    TableOfContentsDockState = (int)_contentsDockContent.DockState,
+                    TableOfContentsAutoHidePortion = _contentsDockContent.AutoHidePortion,
+                    ConsoleDockState = (int)_consoleDockContent.DockState,
+                    ConsoleAutoHidePortion = _consoleDockContent.AutoHidePortion,
+                    DockLeftPortion = _dockPanel.DockLeftPortion,
+                    DockRightPortion = _dockPanel.DockRightPortion,
+                    DockTopPortion = _dockPanel.DockTopPortion,
+                    DockBottomPortion = _dockPanel.DockBottomPortion,
+                };
+
+                Settings.Default.MainFormLayout = JsonSerializer.Serialize(layout);
+                Settings.Default.Save();
+            } catch { }
+        }
+
+        private UserLayout RestoreUserLayout() {
+            try {
+                var x = JsonSerializer.Deserialize<UserLayout>(Settings.Default.MainFormLayout);
+                var dpiRatio = (double)DeviceDpi / x.Dpi;
+                var left = (int)(dpiRatio * x.Left);
+                var top = (int)(dpiRatio * x.Top);
+                var width = (int)(dpiRatio * x.Width);
+                var height = (int)(dpiRatio * x.Height);
+                
+                var screen = Screen.PrimaryScreen;
+                foreach (var potentialScreen in Screen.AllScreens) {
+                    if (potentialScreen.WorkingArea.Contains(new Point(left, top))) {
+                        screen = potentialScreen;
+                        break;
+                    }
+                }
+
+                var screenSize = screen.WorkingArea.Size;
+                // Don't be bigger than whole screen
+                width = Math.Min(width, screenSize.Width);
+                height = Math.Min(height, screenSize.Height);
+
+                // Don't go off the right or bottom of the screen
+                left = Math.Min(left, screenSize.Width - width);
+                top = Math.Min(top, screenSize.Height - height);
+                
+                // Don't go off the left or top of the screen
+                left = Math.Max(left, screen.WorkingArea.Left);
+                top = Math.Max(top, screen.WorkingArea.Top);
+
+                Location = new(left, top);
+                Size = new(width, height);
+                var state = (FormWindowState)x.WindowState;
+                if (state != FormWindowState.Minimized) {
+                    WindowState = state;
+                }
+
+                return x;
+            } catch {
+                return null;
+            }
+        }
     }
 }
  

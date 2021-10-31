@@ -58,5 +58,17 @@ namespace SqlNotebook.Properties {
                 this["MySqlLastConnectionString"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MainFormLayout {
+            get {
+                return ((string)(this["MainFormLayout"]));
+            }
+            set {
+                this["MainFormLayout"] = value;
+            }
+        }
     }
 }
