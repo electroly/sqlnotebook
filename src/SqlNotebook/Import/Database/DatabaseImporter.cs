@@ -73,7 +73,7 @@ namespace SqlNotebook.Import.Database {
                     _notebook.Execute(dbSession.GetCreateVirtualTableStatement(selectedTable.SourceName, "__temp_import"));
 
                     // create the target physical table with the same schema as the virtual table
-                    var tableCols = _notebook.Query($"PRAGMA table_info (__temp_import)");
+                    var tableCols = _notebook.Query($"PRAGMA table_info (__temp_import)", -1);
                     var lines = new List<string>();
                     var pks = new string[tableCols.Rows.Count];
                     for (int i = 0; i < tableCols.Rows.Count; i++) {

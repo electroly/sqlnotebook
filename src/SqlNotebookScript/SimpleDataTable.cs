@@ -5,8 +5,9 @@ namespace SqlNotebookScript {
         public IReadOnlyList<string> Columns { get; }
         public IReadOnlyList<object[]> Rows { get; }
         private IReadOnlyDictionary<string, int> _columnIndices;
+        public long FullCount { get; }
 
-        public SimpleDataTable(IReadOnlyList<string> columns, IReadOnlyList<object[]> rows) {
+        public SimpleDataTable(IReadOnlyList<string> columns, IReadOnlyList<object[]> rows, long fullCount) {
             Columns = columns;
             Rows = rows;
     
@@ -16,6 +17,8 @@ namespace SqlNotebookScript {
                 dict[columnName] = i++;
             }
             _columnIndices = dict;
+
+            FullCount = fullCount == 0 ? rows.Count : fullCount;
         }
 
         public object Get(int rowNumber, string column) {

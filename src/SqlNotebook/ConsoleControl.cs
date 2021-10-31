@@ -107,9 +107,9 @@ namespace SqlNotebook {
                     var s = simpleDataTable.Rows.Count == 1 ? "" : "s";
                     _outputFlow.Controls.Add(new Label {
                         AutoSize = true,
-                        Text = simpleDataTable.Rows.Count > MAX_GRID_ROWS
-                            ? $"{simpleDataTable.Rows.Count:#,##0} row{s} ({MAX_GRID_ROWS} shown)"
-                            : $"{simpleDataTable.Rows.Count:#,##0} row{s}",
+                        Text = simpleDataTable.FullCount > MAX_GRID_ROWS
+                            ? $"{simpleDataTable.FullCount:#,##0} row{s} ({MAX_GRID_ROWS} shown)"
+                            : $"{simpleDataTable.FullCount:#,##0} row{s}",
                         Margin = _outputCountMargin,
                         ForeColor = Color.Gray
                     });
@@ -161,7 +161,7 @@ namespace SqlNotebook {
             }
 
             var output = WaitForm.Go(FindForm(), "Delete", "Executing...", out var success, () =>
-                SqlUtil.WithTransaction(_manager.Notebook, () => _manager.ExecuteScript(code)));
+                SqlUtil.WithTransaction(_manager.Notebook, () => _manager.ExecuteScript(code, maxRows: MAX_GRID_ROWS)));
             if (!success) {
                 return;
             }

@@ -30,12 +30,16 @@ namespace SqlNotebook.Import.Database {
             EnableDisableButtons();
 
             Ui ui = new(this, 70, 30);
+            ui.InitHeader(_importTablesLabel);
             ui.Init(_importTable);
-            ui.Pad(_importTable);
+            ui.Init(_opsFlow);
+            ui.Pad(_opsFlow);
             ui.Init(_renameTableBtn);
+            ui.MarginRight(_renameTableBtn);
             ui.Init(_selectAllBtn);
-            ui.MarginTop(_selectAllBtn);
             ui.Init(_selectNoneBtn);
+            ui.InitHeader(_methodLabel);
+            ui.MarginTop(_methodLabel);
             ui.Init(_methodFlow);
             ui.Pad(_methodFlow);
             ui.Init(_methodCopyRad);

@@ -232,7 +232,7 @@ void Notebook::WriteFileVersionAndUserDataToDatabase() {
 
 void Notebook::ReadUserDataFromDatabase() {
     Execute("CREATE TABLE IF NOT EXISTS _sqlnotebook_userdata (json);");
-    auto table = Query("SELECT json FROM _sqlnotebook_userdata");
+    auto table = Query("SELECT json FROM _sqlnotebook_userdata", -1);
     if (table->Rows->Count == 0) {
         _userData = gcnew NotebookUserData();
         return;
@@ -280,24 +280,24 @@ static IReadOnlyDictionary<String^, Object^>^ ToLowercaseKeys(IReadOnlyDictionar
 }
 
 void Notebook::Execute(String^ sql, IReadOnlyDictionary<String^, Object^>^ args) {
-    QueryCore(sql, ToLowercaseKeys(args), nullptr, false, _sqlite, gcnew Func<bool>(this, &Notebook::GetCancelling));
+    QueryCore(sql, ToLowercaseKeys(args), nullptr, false, _sqlite, gcnew Func<bool>(this, &Notebook::GetCancelling), -1);
 }
 
 void Notebook::Execute(String^ sql, IReadOnlyList<Object^>^ args) {
-    QueryCore(sql, nullptr, args, false, _sqlite, gcnew Func<bool>(this, &Notebook::GetCancelling));
+    QueryCore(sql, nullptr, args, false, _sqlite, gcnew Func<bool>(this, &Notebook::GetCancelling), -1);
 }
 
-SimpleDataTable^ Notebook::Query(String^ sql) {
-    return Query(sql, gcnew List<Object^>());
+SimpleDataTable^ Notebook::Query(String^ sql, int maxRows) {
+    return Query(sql, gcnew List<Object^>(), maxRows);
 }
 
-SimpleDataTable^ Notebook::Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args) {
+SimpleDataTable^ Notebook::Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args, int maxRows) {
     return QueryCore(sql, ToLowercaseKeys(args), nullptr, true, _sqlite,
-        gcnew Func<bool>(this, &Notebook::GetCancelling));
+        gcnew Func<bool>(this, &Notebook::GetCancelling), maxRows);
 }
 
-SimpleDataTable^ Notebook::Query(String^ sql, IReadOnlyList<Object^>^ args) {
-    return QueryCore(sql, nullptr, args, true, _sqlite, gcnew Func<bool>(this, &Notebook::GetCancelling));
+SimpleDataTable^ Notebook::Query(String^ sql, IReadOnlyList<Object^>^ args, int maxRows) {
+    return QueryCore(sql, nullptr, args, true, _sqlite, gcnew Func<bool>(this, &Notebook::GetCancelling), maxRows);
 }
 
 // opens a new connection if another query is in progress.  the SQL command must be pure SQLite and must contain 
@@ -305,7 +305,7 @@ SimpleDataTable^ Notebook::Query(String^ sql, IReadOnlyList<Object^>^ args) {
 SimpleDataTable^ Notebook::SpecialReadOnlyQuery(String^ sql, IReadOnlyDictionary<String^, Object^>^ args) {
     if (Monitor::TryEnter(_lock)) {
         try {
-            return Query(sql, args);
+            return Query(sql, args, -1);
         } finally {
             Monitor::Exit(_lock);
         }
@@ -315,7 +315,7 @@ SimpleDataTable^ Notebook::SpecialReadOnlyQuery(String^ sql, IReadOnlyDictionary
         sqlite3* tempSqlite = nullptr;
         g_SqliteCall(tempSqlite, sqlite3_open_v2(filePathCstr.c_str(), &tempSqlite, SQLITE_OPEN_READONLY, nullptr));
         try {
-            return QueryCore(sql, args, nullptr, true, tempSqlite, nullptr);
+            return QueryCore(sql, args, nullptr, true, tempSqlite, nullptr, -1);
         } finally {
             sqlite3_close_v2(tempSqlite);
         }
@@ -327,7 +327,7 @@ Object^ Notebook::QueryValue(String^ sql) {
 }
 
 Object^ Notebook::QueryValue(String^ sql, IReadOnlyDictionary<String^, Object^>^ args) {
-    auto dt = Query(sql, args);
+    auto dt = Query(sql, args, -1);
     if (dt->Rows->Count == 1 && dt->Columns->Count == 1) {
         return dt->Rows[0]->GetValue(0);
     } else {
@@ -336,7 +336,7 @@ Object^ Notebook::QueryValue(String^ sql, IReadOnlyDictionary<String^, Object^>^
 }
 
 Object^ Notebook::QueryValue(String^ sql, IReadOnlyList<Object^>^ args) {
-    auto dt = Query(sql, args);
+    auto dt = Query(sql, args, -1);
     if (dt->Rows->Count == 1 && dt->Columns->Count == 1) {
         return dt->Rows[0]->GetValue(0);
     } else {
@@ -345,7 +345,10 @@ Object^ Notebook::QueryValue(String^ sql, IReadOnlyList<Object^>^ args) {
 }
 
 SimpleDataTable^ Notebook::QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
-IReadOnlyList<Object^>^ orderedArgs, bool returnResult, sqlite3* db, Func<bool>^ cancelling) {
+    IReadOnlyList<Object^>^ orderedArgs, bool returnResult, sqlite3* db, Func<bool>^ cancelling, int maxRows
+    ) {
+    System::Diagnostics::Debug::Assert(maxRows != 0); // -1 is unrestricted, not zero
+
     if (cancelling != nullptr && cancelling()) {
         throw gcnew OperationCanceledException();
     }
@@ -424,6 +427,7 @@ IReadOnlyList<Object^>^ orderedArgs, bool returnResult, sqlite3* db, Func<bool>^
 
         // read the results
         auto rows = gcnew List<array<Object^>^>();
+        long fullCount = 0;
         while (true) {
             if (cancelling != nullptr && cancelling()) {
                 throw gcnew OperationCanceledException();
@@ -433,6 +437,11 @@ IReadOnlyList<Object^>^ orderedArgs, bool returnResult, sqlite3* db, Func<bool>^
             if (ret == SQLITE_DONE) {
                 break;
             } else if (ret == SQLITE_ROW) {
+                fullCount++;
+                if (maxRows >= 0 && fullCount > maxRows) {
+                    // Keep counting, but don't read the rows.
+                    continue;
+                }
                 if (returnResult) {
                     array<Object^>^ rowData = gcnew array<Object^>(columnCount);
                     for (int i = 0; i < columnCount; i++) {
@@ -481,7 +490,7 @@ IReadOnlyList<Object^>^ orderedArgs, bool returnResult, sqlite3* db, Func<bool>^
         }
 
         if (returnResult) {
-            return gcnew SimpleDataTable(columnNames, rows);
+            return gcnew SimpleDataTable(columnNames, rows, fullCount);
         } else {
             return nullptr;
         }

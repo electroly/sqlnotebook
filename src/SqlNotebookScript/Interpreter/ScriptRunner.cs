@@ -43,6 +43,8 @@ namespace SqlNotebookScript.Interpreter {
         public bool DidThrow { get; set; }
 
         public object ErrorMessage { get; set; }
+
+        public int MaxRows { get; set; } = -1;
     }
 
     public class ScriptException : Exception {
@@ -146,7 +148,7 @@ namespace SqlNotebookScript.Interpreter {
             }
 
             try {
-                var dt = _notebook.Query(stmt.Sql, env.Vars);
+                var dt = _notebook.Query(stmt.Sql, env.Vars, env.MaxRows);
                 if (dt.Columns.Any()) {
                     env.Output.DataTables.Add(dt);
                 }
@@ -406,7 +408,7 @@ namespace SqlNotebookScript.Interpreter {
         }
 
         public object EvaluateExpr(Ast.Expr expr, ScriptEnv env) {
-            var dt = _notebook.Query($"SELECT ({expr.Sql})", env.Vars);
+            var dt = _notebook.Query($"SELECT ({expr.Sql})", env.Vars, -1);
             if (dt.Columns.Count == 1 && dt.Rows.Count == 1) {
                 return dt.Rows[0][0];
             } else {

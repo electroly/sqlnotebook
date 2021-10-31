@@ -56,7 +56,7 @@ namespace SqlNotebookScript.Interpreter {
             var fileMode = _truncateExistingFile ? FileMode.Create : FileMode.Append;
             using (var stream = File.Open(_filePath, fileMode, FileAccess.Write, FileShare.None)) 
             using (var writer = new StreamWriter(stream, _fileEncoding)) {
-                var sdt = _notebook.Query(_stmt.SelectStmt.Sql, _env.Vars);
+                var sdt = _notebook.Query(_stmt.SelectStmt.Sql, _env.Vars, -1);
                 foreach (var row in sdt.Rows) {
                     writer.WriteLine(string.Join("", row));
                 }

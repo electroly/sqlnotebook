@@ -215,9 +215,9 @@ namespace SqlNotebook {
         }
 
         public ScriptOutput ExecuteScript(string code, IReadOnlyDictionary<string, object> args = null,
-            TransactionType transactionType = TransactionType.NoTransaction
+            TransactionType transactionType = TransactionType.NoTransaction, int maxRows = -1
             ) =>
-            ExecuteScriptEx(code, args, transactionType, out _);
+            ExecuteScriptEx(code, args, transactionType, out _, maxRows);
 
         public enum TransactionType {
             Transaction,
@@ -226,8 +226,9 @@ namespace SqlNotebook {
         }
 
         public ScriptOutput ExecuteScriptEx(string code, IReadOnlyDictionary<string, object> args,
-        TransactionType transactionType, out Dictionary<string, object> vars) {
-            var env = new ScriptEnv();
+            TransactionType transactionType, out Dictionary<string, object> vars, int maxRows = -1
+            ) {
+            var env = new ScriptEnv { MaxRows = maxRows };
             var output = Invoke(() => {
                 var parser = new ScriptParser(Notebook);
                 var script = parser.Parse(code);

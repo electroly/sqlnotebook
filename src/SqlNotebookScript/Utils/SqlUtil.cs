@@ -48,7 +48,7 @@ namespace SqlNotebookScript.Utils {
         }
 
         public static void VerifyColumnsExist(string[] colNames, string tableName, INotebook notebook) {
-            var tableInfo = notebook.Query($"PRAGMA TABLE_INFO ({tableName.DoubleQuote()})");
+            var tableInfo = notebook.Query($"PRAGMA TABLE_INFO ({tableName.DoubleQuote()})", -1);
             var nameColIndex = tableInfo.GetIndex("name");
             var actualColNames = tableInfo.Rows.Select(x => x[nameColIndex].ToString().ToLower()).ToList();
             foreach (var name in colNames.Where(x => x != null)) {

@@ -269,13 +269,16 @@ namespace SqlNotebook {
         public const string RELEASE_NOTES = "View release notes";
 
         public static string ShowTaskDialog(IWin32Window owner, string heading, string caption,
-            string[] buttons, TaskDialogIcon icon = null, bool defaultIsFirst = true
+            string[] buttons, TaskDialogIcon icon = null, bool defaultIsFirst = true, string details = null
             ) {
             TaskDialogPage taskDialogPage = new() {
                 Heading = heading,
                 Caption = caption,
                 Icon = icon,
             };
+            if (details != null) {
+                taskDialogPage.Text = details;
+            }
             foreach (var button in buttons) {
                 taskDialogPage.Buttons.Add(button);
             }

@@ -23,11 +23,9 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this._methodGrp = new System.Windows.Forms.GroupBox();
             this._methodFlow = new System.Windows.Forms.FlowLayoutPanel();
             this._methodCopyRad = new System.Windows.Forms.RadioButton();
             this._methodLinkRad = new System.Windows.Forms.RadioButton();
-            this._tablesGrp = new System.Windows.Forms.GroupBox();
             this._importTable = new System.Windows.Forms.TableLayoutPanel();
             this._listBox = new System.Windows.Forms.CheckedListBox();
             this._opsFlow = new System.Windows.Forms.FlowLayoutPanel();
@@ -38,40 +36,27 @@
             this._cancelBtn = new System.Windows.Forms.Button();
             this._table = new System.Windows.Forms.TableLayoutPanel();
             this._buttonFlow = new System.Windows.Forms.FlowLayoutPanel();
-            this._methodGrp.SuspendLayout();
+            this._importTablesLabel = new System.Windows.Forms.Label();
+            this._methodLabel = new System.Windows.Forms.Label();
             this._methodFlow.SuspendLayout();
-            this._tablesGrp.SuspendLayout();
             this._importTable.SuspendLayout();
             this._opsFlow.SuspendLayout();
             this._table.SuspendLayout();
             this._buttonFlow.SuspendLayout();
             this.SuspendLayout();
             // 
-            // _methodGrp
-            // 
-            this._methodGrp.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this._methodGrp.AutoSize = true;
-            this._methodGrp.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this._methodGrp.Controls.Add(this._methodFlow);
-            this._methodGrp.Location = new System.Drawing.Point(3, 750);
-            this._methodGrp.Name = "_methodGrp";
-            this._methodGrp.Size = new System.Drawing.Size(782, 100);
-            this._methodGrp.TabIndex = 1;
-            this._methodGrp.TabStop = false;
-            this._methodGrp.Text = "Method";
-            // 
             // _methodFlow
             // 
             this._methodFlow.AutoSize = true;
             this._methodFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._methodFlow.BackColor = System.Drawing.Color.White;
             this._methodFlow.Controls.Add(this._methodCopyRad);
             this._methodFlow.Controls.Add(this._methodLinkRad);
             this._methodFlow.Dock = System.Windows.Forms.DockStyle.Fill;
             this._methodFlow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this._methodFlow.Location = new System.Drawing.Point(3, 27);
+            this._methodFlow.Location = new System.Drawing.Point(3, 780);
             this._methodFlow.Name = "_methodFlow";
-            this._methodFlow.Size = new System.Drawing.Size(776, 70);
+            this._methodFlow.Size = new System.Drawing.Size(782, 70);
             this._methodFlow.TabIndex = 2;
             this._methodFlow.WrapContents = false;
             // 
@@ -81,10 +66,10 @@
             this._methodCopyRad.Checked = true;
             this._methodCopyRad.Location = new System.Drawing.Point(3, 3);
             this._methodCopyRad.Name = "_methodCopyRad";
-            this._methodCopyRad.Size = new System.Drawing.Size(375, 29);
+            this._methodCopyRad.Size = new System.Drawing.Size(426, 29);
             this._methodCopyRad.TabIndex = 1;
             this._methodCopyRad.TabStop = true;
-            this._methodCopyRad.Text = "&Copy all source data into the notebook file";
+            this._methodCopyRad.Text = "&Copy source data into notebook (recommended)";
             this._methodCopyRad.UseVisualStyleBackColor = true;
             // 
             // _methodLinkRad
@@ -92,46 +77,36 @@
             this._methodLinkRad.AutoSize = true;
             this._methodLinkRad.Location = new System.Drawing.Point(3, 38);
             this._methodLinkRad.Name = "_methodLinkRad";
-            this._methodLinkRad.Size = new System.Drawing.Size(398, 29);
+            this._methodLinkRad.Size = new System.Drawing.Size(236, 29);
             this._methodLinkRad.TabIndex = 0;
-            this._methodLinkRad.Text = "Create a live, read-only &link to the source data";
+            this._methodLinkRad.Text = "&Live database connection";
             this._methodLinkRad.UseVisualStyleBackColor = true;
-            // 
-            // _tablesGrp
-            // 
-            this._tablesGrp.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this._tablesGrp.Controls.Add(this._importTable);
-            this._tablesGrp.Location = new System.Drawing.Point(3, 3);
-            this._tablesGrp.Name = "_tablesGrp";
-            this._tablesGrp.Size = new System.Drawing.Size(782, 741);
-            this._tablesGrp.TabIndex = 0;
-            this._tablesGrp.TabStop = false;
-            this._tablesGrp.Text = "Tables to import";
             // 
             // _importTable
             // 
+            this._importTable.BackColor = System.Drawing.Color.White;
             this._importTable.ColumnCount = 2;
             this._importTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._importTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this._importTable.Controls.Add(this._listBox, 0, 0);
-            this._importTable.Controls.Add(this._opsFlow, 1, 0);
+            this._importTable.Controls.Add(this._opsFlow, 0, 1);
             this._importTable.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._importTable.Location = new System.Drawing.Point(3, 27);
+            this._importTable.Location = new System.Drawing.Point(3, 28);
             this._importTable.Name = "_importTable";
-            this._importTable.RowCount = 1;
+            this._importTable.RowCount = 2;
             this._importTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._importTable.Size = new System.Drawing.Size(776, 711);
+            this._importTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._importTable.Size = new System.Drawing.Size(782, 721);
             this._importTable.TabIndex = 13;
             // 
             // _listBox
             // 
+            this._listBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._listBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this._listBox.IntegralHeight = false;
             this._listBox.Location = new System.Drawing.Point(3, 3);
             this._listBox.Name = "_listBox";
-            this._listBox.Size = new System.Drawing.Size(645, 705);
+            this._listBox.Size = new System.Drawing.Size(776, 668);
             this._listBox.TabIndex = 6;
             this._listBox.SelectedIndexChanged += new System.EventHandler(this.ListBox_SelectedIndexChanged);
             // 
@@ -142,11 +117,12 @@
             this._opsFlow.Controls.Add(this._renameTableBtn);
             this._opsFlow.Controls.Add(this._selectAllBtn);
             this._opsFlow.Controls.Add(this._selectNoneBtn);
-            this._opsFlow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this._opsFlow.Location = new System.Drawing.Point(654, 3);
+            this._opsFlow.Dock = System.Windows.Forms.DockStyle.Right;
+            this._opsFlow.Location = new System.Drawing.Point(422, 677);
             this._opsFlow.Name = "_opsFlow";
-            this._opsFlow.Size = new System.Drawing.Size(119, 123);
+            this._opsFlow.Size = new System.Drawing.Size(357, 41);
             this._opsFlow.TabIndex = 7;
+            this._opsFlow.WrapContents = false;
             // 
             // _renameTableBtn
             // 
@@ -164,7 +140,7 @@
             // 
             this._selectAllBtn.AutoSize = true;
             this._selectAllBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._selectAllBtn.Location = new System.Drawing.Point(3, 44);
+            this._selectAllBtn.Location = new System.Drawing.Point(122, 3);
             this._selectAllBtn.Name = "_selectAllBtn";
             this._selectAllBtn.Size = new System.Drawing.Size(113, 35);
             this._selectAllBtn.TabIndex = 11;
@@ -176,7 +152,7 @@
             // 
             this._selectNoneBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._selectNoneBtn.AutoSize = true;
-            this._selectNoneBtn.Location = new System.Drawing.Point(3, 85);
+            this._selectNoneBtn.Location = new System.Drawing.Point(241, 3);
             this._selectNoneBtn.Name = "_selectNoneBtn";
             this._selectNoneBtn.Size = new System.Drawing.Size(113, 35);
             this._selectNoneBtn.TabIndex = 12;
@@ -212,17 +188,20 @@
             // 
             this._table.ColumnCount = 1;
             this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._table.Controls.Add(this._methodGrp, 0, 1);
-            this._table.Controls.Add(this._tablesGrp, 0, 0);
-            this._table.Controls.Add(this._buttonFlow, 0, 2);
+            this._table.Controls.Add(this._methodFlow, 0, 3);
+            this._table.Controls.Add(this._importTable, 0, 1);
+            this._table.Controls.Add(this._buttonFlow, 0, 4);
+            this._table.Controls.Add(this._importTablesLabel, 0, 0);
+            this._table.Controls.Add(this._methodLabel, 0, 2);
             this._table.Dock = System.Windows.Forms.DockStyle.Fill;
             this._table.Location = new System.Drawing.Point(0, 0);
             this._table.Name = "_table";
-            this._table.RowCount = 3;
+            this._table.RowCount = 5;
+            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.Size = new System.Drawing.Size(788, 900);
             this._table.TabIndex = 6;
             // 
@@ -237,6 +216,24 @@
             this._buttonFlow.Name = "_buttonFlow";
             this._buttonFlow.Size = new System.Drawing.Size(188, 41);
             this._buttonFlow.TabIndex = 6;
+            // 
+            // _importTablesLabel
+            // 
+            this._importTablesLabel.AutoSize = true;
+            this._importTablesLabel.Location = new System.Drawing.Point(3, 0);
+            this._importTablesLabel.Name = "_importTablesLabel";
+            this._importTablesLabel.Size = new System.Drawing.Size(120, 25);
+            this._importTablesLabel.TabIndex = 7;
+            this._importTablesLabel.Text = "Import Tables";
+            // 
+            // _methodLabel
+            // 
+            this._methodLabel.AutoSize = true;
+            this._methodLabel.Location = new System.Drawing.Point(3, 752);
+            this._methodLabel.Name = "_methodLabel";
+            this._methodLabel.Size = new System.Drawing.Size(75, 25);
+            this._methodLabel.TabIndex = 14;
+            this._methodLabel.Text = "Method";
             // 
             // DatabaseImportTablesForm
             // 
@@ -256,11 +253,8 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Import";
-            this._methodGrp.ResumeLayout(false);
-            this._methodGrp.PerformLayout();
             this._methodFlow.ResumeLayout(false);
             this._methodFlow.PerformLayout();
-            this._tablesGrp.ResumeLayout(false);
             this._importTable.ResumeLayout(false);
             this._importTable.PerformLayout();
             this._opsFlow.ResumeLayout(false);
@@ -282,12 +276,12 @@
         private System.Windows.Forms.RadioButton _methodCopyRad;
         private System.Windows.Forms.Button _selectNoneBtn;
         private System.Windows.Forms.Button _selectAllBtn;
-        private System.Windows.Forms.GroupBox _tablesGrp;
-        private System.Windows.Forms.GroupBox _methodGrp;
         private System.Windows.Forms.TableLayoutPanel _table;
         private System.Windows.Forms.FlowLayoutPanel _buttonFlow;
         private System.Windows.Forms.TableLayoutPanel _importTable;
         private System.Windows.Forms.FlowLayoutPanel _opsFlow;
         private System.Windows.Forms.FlowLayoutPanel _methodFlow;
+        private System.Windows.Forms.Label _importTablesLabel;
+        private System.Windows.Forms.Label _methodLabel;
     }
 }

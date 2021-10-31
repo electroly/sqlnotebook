@@ -23,7 +23,7 @@ namespace SqlNotebook {
             var nonTables = new List<string>();
 
             notebook.Invoke(() => {
-                var tablesDt = notebook.Query("SELECT name, type FROM sqlite_master");
+                var tablesDt = notebook.Query("SELECT name, type FROM sqlite_master", -1);
                 for (int i = 0; i < tablesDt.Rows.Count; i++) {
                     var tableName = tablesDt.Get(i, "name").ToString();
                     var tableType = tablesDt.Get(i, "type").ToString();
@@ -42,7 +42,7 @@ namespace SqlNotebook {
             // precondition: must be inside notebook.Invoke()
             var columnSchemas = new List<ColumnSchema>();
 
-            var dt = notebook.Query($"PRAGMA table_info ({tableName.DoubleQuote()})");
+            var dt = notebook.Query($"PRAGMA table_info ({tableName.DoubleQuote()})", -1);
             for (int i = 0; i < dt.Rows.Count; i++) {
                 var name = dt.Get(i, "name").ToString();
                 var type = dt.Get(i, "type").ToString();

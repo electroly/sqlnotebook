@@ -55,9 +55,9 @@ namespace SqlNotebookCore {
         virtual void Execute(String^ sql);
         virtual void Execute(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
         virtual void Execute(String^ sql, IReadOnlyList<Object^>^ args);
-        virtual SimpleDataTable^ Query(String^ sql);
-        virtual SimpleDataTable^ Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
-        virtual SimpleDataTable^ Query(String^ sql, IReadOnlyList<Object^>^ args);
+        virtual SimpleDataTable^ Query(String^ sql, int maxRows);
+        virtual SimpleDataTable^ Query(String^ sql, IReadOnlyDictionary<String^, Object^>^ args, int maxRows);
+        virtual SimpleDataTable^ Query(String^ sql, IReadOnlyList<Object^>^ args, int maxRows);
         virtual Object^ QueryValue(String^ sql);
         virtual Object^ QueryValue(String^ sql, IReadOnlyDictionary<String^, Object^>^ args);
         virtual Object^ QueryValue(String^ sql, IReadOnlyList<Object^>^ args);
@@ -77,7 +77,8 @@ namespace SqlNotebookCore {
         List<IntPtr>^ _sqliteModules = gcnew List<IntPtr>();
 
         static SimpleDataTable^ QueryCore(String^ sql, IReadOnlyDictionary<String^, Object^>^ namedArgs,
-            IReadOnlyList<Object^>^ orderedArgs, bool returnResult, sqlite3* db, Func<bool>^ cancelling);
+            IReadOnlyList<Object^>^ orderedArgs, bool returnResult, sqlite3* db, Func<bool>^ cancelling,
+            int maxRows);
         void InstallPgModule();
         void InstallMsModule();
         void InstallMyModule();
