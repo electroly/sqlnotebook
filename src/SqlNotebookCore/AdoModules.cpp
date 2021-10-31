@@ -15,6 +15,7 @@ using namespace MySql::Data::MySqlClient;
 private struct AdoCreateInfo {
     gcroot<Func<Object^, IDbConnection^>^> ConnectionCreator;
     gcroot<Object^> SelectRandomSampleSql; // should contain {0} as a placeholder for the escaped table name including surrounding quotes
+    gcroot<Object^> SelectRandomSampleSqlFallback; // for SQL Server we need to fall back to a non-TABLESAMPLE for views
 };
 
 private struct AdoTable {
@@ -102,9 +103,21 @@ static int AdoCreate(sqlite3* db, void* pAux, int argc, const char* const* argv,
 
         // take a random sample of rows and compute some basic statistics
         {
-            auto_handle<IDbCommand> cmd(conn->CreateCommand());
-            cmd->CommandText = ((String^)(Object^)createInfo->SelectRandomSampleSql)->Replace("{0}", adoQuotedCombinedName);
-            auto_handle<IDataReader> reader(cmd->ExecuteReader());
+            auto_handle<IDataReader> reader{};
+            try {
+                auto_handle<IDbCommand> cmd(conn->CreateCommand());
+                cmd->CommandText = ((String^)(Object^)createInfo->SelectRandomSampleSql)->Replace("{0}", adoQuotedCombinedName);
+                reader = auto_handle<IDataReader>{ cmd->ExecuteReader() };
+            } catch (Exception^ ex) {
+                // On MSSQL we can't use TABLESAMPLE for views, so detect that error and run the fallback instead.
+                if (ex->Message->Contains("TABLESAMPLE")) {
+                    auto_handle<IDbCommand> cmd(conn->CreateCommand());
+                    cmd->CommandText = ((String^)(Object^)createInfo->SelectRandomSampleSqlFallback)->Replace("{0}", adoQuotedCombinedName);
+                    reader = auto_handle<IDataReader>{ cmd->ExecuteReader() };
+                } else {
+                    throw;
+                }
+            }
 
             auto colCount = columnNames->Count;
 
@@ -477,7 +490,10 @@ void Notebook::InstallMsModule() {
     if (s_msModule.iVersion != 1) {
         AdoPopulateModule(&s_msModule);
         s_msCreateInfo.ConnectionCreator = gcnew Func<Object^, IDbConnection^>(MsCreateConnection);
+        // TABLESAMPLE doesn't work for views, and we don't have an easy way to differentiate tables and views here.
+        // So we will try TABLESAMPLE and fallback to TOP 5000 if it fails.
         s_msCreateInfo.SelectRandomSampleSql = "SELECT * FROM {0} TABLESAMPLE (5000 ROWS);";
+        s_msCreateInfo.SelectRandomSampleSqlFallback = "SELECT TOP 5000 * FROM {0}";
     }
     SqliteCall(sqlite3_create_module_v2(_sqlite, "mssql", &s_msModule, &s_msCreateInfo, NULL));
 }
