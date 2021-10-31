@@ -65,7 +65,7 @@ namespace SqlNotebookScript.ScalarFunctions {
             try {
                 return File.ReadAllText(filePath);
             } catch (Exception ex) {
-                throw new Exception($"{Name.ToUpper()}: {ex.Message}");
+                throw new Exception($"{Name.ToUpper()}: {ex.GetExceptionMessage()}");
             }
         }
     }
@@ -85,7 +85,7 @@ namespace SqlNotebookScript.ScalarFunctions {
                 var encoding = Encoding.GetEncoding(encodingNum);
                 return File.ReadAllText(filePath, encoding);
             } catch (Exception ex) {
-                throw new Exception($"{Name.ToUpper()}: {ex.Message}");
+                throw new Exception($"{Name.ToUpper()}: {ex.GetExceptionMessage()}");
             }
         }
     }

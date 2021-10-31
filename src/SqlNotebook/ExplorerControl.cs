@@ -188,7 +188,7 @@ namespace SqlNotebook {
             try {
                 _manager.RenameItem(new NotebookItem(type, lvi.Text), e.Label);
             } catch (Exception ex) {
-                Ui.ShowError(TopLevelControl, "Rename Error", ex.GetExceptionMessage());
+                Ui.ShowError(TopLevelControl, "Rename Error", ex);
             }
         }
 

@@ -52,7 +52,7 @@ namespace SqlNotebookScript.Interpreter {
     public sealed class UncaughtErrorScriptException : ScriptException {
         public object ErrorMessage { get; }
         public UncaughtErrorScriptException(object errorMessage)
-            : base($"Uncaught SQL error: {errorMessage}") {
+            : base(errorMessage.ToString()) {
             ErrorMessage = errorMessage;
         }
     }
@@ -366,7 +366,7 @@ namespace SqlNotebookScript.Interpreter {
             try {
                 ImportCsvStmtRunner.Run(_notebook, env, this, stmt);
             } catch (Exception ex) {
-                Throw(env, ex.Message);
+                Throw(env, ex.GetExceptionMessage());
             }
         }
 
@@ -374,7 +374,7 @@ namespace SqlNotebookScript.Interpreter {
             try {
                 ImportXlsStmtRunner.Run(_notebook, env, this, stmt);
             } catch (Exception ex) {
-                Throw(env, ex.Message);
+                Throw(env, ex.GetExceptionMessage());
             }
         }
 
@@ -382,7 +382,7 @@ namespace SqlNotebookScript.Interpreter {
             try {
                 ImportTxtStmtRunner.Run(_notebook, env, this, stmt);
             } catch (Exception ex) {
-                Throw(env, ex.Message);
+                Throw(env, ex.GetExceptionMessage());
             }
         }
 
@@ -390,7 +390,7 @@ namespace SqlNotebookScript.Interpreter {
             try {
                 ExportTxtStmtRunner.Run(_notebook, env, this, stmt);
             } catch (Exception ex) {
-                Throw(env, ex.Message);
+                Throw(env, ex.GetExceptionMessage());
             }
         }
 

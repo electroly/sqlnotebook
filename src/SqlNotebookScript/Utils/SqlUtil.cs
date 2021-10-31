@@ -63,7 +63,7 @@ namespace SqlNotebookScript.Utils {
             if (uncaught != null) {
                 return uncaught.ErrorMessage.ToString();
             } else {
-                return self.Message;
+                return self.GetExceptionMessage();
             }
         }
 
@@ -127,8 +127,9 @@ namespace SqlNotebookScript.Utils {
         }
 
         public static void GetDestinationColumns(IEnumerable<Ast.ImportColumn> importColumns, ScriptRunner runner,
-        ScriptEnv env, IReadOnlyList<string> srcColNames, out Ast.ImportColumn[] dstColNodes,
-        out string[] dstColNames) {
+            ScriptEnv env, IReadOnlyList<string> srcColNames, out Ast.ImportColumn[] dstColNodes,
+            out string[] dstColNames
+            ) {
             // if there is no column list specified, then all columns are imported with default settings.
             if (!importColumns.Any()) {
                 importColumns =
@@ -154,7 +155,7 @@ namespace SqlNotebookScript.Utils {
                     }
                 } else {
                     // the user specified a column name that does not exist in the CSV file
-                    throw new Exception($"The column \"{name}\" does not exist in the CSV file. " +
+                    throw new ExceptionEx($"The column \"{name}\" does not exist in the CSV file.",
                         $"The columns that were found are: {string.Join(", ", srcColNames.Select(DoubleQuote))}");
                 }
 

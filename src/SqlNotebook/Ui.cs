@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SqlNotebookScript.Utils;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -292,6 +293,33 @@ namespace SqlNotebook {
             if (details != null) {
                 taskDialogPage.Text = details;
             }
+            taskDialogPage.Buttons.Add("OK");
+            taskDialogPage.DefaultButton = taskDialogPage.Buttons[0];
+            TaskDialog.ShowDialog(owner, taskDialogPage);
+        }
+
+        public static void ShowError(IWin32Window owner, string title, Exception exception) {
+            var extended = exception as ExceptionEx;
+            var message = exception.GetExceptionMessage();
+            string details = null;
+            if (message.Contains("\r\n\r\n")) {
+                var parts = message.Split("\r\n\r\n", 2);
+                message = parts[0];
+                details = parts[1];
+            }
+            if (extended != null) {
+                details = extended.Details;
+            }
+
+            TaskDialogPage taskDialogPage = new() {
+                Heading = extended?.Heading ?? message,
+                Caption = title,
+                Icon = TaskDialogIcon.Error,
+            };
+            if (details != null) {
+                taskDialogPage.Text = details;
+            }
+
             taskDialogPage.Buttons.Add("OK");
             taskDialogPage.DefaultButton = taskDialogPage.Buttons[0];
             TaskDialog.ShowDialog(owner, taskDialogPage);

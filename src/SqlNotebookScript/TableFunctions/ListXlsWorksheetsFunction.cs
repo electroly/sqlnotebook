@@ -24,7 +24,7 @@ namespace SqlNotebookScript.TableFunctions {
                     filePath, i + 1, name
                 }).ToList();
             } catch (Exception ex) {
-                throw new Exception($"{Name.ToUpper()}: {ex.Message}");
+                throw new Exception($"{Name.ToUpper()}: {ex.GetExceptionMessage()}");
             }
         }
     }

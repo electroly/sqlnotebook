@@ -304,14 +304,6 @@ namespace SqlNotebook {
             }
         }
 
-        public static string GetExceptionMessage(this Exception self) {
-            if (self is AggregateException agg) {
-                return string.Join(Environment.NewLine, agg.InnerExceptions.Select(x => x.GetExceptionMessage()));
-            } else {
-                return self.Message;
-            }
-        }
-
         #region Enum Descriptions
         // https://www.codementor.io/cerkit/giving-an-enum-a-string-value-using-the-description-attribute-6b4fwdle0
         public static string GetDescription<T>(this T e) where T : IConvertible {

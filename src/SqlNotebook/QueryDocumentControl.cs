@@ -84,7 +84,7 @@ namespace SqlNotebook {
                 _manager.Rescan();
                 return true;
             } catch (Exception ex) {
-                Ui.ShowError(TopLevelControl, "Script Error", "An error occurred.", ex.GetExceptionMessage());
+                Ui.ShowError(TopLevelControl, "Script Error", ex);
                 return false;
             }
         }

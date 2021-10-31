@@ -333,7 +333,7 @@ namespace SqlNotebook {
             try {
                 FileImporter.Start(this, filePath, _manager);
             } catch (Exception ex) {
-                Ui.ShowError(this, "Import Error", ex.GetExceptionMessage());
+                Ui.ShowError(this, "Import Error", ex);
             }
         }
 
@@ -508,7 +508,7 @@ namespace SqlNotebook {
                             return false;
                         }
                     } catch (Exception ex) {
-                        Ui.ShowError(this, "SQL Notebook", ex.GetExceptionMessage());
+                        Ui.ShowError(this, "SQL Notebook", ex);
                         return false;
                     }
                 } else if (result == Ui.CANCEL) {

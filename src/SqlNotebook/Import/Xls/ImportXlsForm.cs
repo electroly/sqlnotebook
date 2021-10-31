@@ -306,7 +306,7 @@ namespace SqlNotebook.Import.Xls {
 
                 realSql = GenerateSql();
             } catch (Exception ex) {
-                Ui.ShowError(this, "Preview Error", ex.GetExceptionMessage());
+                Ui.ShowError(this, "Preview Error", ex);
                 return;
             }
 
@@ -468,7 +468,7 @@ namespace SqlNotebook.Import.Xls {
             try {
                 sql = GenerateSql();
             } catch (Exception ex) {
-                Ui.ShowError(this, "Import Error", ex.GetExceptionMessage());
+                Ui.ShowError(this, "Import Error", ex);
                 return;
             }
 

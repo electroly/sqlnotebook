@@ -1,4 +1,5 @@
 ﻿using SqlNotebookCore;
+using SqlNotebookScript.Utils;
 using System;
 using System.IO;
 using System.Net.Http;

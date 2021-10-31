@@ -1,4 +1,5 @@
 ﻿using Microsoft.WindowsAPICodePack.Taskbar;
+using SqlNotebookScript.Utils;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -46,7 +47,7 @@ namespace SqlNotebook {
             try {
                 task.Wait(millisecondsTimeout: 100);
             } catch (Exception ex) {
-                Ui.ShowError(owner, title, ex.GetExceptionMessage());
+                Ui.ShowError(owner, title, ex);
                 return;
             }
 
@@ -54,7 +55,7 @@ namespace SqlNotebook {
                 try {
                     task.GetAwaiter().GetResult();
                 } catch (Exception ex) {
-                    Ui.ShowError(owner, title, ex.GetExceptionMessage());
+                    Ui.ShowError(owner, title, ex);
                     return;
                 }
             } else {
@@ -70,7 +71,7 @@ namespace SqlNotebook {
                 var result = f.ShowDialog(owner);
                 if (result != DialogResult.OK) {
                     if (!(f.ResultException is OperationCanceledException)) {
-                        Ui.ShowError(owner, title, f.ResultException.Message);
+                        Ui.ShowError(owner, title, f.ResultException);
                     }
                     return;
                 }
@@ -89,7 +90,7 @@ namespace SqlNotebook {
             try {
                 task.Wait(millisecondsTimeout: 100);
             } catch (Exception ex) {
-                Ui.ShowError(owner, title, ex.GetExceptionMessage());
+                Ui.ShowError(owner, title, ex);
                 return;
             }
 
@@ -97,14 +98,14 @@ namespace SqlNotebook {
                 try {
                     task.GetAwaiter().GetResult();
                 } catch (Exception ex) {
-                    Ui.ShowError(owner, title, ex.GetExceptionMessage());
+                    Ui.ShowError(owner, title, ex);
                     return;
                 }
             } else {
                 using WaitForm f = new(title, text, () => task.GetAwaiter().GetResult(), allowCancel: false);
                 var result = f.ShowDialog(owner);
                 if (result != DialogResult.OK) {
-                    Ui.ShowError(owner, title, f.ResultException.Message);
+                    Ui.ShowError(owner, title, f.ResultException);
                     return;
                 }
             }
