@@ -100,6 +100,7 @@ namespace SqlNotebookScript.Interpreter.Ast {
     public sealed class SqlStmt : Stmt {
         public string Sql { get; set; }
         public SqliteSyntaxProduction SqliteSyntax { get; set; }
+        public int FirstTokenIndex { get; set; }
 
         // statements may be added here by the preprocessor
         public List<Stmt> RunBefore { get; set; } = new List<Stmt>();

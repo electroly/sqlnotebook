@@ -466,7 +466,8 @@ namespace SqlNotebookScript.Interpreter {
                 var stmt = new Ast.SqlStmt {
                     Sql = q.Substring(start, result.NumValidTokens),
                     SourceToken = tok,
-                    SqliteSyntax = syntaxNode
+                    SqliteSyntax = syntaxNode,
+                    FirstTokenIndex = start,
                 };
                 _preprocessor.PreprocessStmt(stmt);
                 return stmt;

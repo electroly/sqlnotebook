@@ -22,7 +22,7 @@ namespace SqlNotebookScript {
 
         protected Ast.SqlStmt NewSqlStmt(string text) {
             var ast = ParseSqlStmt(text);
-            return new Ast.SqlStmt { Sql = text, SqliteSyntax = ast };
+            return new Ast.SqlStmt { Sql = text, SqliteSyntax = ast, FirstTokenIndex = -1 };
         }
 
         protected Ast.SqliteSyntaxProduction ParseSqlStmt(string text) {

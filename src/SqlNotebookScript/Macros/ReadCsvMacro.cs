@@ -16,7 +16,7 @@ namespace SqlNotebookScript.Macros {
                     .OfType<Ast.SqliteSyntaxProduction>()
                     .FirstOrDefault(x => x.Name == "table-or-subquery.table-function-name")
                     ?.Text;
-                if (functionName.ToLower() != "read_csv") {
+                if (functionName.ToLowerInvariant() != "read_csv") {
                     continue;
                 }
 
@@ -58,10 +58,11 @@ namespace SqlNotebookScript.Macros {
 
                 // replace the READ_CSV(...) call with the table name
                 var originalTokens = Notebook.Tokenize(input.Sql).Select(x => x.Text).ToList();
-                for (int i = 0; i < tableFunctionCallNode.NumTokens; i++) {
-                    originalTokens.RemoveAt(tableFunctionCallNode.StartToken);
+                var tokenReplaceIndex = tableFunctionCallNode.StartToken - input.FirstTokenIndex;
+                for (var i = 0; i < tableFunctionCallNode.NumTokens; i++) {
+                    originalTokens.RemoveAt(tokenReplaceIndex);
                 }
-                originalTokens.Insert(tableFunctionCallNode.StartToken, tempTableName.DoubleQuote());
+                originalTokens.Insert(tokenReplaceIndex, tempTableName.DoubleQuote());
                 var newSqlText = string.Join(" ", originalTokens);
                 input.Sql = newSqlText;
                 input.SqliteSyntax = ParseSqlStmt(newSqlText);
