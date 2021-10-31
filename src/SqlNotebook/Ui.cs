@@ -6,6 +6,14 @@ using System.Windows.Forms;
 
 namespace SqlNotebook {
     public sealed class Ui {
+        public const string OK = "OK";
+        public const string CANCEL = "Cancel";
+        public const string SAVE = "&Save";
+        public const string DONT_SAVE = "Do&n't save";
+        public const string DELETE = "&Delete";
+        public const string INSTALL = "&Install";
+        public const string RELEASE_NOTES = "&View release notes";
+
         private readonly float _dpi;
         private readonly SizeF _x;
         private readonly Padding _buttonPadding;
@@ -260,14 +268,6 @@ namespace SqlNotebook {
             var y = XHeight(0.75);
             control.Padding = new(x, y, x, y);
         }
-
-        public const string OK = "OK";
-        public const string CANCEL = "Cancel";
-        public const string SAVE = "Save";
-        public const string DONT_SAVE = "Don't save";
-        public const string DELETE = "Delete";
-        public const string INSTALL = "Install";
-        public const string RELEASE_NOTES = "View release notes";
 
         public static string ShowTaskDialog(IWin32Window owner, string heading, string caption,
             string[] buttons, TaskDialogIcon icon = null, bool defaultIsFirst = true, string details = null

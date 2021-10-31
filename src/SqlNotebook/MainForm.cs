@@ -43,8 +43,8 @@ namespace SqlNotebook {
             _menuStrip.SetMenuAppearance();
             _menuStrip.Items.Insert(0, _searchTxt = new CueToolStripTextBox {
                 Alignment = ToolStripItemAlignment.Right,
-                CueText = "Search Help",
-                ToolTipText = "Search the built-in documentation (Ctrl+H)",
+                CueText = "Search Help (Ctrl+H)",
+                ToolTipText = "Search the built-in documentation",
                 AutoSize = false,
                 Margin = new Padding(0, 0, 5, 0)
             });
@@ -85,8 +85,8 @@ namespace SqlNotebook {
             _transactionMenu.Paint += (sender, e) => {
                 e.Graphics.DrawRectangle(Pens.Red, new(0, 0, _transactionMenu.Width - 1, _transactionMenu.Height - 1));
             };
-            _updateAvailableMenu.Margin = _transactionMenu.Margin = _searchTxt.Margin =
-                new(ui.XWidth(1), 0, 0, 0);
+            _updateAvailableMenu.Margin = _transactionMenu.Margin = new(ui.XWidth(1), 0, 0, 0);
+            _searchTxt.Margin = new(ui.XWidth(1), 0, ui.XWidth(1), 0);
 
             if (isNew) {
                 _notebook = new Notebook(filePath, isNew);
