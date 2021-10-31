@@ -3,6 +3,7 @@ using SqlNotebookScript.Utils;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
@@ -16,6 +17,9 @@ namespace SqlNotebook {
         [STAThread]
         public static void Main()
         {
+            // .NET 5 moves the ANSI code pages into an external encoding provider. Bring it in.
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
             NotebookTempFiles.Init();
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);

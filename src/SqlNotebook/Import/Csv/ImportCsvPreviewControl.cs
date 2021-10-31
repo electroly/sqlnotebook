@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Linq;
+using System.Windows.Forms;
 
 namespace SqlNotebook.Import.Csv {
     public partial class ImportCsvPreviewControl : UserControl {
@@ -9,7 +10,12 @@ namespace SqlNotebook.Import.Csv {
                 return _text.Text;
             }
             set {
-                _text.SqlText = value;
+                var truncatedText = string.Join('\n',
+                    value.Split('\n')
+                    .Select(x => x.Length > 1000 ? x.Substring(0, 1000) : x)
+                    .Take(10_000));
+
+                _text.SqlText = truncatedText;
             }
         }
 
