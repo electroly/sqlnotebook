@@ -1,16 +1,15 @@
-﻿using System;
+﻿using SqlNotebook.Properties;
+using SqlNotebookScript.Utils;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SqlNotebook.Properties;
-using SqlNotebookScript;
-using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {
     public partial class TableDocumentControl : UserControl, IDocumentControl {
         private readonly NotebookManager _manager;
         private readonly string _tableName;
+        private readonly DataGridView _grid;
 
         public TableDocumentControl(NotebookManager manager, string tableName) {
             InitializeComponent();
@@ -18,7 +17,9 @@ namespace SqlNotebook {
             _tableName = tableName;
             _toolStrip.SetMenuAppearance();
 
-            _grid.EnableDoubleBuffering();
+            _grid = DataGridViewUtil.NewDataGridView();
+            _grid.Dock = DockStyle.Fill;
+            _tablePanel.Controls.Add(_grid);
 
             Load += delegate {
                 var simpleDataTable = WaitForm.Go(FindForm(), "Table", "Reading table data...", out var success, () =>

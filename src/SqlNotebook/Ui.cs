@@ -94,11 +94,15 @@ namespace SqlNotebook {
             Init((Label)label);
         }
 
-        public void Init(Button button) {
+        public void Init(Button button, int? width = null) {
             button.TabIndex = _tabIndex++;
             button.AutoSize = true;
             button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             button.Padding = _buttonPadding;
+            if (width.HasValue) {
+                button.AutoSizeMode = AutoSizeMode.GrowOnly;
+                button.Width = XWidth(width.Value);
+            }
         }
 
         public void Init(Button button, Image lodpi, Image hidpi) {
@@ -120,9 +124,14 @@ namespace SqlNotebook {
             flow.Margin = Padding.Empty;
         }
 
-        public void Init(Panel panel) {
-            panel.Margin = Padding.Empty;
+        public void Init(Panel panel, double? width = null, double? height = null, bool margin = false) {
+            if (!margin) {
+                panel.Margin = Padding.Empty;
+            }
             panel.TabIndex = _tabIndex++;
+            if (width.HasValue && height.HasValue) {
+                panel.Size = new(XWidth(width.Value), XHeight(height.Value));
+            }
         }
 
         public void Init(CheckBox check) {
@@ -238,6 +247,11 @@ namespace SqlNotebook {
             split.TabIndex = _tabIndex++;
         }
 
+        public void Init(ListBox list, double width, double height) {
+            list.IntegralHeight = false;
+            list.Size = new(XWidth(width), XHeight(height));
+        }
+
         public void MarginTop(Control control, double height = 0.75) {
             var m = control.Margin;
             m.Top = XHeight(height);
@@ -254,6 +268,18 @@ namespace SqlNotebook {
             var m = control.Margin;
             m.Right = XWidth(width);
             control.Margin = m;
+        }
+
+        public void PadLeft(Control control, double width = 2) {
+            var m = control.Padding;
+            m.Left = XWidth(width);
+            control.Padding = m;
+        }
+
+        public void PadRight(Control control, double width = 2) {
+            var m = control.Padding;
+            m.Right = XWidth(width);
+            control.Padding = m;
         }
 
         public void Pad(Control control) {

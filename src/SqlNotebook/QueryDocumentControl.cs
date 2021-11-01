@@ -16,6 +16,7 @@ namespace SqlNotebook {
         private readonly Notebook _notebook;
         private readonly SqlTextControl _textCtl;
         private readonly List<(long Count, DataTable DataTable)> _results = new();
+        private readonly DataGridView _grid;
         private int _selectedResultIndex = 0;
 
         public string ItemName { get; set; }
@@ -32,11 +33,13 @@ namespace SqlNotebook {
             _mainForm = mainForm;
             _resultToolStrip.SetMenuAppearance();
 
-            _grid.EnableDoubleBuffering();
+            _grid = DataGridViewUtil.NewDataGridView();
+            _grid.Dock = DockStyle.Fill;
+            _toolStripContainer.ContentPanel.Controls.Add(_grid);
 
             _textCtl = new SqlTextControl(false) {
                 Dock = DockStyle.Fill,
-                Padding = new Padding(4, 0, 0, 0),
+                Padding = new Padding(0, 0, 0, 0),
             };
             _sqlPanel.Controls.Add(_textCtl);
 
@@ -116,7 +119,7 @@ namespace SqlNotebook {
         }
 
         private bool ExecuteCore(string sql) {
-            if (!GetResultSets(sql, 500_000, out var resultSets)) {
+            if (!GetResultSets(sql, 100_000, out var resultSets)) {
                 return false;
             }
             _grid.DataSource = null;

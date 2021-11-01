@@ -70,5 +70,17 @@ namespace SqlNotebook.Properties {
                 this["MainFormLayout"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string UserOptions {
+            get {
+                return ((string)(this["UserOptions"]));
+            }
+            set {
+                this["UserOptions"] = value;
+            }
+        }
     }
 }

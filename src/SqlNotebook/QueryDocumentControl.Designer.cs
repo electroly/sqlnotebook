@@ -23,11 +23,9 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this._splitContainer = new System.Windows.Forms.SplitContainer();
             this._sqlPanel = new System.Windows.Forms.Panel();
-            this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
-            this._grid = new System.Windows.Forms.DataGridView();
+            this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this._resultToolStrip = new System.Windows.Forms.ToolStrip();
             this._executeBtn = new System.Windows.Forms.ToolStripButton();
             this._prevBtn = new System.Windows.Forms.ToolStripButton();
@@ -43,10 +41,8 @@
             this._splitContainer.Panel1.SuspendLayout();
             this._splitContainer.Panel2.SuspendLayout();
             this._splitContainer.SuspendLayout();
-            this.toolStripContainer1.ContentPanel.SuspendLayout();
-            this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
-            this.toolStripContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this._grid)).BeginInit();
+            this._toolStripContainer.TopToolStripPanel.SuspendLayout();
+            this._toolStripContainer.SuspendLayout();
             this._resultToolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -63,7 +59,7 @@
             // 
             // _splitContainer.Panel2
             // 
-            this._splitContainer.Panel2.Controls.Add(this.toolStripContainer1);
+            this._splitContainer.Panel2.Controls.Add(this._toolStripContainer);
             this._splitContainer.Panel2.Cursor = System.Windows.Forms.Cursors.Arrow;
             this._splitContainer.Size = new System.Drawing.Size(694, 614);
             this._splitContainer.SplitterDistance = 300;
@@ -84,49 +80,19 @@
             // 
             // toolStripContainer1.ContentPanel
             // 
-            this.toolStripContainer1.ContentPanel.Controls.Add(this._grid);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(694, 279);
-            this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
-            this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(694, 309);
-            this.toolStripContainer1.TabIndex = 1;
-            this.toolStripContainer1.Text = "toolStripContainer1";
+            this._toolStripContainer.ContentPanel.Size = new System.Drawing.Size(694, 279);
+            this._toolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._toolStripContainer.Location = new System.Drawing.Point(0, 0);
+            this._toolStripContainer.Name = "toolStripContainer1";
+            this._toolStripContainer.Size = new System.Drawing.Size(694, 309);
+            this._toolStripContainer.TabIndex = 1;
+            this._toolStripContainer.Text = "toolStripContainer1";
             // 
             // toolStripContainer1.TopToolStripPanel
             // 
-            this.toolStripContainer1.TopToolStripPanel.BackColor = System.Drawing.SystemColors.Window;
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this._resultToolStrip);
-            this.toolStripContainer1.TopToolStripPanel.Cursor = System.Windows.Forms.Cursors.Arrow;
-            // 
-            // _grid
-            // 
-            this._grid.AllowUserToAddRows = false;
-            this._grid.AllowUserToDeleteRows = false;
-            this._grid.AllowUserToResizeRows = false;
-            this._grid.BackgroundColor = System.Drawing.SystemColors.Window;
-            this._grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this._grid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this._grid.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._grid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this._grid.EnableHeadersVisualStyles = false;
-            this._grid.Location = new System.Drawing.Point(0, 0);
-            this._grid.Name = "_grid";
-            this._grid.ReadOnly = true;
-            this._grid.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            this._grid.RowHeadersVisible = false;
-            this._grid.RowHeadersWidth = 25;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this._grid.RowsDefaultCellStyle = dataGridViewCellStyle1;
-            this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this._grid.ShowCellErrors = false;
-            this._grid.ShowCellToolTips = false;
-            this._grid.ShowEditingIcon = false;
-            this._grid.ShowRowErrors = false;
-            this._grid.Size = new System.Drawing.Size(694, 279);
-            this._grid.TabIndex = 0;
+            this._toolStripContainer.TopToolStripPanel.BackColor = System.Drawing.SystemColors.Window;
+            this._toolStripContainer.TopToolStripPanel.Controls.Add(this._resultToolStrip);
+            this._toolStripContainer.TopToolStripPanel.Cursor = System.Windows.Forms.Cursors.Arrow;
             // 
             // _resultToolStrip
             // 
@@ -258,12 +224,10 @@
             this._splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._splitContainer)).EndInit();
             this._splitContainer.ResumeLayout(false);
-            this.toolStripContainer1.ContentPanel.ResumeLayout(false);
-            this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
-            this.toolStripContainer1.TopToolStripPanel.PerformLayout();
-            this.toolStripContainer1.ResumeLayout(false);
-            this.toolStripContainer1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this._grid)).EndInit();
+            this._toolStripContainer.TopToolStripPanel.ResumeLayout(false);
+            this._toolStripContainer.TopToolStripPanel.PerformLayout();
+            this._toolStripContainer.ResumeLayout(false);
+            this._toolStripContainer.PerformLayout();
             this._resultToolStrip.ResumeLayout(false);
             this._resultToolStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -274,10 +238,9 @@
 
         private System.Windows.Forms.SplitContainer _splitContainer;
         private System.Windows.Forms.Panel _sqlPanel;
-        private System.Windows.Forms.ToolStripContainer toolStripContainer1;
+        private System.Windows.Forms.ToolStripContainer _toolStripContainer;
         private System.Windows.Forms.ToolStrip _resultToolStrip;
         private System.Windows.Forms.ToolStripButton _executeBtn;
-        private System.Windows.Forms.DataGridView _grid;
         private System.Windows.Forms.ToolStripButton _prevBtn;
         private System.Windows.Forms.ToolStripButton _nextBtn;
         private System.Windows.Forms.ToolStripLabel _resultSetLbl;

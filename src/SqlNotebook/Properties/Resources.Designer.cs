@@ -393,6 +393,26 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap preferences {
+            get {
+                object obj = ResourceManager.GetObject("preferences", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap preferences32 {
+            get {
+                object obj = ResourceManager.GetObject("preferences32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap resultset_next {
             get {
                 object obj = ResourceManager.GetObject("resultset_next", resourceCulture);

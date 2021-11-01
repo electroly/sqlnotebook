@@ -15,8 +15,6 @@ namespace SqlNotebook {
         private readonly NotebookManager _manager;
         private readonly SqlTextControl _inputText;
         private readonly FlowLayoutPanel _outputFlow;
-        private readonly Font _consolas = new("Consolas", 11f);
-        private readonly Font _segoeBold = new("Segoe UI", 11f, FontStyle.Bold);
         private readonly Padding _outputSqlMargin;
         private readonly Padding _outputTableMargin;
         private readonly Padding _outputCountMargin;
@@ -56,6 +54,14 @@ namespace SqlNotebook {
             ui.Init(_clearHistoryMenu, Resources.Delete, Resources.delete32);
             _outputFlow.ContextMenuStrip = _contextMenuStrip;
             _outputPanel.ContextMenuStrip = _contextMenuStrip;
+
+            EventHandler optUpdated = delegate {
+                var opt = UserOptions.Instance;
+                _outputPanel.BackColor = opt.GetColors()[UserOptionsColor.GRID_BACKGROUND];
+            };
+            optUpdated(null, null);
+            UserOptions.Updated += optUpdated;
+            Disposed += delegate { UserOptions.Updated -= optUpdated; };
         }
 
         private void Log(string sql, ScriptOutput output) {
@@ -70,10 +76,21 @@ namespace SqlNotebook {
                     Label label = new() {
                         AutoSize = true,
                         Text = sql,
-                        Font = _consolas,
                         Margin = _outputSqlMargin,
                         Cursor = Cursors.Hand,
                     };
+                    
+                    EventHandler optUpdated = delegate {
+                        var opt = UserOptions.Instance;
+                        label.Font = opt.GetCodeFont();
+                        var colors = opt.GetColors();
+                        label.BackColor = colors[UserOptionsColor.GRID_BACKGROUND];
+                        label.ForeColor = colors[UserOptionsColor.GRID_PLAIN];
+                    };
+                    optUpdated(null, null);
+                    UserOptions.Updated += optUpdated;
+                    label.Disposed += delegate { UserOptions.Updated -= optUpdated; };
+
                     label.MouseUp += (sender, e) => {
                         if (e.Button == MouseButtons.Left) {
                             _inputText.SqlText = sql;
@@ -85,34 +102,71 @@ namespace SqlNotebook {
 
                 if ((output.TextOutput?.Count ?? 0) > 0) {
                     var text = string.Join(Environment.NewLine, output.TextOutput);
-                    _outputFlow.Controls.Add(new Label {
+                    Label label = new() {
                         AutoSize = true,
                         Text = text,
                         Margin = _outputTableMargin,
-                        Font = _segoeBold,
-                        ForeColor = Color.Red,
                         ContextMenuStrip = _contextMenuStrip
-                    });
+                    };
+
+                    EventHandler optUpdated = delegate {
+                        var opt = UserOptions.Instance;
+                        label.Font = opt.GetDataTableFont();
+                        var colors = opt.GetColors();
+                        label.BackColor = colors[UserOptionsColor.GRID_BACKGROUND];
+                        label.ForeColor = colors[UserOptionsColor.GRID_PLAIN];
+                    };
+                    optUpdated(null, null);
+                    UserOptions.Updated += optUpdated;
+                    label.Disposed += delegate { UserOptions.Updated -= optUpdated; };
+
+                    _outputFlow.Controls.Add(label);
                 }
                 
                 if (output.ScalarResult != null) {
-                    _outputFlow.Controls.Add(new Label {
+                    Label label = new() {
                         AutoSize = true,
                         Text = output.ScalarResult.ToString(),
                         Margin = _outputTableMargin,
-                    });
+                    };
+
+                    EventHandler optUpdated = delegate {
+                        var opt = UserOptions.Instance;
+                        label.Font = opt.GetDataTableFont();
+                        var colors = opt.GetColors();
+                        label.BackColor = colors[UserOptionsColor.GRID_BACKGROUND];
+                        label.ForeColor = colors[UserOptionsColor.GRID_PLAIN];
+                    };
+                    optUpdated(null, null);
+                    UserOptions.Updated += optUpdated;
+                    label.Disposed += delegate { UserOptions.Updated -= optUpdated; };
+
+                    _outputFlow.Controls.Add(label);
                 }
 
                 foreach (var simpleDataTable in output.DataTables) {
                     var s = simpleDataTable.Rows.Count == 1 ? "" : "s";
-                    _outputFlow.Controls.Add(new Label {
+
+                    Label label = new() {
                         AutoSize = true,
                         Text = simpleDataTable.FullCount > MAX_GRID_ROWS
                             ? $"{simpleDataTable.FullCount:#,##0} row{s} ({MAX_GRID_ROWS} shown)"
                             : $"{simpleDataTable.FullCount:#,##0} row{s}",
                         Margin = _outputCountMargin,
-                        ForeColor = Color.Gray
-                    });
+                    };
+
+                    EventHandler optUpdated = delegate {
+                        var opt = UserOptions.Instance;
+                        label.Font = opt.GetDataTableFont();
+                        var colors = opt.GetColors();
+                        label.BackColor = colors[UserOptionsColor.GRID_BACKGROUND];
+                        label.ForeColor = colors[UserOptionsColor.GRID_PLAIN];
+                    };
+                    optUpdated(null, null);
+                    UserOptions.Updated += optUpdated;
+                    label.Disposed += delegate { UserOptions.Updated -= optUpdated; };
+
+                    _outputFlow.Controls.Add(label);
 
                     DataGridView grid = DataGridViewUtil.NewDataGridView();
                     grid.Margin = _outputTableMargin;

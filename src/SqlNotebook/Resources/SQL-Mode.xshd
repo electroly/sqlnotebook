@@ -1,24 +1,22 @@
 ﻿<?xml version="1.0"?>
 <SyntaxDefinition name="SQL" extensions=".sql" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 	<!-- Derived from TSQL-Mode.xshd in AvalonEdit -->
-	<Color name="Comment" foreground="Green" exampleText="-- comment" />
-	<Color name="Char" foreground="Red" exampleText="name = 'abc'"/>
-	<Color name="Keywords" fontWeight="bold" foreground="Blue" exampleText="SELECT FROM"/>
+	<Color name="Comment" foreground="[COMMENT_COLOR]" exampleText="-- comment" />
+	<Color name="Char" foreground="[STRING_COLOR]" exampleText="name = 'abc'"/>
+	<Color name="Keywords" foreground="[KEYWORD_COLOR]" fontWeight="bold" exampleText="SELECT FROM"/>
 
-	<Property name="DocCommentMarker" value="///" />
+  <RuleSet name="CommentMarkerSet">
+    <Keywords fontWeight="bold" foreground="Red">
+      <Word>TODO</Word>
+      <Word>FIXME</Word>
+    </Keywords>
+    <Keywords fontWeight="bold" foreground="#E0E000">
+      <Word>HACK</Word>
+      <Word>UNDONE</Word>
+    </Keywords>
+  </RuleSet>
 
-	<RuleSet name="CommentMarkerSet">
-		<Keywords fontWeight="bold" foreground="Red">
-			<Word>TODO</Word>
-			<Word>FIXME</Word>
-		</Keywords>
-		<Keywords fontWeight="bold" foreground="#E0E000">
-			<Word>HACK</Word>
-			<Word>UNDONE</Word>
-		</Keywords>
-	</RuleSet>
-
-	<RuleSet ignoreCase="true">
+  <RuleSet ignoreCase="true">
 		<Span color="Comment" ruleSet="CommentMarkerSet">
 			<Begin>--</Begin>
 		</Span>
@@ -31,9 +29,6 @@
 		<Span color="Char">
 			<Begin>'</Begin>
 			<End>'</End>
-			<RuleSet>
-				<Span begin="\\" end="."/>
-			</RuleSet>
 		</Span>
 
 		<Keywords color="Keywords">

@@ -71,6 +71,7 @@ namespace SqlNotebook {
             ui.Init(_viewDocMnu, Resources.Help, Resources.help32);
             ui.Init(_contentsMnu, Resources.list, Resources.list32);
             ui.Init(_consoleMnu, Resources.zone_select, Resources.zone_select32);
+            ui.Init(_windowOptionsMenu, Resources.preferences, Resources.preferences32);
             ui.Init(_searchTxt);
             ui.Init(_transactionCommitMenu, Resources.accept_button, Resources.accept_button32);
 
@@ -665,8 +666,8 @@ namespace SqlNotebook {
         }
 
         private void WindowMnu_DropDownOpening(object sender, EventArgs e) {
-            while (_windowMnu.DropDownItems.Count > 2) {
-                _windowMnu.DropDownItems.RemoveAt(2);
+            while (_windowMnu.DropDownItems.Count > 3) {
+                _windowMnu.DropDownItems.RemoveAt(3);
             }
             if (_dockPanel.Documents.Any()) {
                 _windowMnu.DropDownItems.Add(new ToolStripSeparator());
@@ -878,6 +879,11 @@ namespace SqlNotebook {
             } catch {
                 return null;
             }
+        }
+
+        private void WindowOptionsMenu_Click(object sender, EventArgs e) {
+            using OptionsForm f = new();
+            f.ShowDialog(this);
         }
     }
 }
