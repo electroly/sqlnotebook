@@ -12,3 +12,7 @@
 ## sqlite
 - License: Public domain
 - Downloaded by `ps1/Update-Deps.ps1`.
+
+## Windows-API-Code-Pack
+- License: Microsoft software license
+- Downloaded by `ps1/Update-Deps.ps1`.
