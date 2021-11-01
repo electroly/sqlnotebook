@@ -174,9 +174,8 @@ namespace SqlNotebook {
 
             if (isNew) {
                 // create a new script by default in a new notebook
-                Load += (sender, e) => {
-                    var name = _manager.NewScript();
-                    OpenItem(new NotebookItem(NotebookItemType.Script, name));
+                Load += delegate {
+                    _manager.NewScript();
                     _isDirty.Value = false;
                 };
             }
@@ -192,8 +191,20 @@ namespace SqlNotebook {
                 ? consoleAutoHidePortion.Value * userLayoutScale
                 : ui.XHeight(20);
 
-            Load += async (sender, e) => {
+            Load += async delegate {
                 _manager.Rescan();
+
+                // open first item named "Script*" or "Main"
+                var items =
+                    from x in _manager.Items
+                    where
+                        x.Name.StartsWith("Script", StringComparison.OrdinalIgnoreCase) ||
+                        x.Name.Equals("Main", StringComparison.OrdinalIgnoreCase)
+                    orderby x.Name.ToUpperInvariant()
+                    select x;
+                if (items.Any()) {
+                    OpenItem(items.First());
+                }
 
                 var updateAvailable = await IsUpdateAvailable();
                 if (updateAvailable) {
