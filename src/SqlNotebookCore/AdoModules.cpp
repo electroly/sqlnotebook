@@ -210,7 +210,6 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
     int argvIndex = 1;
     double estimatedRowsPercent = 1;
     if (info->nConstraint > 0) {
-        sb->Append(" WHERE ");
         auto terms = gcnew List<String^>();
         for (int i = 0; i < info->nConstraint; i++) {
             if (info->aConstraint[i].iColumn == -1) {
@@ -238,7 +237,10 @@ static int AdoBestIndex(sqlite3_vtab* pVTab, sqlite3_index_info* info) {
 
             estimatedRowsPercent *= vtab->EstimatedRowsPercentByColumn->default[columnName];
         }
-        sb->Append(String::Join(" AND ", terms));
+        if (terms->Count > 0) {
+            sb->Append(" WHERE ");
+            sb->Append(String::Join(" AND ", terms));
+        }
     }
 
     // order by clause
