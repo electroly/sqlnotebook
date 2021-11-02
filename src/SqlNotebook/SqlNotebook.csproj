@@ -27,89 +27,21 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
-	<NoWarn>$(NoWarn);CA1416</NoWarn>
-	<Platforms>x64</Platforms>
-	<LangVersion>latest</LangVersion>
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
+    <Platforms>x64</Platforms>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>A5AFC4D045E7C07EF0B3A3F3EDEBE97B371E7E3B</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
     <ManifestKeyFile></ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
     <SignManifests>false</SignManifests>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationIcon>SqlNotebookIcon.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
     <StartupObject>SqlNotebook.Program</StartupObject>
-  </PropertyGroup>
-  <PropertyGroup />
-  <PropertyGroup>
     <ManifestTimestampUrl></ManifestTimestampUrl>
-  </PropertyGroup>
-  <PropertyGroup>
     <DelaySign>true</DelaySign>
-  </PropertyGroup>
-  <PropertyGroup>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Update="ConsoleControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="CueToolStripTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Import\ImportColumnsControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Import\Csv\ImportCsvOptionsControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Import\ImportPreviewControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Import\Csv\ImportCsvPreviewControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Import\Csv\LoadingContainerControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="NoteDocumentControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Update="QueryDocumentControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="SqlTextControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="TableDocumentControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="ExplorerControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\ThemeVS2012Light.csproj" />
     <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\WinFormsUI.csproj" />
@@ -127,9 +59,6 @@
     </FileAssociation>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SqlNotebookIcon.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.1.2.30" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.37" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
@@ -141,13 +70,6 @@
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <!--doc start-->
@@ -1523,8 +1445,61 @@
     <None Update="ThirdPartyLicenses.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
+    <Content Include="SqlNotebookIcon.ico" />
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="ConsoleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="CueToolStripTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Import\ImportColumnsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Import\Csv\ImportCsvOptionsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Import\ImportPreviewControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Import\Csv\ImportCsvPreviewControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Import\Csv\LoadingContainerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="NoteDocumentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Update="QueryDocumentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="SqlTextControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="TableDocumentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ExplorerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="AboutForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1564,5 +1539,11 @@
     <Compile Update="ZForm.cs">
       <SubType>Form</SubType>
     </Compile>
-  </ItemGroup>  
+    <Compile Update="FontForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="OptionsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>
