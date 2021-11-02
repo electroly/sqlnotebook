@@ -4,6 +4,9 @@ using namespace SqlNotebookCore;
 using namespace System::IO;
 using namespace msclr;
 
+// You can call Init() multiple times as long as you ensure that any calls to other methods finish before you call
+// Init() and that you don't call any other methods while Init() is running. This is true for unit tests, so we can
+// freely call Init() at the beginning of test methods.
 void NotebookTempFiles::Init() {
     _lock = gcnew Object();
     _count = 0;
@@ -19,7 +22,7 @@ void NotebookTempFiles::Init() {
 }
 
 String^ NotebookTempFiles::GetTempFilePath(String^ extension) {
-    Monitor::Enter(_lock);
+    Monitor::Enter(_lock); // If you're crashing here, it's because you didn't call Init()!
     try {
         auto filePath = Path::Combine(_path, _filenamePrefix + (++_count).ToString() + extension);
         File::WriteAllText(filePath, "");
