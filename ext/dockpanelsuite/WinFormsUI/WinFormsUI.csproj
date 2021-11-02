@@ -143,6 +143,17 @@
     <EmbeddedResource Remove="ThemeVS2013Blue\Resources.resx" />
     <EmbeddedResource Remove="ThemeVS2013Blue\Strings.resx" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Docking\DockContent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Docking\DragForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Docking\FloatWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
   <UsingTask Condition=" '$(Configuration)' == 'Release' AND '$(OS)' == 'Windows_NT' AND Exists('..\gendarme\GendarmeMsBuild.dll')" AssemblyFile="..\gendarme\GendarmeMsBuild.dll" TaskName="GendarmeMsBuild.Gendarme" />
   <Target Name="AfterBuild">
     <Gendarme Condition=" '$(Configuration)' == 'Release' AND '$(OS)' == 'Windows_NT' AND Exists('..\gendarme\gendarme.exe')" GendarmeExeFilename="..\gendarme\gendarme.exe" Assemblies="$(TargetPath)" WarningsAsErrors="False" IntegrateWithVisualStudio="True" GendarmeIgnoreFilename="gendarme.ignore" />
