@@ -33,6 +33,11 @@ if (-not (Test-Path $wixDir)) {
     throw "WiX not found!"
 }
 
+$signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x86\signtool.exe"
+if (-not (Test-Path $signtool)) {
+    throw "Signtool not found!"
+}
+
 $ps1Dir = $PSScriptRoot
 $rootDir = (Resolve-Path (Join-Path $ps1Dir "..\")).Path
 $srcDir = Join-Path $rootDir "src"
@@ -94,8 +99,7 @@ Set-Content "$relDir\SqlNotebook.wxs" $wxs
 
 copy -force "$srcdir\SqlNotebook\SqlNotebookIcon.ico" "$relDir\SqlNotebookIcon.ico"
 
-#& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 "$relDir\SqlNotebook.exe" | Write-Output
-#& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 "$relDir\SqlNotebookUpdater.exe" | Write-Output
+& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com "$relDir\SqlNotebook.exe" | Write-Output
 
 & "$wixDir\candle.exe" -nologo -pedantic "$relDir\SqlNotebook.wxs" | Write-Output
 if (-not (Test-Path "$relDir\SqlNotebook.wixobj")) {
@@ -109,6 +113,6 @@ if (-not (Test-Path "$relDir\SqlNotebook.msi")) {
 
 Move-Item -Force "$relDir\SqlNotebook.msi" $msiFilePath
 
-#& "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /n "Brian Luft" /tr http://tsa.startssl.com/rfc3161 /d $msiFilename $msiFilePath | Write-Output
+& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com /d $msiFilename $msiFilePath | Write-Output
 
 Pop-Location
