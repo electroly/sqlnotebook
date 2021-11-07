@@ -25,10 +25,10 @@
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ColumnHeader _nameColumn;
-            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Scripts", System.Windows.Forms.HorizontalAlignment.Center);
-            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Tables", System.Windows.Forms.HorizontalAlignment.Center);
-            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Views", System.Windows.Forms.HorizontalAlignment.Center);
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExplorerControl));
+            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Pages", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Scripts", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Tables", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Views", System.Windows.Forms.HorizontalAlignment.Center);
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -39,14 +39,13 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this._deleteMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._renameMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this._imageList = new System.Windows.Forms.ImageList(this.components);
             this._splitContainer = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this._selectionLabel = new System.Windows.Forms.Label();
             this._detailsGrid = new System.Windows.Forms.DataGridView();
-            this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.nameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.typeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             _nameColumn = new System.Windows.Forms.ColumnHeader();
             this._contextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._splitContainer)).BeginInit();
@@ -70,19 +69,23 @@
             _nameColumn});
             this._list.ContextMenuStrip = this._contextMenuStrip;
             this._list.Dock = System.Windows.Forms.DockStyle.Fill;
-            listViewGroup1.Header = "Scripts";
+            listViewGroup1.Header = "Pages";
             listViewGroup1.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup1.Name = "Script";
-            listViewGroup2.Header = "Tables";
+            listViewGroup1.Name = "Page";
+            listViewGroup2.Header = "Scripts";
             listViewGroup2.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup2.Name = "Table";
-            listViewGroup3.Header = "Views";
+            listViewGroup2.Name = "Script";
+            listViewGroup3.Header = "Tables";
             listViewGroup3.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup3.Name = "View";
+            listViewGroup3.Name = "Table";
+            listViewGroup4.Header = "Views";
+            listViewGroup4.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
+            listViewGroup4.Name = "View";
             this._list.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
             listViewGroup1,
             listViewGroup2,
-            listViewGroup3});
+            listViewGroup3,
+            listViewGroup4});
             this._list.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this._list.HideSelection = false;
             this._list.LabelEdit = true;
@@ -90,9 +93,7 @@
             this._list.Location = new System.Drawing.Point(0, 0);
             this._list.MultiSelect = false;
             this._list.Name = "_list";
-            this._list.ShowGroups = false;
             this._list.Size = new System.Drawing.Size(340, 287);
-            this._list.SmallImageList = this._imageList;
             this._list.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this._list.TabIndex = 0;
             this._list.UseCompatibleStateImageBehavior = false;
@@ -140,18 +141,6 @@
             this._renameMnu.Size = new System.Drawing.Size(147, 32);
             this._renameMnu.Text = "&Rename";
             this._renameMnu.Click += new System.EventHandler(this.RenameMnu_Click);
-            // 
-            // _imageList
-            // 
-            this._imageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this._imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("_imageList.ImageStream")));
-            this._imageList.TransparentColor = System.Drawing.Color.Transparent;
-            this._imageList.Images.SetKeyName(0, "script32.png");
-            this._imageList.Images.SetKeyName(1, "table32.png");
-            this._imageList.Images.SetKeyName(2, "filter32.png");
-            this._imageList.Images.SetKeyName(3, "bullet_black32.png");
-            this._imageList.Images.SetKeyName(4, "bullet_key32.png");
-            this._imageList.Images.SetKeyName(5, "table_link32.png");
             // 
             // _splitContainer
             // 
@@ -248,24 +237,6 @@
             this._detailsGrid.Size = new System.Drawing.Size(334, 261);
             this._detailsGrid.TabIndex = 2;
             // 
-            // toolStripContainer1
-            // 
-            // 
-            // toolStripContainer1.ContentPanel
-            // 
-            this.toolStripContainer1.ContentPanel.Controls.Add(this._splitContainer);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(340, 583);
-            this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
-            this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(340, 608);
-            this.toolStripContainer1.TabIndex = 2;
-            this.toolStripContainer1.Text = "toolStripContainer1";
-            // 
-            // toolStripContainer1.TopToolStripPanel
-            // 
-            this.toolStripContainer1.TopToolStripPanel.BackColor = System.Drawing.SystemColors.Window;
-            // 
             // nameColumn
             // 
             this.nameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
@@ -285,6 +256,24 @@
             this.typeColumn.MinimumWidth = 8;
             this.typeColumn.Name = "typeColumn";
             this.typeColumn.ReadOnly = true;
+            // 
+            // toolStripContainer1
+            // 
+            // 
+            // toolStripContainer1.ContentPanel
+            // 
+            this.toolStripContainer1.ContentPanel.Controls.Add(this._splitContainer);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(340, 583);
+            this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
+            this.toolStripContainer1.Name = "toolStripContainer1";
+            this.toolStripContainer1.Size = new System.Drawing.Size(340, 608);
+            this.toolStripContainer1.TabIndex = 2;
+            this.toolStripContainer1.Text = "toolStripContainer1";
+            // 
+            // toolStripContainer1.TopToolStripPanel
+            // 
+            this.toolStripContainer1.TopToolStripPanel.BackColor = System.Drawing.SystemColors.Window;
             // 
             // ExplorerControl
             // 
@@ -310,7 +299,6 @@
         #endregion
         private System.Windows.Forms.SplitContainer _splitContainer;
         private System.Windows.Forms.ListView _list;
-        private System.Windows.Forms.ImageList _imageList;
         private System.Windows.Forms.ContextMenuStrip _contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem _deleteMnu;
         private System.Windows.Forms.ToolStripMenuItem _renameMnu;

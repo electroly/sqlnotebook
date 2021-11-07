@@ -1,7 +1,9 @@
 ﻿using SqlNotebookScript.Utils;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
@@ -14,9 +16,10 @@ namespace SqlNotebook {
         public const string INSTALL = "&Install";
         public const string RELEASE_NOTES = "&View release notes";
 
-        private readonly float _dpi;
+        private readonly float _scale;
         private readonly SizeF _x;
         private readonly Padding _buttonPadding;
+        private readonly Padding _defaultMargin;
         private int _tabIndex = 1;
 
         private static readonly Font _consolas = new("Consolas", 11f);
@@ -24,10 +27,13 @@ namespace SqlNotebook {
         private Ui(Control control, bool padded, bool autoSize) {
             using var graphics = control.CreateGraphics();
             _x = graphics.MeasureString("x", control.Font, PointF.Empty, StringFormat.GenericTypographic);
-            _dpi = control.DeviceDpi;
+            _scale = (float)control.DeviceDpi / 96;
             var buttonPaddingX = (int)(_x.Width * 3);
             var buttonPaddingY = (int)(_x.Height * 0.25);
             _buttonPadding = new(buttonPaddingX, buttonPaddingY, buttonPaddingX, buttonPaddingY);
+            
+            var labelMargin = (int)(_scale * 3);
+            _defaultMargin = new(labelMargin, labelMargin, labelMargin, labelMargin);
 
             if (padded) {
                 var formPaddingX = (int)(_x.Width * 2);
@@ -72,13 +78,12 @@ namespace SqlNotebook {
         }
 
         public int SizeGripHeight {
-            get => (int)(2 * _dpi / 96) * 8;
+            get => (int)(16 * _scale);
         }
 
         public void Init(Label label) {
             label.TabIndex = _tabIndex++;
-            var margin = label.Margin;
-            label.Margin = new(0, margin.Top, margin.Right, margin.Bottom);
+            label.Margin = new(0, _defaultMargin.Top, _defaultMargin.Right, _defaultMargin.Bottom);
         }
 
         public void InitHeader(Label label) {
@@ -98,6 +103,7 @@ namespace SqlNotebook {
             button.TabIndex = _tabIndex++;
             button.AutoSize = true;
             button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            button.Margin = _defaultMargin;
             button.Padding = _buttonPadding;
             if (width.HasValue) {
                 button.AutoSizeMode = AutoSizeMode.GrowOnly;
@@ -107,7 +113,7 @@ namespace SqlNotebook {
 
         public void Init(Button button, Image lodpi, Image hidpi) {
             Init(button);
-            button.Image = GetScaledIcon(button, lodpi, hidpi, _dpi);
+            button.Image = GetScaledIcon(button, lodpi, hidpi, _scale);
         }
 
         public void Init(TableLayoutPanel table) {
@@ -163,33 +169,48 @@ namespace SqlNotebook {
         }
 
         public void Init(TabPage tab) {
-            tab.TabIndex = _tabIndex++;
         }
 
         public void Init(PropertyGrid grid) {
             grid.TabIndex = _tabIndex++;
         }
 
+        public void Init(ToolStripButton button) {
+            button.AutoSize = true;
+        }
+
         public void Init(ToolStripButton button, Image lodpi, Image hidpi) {
-            button.Image = GetScaledIcon(button, lodpi, hidpi, _dpi);
+            button.Image = GetScaledIcon(button, lodpi, hidpi, _scale);
             button.ImageScaling = ToolStripItemImageScaling.None;
             button.AutoSize = true;
         }
 
         public void Init(ToolStripMenuItem item, Image lodpi, Image hidpi) {
-            item.Image = GetScaledIcon(item, lodpi, hidpi, _dpi);
+            item.Image = GetScaledIcon(item, lodpi, hidpi, _scale);
             item.ImageScaling = ToolStripItemImageScaling.None;
         }
 
-        private static Image GetScaledIcon(Component button, Image lodpi, Image hidpi, float dpi) {
-            var scale = dpi / 96;
+        public void Init(ToolStripDropDownButton item) {
+        }
+
+        public void Init(ToolStripDropDownButton item, Image lodpi, Image hidpi) {
+            item.Image = GetScaledIcon(item, lodpi, hidpi, _scale);
+            item.ImageScaling = ToolStripItemImageScaling.None;
+        }
+
+        public static Image GetScaledIcon(Control owningControl, Image lodpi, Image hidpi, bool dispose = true) =>
+            GetScaledIcon(owningControl, lodpi, hidpi, (float)owningControl.DeviceDpi / 96, dispose);
+
+        private static Image GetScaledIcon(Component owningComponent, Image lodpi, Image hidpi, float scale, bool dispose = true) {
             Image image;
             if (scale <= 1) {
                 image = lodpi;
             } else {
                 var scaledWidth = 16 * scale;
                 Bitmap bmp = new((int)Math.Ceiling(scaledWidth), (int)Math.Ceiling(scaledWidth));
-                button.Disposed += delegate { bmp.Dispose(); };
+                if (dispose) {
+                    owningComponent.Disposed += delegate { bmp.Dispose(); };
+                }
                 using (var bmpG = Graphics.FromImage(bmp)) {
                     bmpG.DrawImage(hidpi, new RectangleF(0, 0, scaledWidth, scaledWidth));
                 }
@@ -252,6 +273,9 @@ namespace SqlNotebook {
             list.Size = new(XWidth(width), XHeight(height));
         }
 
+        public void Init(ToolStripLabel label) {
+        }
+
         public void MarginTop(Control control, double height = 0.75) {
             var m = control.Margin;
             m.Top = XHeight(height);
@@ -268,6 +292,12 @@ namespace SqlNotebook {
             var m = control.Margin;
             m.Right = XWidth(width);
             control.Margin = m;
+        }
+
+        public void MarginRight(ToolStripItem item, double width = 2) {
+            var m = item.Margin;
+            m.Right = XWidth(width);
+            item.Margin = m;
         }
 
         public void PadLeft(Control control, double width = 2) {
@@ -353,6 +383,54 @@ namespace SqlNotebook {
             taskDialogPage.Buttons.Add("OK");
             taskDialogPage.DefaultButton = taskDialogPage.Buttons[0];
             TaskDialog.ShowDialog(owner, taskDialogPage);
+        }
+
+        public static Bitmap ShiftImage(Bitmap source, int xOffset, int yOffset) {
+            Bitmap shifted = new(source.Width, source.Height);
+            using var g = Graphics.FromImage(shifted);
+            g.DrawImageUnscaled(source, xOffset, yOffset);
+            return shifted;
+        }
+
+        public static Bitmap SuperimposePlusSymbol(Bitmap source) {
+            Debug.Assert(source.Width == 16 || source.Width == 32);
+            Bitmap composite = new(source);
+            using var g = Graphics.FromImage(composite);
+
+            var w = source.Width;
+            var offset = (int)(0.3 * w);
+            var thickness = (int)(0.1 * w);
+            if (thickness < 1 || (thickness % 2) != 0) {
+                thickness++;
+            }
+            var barLength = w - 2 * offset;
+            var centeringOffset = w / 2 - thickness / 2;
+            var padding = thickness / 2;
+            var diagonalAlignmentOffset = 0;
+
+            Rectangle verticalRect = new(
+                x: diagonalAlignmentOffset + centeringOffset,
+                y: diagonalAlignmentOffset + offset,
+                width: thickness,
+                height: barLength);
+
+            Rectangle horizontalRect = new(
+                x: diagonalAlignmentOffset + offset,
+                y: diagonalAlignmentOffset + centeringOffset,
+                width: barLength,
+                height: thickness);
+
+            var verticalRectExpanded = verticalRect;
+            var horizontalRectExpanded = horizontalRect;
+            verticalRectExpanded.Inflate(padding, padding);
+            horizontalRectExpanded.Inflate(padding, padding);
+            g.FillRectangle(Brushes.WhiteSmoke, verticalRectExpanded);
+            g.FillRectangle(Brushes.WhiteSmoke, horizontalRectExpanded);
+
+            g.FillRectangle(Brushes.Green, verticalRect);
+            g.FillRectangle(Brushes.Green, horizontalRect);
+
+            return composite;
         }
     }
 }

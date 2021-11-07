@@ -55,13 +55,12 @@ namespace SqlNotebook {
             _outputFlow.ContextMenuStrip = _contextMenuStrip;
             _outputPanel.ContextMenuStrip = _contextMenuStrip;
 
-            EventHandler optUpdated = delegate {
+            void OptionsUpdated() {
                 var opt = UserOptions.Instance;
                 _outputPanel.BackColor = opt.GetColors()[UserOptionsColor.GRID_BACKGROUND];
             };
-            optUpdated(null, null);
-            UserOptions.Updated += optUpdated;
-            Disposed += delegate { UserOptions.Updated -= optUpdated; };
+            OptionsUpdated();
+            UserOptions.OnUpdate(this, OptionsUpdated);
         }
 
         private void Log(string sql, ScriptOutput output) {
@@ -80,16 +79,15 @@ namespace SqlNotebook {
                         Cursor = Cursors.Hand,
                     };
                     
-                    EventHandler optUpdated = delegate {
+                    void OptionsUpdated() {
                         var opt = UserOptions.Instance;
                         label.Font = opt.GetCodeFont();
                         var colors = opt.GetColors();
                         label.BackColor = colors[UserOptionsColor.GRID_BACKGROUND];
                         label.ForeColor = colors[UserOptionsColor.GRID_PLAIN];
-                    };
-                    optUpdated(null, null);
-                    UserOptions.Updated += optUpdated;
-                    label.Disposed += delegate { UserOptions.Updated -= optUpdated; };
+                    }
+                    OptionsUpdated();
+                    UserOptions.OnUpdate(label, OptionsUpdated);
 
                     label.MouseUp += (sender, e) => {
                         if (e.Button == MouseButtons.Left) {
@@ -109,16 +107,15 @@ namespace SqlNotebook {
                         ContextMenuStrip = _contextMenuStrip
                     };
 
-                    EventHandler optUpdated = delegate {
+                    void OptionsUpdated() {
                         var opt = UserOptions.Instance;
                         label.Font = opt.GetDataTableFont();
                         var colors = opt.GetColors();
                         label.BackColor = colors[UserOptionsColor.GRID_BACKGROUND];
                         label.ForeColor = colors[UserOptionsColor.GRID_PLAIN];
-                    };
-                    optUpdated(null, null);
-                    UserOptions.Updated += optUpdated;
-                    label.Disposed += delegate { UserOptions.Updated -= optUpdated; };
+                    }
+                    OptionsUpdated();
+                    UserOptions.OnUpdate(label, OptionsUpdated);
 
                     _outputFlow.Controls.Add(label);
                 }
@@ -130,16 +127,15 @@ namespace SqlNotebook {
                         Margin = _outputTableMargin,
                     };
 
-                    EventHandler optUpdated = delegate {
+                    void OptionsUpdated() {
                         var opt = UserOptions.Instance;
                         label.Font = opt.GetDataTableFont();
                         var colors = opt.GetColors();
                         label.BackColor = colors[UserOptionsColor.GRID_BACKGROUND];
                         label.ForeColor = colors[UserOptionsColor.GRID_PLAIN];
                     };
-                    optUpdated(null, null);
-                    UserOptions.Updated += optUpdated;
-                    label.Disposed += delegate { UserOptions.Updated -= optUpdated; };
+                    OptionsUpdated();
+                    UserOptions.OnUpdate(label, OptionsUpdated);
 
                     _outputFlow.Controls.Add(label);
                 }
@@ -155,20 +151,19 @@ namespace SqlNotebook {
                         Margin = _outputCountMargin,
                     };
 
-                    EventHandler optUpdated = delegate {
+                    void OptionsUpdated() {
                         var opt = UserOptions.Instance;
                         label.Font = opt.GetDataTableFont();
                         var colors = opt.GetColors();
                         label.BackColor = colors[UserOptionsColor.GRID_BACKGROUND];
                         label.ForeColor = colors[UserOptionsColor.GRID_PLAIN];
                     };
-                    optUpdated(null, null);
-                    UserOptions.Updated += optUpdated;
-                    label.Disposed += delegate { UserOptions.Updated -= optUpdated; };
+                    OptionsUpdated();
+                    UserOptions.OnUpdate(label, OptionsUpdated);
 
                     _outputFlow.Controls.Add(label);
 
-                    DataGridView grid = DataGridViewUtil.NewDataGridView();
+                    var grid = DataGridViewUtil.NewDataGridView();
                     grid.Margin = _outputTableMargin;
                     grid.ContextMenuStrip = _contextMenuStrip;
                     grid.ScrollBars = ScrollBars.None;
@@ -214,7 +209,7 @@ namespace SqlNotebook {
                 return;
             }
 
-            var output = WaitForm.Go(FindForm(), "Delete", "Executing...", out var success, () =>
+            var output = WaitForm.Go(TopLevelControl, "Delete", "Executing...", out var success, () =>
                 SqlUtil.WithTransaction(_manager.Notebook, () => _manager.ExecuteScript(code, maxRows: MAX_GRID_ROWS)));
             if (!success) {
                 return;

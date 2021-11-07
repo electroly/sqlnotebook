@@ -1,64 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using System.Linq;
-using SqlNotebookScript;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.Interpreter {
-    public sealed class ScriptOutput {
-        public List<SimpleDataTable> DataTables { get; } = new List<SimpleDataTable>();
-        public List<string> TextOutput { get; } = new List<string>();
-        public object ScalarResult { get; set; }
-
-        public void Append(ScriptOutput x) {
-            DataTables.AddRange(x.DataTables);
-            x.DataTables.Clear();
-            TextOutput.AddRange(x.TextOutput);
-            x.TextOutput.Clear();
-        }
-
-        public void WriteCsv(StreamWriter s) {
-            foreach (var dt in DataTables) {
-                s.WriteLine(string.Join(",", dt.Columns.Select(CsvUtil.EscapeCsv)));
-                CsvUtil.WriteCsv(dt.Rows, s);
-            }
-        }
-    }
-
-    public sealed class ScriptEnv {
-        // local variables and script parameters. keys are in lowercase.
-        public Dictionary<string, object> Vars { get; } = new Dictionary<string, object>();
-
-        // the names of script parameters, in lowercase.  this is populated as DECLARE PARAMETER statements are ran,
-        // to ensure that the same parameter is not declared twice.
-        public HashSet<string> ParNames { get; } = new HashSet<string>();
-
-        public ScriptOutput Output { get; private set; } = new ScriptOutput();
-
-        public bool DidReturn { get; set; }
-        public bool DidBreak { get; set; }
-        public bool DidContinue { get; set; }
-        public bool DidThrow { get; set; }
-
-        public object ErrorMessage { get; set; }
-
-        public int MaxRows { get; set; } = -1;
-    }
-
-    public class ScriptException : Exception {
-        public ScriptException(string message) : base(message) { }
-    }
-
-    public sealed class UncaughtErrorScriptException : ScriptException {
-        public object ErrorMessage { get; }
-        public UncaughtErrorScriptException(object errorMessage)
-            : base(errorMessage.ToString()) {
-            ErrorMessage = errorMessage;
-        }
-    }
-
     public sealed class ScriptRunner {
         private readonly INotebook _notebook;
         private readonly IReadOnlyDictionary<Type, Action<Ast.Stmt, ScriptEnv>> _stmtRunners;

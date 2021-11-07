@@ -32,7 +32,7 @@ namespace SqlNotebook {
             ui.Init(_rowFlow2);
             ui.MarginTop(_rowFlow2);
             ui.Init(_previewLabel);
-            ui.Init(_previewPanel, 80, 4, margin: true);
+            ui.Init(_previewPanel, 80, 6, margin: true);
             ui.Init(_buttonFlow);
             ui.MarginTop(_buttonFlow);
             ui.Init(_okButton);

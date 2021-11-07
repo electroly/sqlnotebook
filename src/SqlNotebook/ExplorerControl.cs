@@ -1,4 +1,5 @@
-﻿using SqlNotebookScript.Utils;
+﻿using SqlNotebook.Properties;
+using SqlNotebookScript.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,12 @@ namespace SqlNotebook {
     public partial class ExplorerControl : UserControl {
         private readonly NotebookManager _manager;
         private readonly IWin32Window _mainForm;
+
+        private const int ICON_PAGE = 0;
+        private const int ICON_SCRIPT = 1;
+        private const int ICON_TABLE = 2;
+        private const int ICON_VIEW = 3;
+        private const int ICON_LINKED_TABLE = 4;
 
         public ExplorerControl(NotebookManager manager, IWin32Window mainForm) {
             InitializeComponent();
@@ -20,8 +27,25 @@ namespace SqlNotebook {
             _manager.NotebookChange += (sender, e) => HandleNotebookChange(e);
             _contextMenuStrip.SetMenuAppearance();
 
-            using var g = CreateGraphics();
-            _list.SmallImageList = _imageList.PadListViewIcons(g);
+            var dpiScale = DeviceDpi / 96d;
+            var scaled16 = (int)(16 * dpiScale);
+            ImageList imageList = new() {
+                ColorDepth = ColorDepth.Depth32Bit,
+                ImageSize = new(scaled16, scaled16),
+            };
+            
+            // Same order as the ICON_* constants.
+            // ICON_PAGE
+            imageList.Images.Add(Ui.GetScaledIcon(this, Resources.note, Resources.note32, dispose: false));
+            // ICON_SCRIPT
+            imageList.Images.Add(Ui.GetScaledIcon(this, Resources.script, Ui.ShiftImage(Resources.script32, 0, 1), dispose: false));
+            // ICON_TABLE
+            imageList.Images.Add(Ui.GetScaledIcon(this, Resources.table, Resources.table32, dispose: false));
+            // ICON_VIEW
+            imageList.Images.Add(Ui.GetScaledIcon(this, Resources.filter, Resources.filter32, dispose: false));
+            // ICON_LINKED_TABLE
+            imageList.Images.Add(Ui.GetScaledIcon(this, Resources.link, Resources.link32, dispose: false));
+            _list.SmallImageList = imageList;
 
             Ui ui = new(this, false);
 
@@ -29,6 +53,8 @@ namespace SqlNotebook {
                 _manager.CommitOpenEditors();
                 _manager.Rescan(notebookItemsOnly: true);
             };
+
+            _splitContainer.Panel2Collapsed = true;
 
             _splitContainer.SplitterDistance = Math.Max(
                 _splitContainer.Height / 2, _splitContainer.Height - ui.XHeight(10));
@@ -54,9 +80,16 @@ namespace SqlNotebook {
                         var lvi = _list.Items.Add(item.Name);
                         lvi.Group = _list.Groups[item.Type.ToString()];
                         if (item.IsVirtualTable) {
-                            lvi.ImageIndex = _list.SmallImageList.Images.Count - 1;
+                            lvi.ImageIndex = ICON_LINKED_TABLE;
                         } else {
-                            lvi.ImageIndex = (int)item.Type;
+                            lvi.ImageIndex =
+                                item.Type switch {
+                                    NotebookItemType.Page => ICON_PAGE,
+                                    NotebookItemType.Script => ICON_SCRIPT,
+                                    NotebookItemType.Table => ICON_TABLE,
+                                    NotebookItemType.View => ICON_VIEW,
+                                    _ => throw new NotImplementedException()
+                                };
                         }
                     }
                     _list.Sort();
@@ -106,7 +139,7 @@ namespace SqlNotebook {
             var item = new NotebookItem(type, name);
             _manager.CloseItem(item);
 
-            WaitForm.Go(FindForm(), "Delete", "Deleting the selected item...", out _, () => {
+            WaitForm.Go(TopLevelControl, "Delete", "Deleting the selected item...", out _, () => {
                 _manager.DeleteItem(item);
             });
 
@@ -123,6 +156,7 @@ namespace SqlNotebook {
             _detailsGrid.DataSource = null;
             _selectionLabel.Text = "Selected item";
             if (_list.SelectedItems.Count != 1) {
+                _splitContainer.Panel2Collapsed = true;;
                 return;
             }
             var lvi = _list.SelectedItems[0];
@@ -148,6 +182,8 @@ namespace SqlNotebook {
                             details.Add(Tuple.Create(paramName, "parameter"));
                         }
                     }
+                } else if (lvi.Group.Name == "Note") {
+                    // Nothing to show.
                 }
             } catch (Exception) { }
 
@@ -163,6 +199,8 @@ namespace SqlNotebook {
             }
             _detailsGrid.DataSource = list;
             _selectionLabel.Text = notebookItemName;
+
+            _splitContainer.Panel2Collapsed = list.Count == 0;
         }
 
         public sealed class Row {

@@ -1,5 +1,6 @@
 ﻿using SqlNotebook.Import;
 using SqlNotebook.Import.Database;
+using SqlNotebook.Pages;
 using SqlNotebook.Properties;
 using SqlNotebookCore;
 using SqlNotebookScript.Utils;
@@ -57,21 +58,30 @@ namespace SqlNotebook {
                 }
             };
              
-            Ui ui = new(this, 140, 45, false);
+            Ui ui = new(this, 180, 50, false);
             MinimumSize = new(Size.Width / 2, Size.Height / 2);
             Padding = new(0, 0, 0, ui.SizeGripHeight);
             ui.Init(_saveBtn, Resources.Diskette, Resources.diskette32);
-            ui.Init(_newScriptBtn, Resources.ScriptAdd, Resources.script_add32);
+            var newScriptImage16 = Ui.SuperimposePlusSymbol(Resources.script);
+            var newScriptImage32 = Ui.SuperimposePlusSymbol(Ui.ShiftImage(Resources.script32, 0, 1));
+            ui.Init(_newScriptBtn, newScriptImage16, newScriptImage32);
+            var newPageImage16 = Ui.SuperimposePlusSymbol(Resources.note);
+            var newPageImage32 = Ui.SuperimposePlusSymbol(Resources.note32);
+            ui.Init(_newPageButton, newPageImage16, newPageImage32);
             ui.Init(_newMnu, Resources.PageWhite, Resources.page_white32);
             ui.Init(_openMnu, Resources.Folder, Resources.folder32);
             ui.Init(_saveMnu, Resources.Diskette, Resources.diskette32);
-            ui.Init(_newScriptMnu, Resources.ScriptAdd, Resources.script_add32);
+            ui.Init(_newScriptMnu, newScriptImage16, newScriptImage32);
+            ui.Init(_fileNewPageMenu, newPageImage16, newPageImage32);
             ui.Init(_importFromFileMnu, Resources.TextImports, Resources.text_imports32);
             ui.Init(_exportCsvMnu, Resources.TextExports, Resources.text_exports32);
-            ui.Init(_viewDocMnu, Resources.Help, Resources.help32);
             ui.Init(_contentsMnu, Resources.list, Resources.list32);
             ui.Init(_consoleMnu, Resources.zone_select, Resources.zone_select32);
-            ui.Init(_windowOptionsMenu, Resources.preferences, Resources.preferences32);
+            ui.Init(_windowOptionsMenu, Resources.cog, Resources.cog32);
+            ui.Init(_viewDocMnu, Resources.Help, Resources.help32);
+            ui.Init(_helpReportIssueMenu, Resources.world_link, Resources.world_link32);
+            ui.Init(_releaseNotesMenu, Resources.world_link, Resources.world_link32);
+            ui.Init(_helpLicenseInformationMenu, Resources.world_link, Resources.world_link32);
             ui.Init(_searchTxt);
             ui.Init(_transactionCommitMenu, Resources.accept_button, Resources.accept_button32);
 
@@ -140,7 +150,7 @@ namespace SqlNotebook {
                 CloseButtonVisible = false,
             };
             _contentsDockContent.Show(_dockPanel,
-                userLayout?.GetTableOfContentsDockState() ?? DockState.DockLeftAutoHide);
+                userLayout?.GetTableOfContentsDockState() ?? DockState.DockLeft);
             _contentsDockContent.AutoHidePortion =
                     tocAutoHidePortion.HasValue
                     ? tocAutoHidePortion.Value * userLayoutScale
@@ -301,6 +311,13 @@ namespace SqlNotebook {
                 f = new UserControlDockContent(item.Name, doc, dockAreas) {
                     Icon = Resources.table32Ico
                 };
+            } else if (item.Type == NotebookItemType.Page) {
+                PageControl doc = new(item.Name, _manager, this);
+                f = new UserControlDockContent(item.Name, doc, dockAreas) {
+                    Icon = Resources.script32Ico
+                };
+                ApplySaveOnClose(f, doc);
+                getName = () => doc.ItemName;
             }
 
             if (getName != null) {
@@ -322,8 +339,16 @@ namespace SqlNotebook {
         }
 
         private void AboutMnu_Click(object sender, EventArgs e) {
-            using (var frm = new AboutForm()) {
-                frm.ShowDialog(this);
+            var siteButton = "Visit sqlnotebook.com";
+            var choice = Ui.ShowTaskDialog(this,
+                "SQL Notebook",
+                "About SQL Notebook",
+                new[] { siteButton, Ui.OK },
+                TaskDialogIcon.Information,
+                defaultIsFirst: false,
+                details: $"Version {Application.ProductVersion}\r\nCopyright (c) 2016-2021 Brian Luft");
+            if (choice == siteButton) {
+                Process.Start(new ProcessStartInfo("https://sqlnotebook.com/") { UseShellExecute = true });
             }
         }
 
@@ -383,6 +408,22 @@ namespace SqlNotebook {
             } catch (Exception ex) {
                 ErrorBox("Notebook Error", "There was a problem creating the script.", ex.GetExceptionMessage());
             }
+        }
+
+        private void NewPage() {
+            try {
+                OpenItem(new NotebookItem(NotebookItemType.Page, _manager.NewPage()));
+            } catch (Exception ex) {
+                ErrorBox("Notebook Error", "There was a problem creating the page.", ex.GetExceptionMessage());
+            }
+        }
+
+        private void FileNewPageMenu_Click(object sender, EventArgs e) {
+            NewPage();
+        }
+
+        private void NewPageButton_Click(object sender, EventArgs e) {
+            NewPage();
         }
 
         private static bool _ignoreF5 = false;
@@ -895,6 +936,11 @@ namespace SqlNotebook {
         private void WindowOptionsMenu_Click(object sender, EventArgs e) {
             using OptionsForm f = new();
             f.ShowDialog(this);
+        }
+
+        private void HelpLicenseInformationMenu_Click(object sender, EventArgs e) {
+            var filePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "ThirdPartyLicenses.html");
+            Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
         }
     }
 }

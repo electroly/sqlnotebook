@@ -130,9 +130,6 @@
   <data name="ScriptIco" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\script.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ScriptAdd" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\ext\fatcow\script_add.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="PageWhite" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\page_white.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -198,9 +195,6 @@
   </data>
   <data name="diskette32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\diskette32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="script_add32" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\ext\fatcow\script_add32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SqlNotebookIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SqlNotebookIcon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -309,5 +303,68 @@
   </data>
   <data name="preferences32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\preferences32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="bullet_add" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\bullet_add.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="bullet_add32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\bullet_add32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="script" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\script.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="note" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\note.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="note32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\note32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="filter" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\filter.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="filter32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\filter32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="link" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\link.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="link32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\link32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="font" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\font.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="font32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\font32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="table_go" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\table_go.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="table_go32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\table_go32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cog" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\cog.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cog32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\cog32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cross" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\cross.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cross32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\cross32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="panel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\panel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="panel32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\panel32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="world_link" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\world_link.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="world_link32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\world_link32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

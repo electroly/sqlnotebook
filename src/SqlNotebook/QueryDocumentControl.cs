@@ -53,7 +53,7 @@ namespace SqlNotebook {
 
             // if this tool window has been pulled off into a floating window, then the MainForm's key handler won't
             // trigger on F5, so catch it here.
-            _textCtl.TextBox.KeyDown += async (sender, e) => {
+            _textCtl.TextBox.KeyDown += (_, e) => {
                 if (e.SystemKey == System.Windows.Input.Key.F5) {
                     Execute();
                 }
@@ -93,7 +93,7 @@ namespace SqlNotebook {
         }
 
         private bool GetResultSets(string sql, int maxRows, out List<(long Count, DataTable DataTable)> resultSets) {
-            var output = WaitForm.Go(FindForm(), "Script", "Running your script...", out var success, () =>
+            var output = WaitForm.Go(TopLevelControl, "Script", "Running your script...", out var success, () =>
                 _manager.ExecuteScript(sql, maxRows: maxRows));
             if (!success) {
                 resultSets = null;
@@ -200,7 +200,7 @@ namespace SqlNotebook {
 
             var insertSql = SqlUtil.GetInsertSql(name, dt.Columns.Count);
 
-            WaitForm.Go(FindForm(), "Send Data", $"Sending {result.DataTable.Rows.Count:#,##0} rows to \"{name}\"...", out var success, () => {
+            WaitForm.Go(TopLevelControl, "Send Data", $"Sending {result.DataTable.Rows.Count:#,##0} rows to \"{name}\"...", out var success, () => {
                 _notebook.Invoke(() => {
                     SqlUtil.WithTransaction(_notebook, () => {
                         _manager.ExecuteScript(createSql);

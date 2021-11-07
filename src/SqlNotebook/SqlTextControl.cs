@@ -36,31 +36,31 @@ namespace SqlNotebook {
 
         public event EventHandler SqlTextChanged;
 
-        public SqlTextControl(bool readOnly, bool syntaxColoring = true, bool wrap = true) {
+        public SqlTextControl(bool readOnly, bool syntaxColoring = true, bool wrap = true, bool lineNumbers = true) {
             InitializeComponent();
             _syntaxColoring = syntaxColoring;
 
             _text = new() {
                 IsReadOnly = readOnly,
                 HorizontalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
+                VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
                 WordWrap = wrap,
-                ShowLineNumbers = true,
+                ShowLineNumbers = lineNumbers,
                 LineNumbersForeground = System.Windows.Media.Brushes.LightGray,
             };
-            var opt = UserOptions.Instance;
-            SetFont(opt.GetCodeFont());
             ElementHost host = new() {
                 Dock = DockStyle.Fill,
                 Child = _text,
             };
-            SetupSyntaxColoring();
 
             _text.TextChanged += (sender, e) => SqlTextChanged?.Invoke(this, EventArgs.Empty);
 
             Controls.Add(host);
 
-            UserOptions.Updated += UserOptions_Updated;
-            Disposed += delegate { UserOptions.Updated -= UserOptions_Updated; };
+            UserOptions.OnUpdateAndNow(this, () => {
+                SetFont(UserOptions.Instance.GetCodeFont());
+                SetupSyntaxColoring();
+            });
         }
 
         private void SetupSyntaxColoring() {
@@ -91,11 +91,6 @@ namespace SqlNotebook {
             var line = colors[UserOptionsColor.CODE_LINENUMS];
             _text.LineNumbersForeground = new System.Windows.Media.SolidColorBrush(
                 System.Windows.Media.Color.FromRgb(line.R, line.G, line.B));
-        }
-
-        private void UserOptions_Updated(object sender, EventArgs e) {
-            SetFont(UserOptions.Instance.GetCodeFont());
-            SetupSyntaxColoring();
         }
     }
 }

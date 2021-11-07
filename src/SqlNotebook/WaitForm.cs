@@ -123,6 +123,7 @@ namespace SqlNotebook {
             Ui ui = new(this, 75, allowCancel ? 10 : 8);
             ui.Init(_table);
             ui.Init(_infoTxt);
+            _infoTxt.Margin = Padding.Empty;
             ui.Init(_spinner);
             ui.MarginRight(_spinner, 2);
             if (allowCancel) {

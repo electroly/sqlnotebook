@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace SqlNotebook {
@@ -36,7 +35,7 @@ namespace SqlNotebook {
         }
 
         public static void AttachFontColorEventHandler(DataGridView grid) {
-            EventHandler userOptionsHandler = delegate {
+            void OptionsUpdated() {
                 using var g = grid.CreateGraphics();
                 var oldX = g.MeasureString("x", grid.Font, PointF.Empty, StringFormat.GenericTypographic);
                 var opt = UserOptions.Instance;
@@ -87,9 +86,8 @@ namespace SqlNotebook {
                 grid.Width++;
                 grid.Width--;
             };
-            userOptionsHandler(null, null);
-            UserOptions.Updated += userOptionsHandler;
-            grid.Disposed += delegate { UserOptions.Updated -= userOptionsHandler; };
+            OptionsUpdated();
+            UserOptions.OnUpdate(grid, OptionsUpdated);
         }
 
         // This will hide the arrow on the row header of the current row.

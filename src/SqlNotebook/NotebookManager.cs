@@ -13,7 +13,8 @@ namespace SqlNotebook {
     public enum NotebookItemType {
         Script,
         Table,
-        View
+        View,
+        Page
     }
 
     public struct NotebookItem {
@@ -160,6 +161,10 @@ namespace SqlNotebook {
 
         public string NewScript() {
             return NewItem(NotebookItemType.Script.ToString());
+        }
+
+        public string NewPage() {
+            return NewItem(NotebookItemType.Page.ToString());
         }
 
         private string NewItem(string type, string name = null, string data = null) {

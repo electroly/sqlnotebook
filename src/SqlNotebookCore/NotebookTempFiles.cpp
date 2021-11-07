@@ -50,6 +50,12 @@ void NotebookTempFiles::DeleteFilesFromThisSession() {
 }
 
 void NotebookTempFiles::DeleteFilesFromPreviousSessions() {
+    // This is annoying in the debugger due to the exception that gets thrown below, so skip this when a debugger is
+    // attached.
+    if (System::Diagnostics::Debugger::IsAttached) {
+        return;
+    }
+
     // Track process IDs we've seen before so we don't call GetProcessById more than once per process.
     auto pids = gcnew HashSet<int>();
 

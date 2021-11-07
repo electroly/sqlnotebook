@@ -304,6 +304,13 @@ namespace SqlNotebook {
             }
         }
 
+        public static int Scaled(this Control self, double x) => (int)(x * self.DeviceDpi / 96);
+
+        public static float ScaledF(this Control self, double x) => (float)(x * self.DeviceDpi / 96);
+
+        public static Size ToSize(this SizeF self) =>
+            new((int)self.Width, (int)self.Height);
+
         #region Enum Descriptions
         // https://www.codementor.io/cerkit/giving-an-enum-a-string-value-using-the-description-attribute-6b4fwdle0
         public static string GetDescription<T>(this T e) where T : IConvertible {

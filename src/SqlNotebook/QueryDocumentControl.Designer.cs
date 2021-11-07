@@ -75,20 +75,20 @@
             this._sqlPanel.Size = new System.Drawing.Size(694, 300);
             this._sqlPanel.TabIndex = 0;
             // 
-            // toolStripContainer1
+            // _toolStripContainer
             // 
             // 
-            // toolStripContainer1.ContentPanel
+            // _toolStripContainer.ContentPanel
             // 
             this._toolStripContainer.ContentPanel.Size = new System.Drawing.Size(694, 279);
             this._toolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this._toolStripContainer.Location = new System.Drawing.Point(0, 0);
-            this._toolStripContainer.Name = "toolStripContainer1";
+            this._toolStripContainer.Name = "_toolStripContainer";
             this._toolStripContainer.Size = new System.Drawing.Size(694, 309);
             this._toolStripContainer.TabIndex = 1;
             this._toolStripContainer.Text = "toolStripContainer1";
             // 
-            // toolStripContainer1.TopToolStripPanel
+            // _toolStripContainer.TopToolStripPanel
             // 
             this._toolStripContainer.TopToolStripPanel.BackColor = System.Drawing.SystemColors.Window;
             this._toolStripContainer.TopToolStripPanel.Controls.Add(this._resultToolStrip);
@@ -210,7 +210,7 @@
             this._rowCountLbl.Margin = new System.Windows.Forms.Padding(0, 1, 8, 2);
             this._rowCountLbl.Name = "_rowCountLbl";
             this._rowCountLbl.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-            this._rowCountLbl.Size = new System.Drawing.Size(5, 27);
+            this._rowCountLbl.Size = new System.Drawing.Size(5, 29);
             // 
             // QueryDocumentControl
             // 

@@ -66,7 +66,7 @@ namespace SqlNotebook.Import.Xls {
                 Icon = Resources.file_extension_xls_ico;
 
                 ui.Init(_table);
-                ui.Init(_outerSplit, 0.53);
+                ui.Init(_outerSplit, 0.5);
                 ui.Init(_lowerSplit, 0.5);
                 ui.Init(_originalFileTable);
                 ui.InitHeader(_originalFileLabel);

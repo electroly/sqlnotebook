@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0"?>
 <SyntaxDefinition name="SQL" extensions=".sql" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 	<!-- Derived from TSQL-Mode.xshd in AvalonEdit -->
-	<Color name="Comment" foreground="[COMMENT_COLOR]" exampleText="-- comment" />
+	<Color name="Comment" foreground="[COMMENT_COLOR]" fontWeight="bold" exampleText="-- comment" />
 	<Color name="Char" foreground="[STRING_COLOR]" exampleText="name = 'abc'"/>
-	<Color name="Keywords" foreground="[KEYWORD_COLOR]" fontWeight="bold" exampleText="SELECT FROM"/>
+	<Color name="Keywords" foreground="[KEYWORD_COLOR]" exampleText="SELECT FROM"/>
 
   <RuleSet name="CommentMarkerSet">
     <Keywords fontWeight="bold" foreground="Red">

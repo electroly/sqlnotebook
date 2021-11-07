@@ -1,6 +1,7 @@
 ﻿using SqlNotebook.Properties;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text.Json;
@@ -62,7 +63,27 @@ namespace SqlNotebook {
 
         // ---
 
-        public static event EventHandler Updated;
+        private static event EventHandler Updated;
+
+        // This is called after the Updated event handlers finish.
+        private static event EventHandler UpdatedPost;
+
+        public static void OnUpdate(Component owner, Action action) {
+            EventHandler handler = delegate { action(); };
+            Updated += handler;
+            owner.Disposed += delegate { Updated -= handler; };
+        }
+
+        public static void OnUpdatePost(Component owner, Action action) {
+            EventHandler handler = delegate { action(); };
+            UpdatedPost += handler;
+            owner.Disposed += delegate { UpdatedPost -= handler; };
+        }
+
+        public static void OnUpdateAndNow(Component owner, Action action) {
+            action();
+            OnUpdate(owner, action);
+        }
 
         public static readonly Lazy<UserOptions> _instance = new(() => {
             try {
@@ -79,6 +100,7 @@ namespace SqlNotebook {
             Settings.Default.UserOptions = JsonSerializer.Serialize(this);
             Settings.Default.Save();
             Updated?.Invoke(this, EventArgs.Empty);
+            UpdatedPost?.Invoke(this, EventArgs.Empty);
         }
 
         // ---
@@ -160,11 +182,11 @@ namespace SqlNotebook {
         public static Color[] GetDefaultColors() {
             var colors = new Color[UserOptionsColor.NUM_COLORS];
             colors[UserOptionsColor.GRID_BACKGROUND] = Color.White;
-            colors[UserOptionsColor.GRID_HEADER] = Color.FromArgb(0xE0, 0xE0, 0xE0);
-            colors[UserOptionsColor.GRID_LINES] = Color.Gray;
+            colors[UserOptionsColor.GRID_HEADER] = Color.FromArgb(221, 238, 255);
+            colors[UserOptionsColor.GRID_LINES] = Color.FromArgb(0, 122, 204);
             colors[UserOptionsColor.GRID_PLAIN] = Color.Black;
             colors[UserOptionsColor.CODE_PLAIN] = Color.Black;
-            colors[UserOptionsColor.CODE_COMMENT] = Color.DarkGreen;
+            colors[UserOptionsColor.CODE_COMMENT] = Color.Green;
             colors[UserOptionsColor.CODE_KEYWORD] = Color.Blue;
             colors[UserOptionsColor.CODE_STRING] = Color.Red;
             colors[UserOptionsColor.CODE_LINENUMS] = Color.LightGray;

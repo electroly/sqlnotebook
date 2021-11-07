@@ -22,7 +22,7 @@ namespace SqlNotebook {
             _tablePanel.Controls.Add(_grid);
 
             Load += delegate {
-                var simpleDataTable = WaitForm.Go(FindForm(), "Table", "Reading table data...", out var success, () =>
+                var simpleDataTable = WaitForm.Go(TopLevelControl, "Table", "Reading table data...", out var success, () =>
                     _manager.Notebook.SpecialReadOnlyQuery(
                         $"SELECT * FROM {_tableName.DoubleQuote()} LIMIT 1000",
                         new Dictionary<string, object>()));
@@ -40,7 +40,7 @@ namespace SqlNotebook {
                     dt.Rows.Add(dtRow);
                 }
                 _grid.DataSource = dt;
-                _grid.AutoSizeColumns();
+                _grid.AutoSizeColumns(this.Scaled(300));
 
                 Ui ui = new(this, false);
                 ui.Init(_scriptBtn, Resources.script_go, Resources.script_go32);

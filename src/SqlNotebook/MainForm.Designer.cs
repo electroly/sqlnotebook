@@ -28,17 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+            System.Windows.Forms.ToolStripSeparator _helpSeparator1;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this._menuStrip = new System.Windows.Forms.MenuStrip();
             this._saveBtn = new System.Windows.Forms.ToolStripButton();
+            this._newPageButton = new System.Windows.Forms.ToolStripButton();
             this._newScriptBtn = new System.Windows.Forms.ToolStripButton();
             this._notebookMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._openMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._saveMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._saveAsMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._fileNewPageMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._newScriptMnu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this._exitMnu = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,29 +64,30 @@
             this._windowMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._contentsMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._consoleMnu = new System.Windows.Forms.ToolStripMenuItem();
+            this._windowOptionsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._viewDocMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._searchDocMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this._helpReportIssueMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this._helpSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this._releaseNotesMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripMenuItem();
+            this._helpLicenseInformationMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this._helpAboutMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._transactionMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._transactionCommitMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._transactionRollbackMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._updateAvailableMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this._windowOptionsMenu = new System.Windows.Forms.ToolStripMenuItem();
-            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            _helpSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
             this._toolStripContainer.SuspendLayout();
             this._menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
-            // toolStripSeparator1
+            // _helpSeparator1
             // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(305, 6);
+            _helpSeparator1.Name = "_helpSeparator1";
+            _helpSeparator1.Size = new System.Drawing.Size(284, 6);
             // 
             // toolStripSeparator3
             // 
@@ -117,6 +120,7 @@
             this._menuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this._menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._saveBtn,
+            this._newPageButton,
             this._newScriptBtn,
             this._notebookMnu,
             this._importMnu,
@@ -147,10 +151,22 @@
             this._saveBtn.ToolTipText = "Save notebook (Ctrl+S)";
             this._saveBtn.Click += new System.EventHandler(this.SaveMnu_Click);
             // 
+            // _newPageButton
+            // 
+            this._newPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this._newPageButton.Image = global::SqlNotebook.Properties.Resources.note;
+            this._newPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._newPageButton.Margin = new System.Windows.Forms.Padding(0);
+            this._newPageButton.Name = "_newPageButton";
+            this._newPageButton.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._newPageButton.Size = new System.Drawing.Size(36, 29);
+            this._newPageButton.ToolTipText = "Add new page (Ctrl+Shift+P)";
+            this._newPageButton.Click += new System.EventHandler(this.NewPageButton_Click);
+            // 
             // _newScriptBtn
             // 
             this._newScriptBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._newScriptBtn.Image = global::SqlNotebook.Properties.Resources.ScriptAdd;
+            this._newScriptBtn.Image = global::SqlNotebook.Properties.Resources.script;
             this._newScriptBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._newScriptBtn.Margin = new System.Windows.Forms.Padding(0);
             this._newScriptBtn.Name = "_newScriptBtn";
@@ -168,6 +184,7 @@
             this._saveMnu,
             this._saveAsMnu,
             toolStripSeparator3,
+            this._fileNewPageMenu,
             this._newScriptMnu,
             this.toolStripSeparator4,
             this._exitMnu});
@@ -206,6 +223,15 @@
             this._saveAsMnu.Size = new System.Drawing.Size(305, 34);
             this._saveAsMnu.Text = "Save &as";
             this._saveAsMnu.Click += new System.EventHandler(this.SaveAsMnu_Click);
+            // 
+            // _fileNewPageMenu
+            // 
+            this._fileNewPageMenu.Name = "_fileNewPageMenu";
+            this._fileNewPageMenu.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.P)));
+            this._fileNewPageMenu.Size = new System.Drawing.Size(305, 34);
+            this._fileNewPageMenu.Text = "Add &page";
+            this._fileNewPageMenu.Click += new System.EventHandler(this.FileNewPageMenu_Click);
             // 
             // _newScriptMnu
             // 
@@ -389,16 +415,24 @@
             this._consoleMnu.Text = "&Console";
             this._consoleMnu.Click += new System.EventHandler(this.ConsoleMnu_Click);
             // 
+            // _windowOptionsMenu
+            // 
+            this._windowOptionsMenu.Name = "_windowOptionsMenu";
+            this._windowOptionsMenu.Size = new System.Drawing.Size(312, 34);
+            this._windowOptionsMenu.Text = "&Options";
+            this._windowOptionsMenu.Click += new System.EventHandler(this.WindowOptionsMenu_Click);
+            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._viewDocMnu,
             this._searchDocMnu,
-            toolStripSeparator1,
-            this.toolStripMenuItem15,
-            this.toolStripSeparator5,
+            _helpSeparator1,
             this._releaseNotesMenu,
-            this.toolStripMenuItem16});
+            this._helpReportIssueMenu,
+            this._helpLicenseInformationMenu,
+            this._helpSeparator2,
+            this._helpAboutMenu});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(65, 29);
             this.helpToolStripMenuItem.Text = "&Help";
@@ -407,43 +441,50 @@
             // 
             this._viewDocMnu.Name = "_viewDocMnu";
             this._viewDocMnu.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this._viewDocMnu.Size = new System.Drawing.Size(308, 34);
-            this._viewDocMnu.Text = "View documentation";
+            this._viewDocMnu.Size = new System.Drawing.Size(287, 34);
+            this._viewDocMnu.Text = "Documentation";
             this._viewDocMnu.Click += new System.EventHandler(this.ViewDocMnu_Click);
             // 
             // _searchDocMnu
             // 
             this._searchDocMnu.Name = "_searchDocMnu";
             this._searchDocMnu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
-            this._searchDocMnu.Size = new System.Drawing.Size(308, 34);
+            this._searchDocMnu.Size = new System.Drawing.Size(287, 34);
             this._searchDocMnu.Text = "Search";
             this._searchDocMnu.Click += new System.EventHandler(this.SearchDocMnu_Click);
             // 
-            // toolStripMenuItem15
+            // _helpReportIssueMenu
             // 
-            this.toolStripMenuItem15.Name = "toolStripMenuItem15";
-            this.toolStripMenuItem15.Size = new System.Drawing.Size(308, 34);
-            this.toolStripMenuItem15.Text = "Report an issue";
-            this.toolStripMenuItem15.Click += new System.EventHandler(this.ReportIssueMnu_Click);
+            this._helpReportIssueMenu.Name = "_helpReportIssueMenu";
+            this._helpReportIssueMenu.Size = new System.Drawing.Size(287, 34);
+            this._helpReportIssueMenu.Text = "Report an issue";
+            this._helpReportIssueMenu.Click += new System.EventHandler(this.ReportIssueMnu_Click);
             // 
-            // toolStripSeparator5
+            // _helpSeparator2
             // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(305, 6);
+            this._helpSeparator2.Name = "_helpSeparator2";
+            this._helpSeparator2.Size = new System.Drawing.Size(284, 6);
             // 
             // _releaseNotesMenu
             // 
             this._releaseNotesMenu.Name = "_releaseNotesMenu";
-            this._releaseNotesMenu.Size = new System.Drawing.Size(308, 34);
-            this._releaseNotesMenu.Text = "View release notes";
+            this._releaseNotesMenu.Size = new System.Drawing.Size(287, 34);
+            this._releaseNotesMenu.Text = "Release notes";
             this._releaseNotesMenu.Click += new System.EventHandler(this.ReleaseNotesMenu_Click);
             // 
-            // toolStripMenuItem16
+            // _helpLicenseInformationMenu
             // 
-            this.toolStripMenuItem16.Name = "toolStripMenuItem16";
-            this.toolStripMenuItem16.Size = new System.Drawing.Size(308, 34);
-            this.toolStripMenuItem16.Text = "About SQL Notebook";
-            this.toolStripMenuItem16.Click += new System.EventHandler(this.AboutMnu_Click);
+            this._helpLicenseInformationMenu.Name = "_helpLicenseInformationMenu";
+            this._helpLicenseInformationMenu.Size = new System.Drawing.Size(287, 34);
+            this._helpLicenseInformationMenu.Text = "License information";
+            this._helpLicenseInformationMenu.Click += new System.EventHandler(this.HelpLicenseInformationMenu_Click);
+            // 
+            // _helpAboutMenu
+            // 
+            this._helpAboutMenu.Name = "_helpAboutMenu";
+            this._helpAboutMenu.Size = new System.Drawing.Size(287, 34);
+            this._helpAboutMenu.Text = "About SQL Notebook";
+            this._helpAboutMenu.Click += new System.EventHandler(this.AboutMnu_Click);
             // 
             // _transactionMenu
             // 
@@ -482,13 +523,6 @@
             this._updateAvailableMenu.Text = "Update Available";
             this._updateAvailableMenu.Visible = false;
             this._updateAvailableMenu.Click += new System.EventHandler(this.UpdateAvailableMenu_Click);
-            // 
-            // _windowOptionsMenu
-            // 
-            this._windowOptionsMenu.Name = "_windowOptionsMenu";
-            this._windowOptionsMenu.Size = new System.Drawing.Size(312, 34);
-            this._windowOptionsMenu.Text = "&Options";
-            this._windowOptionsMenu.Click += new System.EventHandler(this.WindowOptionsMenu_Click);
             // 
             // MainForm
             // 
@@ -536,8 +570,8 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem12;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem13;
         private System.Windows.Forms.ToolStripMenuItem _viewDocMnu;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem15;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem16;
+        private System.Windows.Forms.ToolStripMenuItem _helpReportIssueMenu;
+        private System.Windows.Forms.ToolStripMenuItem _helpAboutMenu;
         private System.Windows.Forms.ToolStripMenuItem _newMnu;
         private System.Windows.Forms.ToolStripMenuItem _openMnu;
         private System.Windows.Forms.ToolStripMenuItem _saveMnu;
@@ -548,7 +582,7 @@
         private System.Windows.Forms.ToolStripMenuItem _newScriptMnu;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem _searchDocMnu;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripSeparator _helpSeparator2;
         private System.Windows.Forms.ToolStripMenuItem _windowMnu;
         private System.Windows.Forms.ToolStripMenuItem _consoleMnu;
         private System.Windows.Forms.ToolStripMenuItem _contentsMnu;
@@ -558,6 +592,9 @@
         private System.Windows.Forms.ToolStripMenuItem _updateAvailableMenu;
         private System.Windows.Forms.ToolStripMenuItem _releaseNotesMenu;
         private System.Windows.Forms.ToolStripMenuItem _windowOptionsMenu;
+        private System.Windows.Forms.ToolStripButton _newPageButton;
+        private System.Windows.Forms.ToolStripMenuItem _fileNewPageMenu;
+        private System.Windows.Forms.ToolStripMenuItem _helpLicenseInformationMenu;
     }
 }
 
