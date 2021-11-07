@@ -42,6 +42,7 @@ namespace SqlNotebook {
             Icon = Resources.SqlNotebookIcon;
             
             _menuStrip.SetMenuAppearance();
+
             _menuStrip.Items.Insert(0, _searchTxt = new CueToolStripTextBox {
                 Alignment = ToolStripItemAlignment.Right,
                 CueText = "Search Help (Ctrl+H)",
@@ -61,13 +62,10 @@ namespace SqlNotebook {
             Ui ui = new(this, 180, 50, false);
             MinimumSize = new(Size.Width / 2, Size.Height / 2);
             Padding = new(0, 0, 0, ui.SizeGripHeight);
-            ui.Init(_saveBtn, Resources.Diskette, Resources.diskette32);
-            var newScriptImage16 = Ui.SuperimposePlusSymbol(Resources.script);
-            var newScriptImage32 = Ui.SuperimposePlusSymbol(Ui.ShiftImage(Resources.script32, 0, 1));
-            ui.Init(_newScriptBtn, newScriptImage16, newScriptImage32);
             var newPageImage16 = Ui.SuperimposePlusSymbol(Resources.note);
             var newPageImage32 = Ui.SuperimposePlusSymbol(Resources.note32);
-            ui.Init(_newPageButton, newPageImage16, newPageImage32);
+            var newScriptImage16 = Ui.SuperimposePlusSymbol(Resources.script);
+            var newScriptImage32 = Ui.SuperimposePlusSymbol(Ui.ShiftImage(Resources.script32, 0, 1));
             ui.Init(_newMnu, Resources.PageWhite, Resources.page_white32);
             ui.Init(_openMnu, Resources.Folder, Resources.folder32);
             ui.Init(_saveMnu, Resources.Diskette, Resources.diskette32);
@@ -149,6 +147,8 @@ namespace SqlNotebook {
                 ) {
                 CloseButtonVisible = false,
             };
+            _explorer.NewPageButtonClicked += delegate { NewPage(); };
+            _explorer.NewScriptButtonClicked += delegate { NewScript(); };
             _contentsDockContent.Show(_dockPanel,
                 userLayout?.GetTableOfContentsDockState() ?? DockState.DockLeft);
             _contentsDockContent.AutoHidePortion =
@@ -171,7 +171,7 @@ namespace SqlNotebook {
                     _isTransactionOpen);
                 Slot.Bind(
                     () => BeginInvoke(new MethodInvoker(() =>
-                        _saveBtn.Enabled = _saveMnu.Enabled = _isDirty && !_isTransactionOpen
+                        _saveMnu.Enabled = _isDirty && !_isTransactionOpen
                     )),
                     _isDirty, _isTransactionOpen);
                 _isDirty.Change += (a, b) => SetTitle();
@@ -403,6 +403,10 @@ namespace SqlNotebook {
         }
 
         private void NewScriptBtn_Click(object sender, EventArgs e) {
+            NewScript();
+        }
+
+        private void NewScript() {
             try {
                 OpenItem(new NotebookItem(NotebookItemType.Script, _manager.NewScript()));
             } catch (Exception ex) {
@@ -941,6 +945,14 @@ namespace SqlNotebook {
         private void HelpLicenseInformationMenu_Click(object sender, EventArgs e) {
             var filePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "ThirdPartyLicenses.html");
             Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+        }
+
+        private void NewButton_Click(object sender, EventArgs e) {
+
+        }
+
+        private void OpenButton_Click(object sender, EventArgs e) {
+
         }
     }
 }

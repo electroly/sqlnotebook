@@ -16,6 +16,9 @@ namespace SqlNotebook {
         private const int ICON_VIEW = 3;
         private const int ICON_LINKED_TABLE = 4;
 
+        public event EventHandler NewPageButtonClicked;
+        public event EventHandler NewScriptButtonClicked;
+
         public ExplorerControl(NotebookManager manager, IWin32Window mainForm) {
             InitializeComponent();
             _list.EnableDoubleBuffer();
@@ -26,6 +29,7 @@ namespace SqlNotebook {
             _manager = manager;
             _manager.NotebookChange += (sender, e) => HandleNotebookChange(e);
             _contextMenuStrip.SetMenuAppearance();
+            _toolStrip.SetMenuAppearance();
 
             var dpiScale = DeviceDpi / 96d;
             var scaled16 = (int)(16 * dpiScale);
@@ -48,6 +52,13 @@ namespace SqlNotebook {
             _list.SmallImageList = imageList;
 
             Ui ui = new(this, false);
+            Padding buttonPadding = new(this.Scaled(2));
+            var newPageImage16 = Ui.SuperimposePlusSymbol(Resources.note);
+            var newPageImage32 = Ui.SuperimposePlusSymbol(Resources.note32);
+            ui.Init(_toolbarNewPageButton, newPageImage16, newPageImage32);
+            var newScriptImage16 = Ui.SuperimposePlusSymbol(Resources.script);
+            var newScriptImage32 = Ui.SuperimposePlusSymbol(Ui.ShiftImage(Resources.script32, 0, 1));
+            ui.Init(_toolbarNewScriptButton, newScriptImage16, newScriptImage32);
 
             _list.GotFocus += (sender, e) => {
                 _manager.CommitOpenEditors();
@@ -238,6 +249,14 @@ namespace SqlNotebook {
                     DoDelete();
                 }
             }
+        }
+
+        private void ToolbarNewPageButton_Click(object sender, EventArgs e) {
+            NewPageButtonClicked?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ToolbarNewScriptButton_Click(object sender, EventArgs e) {
+            NewScriptButtonClicked?.Invoke(this, EventArgs.Empty);
         }
     }
 }

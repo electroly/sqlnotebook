@@ -32,9 +32,6 @@
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this._menuStrip = new System.Windows.Forms.MenuStrip();
-            this._saveBtn = new System.Windows.Forms.ToolStripButton();
-            this._newPageButton = new System.Windows.Forms.ToolStripButton();
-            this._newScriptBtn = new System.Windows.Forms.ToolStripButton();
             this._notebookMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._newMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._openMnu = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,10 +65,10 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._viewDocMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._searchDocMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this._helpReportIssueMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this._helpSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this._releaseNotesMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this._helpReportIssueMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._helpLicenseInformationMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this._helpSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this._helpAboutMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._transactionMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._transactionCommitMenu = new System.Windows.Forms.ToolStripMenuItem();
@@ -119,9 +116,6 @@
             this._menuStrip.Dock = System.Windows.Forms.DockStyle.None;
             this._menuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this._menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._saveBtn,
-            this._newPageButton,
-            this._newScriptBtn,
             this._notebookMnu,
             this._importMnu,
             this._exportMnu,
@@ -138,44 +132,6 @@
             this._menuStrip.TabIndex = 2;
             this._menuStrip.Text = "menuStrip1";
             // 
-            // _saveBtn
-            // 
-            this._saveBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._saveBtn.Image = global::SqlNotebook.Properties.Resources.Diskette;
-            this._saveBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._saveBtn.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
-            this._saveBtn.Name = "_saveBtn";
-            this._saveBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this._saveBtn.Size = new System.Drawing.Size(36, 29);
-            this._saveBtn.Text = "toolStripButton1";
-            this._saveBtn.ToolTipText = "Save notebook (Ctrl+S)";
-            this._saveBtn.Click += new System.EventHandler(this.SaveMnu_Click);
-            // 
-            // _newPageButton
-            // 
-            this._newPageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._newPageButton.Image = global::SqlNotebook.Properties.Resources.note;
-            this._newPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._newPageButton.Margin = new System.Windows.Forms.Padding(0);
-            this._newPageButton.Name = "_newPageButton";
-            this._newPageButton.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this._newPageButton.Size = new System.Drawing.Size(36, 29);
-            this._newPageButton.ToolTipText = "Add new page (Ctrl+Shift+P)";
-            this._newPageButton.Click += new System.EventHandler(this.NewPageButton_Click);
-            // 
-            // _newScriptBtn
-            // 
-            this._newScriptBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._newScriptBtn.Image = global::SqlNotebook.Properties.Resources.script;
-            this._newScriptBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._newScriptBtn.Margin = new System.Windows.Forms.Padding(0);
-            this._newScriptBtn.Name = "_newScriptBtn";
-            this._newScriptBtn.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this._newScriptBtn.Size = new System.Drawing.Size(36, 29);
-            this._newScriptBtn.Text = "toolStripButton1";
-            this._newScriptBtn.ToolTipText = "Add new script (Ctrl+Shift+S)";
-            this._newScriptBtn.Click += new System.EventHandler(this.NewScriptBtn_Click);
-            // 
             // _notebookMnu
             // 
             this._notebookMnu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -188,7 +144,6 @@
             this._newScriptMnu,
             this.toolStripSeparator4,
             this._exitMnu});
-            this._notebookMnu.Margin = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this._notebookMnu.Name = "_notebookMnu";
             this._notebookMnu.Size = new System.Drawing.Size(54, 29);
             this._notebookMnu.Text = "&File";
@@ -453,18 +408,6 @@
             this._searchDocMnu.Text = "Search";
             this._searchDocMnu.Click += new System.EventHandler(this.SearchDocMnu_Click);
             // 
-            // _helpReportIssueMenu
-            // 
-            this._helpReportIssueMenu.Name = "_helpReportIssueMenu";
-            this._helpReportIssueMenu.Size = new System.Drawing.Size(287, 34);
-            this._helpReportIssueMenu.Text = "Report an issue";
-            this._helpReportIssueMenu.Click += new System.EventHandler(this.ReportIssueMnu_Click);
-            // 
-            // _helpSeparator2
-            // 
-            this._helpSeparator2.Name = "_helpSeparator2";
-            this._helpSeparator2.Size = new System.Drawing.Size(284, 6);
-            // 
             // _releaseNotesMenu
             // 
             this._releaseNotesMenu.Name = "_releaseNotesMenu";
@@ -472,12 +415,24 @@
             this._releaseNotesMenu.Text = "Release notes";
             this._releaseNotesMenu.Click += new System.EventHandler(this.ReleaseNotesMenu_Click);
             // 
+            // _helpReportIssueMenu
+            // 
+            this._helpReportIssueMenu.Name = "_helpReportIssueMenu";
+            this._helpReportIssueMenu.Size = new System.Drawing.Size(287, 34);
+            this._helpReportIssueMenu.Text = "Report an issue";
+            this._helpReportIssueMenu.Click += new System.EventHandler(this.ReportIssueMnu_Click);
+            // 
             // _helpLicenseInformationMenu
             // 
             this._helpLicenseInformationMenu.Name = "_helpLicenseInformationMenu";
             this._helpLicenseInformationMenu.Size = new System.Drawing.Size(287, 34);
             this._helpLicenseInformationMenu.Text = "License information";
             this._helpLicenseInformationMenu.Click += new System.EventHandler(this.HelpLicenseInformationMenu_Click);
+            // 
+            // _helpSeparator2
+            // 
+            this._helpSeparator2.Name = "_helpSeparator2";
+            this._helpSeparator2.Size = new System.Drawing.Size(284, 6);
             // 
             // _helpAboutMenu
             // 
@@ -577,8 +532,6 @@
         private System.Windows.Forms.ToolStripMenuItem _saveMnu;
         private System.Windows.Forms.ToolStripMenuItem _saveAsMnu;
         private System.Windows.Forms.ToolStripMenuItem _exitMnu;
-        private System.Windows.Forms.ToolStripButton _saveBtn;
-        private System.Windows.Forms.ToolStripButton _newScriptBtn;
         private System.Windows.Forms.ToolStripMenuItem _newScriptMnu;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem _searchDocMnu;
@@ -592,7 +545,6 @@
         private System.Windows.Forms.ToolStripMenuItem _updateAvailableMenu;
         private System.Windows.Forms.ToolStripMenuItem _releaseNotesMenu;
         private System.Windows.Forms.ToolStripMenuItem _windowOptionsMenu;
-        private System.Windows.Forms.ToolStripButton _newPageButton;
         private System.Windows.Forms.ToolStripMenuItem _fileNewPageMenu;
         private System.Windows.Forms.ToolStripMenuItem _helpLicenseInformationMenu;
     }
