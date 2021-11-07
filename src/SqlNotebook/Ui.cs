@@ -182,7 +182,7 @@ namespace SqlNotebook {
         public void Init(ToolStripButton button, Image lodpi, Image hidpi) {
             button.Image = GetScaledIcon(button, lodpi, hidpi, _scale);
             button.ImageScaling = ToolStripItemImageScaling.None;
-            button.Padding = new((int)(2 * _scale));
+            button.Padding = new((int)(2 * _scale), (int)(2 * _scale), (int)(2 * _scale), (int)(4 * _scale));
             button.AutoSize = true;
         }
 

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 namespace SqlNotebook {
     public partial class QueryEmbeddedControl : UserControl {
         private readonly NotebookManager _manager;
+        private readonly bool _isPageContext;
         private readonly Ui _ui;
 
         public SqlTextControl TextControl { get; private set; }
@@ -20,10 +21,10 @@ namespace SqlNotebook {
         public ScriptOutput Output { get; private set; }
         public event EventHandler SqlTextChanged;
 
-        public QueryEmbeddedControl(NotebookManager manager) {
+        public QueryEmbeddedControl(NotebookManager manager, bool isPageContext) {
             InitializeComponent();
             _manager = manager;
-
+            _isPageContext = isPageContext;
             _toolStrip.SetMenuAppearance();
 
             TextControl = new SqlTextControl(false) {
@@ -31,6 +32,7 @@ namespace SqlNotebook {
                 Padding = Padding.Empty,
             };
             TextControl.SqlTextChanged += (sender, e) => SqlTextChanged?.Invoke(sender, e);
+            TextControl.TextBox.KeyDown += TextControl_KeyDown;
             _sqlPanel.Controls.Add(TextControl);
 
             Ui ui = new(this, false);
@@ -40,25 +42,24 @@ namespace SqlNotebook {
             ui.Init(_sendMenu);
             ui.MarginRight(_sendMenu);
             ui.Init(_optionsMenu);
+            _optionsMenu.Visible = isPageContext;
             ui.Init(_sendTableMenu, Resources.table, Resources.table32);
-            ui.Init(_hideResultsButton, Resources.cross, Resources.cross32);
+            ui.Init(_hideResultsButton, Resources.hide_detail, Resources.hide_detail32);
             _hideResultsButton.Visible = false;
-            ui.Init(_showResultsButton, Resources.panel, Resources.panel32);
+            ui.Init(_showResultsButton, Resources.show_detail, Resources.show_detail32);
             _showResultsButton.Visible = true;
             _ui = ui;
         }
 
-        private void ExecuteButton_Click(object sender, EventArgs e) {
-            try {
-                _manager.CommitOpenEditors();
-                if (!ExecuteCore()) {
-                    return; // Error box already shown.
-                }
-                _manager.SetDirty();
-                _manager.Rescan();
-            } catch (Exception ex) {
-                Ui.ShowError(TopLevelControl, "Script Error", ex);
+        private void TextControl_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) {
+            if (e.Key == System.Windows.Input.Key.F5 && !e.IsRepeat) {
+                Execute();
+                e.Handled = true;
             }
+        }
+
+        private void ExecuteButton_Click(object sender, EventArgs e) {
+            Execute();
         }
 
         public void SetOutput(ScriptOutput output) {
@@ -100,7 +101,8 @@ namespace SqlNotebook {
             _split.Panel2.Controls.Add(tabs);
             Debug.Assert(dataTables.Count == grids.Count);
             for (var i = 0; i < dataTables.Count; i++) {
-                TabPage page = new($"Result ({dataTables[i].Count:#,##0} rows)");
+                var s = dataTables[i].Count == 1 ? "" : "s";
+                TabPage page = new($"Result ({dataTables[i].Count:#,##0} row{s})");
                 tabs.TabPages.Add(page);
                 _ui.Init(page);
                 page.Controls.Add(grids[i]);
@@ -115,17 +117,21 @@ namespace SqlNotebook {
             _showResultsButton.Visible = !show;
         }
 
-        private bool ExecuteCore() {
-            // Execute the script and produce the result as a list of DataTables
-            var sql = SqlText;
-            var output = WaitForm.Go(TopLevelControl, "Script", "Running your script...", out var success, () =>
-                _manager.ExecuteScript(sql, maxRows: 100_000));
-            if (!success) {
-                return false;
-            };
-
-            SetOutput(output);
-            return true;
+        private void Execute() {
+            try {
+                _manager.CommitOpenEditors();
+                var sql = SqlText;
+                var output = WaitForm.Go(TopLevelControl, "Script", "Running your script...", out var success, () =>
+                    _manager.ExecuteScript(sql, maxRows: 100_000));
+                if (!success) {
+                    return;
+                };
+                SetOutput(output);
+                _manager.SetDirty();
+                _manager.Rescan();
+            } catch (Exception ex) {
+                Ui.ShowError(TopLevelControl, "Script Error", ex);
+            }
         }
 
         private List<(long Count, DataTable DataTable)> ConvertOutputToDataTables() {

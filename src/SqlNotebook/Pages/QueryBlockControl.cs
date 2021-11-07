@@ -300,7 +300,7 @@ namespace SqlNotebook.Pages {
             _editMode = true;
             Cursor = Cursors.Default;
             var (acceptButton, table, panel) = CreateStandardEditModeLayout();
-            _queryControl = new(_manager) {
+            _queryControl = new(_manager, isPageContext: true) {
                 Dock = DockStyle.Fill,
                 BorderStyle = BorderStyle.FixedSingle,
                 Margin = Padding.Empty,

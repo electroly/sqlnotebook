@@ -373,6 +373,26 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap hide_detail {
+            get {
+                object obj = ResourceManager.GetObject("hide_detail", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap hide_detail32 {
+            get {
+                object obj = ResourceManager.GetObject("hide_detail32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Hourglass {
             get {
                 object obj = ResourceManager.GetObject("Hourglass", resourceCulture);
@@ -667,6 +687,26 @@ namespace SqlNotebook.Properties {
             get {
                 object obj = ResourceManager.GetObject("ScriptIco", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap show_detail {
+            get {
+                object obj = ResourceManager.GetObject("show_detail", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap show_detail32 {
+            get {
+                object obj = ResourceManager.GetObject("show_detail32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

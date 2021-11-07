@@ -346,7 +346,7 @@ namespace SqlNotebook {
                 new[] { siteButton, Ui.OK },
                 TaskDialogIcon.Information,
                 defaultIsFirst: false,
-                details: $"Version {Application.ProductVersion}\r\nCopyright (c) 2016-2021 Brian Luft");
+                details: $"Version {Application.ProductVersion}\r\n© 2016-2021 Brian Luft");
             if (choice == siteButton) {
                 Process.Start(new ProcessStartInfo("https://sqlnotebook.com/") { UseShellExecute = true });
             }

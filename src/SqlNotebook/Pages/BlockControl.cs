@@ -128,7 +128,7 @@ namespace SqlNotebook.Pages {
             deleteButton.Click += delegate {
                 var choice = Ui.ShowTaskDialog(TopLevelControl,
                     "Do you want to delete this block?", "Page", new[] { Ui.DELETE, Ui.CANCEL },
-                    TaskDialogIcon.None, defaultIsFirst: false);
+                    TaskDialogIcon.Warning, defaultIsFirst: false);
                 if (choice == Ui.DELETE) {
                     RaiseBlockDeleted();
                 }

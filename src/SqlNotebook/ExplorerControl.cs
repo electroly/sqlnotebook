@@ -138,7 +138,7 @@ namespace SqlNotebook {
 
             var choice = Ui.ShowTaskDialog(
                 _mainForm,
-                $"Are you sure you want to delete \"{name}\"?",
+                $"Do you want to delete \"{name}\"?",
                 "Delete Item",
                 new[] { Ui.DELETE, Ui.CANCEL },
                 TaskDialogIcon.Warning,

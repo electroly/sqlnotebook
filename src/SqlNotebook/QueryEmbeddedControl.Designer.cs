@@ -92,8 +92,8 @@ namespace SqlNotebook {
             this._executeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._executeButton.Name = "_executeButton";
             this._executeButton.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
-            this._executeButton.Size = new System.Drawing.Size(75, 35);
-            this._executeButton.Text = "Execute";
+            this._executeButton.Size = new System.Drawing.Size(109, 35);
+            this._executeButton.Text = "Execute (F5)";
             this._executeButton.Click += new System.EventHandler(this.ExecuteButton_Click);
             // 
             // _sendMenu
@@ -109,7 +109,7 @@ namespace SqlNotebook {
             // _sendTableMenu
             // 
             this._sendTableMenu.Name = "_sendTableMenu";
-            this._sendTableMenu.Size = new System.Drawing.Size(188, 34);
+            this._sendTableMenu.Size = new System.Drawing.Size(270, 34);
             this._sendTableMenu.Text = "To table...";
             this._sendTableMenu.Click += new System.EventHandler(this.SendTableMenu_Click);
             // 
