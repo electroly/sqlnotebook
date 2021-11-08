@@ -146,7 +146,7 @@ namespace SqlNotebook {
                     Label label = new() {
                         AutoSize = true,
                         Text = simpleDataTable.FullCount > MAX_GRID_ROWS
-                            ? $"{simpleDataTable.FullCount:#,##0} row{s} ({MAX_GRID_ROWS} shown)"
+                            ? $"{simpleDataTable.FullCount:#,##0} row{s} ({MAX_GRID_ROWS:#,##0} shown)"
                             : $"{simpleDataTable.FullCount:#,##0} row{s}",
                         Margin = _outputCountMargin,
                     };

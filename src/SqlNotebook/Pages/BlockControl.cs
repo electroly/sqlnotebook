@@ -10,7 +10,7 @@ namespace SqlNotebook.Pages {
         private const int VERTICAL_MARGIN_UNSCALED = 5;
 
         protected readonly MouseHover _hover;
-        protected bool _editMode;
+        public bool EditMode { get; protected set; }
 
         protected int HorizontalMargin => this.Scaled(HORIZONTAL_MARGIN_UNSCALED);
         protected int VerticalMargin => this.Scaled(VERTICAL_MARGIN_UNSCALED);
@@ -43,6 +43,7 @@ namespace SqlNotebook.Pages {
         }
 
         public virtual void StartEditing() { }
+        public virtual void StopEditing() { }
 
         public abstract void Serialize(BinaryWriter writer);
         public abstract void Deserialize(BinaryReader reader);
@@ -52,7 +53,7 @@ namespace SqlNotebook.Pages {
             var opt = UserOptions.Instance;
             var colors = opt.GetColors();
 
-            if (_editMode) {
+            if (EditMode) {
                 using SolidBrush editModeBg = new(colors[UserOptionsColor.GRID_BACKGROUND]);
                 e.Graphics.FillRectangle(editModeBg, 0, 0, Width, Height);
                 return;

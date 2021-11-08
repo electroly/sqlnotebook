@@ -16,7 +16,7 @@ namespace SqlNotebook.Pages {
         private readonly StringFormat _stringFormat = new(StringFormatFlags.FitBlackBox);
 
         public override int CalculateHeight() {
-            if (_editMode) {
+            if (EditMode) {
                 return this.Scaled(250);
             }
 
@@ -53,11 +53,11 @@ namespace SqlNotebook.Pages {
         }
 
         public override void StartEditing() {
-            if (_editMode) {
+            if (EditMode) {
                 return;
             }
 
-            _editMode = true;
+            EditMode = true;
             Cursor = Cursors.Default;
 
             var (acceptButton, table, panel) = CreateStandardEditModeLayout();
@@ -80,13 +80,13 @@ namespace SqlNotebook.Pages {
             RaiseBlockClicked();
         }
 
-        private void StopEditing() {
-            if (!_editMode) {
+        public override void StopEditing() {
+            if (!EditMode) {
                 return;
             }
 
             UpdatePropertiesFromEditMode();
-            _editMode = false;
+            EditMode = false;
             Cursor = Cursors.Hand;
             for (var i = Controls.Count - 1; i >= 0; i--) {
                 Controls.RemoveAt(i);
@@ -100,7 +100,7 @@ namespace SqlNotebook.Pages {
         private void UpdatePropertiesFromEditMode() => BlockText = _textBox.SqlText;
 
         public override void Serialize(BinaryWriter writer) {
-            if (_editMode) {
+            if (EditMode) {
                 UpdatePropertiesFromEditMode();
             }
             writer.Write(BlockText);

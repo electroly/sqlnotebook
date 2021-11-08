@@ -114,7 +114,7 @@ namespace SqlNotebook.Pages {
         }
 
         public override int CalculateHeight() {
-            if (_editMode) {
+            if (EditMode) {
                 return this.Scaled(500);
             }
 
@@ -302,11 +302,11 @@ namespace SqlNotebook.Pages {
         }
 
         public override void StartEditing() {
-            if (_editMode) {
+            if (EditMode) {
                 return;
             }
 
-            _editMode = true;
+            EditMode = true;
             Cursor = Cursors.Default;
             var (acceptButton, table, panel) = CreateStandardEditModeLayout();
             _queryControl = new(_manager, isPageContext: true) {
@@ -332,13 +332,13 @@ namespace SqlNotebook.Pages {
             RaiseBlockClicked();
         }
 
-        private void StopEditing() {
-            if (!_editMode) {
+        public override void StopEditing() {
+            if (!EditMode) {
                 return;
             }
 
             UpdatePropertiesFromEditMode();
-            _editMode = false;
+            EditMode = false;
             Cursor = Cursors.Hand;
             for (var i = Controls.Count - 1; i >= 0; i--) {
                 Controls.RemoveAt(i);
@@ -381,7 +381,7 @@ namespace SqlNotebook.Pages {
         }
 
         public override void Serialize(BinaryWriter writer) {
-            if (_editMode) {
+            if (EditMode) {
                 UpdatePropertiesFromEditMode();
             }
 
@@ -402,6 +402,10 @@ namespace SqlNotebook.Pages {
 
             // MaxDisplayRows
             writer.Write(MaxDisplayRows);
+        }
+
+        public ScriptOutput ExecuteOnWorkerThread() {
+            return _manager.ExecuteScript(SqlText, maxRows: QueryEmbeddedControl.MAX_GRID_ROWS);
         }
     }
 }

@@ -175,6 +175,14 @@ namespace SqlNotebook {
             grid.TabIndex = _tabIndex++;
         }
 
+        public void Init(ToolStrip strip) {
+            strip.AutoSize = true;
+            strip.BackColor = Color.FromArgb(250, 250, 250);
+            strip.Stretch = true;
+            strip.GripStyle = ToolStripGripStyle.Hidden;
+            strip.SetMenuAppearance();
+        }
+
         public void Init(ToolStripButton button) {
             button.AutoSize = true;
         }

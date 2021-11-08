@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SqlNotebook.Properties;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -9,8 +11,11 @@ namespace SqlNotebook.Pages {
         private readonly NotebookManager _manager;
         private readonly IWin32Window _mainForm;
 
-        public readonly Panel _scrollPanel;
-        public readonly FlowLayoutPanel _flow;
+        private readonly ToolStrip _toolStrip;
+        private readonly ToolStripButton _executeAllButton;
+        private readonly ToolStripButton _acceptAllButton;
+        private readonly Panel _scrollPanel;
+        private readonly FlowLayoutPanel _flow;
 
         public PageControl(string name, NotebookManager manager, IWin32Window mainForm) {
             ItemName = name;
@@ -29,11 +34,28 @@ namespace SqlNotebook.Pages {
                 Margin = Padding.Empty,
             });
 
+            Controls.Add(_toolStrip = new() {
+                Dock = DockStyle.Top,
+            });
+            _toolStrip.Items.Add(_executeAllButton = new ToolStripButton {
+                Text = "Execute all"
+            });
+            _executeAllButton.Click += ExecuteAllButton_Click;
+            _toolStrip.Items.Add(_acceptAllButton = new ToolStripButton {
+                Text = "Accept all",
+                Enabled = false
+            });
+            _acceptAllButton.Click += AcceptAllButton_Click;
+            _toolStrip.SetMenuAppearance();
+
             DividerBlockControl divider = new();
             divider.AddBlock += Divider_AddPart;
             InsertBlock(divider, 0);
 
             Ui ui = new(this, padded: false);
+            ui.Init(_toolStrip);
+            ui.Init(_executeAllButton, Resources.ControlPlayBlue, Resources.control_play_blue32);
+            ui.Init(_acceptAllButton, Resources.accept_button, Resources.accept_button32);
             ui.Init(_scrollPanel);
             ui.Init(_flow);
 
@@ -158,7 +180,10 @@ namespace SqlNotebook.Pages {
             block.BlockMoved += Block_BlockMoved;
         }
 
-        private void Block_BlockClicked(object sender, EventArgs e) => OnSizeChanged(EventArgs.Empty);
+        private void Block_BlockClicked(object sender, EventArgs e) {
+            OnSizeChanged(EventArgs.Empty);
+            _acceptAllButton.Enabled = _flow.Controls.Cast<BlockControl>().Any(x => x.EditMode);
+        }
 
         private void Block_BlockMoved(BlockControl block, bool up) {
             var controlIndex = _flow.Controls.IndexOf(block);
@@ -184,6 +209,43 @@ namespace SqlNotebook.Pages {
             _flow.Controls.RemoveAt(index); // the part itself
             _flow.Controls.RemoveAt(index); // the divider after the part
             OnSizeChanged(EventArgs.Empty);
+        }
+
+        private void ExecuteAllButton_Click(object sender, EventArgs e) {
+            AcceptAll();
+
+            _manager.CommitOpenEditors();
+            
+            List<Action> uiThreadActions = new();
+            var queryBlockControls = _flow.Controls.OfType<QueryBlockControl>().ToList();
+            WaitForm.Go(TopLevelControl, "Page Execution", "Executing all queries...", out _, () => {
+                foreach (var queryBlockControl in queryBlockControls) {
+                    var output = queryBlockControl.ExecuteOnWorkerThread();
+                    uiThreadActions.Add(() => {
+                        queryBlockControl.Output = output;
+                        queryBlockControl.Invalidate();
+                    });
+                }
+            });
+
+            foreach (var action in uiThreadActions) {
+                action();
+            }
+            OnSizeChanged(EventArgs.Empty);
+
+            _manager.SetDirty();
+            _manager.Rescan();
+        }
+
+        private void AcceptAllButton_Click(object sender, EventArgs e) {
+            AcceptAll();
+        }
+
+        private void AcceptAll() {
+            foreach (BlockControl control in _flow.Controls) {
+                control.StopEditing();
+            }
+            _acceptAllButton.Enabled = false;
         }
     }
 }

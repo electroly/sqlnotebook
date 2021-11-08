@@ -11,14 +11,14 @@ using System.Windows.Forms;
 
 namespace SqlNotebook {
     public partial class QueryEmbeddedControl : UserControl {
-        private const int MAX_GRID_ROWS = 100_000;
+        public const int MAX_GRID_ROWS = 10_000;
         private readonly NotebookManager _manager;
         private readonly bool _isPageContext;
         private readonly Ui _ui;
         private ScriptOutput _output;
 
         // This includes tables for printed messages and scalar results. The indices match the tabs.
-        private readonly List<DataTable> _dataTables = new();
+        private readonly List<(long Count, DataTable DataTable)> _dataTables = new();
         private TabControl _tabs;
 
         public SqlTextControl TextControl { get; private set; }
@@ -141,11 +141,11 @@ namespace SqlNotebook {
             Debug.Assert(dataTables.Count == grids.Count);
             for (var i = 0; i < dataTables.Count; i++) {
                 var (fullCount, dt) = dataTables[i];
-                _dataTables.Add(dt);
+                _dataTables.Add(dataTables[i]);
                 TabPage page = new(
                     dt.Rows.Count == fullCount
                     ? $"Result ({fullCount:#,##0} row{(fullCount == 1 ? "" : "s")})"
-                    : $"Result ({fullCount:#,##0} row{(fullCount == 1 ? "" : "s")}, {dt.Rows.Count} shown)"
+                    : $"Result ({fullCount:#,##0} row{(fullCount == 1 ? "" : "s")}, {dt.Rows.Count:#,##0} shown)"
                     );
                 _tabs.TabPages.Add(page);
                 _ui.Init(page);
@@ -218,7 +218,7 @@ namespace SqlNotebook {
                 return;
             }
 
-            var dt = _dataTables[_tabs.SelectedIndex];
+            var (fullCount, dt) = _dataTables[_tabs.SelectedIndex];
 
             using SendToTableForm f = new(
                 "results",
@@ -231,6 +231,20 @@ namespace SqlNotebook {
                 return;
             }
             var name = f.SelectedName;
+
+            if (fullCount != dt.Rows.Count) {
+                TaskDialogPage page = new() {
+                    Caption = "Send to Table",
+                    Heading = "Your query will be executed. Proceed?", 
+
+                };
+
+                var choice = Ui.ShowTaskDialog(this, "Your query will be executed. Proceed?", "Send to Table",
+                    new[] { Ui.OK, Ui.CANCEL });
+                if (choice != Ui.OK) {
+                    return;
+                }
+            }
 
             var columnDefs = dt.Columns.Cast<DataColumn>().Select(x =>
                 $"{x.ColumnName.DoubleQuote()} {GetSqlNameForDbType(x.DataType)}");

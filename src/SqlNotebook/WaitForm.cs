@@ -1,5 +1,4 @@
 ﻿using Microsoft.WindowsAPICodePack.Taskbar;
-using SqlNotebookScript.Utils;
 using System;
 using System.Diagnostics;
 using System.Drawing;
