@@ -1,4 +1,5 @@
 ﻿using SqlNotebookScript.Interpreter;
+using SqlNotebookScript.Utils;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -71,7 +72,7 @@ namespace SqlNotebook.Pages {
             if (ShowResults) {
                 // Scalar result, if any
                 if (Output?.ScalarResult != null) {
-                    layout.ScalarResultText = Output.ScalarResult.ToString();
+                    layout.ScalarResultText = FormatCellValue(Output.ScalarResult);
                     var textSize = g.MeasureString(layout.ScalarResultText, gridFont, maxContentWidth,
                         _scalarResultStringFormat).ToSize();
                     layout.ScalarResultBounds = new(
@@ -292,6 +293,7 @@ namespace SqlNotebook.Pages {
         private static string FormatCellValue(object obj) =>
             obj switch {
                 double x => $"{x:#.####}",
+                byte[] x when ArrayUtil.IsSqlArray(x) => "[" + string.Join(", ", ArrayUtil.GetArrayElements(x)) + "]",
                 _ => obj.ToString()
             };
 
