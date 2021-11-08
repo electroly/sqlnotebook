@@ -13,7 +13,4 @@
     <ClCompile Include="GenericSqliteModuleImpl.cpp" />
     <ClCompile Include="NotebookTempFiles.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
 </Project>

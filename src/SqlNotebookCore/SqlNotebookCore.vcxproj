@@ -111,9 +111,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="MySql.Data">
       <HintPath>..\packages\MySql.Data.8.0.26\lib\net5.0\MySql.Data.dll</HintPath>
     </Reference>
@@ -121,7 +118,7 @@
       <HintPath>..\packages\Npgsql.5.0.10\lib\net5.0\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.SqlClient">
-      <HintPath>..\packages\System.Data.SqlClient.4.8.3\lib\netstandard2.0\System.Data.SqlClient.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Data.SqlClient.3.0.1\lib\netstandard2.1\Microsoft.Data.SqlClient.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

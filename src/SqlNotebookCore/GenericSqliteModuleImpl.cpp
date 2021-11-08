@@ -4,7 +4,7 @@
 using namespace SqlNotebookCore;
 using namespace SqlNotebookScript;
 using namespace System::Data;
-using namespace System::Data::SqlClient;
+using namespace Microsoft::Data::SqlClient;
 using namespace System::IO;
 using namespace System::Linq;
 using namespace System::Text;

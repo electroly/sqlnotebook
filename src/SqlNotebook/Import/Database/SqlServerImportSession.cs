@@ -1,8 +1,8 @@
-﻿using SqlNotebook.Properties;
+﻿using Microsoft.Data.SqlClient;
+using SqlNotebook.Properties;
 using SqlNotebookScript.Utils;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 
 namespace SqlNotebook.Import.Database {
     public sealed class SqlServerImportSession : ImportSessionBase<SqlConnectionStringBuilder> {
