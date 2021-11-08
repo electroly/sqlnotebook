@@ -1,5 +1,6 @@
 ﻿using SqlNotebook.Properties;
 using SqlNotebookScript.Interpreter;
+using SqlNotebookScript.Utils;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,16 +10,51 @@ using System.Windows.Forms;
 
 namespace SqlNotebook {
     public partial class QueryEmbeddedControl : UserControl {
+        private const int MAX_GRID_ROWS = 100_000;
         private readonly NotebookManager _manager;
         private readonly bool _isPageContext;
         private readonly Ui _ui;
+        private ScriptOutput _output;
+
+        // This includes tables for printed messages and scalar results. The indices match the tabs.
+        private readonly List<DataTable> _dataTables = new();
+        private TabControl _tabs;
 
         public SqlTextControl TextControl { get; private set; }
         public string SqlText {
             get => TextControl.SqlText;
             set => TextControl.SqlText = value;
         }
-        public ScriptOutput Output { get; private set; }
+        public ScriptOutput Output {
+            get => _output;
+            set {
+                _output = value;
+                SetOutput();
+            }
+        }
+        public bool ShowSql {
+            get => _optionsShowSqlMenu.Checked;
+            set => _optionsShowSqlMenu.Checked = value;
+        }
+        public bool ShowResults {
+            get => _optionsShowResultsMenu.Checked;
+            set => _optionsShowResultsMenu.Checked = value;
+        }
+        public int MaxRows {
+            get {
+                foreach (ToolStripMenuItem item in _limitRowsOnPageMenu.DropDownItems) {
+                    if (item.Checked) {
+                        return int.Parse(item.Text);
+                    }
+                }
+                return 10;
+            }
+            set {
+                foreach (ToolStripMenuItem item in _limitRowsOnPageMenu.DropDownItems) {
+                    item.Checked = int.Parse(item.Text) == value;
+                }
+            }
+        }
         public event EventHandler SqlTextChanged;
 
         public QueryEmbeddedControl(NotebookManager manager, bool isPageContext) {
@@ -62,14 +98,14 @@ namespace SqlNotebook {
             Execute();
         }
 
-        public void SetOutput(ScriptOutput output) {
-            Output = output;
-
+        private void SetOutput() {
             // Remove the previous result controls, if any.
             for (var i = _split.Panel2.Controls.Count - 1; i >= 0; i--) {
                 var control = _split.Panel2.Controls[i];
                 _split.Panel2.Controls.RemoveAt(i);
                 control.Dispose();
+                _dataTables.Clear();
+                _tabs = null;
             }
 
             // Now that the previous results are gone, we can bail early if there is no output.
@@ -94,16 +130,21 @@ namespace SqlNotebook {
             }
 
             // Show a tab control with one grid per tab.
-            TabControl tabs = new() {
+            _tabs = new() {
                 Dock = DockStyle.Fill
             };
-            _ui.Init(tabs);
-            _split.Panel2.Controls.Add(tabs);
+            _ui.Init(_tabs);
+            _split.Panel2.Controls.Add(_tabs);
             Debug.Assert(dataTables.Count == grids.Count);
             for (var i = 0; i < dataTables.Count; i++) {
-                var s = dataTables[i].Count == 1 ? "" : "s";
-                TabPage page = new($"Result ({dataTables[i].Count:#,##0} row{s})");
-                tabs.TabPages.Add(page);
+                var (fullCount, dt) = dataTables[i];
+                _dataTables.Add(dt);
+                TabPage page = new(
+                    dt.Rows.Count == fullCount
+                    ? $"Result ({fullCount:#,##0} row{(fullCount == 1 ? "" : "s")})"
+                    : $"Result ({fullCount:#,##0} row{(fullCount == 1 ? "" : "s")}, {dt.Rows.Count} shown)"
+                    );
+                _tabs.TabPages.Add(page);
                 _ui.Init(page);
                 page.Controls.Add(grids[i]);
                 grids[i].AutoSizeColumns(this.Scaled(300));
@@ -122,11 +163,11 @@ namespace SqlNotebook {
                 _manager.CommitOpenEditors();
                 var sql = SqlText;
                 var output = WaitForm.Go(TopLevelControl, "Script", "Running your script...", out var success, () =>
-                    _manager.ExecuteScript(sql, maxRows: 100_000));
+                    _manager.ExecuteScript(sql, maxRows: MAX_GRID_ROWS));
                 if (!success) {
                     return;
                 };
-                SetOutput(output);
+                Output = output;
                 _manager.SetDirty();
                 _manager.Rescan();
             } catch (Exception ex) {
@@ -136,6 +177,14 @@ namespace SqlNotebook {
 
         private List<(long Count, DataTable DataTable)> ConvertOutputToDataTables() {
             List<(long Count, DataTable DataTable)> resultSets = new();
+            if (Output.ScalarResult != null) {
+                DataTable dt = new("Scalar");
+                dt.Columns.Add("value", Output.ScalarResult.GetType());
+                var row = dt.NewRow();
+                row.ItemArray = new object[] { Output.ScalarResult };
+                dt.Rows.Add(row);
+                resultSets.Add((1, dt));
+            }
             if (Output.TextOutput.Any()) {
                 DataTable dt = new("Output");
                 dt.Columns.Add("message", typeof(string));
@@ -153,7 +202,58 @@ namespace SqlNotebook {
         }
 
         private void SendTableMenu_Click(object sender, EventArgs e) {
+            if (_dataTables == null || !_dataTables.Any()) {
+                Ui.ShowError(TopLevelControl, "Send to Table",
+                    "There are no data table results to send.", "Make sure to execute your query first.");
+                return;
+            }
 
+            var dt = _dataTables[_tabs.SelectedIndex];
+
+            using SendToTableForm f = new(
+                "results",
+                _manager.Items
+                    .Where(x => x.Type == NotebookItemType.Table || x.Type == NotebookItemType.View)
+                    .Select(x => x.Name)
+                    .ToList()
+            );
+            if (f.ShowDialog(this) != DialogResult.OK) {
+                return;
+            }
+            var name = f.SelectedName;
+
+            var columnDefs = dt.Columns.Cast<DataColumn>().Select(x =>
+                $"{x.ColumnName.DoubleQuote()} {GetSqlNameForDbType(x.DataType)}");
+            var createSql = $"CREATE TABLE {name.DoubleQuote()} ({string.Join(", ", columnDefs)})";
+
+            var insertSql = SqlUtil.GetInsertSql(name, dt.Columns.Count);
+
+            WaitForm.Go(TopLevelControl, "Send", $"Sending {dt.Rows.Count:#,##0} rows to \"{name}\"...", out var success, () => {
+                _manager.Notebook.Invoke(() => {
+                    SqlUtil.WithTransaction(_manager.Notebook, () => {
+                        _manager.ExecuteScript(createSql);
+                        foreach (DataRow row in dt.Rows) {
+                            _manager.Notebook.Execute(insertSql, row.ItemArray);
+                        }
+                    });
+                });
+            });
+            _manager.SetDirty();
+            _manager.Rescan();
+        }
+
+        private static string GetSqlNameForDbType(Type type) {
+            if (type == typeof(string)) {
+                return "TEXT";
+            } else if (type == typeof(int) || type == typeof(long)) {
+                return "INTEGER";
+            } else if (type == typeof(double)) {
+                return "FLOAT";
+            } else if (type == typeof(byte[])) {
+                return "BLOB";
+            } else {
+                return "ANY";
+            }
         }
 
         private void HideResultsButton_Click(object sender, EventArgs e) {
@@ -162,6 +262,12 @@ namespace SqlNotebook {
 
         private void ShowResultsButton_Click(object sender, EventArgs e) {
             ShowHideResultsPane(true);
+        }
+
+        private void LimitsRowsMenu_Click(object sender, EventArgs e) {
+            foreach (ToolStripMenuItem item in _limitRowsOnPageMenu.DropDownItems) {
+                item.Checked = ReferenceEquals(sender, item);
+            }
         }
     }
 }

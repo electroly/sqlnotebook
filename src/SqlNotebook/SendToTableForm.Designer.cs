@@ -23,19 +23,16 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SendToTableForm));
             this._nameLabel = new System.Windows.Forms.Label();
             this._picture = new System.Windows.Forms.PictureBox();
             this._okBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
             this._nameTxt = new System.Windows.Forms.TextBox();
-            this._errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this._table = new System.Windows.Forms.TableLayoutPanel();
             this._buttonFlow = new System.Windows.Forms.FlowLayoutPanel();
             this._picturePanel = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this._picture)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this._errorProvider)).BeginInit();
             this._table.SuspendLayout();
             this._buttonFlow.SuspendLayout();
             this._picturePanel.SuspendLayout();
@@ -91,11 +88,6 @@
             this._nameTxt.Name = "_nameTxt";
             this._nameTxt.Size = new System.Drawing.Size(620, 31);
             this._nameTxt.TabIndex = 1;
-            this._nameTxt.TextChanged += new System.EventHandler(this.NameTxt_TextChanged);
-            // 
-            // _errorProvider
-            // 
-            this._errorProvider.ContainerControl = this;
             // 
             // _table
             // 
@@ -159,7 +151,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Send to Table";
             ((System.ComponentModel.ISupportInitialize)(this._picture)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this._errorProvider)).EndInit();
             this._table.ResumeLayout(false);
             this._table.PerformLayout();
             this._buttonFlow.ResumeLayout(false);
@@ -174,7 +165,6 @@
         private System.Windows.Forms.Button _okBtn;
         private System.Windows.Forms.Button _cancelBtn;
         private System.Windows.Forms.TextBox _nameTxt;
-        private System.Windows.Forms.ErrorProvider _errorProvider;
         private System.Windows.Forms.Label _nameLabel;
         private System.Windows.Forms.TableLayoutPanel _table;
         private System.Windows.Forms.FlowLayoutPanel _buttonFlow;

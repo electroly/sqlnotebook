@@ -24,6 +24,11 @@ namespace SqlNotebook {
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+            System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
+            System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
+            System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
+            System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QueryEmbeddedControl));
             this._split = new System.Windows.Forms.SplitContainer();
             this._sqlPanel = new System.Windows.Forms.Panel();
@@ -34,13 +39,54 @@ namespace SqlNotebook {
             this._optionsMenu = new System.Windows.Forms.ToolStripDropDownButton();
             this._optionsShowSqlMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._optionsShowResultsMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this._limitRowsOnPageMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._showResultsButton = new System.Windows.Forms.ToolStripButton();
             this._hideResultsButton = new System.Windows.Forms.ToolStripButton();
+            toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this._split)).BeginInit();
             this._split.Panel1.SuspendLayout();
             this._split.SuspendLayout();
             this._toolStrip.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // toolStripMenuItem2
+            // 
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new System.Drawing.Size(270, 34);
+            toolStripMenuItem2.Text = "5";
+            toolStripMenuItem2.Click += new System.EventHandler(this.LimitsRowsMenu_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            toolStripMenuItem3.Name = "toolStripMenuItem3";
+            toolStripMenuItem3.Size = new System.Drawing.Size(270, 34);
+            toolStripMenuItem3.Text = "10";
+            toolStripMenuItem3.Click += new System.EventHandler(this.LimitsRowsMenu_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            toolStripMenuItem4.Name = "toolStripMenuItem4";
+            toolStripMenuItem4.Size = new System.Drawing.Size(270, 34);
+            toolStripMenuItem4.Text = "20";
+            toolStripMenuItem4.Click += new System.EventHandler(this.LimitsRowsMenu_Click);
+            // 
+            // toolStripMenuItem5
+            // 
+            toolStripMenuItem5.Name = "toolStripMenuItem5";
+            toolStripMenuItem5.Size = new System.Drawing.Size(270, 34);
+            toolStripMenuItem5.Text = "50";
+            toolStripMenuItem5.Click += new System.EventHandler(this.LimitsRowsMenu_Click);
+            // 
+            // toolStripMenuItem6
+            // 
+            toolStripMenuItem6.Name = "toolStripMenuItem6";
+            toolStripMenuItem6.Size = new System.Drawing.Size(270, 34);
+            toolStripMenuItem6.Text = "100";
+            toolStripMenuItem6.Click += new System.EventHandler(this.LimitsRowsMenu_Click);
             // 
             // _split
             // 
@@ -109,7 +155,7 @@ namespace SqlNotebook {
             // _sendTableMenu
             // 
             this._sendTableMenu.Name = "_sendTableMenu";
-            this._sendTableMenu.Size = new System.Drawing.Size(270, 34);
+            this._sendTableMenu.Size = new System.Drawing.Size(188, 34);
             this._sendTableMenu.Text = "To table...";
             this._sendTableMenu.Click += new System.EventHandler(this.SendTableMenu_Click);
             // 
@@ -118,12 +164,13 @@ namespace SqlNotebook {
             this._optionsMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this._optionsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._optionsShowSqlMenu,
-            this._optionsShowResultsMenu});
+            this._optionsShowResultsMenu,
+            this._limitRowsOnPageMenu});
             this._optionsMenu.Image = ((System.Drawing.Image)(resources.GetObject("_optionsMenu.Image")));
             this._optionsMenu.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._optionsMenu.Name = "_optionsMenu";
-            this._optionsMenu.Size = new System.Drawing.Size(94, 35);
-            this._optionsMenu.Text = "Options";
+            this._optionsMenu.Size = new System.Drawing.Size(124, 35);
+            this._optionsMenu.Text = "Appearance";
             // 
             // _optionsShowSqlMenu
             // 
@@ -131,7 +178,7 @@ namespace SqlNotebook {
             this._optionsShowSqlMenu.CheckOnClick = true;
             this._optionsShowSqlMenu.CheckState = System.Windows.Forms.CheckState.Checked;
             this._optionsShowSqlMenu.Name = "_optionsShowSqlMenu";
-            this._optionsShowSqlMenu.Size = new System.Drawing.Size(285, 34);
+            this._optionsShowSqlMenu.Size = new System.Drawing.Size(364, 34);
             this._optionsShowSqlMenu.Text = "Show SQL on page";
             // 
             // _optionsShowResultsMenu
@@ -140,8 +187,20 @@ namespace SqlNotebook {
             this._optionsShowResultsMenu.CheckOnClick = true;
             this._optionsShowResultsMenu.CheckState = System.Windows.Forms.CheckState.Checked;
             this._optionsShowResultsMenu.Name = "_optionsShowResultsMenu";
-            this._optionsShowResultsMenu.Size = new System.Drawing.Size(285, 34);
+            this._optionsShowResultsMenu.Size = new System.Drawing.Size(364, 34);
             this._optionsShowResultsMenu.Text = "Show results on page";
+            // 
+            // _limitRowsOnPageMenu
+            // 
+            this._limitRowsOnPageMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            toolStripMenuItem2,
+            toolStripMenuItem3,
+            toolStripMenuItem4,
+            toolStripMenuItem5,
+            toolStripMenuItem6});
+            this._limitRowsOnPageMenu.Name = "_limitRowsOnPageMenu";
+            this._limitRowsOnPageMenu.Size = new System.Drawing.Size(364, 34);
+            this._limitRowsOnPageMenu.Text = "Maximum rows shown on page";
             // 
             // _showResultsButton
             // 
@@ -193,5 +252,11 @@ namespace SqlNotebook {
         private System.Windows.Forms.ToolStripMenuItem _optionsShowResultsMenu;
         private System.Windows.Forms.ToolStripButton _hideResultsButton;
         private System.Windows.Forms.ToolStripButton _showResultsButton;
+        private System.Windows.Forms.ToolStripMenuItem _limitRowsOnPageMenu;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
     }
 }

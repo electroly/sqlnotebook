@@ -212,10 +212,6 @@ namespace SqlNotebook {
             });
             _manager.SetDirty();
             _manager.Rescan();
-
-            if (!success) {
-                return;
-            }
         }
 
         private static string GetSqlNameForDbType(Type type) {

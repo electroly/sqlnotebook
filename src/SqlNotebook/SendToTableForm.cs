@@ -37,6 +37,13 @@ namespace SqlNotebook {
         }
 
         private void OkBtn_Click(object sender, EventArgs e) {
+            try {
+                ValidateInput();
+            } catch (Exception ex) {
+                Ui.ShowError(this, "Send to Table", ex);
+                return;
+            }
+
             SelectedName = _nameTxt.Text;
             DialogResult = DialogResult.OK;
             Close();
@@ -47,17 +54,12 @@ namespace SqlNotebook {
         }
 
         private void ValidateInput() {
-            bool error = true;
             if (string.IsNullOrWhiteSpace(_nameTxt.Text)) {
-                _errorProvider.SetError(_nameTxt, "Please enter a table name.");
-            } else if (_existingNames.Contains(_nameTxt.Text.ToLowerInvariant())) {
-                _errorProvider.SetError(_nameTxt, "This name is already in use.");
-            } else {
-                _errorProvider.SetError(_nameTxt, null);
-                error = false;
+                throw new Exception("Please enter a table name.");
             }
-
-            _okBtn.Enabled = !error;
+            if (_existingNames.Contains(_nameTxt.Text.ToLowerInvariant())) {
+                throw new Exception("This name is already in use.");
+            }
         }
     }
 }

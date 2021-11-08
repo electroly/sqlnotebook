@@ -14,6 +14,8 @@ namespace SqlNotebook.Pages {
         public string SqlText { get; set; } = "SELECT * FROM sqlite_master";
         public ScriptOutput Output { get; set; } = null;
         public int MaxDisplayRows { get; set; } = 10;
+        public bool ShowSql { get; set; } = true;
+        public bool ShowResults { get; set; } = true;
 
         public QueryBlockControl(NotebookManager manager) {
             _manager = manager;
@@ -45,58 +47,63 @@ namespace SqlNotebook.Pages {
 
         private MeasuredLayout Measure(Graphics g) {
             var opt = UserOptions.Instance;
+            var codeFont = opt.GetCodeFont();
             var gridFont = opt.GetDataTableFont();
             var maxContentWidth = Width - 2 * HorizontalMargin;
             MeasuredLayout layout = new() {
                 Grids = new()
             };
+            var lastBounds = Rectangle.Empty;
 
             var spacingBetweenBlocks = this.Scaled(10);
 
-            // SQL code block
-            var codeFont = opt.GetCodeFont();
-            layout.SqlText =
-                (SqlText ?? "")
-                .Replace("\r", "")
-                .Replace("\t", "    ");
-            var codeSize = g.MeasureString(layout.SqlText, codeFont, maxContentWidth, _sqlStringFormat).ToSize();
-            layout.SqlBounds = new(HorizontalMargin, VerticalMargin, maxContentWidth, codeSize.Height);
-            var lastBounds = layout.SqlBounds;
-
-            // Scalar result, if any
-            if (Output?.ScalarResult != null) {
-                layout.ScalarResultText = Output.ScalarResult.ToString();
-                var textSize = g.MeasureString(layout.ScalarResultText, gridFont, maxContentWidth,
-                    _scalarResultStringFormat).ToSize();
-                layout.ScalarResultBounds = new(
-                    HorizontalMargin, lastBounds.Bottom + spacingBetweenBlocks,
-                    maxContentWidth, textSize.Height);
-                lastBounds = layout.ScalarResultBounds;
+            if (ShowSql) {
+                // SQL code block
+                layout.SqlText =
+                    (SqlText ?? "")
+                    .Replace("\r", "")
+                    .Replace("\t", "    ");
+                var codeSize = g.MeasureString(layout.SqlText, codeFont, maxContentWidth, _sqlStringFormat).ToSize();
+                layout.SqlBounds = new(HorizontalMargin, VerticalMargin, maxContentWidth, codeSize.Height);
+                lastBounds = layout.SqlBounds;
             }
 
-            // Result text, if any
-            if (Output?.TextOutput?.Any() ?? false) {
-                layout.PrintedText = string.Join(Environment.NewLine, Output.TextOutput);
-                var textSize = g.MeasureString(layout.PrintedText, gridFont, maxContentWidth,
-                    _scalarResultStringFormat).ToSize();
-                layout.TextBounds = new(
-                    HorizontalMargin, lastBounds.Bottom + spacingBetweenBlocks,
-                    maxContentWidth, textSize.Height);
-                lastBounds = layout.TextBounds;
-            }
-
-            // Result grids, if any
-            var textHeight = g.MeasureString("X", gridFont).ToSize().Height;
-            layout.GridRowHeight = (int)(textHeight * 1.4);
-            layout.GridCellTextYOffset = (layout.GridRowHeight - textHeight) / 2;
-            if (Output != null) {
-                foreach (var table in Output.DataTables) {
-                    var numRows = Math.Min(MaxDisplayRows, table.Rows.Count);
-                    Rectangle gridRect = new(
+            if (ShowResults) {
+                // Scalar result, if any
+                if (Output?.ScalarResult != null) {
+                    layout.ScalarResultText = Output.ScalarResult.ToString();
+                    var textSize = g.MeasureString(layout.ScalarResultText, gridFont, maxContentWidth,
+                        _scalarResultStringFormat).ToSize();
+                    layout.ScalarResultBounds = new(
                         HorizontalMargin, lastBounds.Bottom + spacingBetweenBlocks,
-                        maxContentWidth, layout.GridRowHeight * (numRows + 1));
-                    layout.Grids.Add((numRows, gridRect));
-                    lastBounds = gridRect;
+                        maxContentWidth, textSize.Height);
+                    lastBounds = layout.ScalarResultBounds;
+                }
+
+                // Result text, if any
+                if (Output?.TextOutput?.Any() ?? false) {
+                    layout.PrintedText = string.Join(Environment.NewLine, Output.TextOutput);
+                    var textSize = g.MeasureString(layout.PrintedText, gridFont, maxContentWidth,
+                        _scalarResultStringFormat).ToSize();
+                    layout.TextBounds = new(
+                        HorizontalMargin, lastBounds.Bottom + spacingBetweenBlocks,
+                        maxContentWidth, textSize.Height);
+                    lastBounds = layout.TextBounds;
+                }
+
+                // Result grids, if any
+                var textHeight = g.MeasureString("X", gridFont).ToSize().Height;
+                layout.GridRowHeight = (int)(textHeight * 1.4);
+                layout.GridCellTextYOffset = (layout.GridRowHeight - textHeight) / 2;
+                if (Output != null) {
+                    foreach (var table in Output.DataTables) {
+                        var numRows = Math.Min(MaxDisplayRows, table.Rows.Count);
+                        Rectangle gridRect = new(
+                            HorizontalMargin, lastBounds.Bottom + spacingBetweenBlocks,
+                            maxContentWidth, layout.GridRowHeight * (numRows + 1));
+                        layout.Grids.Add((numRows, gridRect));
+                        lastBounds = gridRect;
+                    }
                 }
             }
 
@@ -119,11 +126,11 @@ namespace SqlNotebook.Pages {
             var gridFont = opt.GetDataTableFont();
             using SolidBrush gridTextBrush = new(colors[UserOptionsColor.GRID_PLAIN]);
 
-            if (!string.IsNullOrWhiteSpace(layout.SqlText)) {
+            if (ShowSql && !string.IsNullOrWhiteSpace(layout.SqlText)) {
                 g.DrawString(layout.SqlText, opt.GetCodeFont(), gridTextBrush, layout.SqlBounds, _sqlStringFormat);
             }
 
-            if (Output == null) {
+            if (Output == null || !ShowResults) {
                 return;
             }
 
@@ -305,8 +312,11 @@ namespace SqlNotebook.Pages {
                 BorderStyle = BorderStyle.FixedSingle,
                 Margin = Padding.Empty,
                 SqlText = SqlText,
+                Output = Output,
+                MaxRows = MaxDisplayRows,
+                ShowSql = ShowSql,
+                ShowResults = ShowResults,
             };
-            _queryControl.SetOutput(Output);
             panel.Controls.Add(_queryControl);
             Controls.Add(table);
             _queryControl.TextControl.Focus();
@@ -327,6 +337,9 @@ namespace SqlNotebook.Pages {
 
             SqlText = _queryControl.SqlText;
             Output = _queryControl.Output;
+            MaxDisplayRows = _queryControl.MaxRows;
+            ShowSql = _queryControl.ShowSql;
+            ShowResults = _queryControl.ShowResults;
             _editMode = false;
             Cursor = Cursors.Hand;
             for (var i = Controls.Count - 1; i >= 0; i--) {
