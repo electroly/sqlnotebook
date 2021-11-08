@@ -99,7 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="license.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
