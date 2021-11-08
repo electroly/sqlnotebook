@@ -335,11 +335,7 @@ namespace SqlNotebook.Pages {
                 return;
             }
 
-            SqlText = _queryControl.SqlText;
-            Output = _queryControl.Output;
-            MaxDisplayRows = _queryControl.MaxRows;
-            ShowSql = _queryControl.ShowSql;
-            ShowResults = _queryControl.ShowResults;
+            UpdatePropertiesFromEditMode();
             _editMode = false;
             Cursor = Cursors.Hand;
             for (var i = Controls.Count - 1; i >= 0; i--) {
@@ -351,31 +347,59 @@ namespace SqlNotebook.Pages {
             RaiseBlockClicked();
         }
 
+        private void UpdatePropertiesFromEditMode() {
+            SqlText = _queryControl.SqlText;
+            Output = _queryControl.Output;
+            MaxDisplayRows = _queryControl.MaxRows;
+            ShowSql = _queryControl.ShowSql;
+            ShowResults = _queryControl.ShowResults;
+        }
+
         public override void Deserialize(BinaryReader reader) {
             // SqlText
             SqlText = reader.ReadString();
 
             // Output
-            var hasOutput = reader.ReadByte();
-            if (hasOutput == 1) {
+            var hasOutput = reader.ReadBoolean();
+            if (hasOutput) {
                 Output = ScriptOutput.Deserialize(reader);
-            } else if (hasOutput != 0) {
-                throw new Exception("File is corrupt.");
             }
+
+            // ShowSql
+            ShowSql = reader.ReadBoolean();
+            
+            // ShowResults
+            ShowResults = reader.ReadBoolean();
+
+            // MaxDisplayRows
+            MaxDisplayRows = reader.ReadInt32();
 
             Height = CalculateHeight();
             Invalidate(true);
         }
 
         public override void Serialize(BinaryWriter writer) {
+            if (_editMode) {
+                UpdatePropertiesFromEditMode();
+            }
+
             // SqlText
             writer.Write(SqlText);
 
             // Output
-            writer.Write((byte)(Output == null ? 0 : 1));
+            writer.Write(Output != null);
             if (Output != null) {
                 Output.Serialize(writer);
             }
+
+            // ShowSql
+            writer.Write(ShowSql);
+
+            // ShowResults
+            writer.Write(ShowResults);
+
+            // MaxDisplayRows
+            writer.Write(MaxDisplayRows);
         }
     }
 }

@@ -2,6 +2,7 @@
 using SqlNotebookScript.Utils;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -30,6 +31,8 @@ namespace SqlNotebook {
             _manager.NotebookChange += (sender, e) => HandleNotebookChange(e);
             _contextMenuStrip.SetMenuAppearance();
             _toolStrip.SetMenuAppearance();
+            _toolStrip.Padding = new(this.Scaled(1), 0, 0, 0);
+            _toolStrip.BackColor = SystemColors.Window;
 
             var dpiScale = DeviceDpi / 96d;
             var scaled16 = (int)(16 * dpiScale);

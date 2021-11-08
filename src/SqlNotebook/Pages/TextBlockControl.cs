@@ -85,7 +85,7 @@ namespace SqlNotebook.Pages {
                 return;
             }
 
-            BlockText = _textBox.SqlText;
+            UpdatePropertiesFromEditMode();
             _editMode = false;
             Cursor = Cursors.Hand;
             for (var i = Controls.Count - 1; i >= 0; i--) {
@@ -97,9 +97,11 @@ namespace SqlNotebook.Pages {
             RaiseBlockClicked();
         }
 
+        private void UpdatePropertiesFromEditMode() => BlockText = _textBox.SqlText;
+
         public override void Serialize(BinaryWriter writer) {
             if (_editMode) {
-                BlockText = _textBox.SqlText;
+                UpdatePropertiesFromEditMode();
             }
             writer.Write(BlockText);
         }

@@ -430,24 +430,6 @@ namespace SqlNotebook {
             NewPage();
         }
 
-        private static bool _ignoreF5 = false;
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-            if (keyData == Keys.F5) {
-                if (_ignoreF5) {
-                    return true;
-                }
-                if (_dockPanel.ActiveDocument is UserControlDockContent doc) {
-                    if (doc.Content is QueryDocumentControl queryDoc) {
-                        _ignoreF5 = true;
-                        queryDoc.Execute();
-                        _ignoreF5 = false;
-                        return true;
-                    }
-                }
-            }
-            return base.ProcessCmdKey(ref msg, keyData);
-        }
-
         private void ExitMnu_Click(object sender, EventArgs e) {
             Close();
         }

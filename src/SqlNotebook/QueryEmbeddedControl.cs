@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -63,6 +64,8 @@ namespace SqlNotebook {
             _isPageContext = isPageContext;
             _toolStrip.SetMenuAppearance();
 
+            BackColor = Color.FromArgb(250, 250, 250);
+
             TextControl = new SqlTextControl(false) {
                 Dock = DockStyle.Fill,
                 Padding = Padding.Empty,
@@ -83,7 +86,7 @@ namespace SqlNotebook {
             ui.Init(_hideResultsButton, Resources.hide_detail, Resources.hide_detail32);
             _hideResultsButton.Visible = false;
             ui.Init(_showResultsButton, Resources.show_detail, Resources.show_detail32);
-            _showResultsButton.Visible = true;
+            _showResultsButton.Visible = false;
             _ui = ui;
         }
 
@@ -104,9 +107,9 @@ namespace SqlNotebook {
                 var control = _split.Panel2.Controls[i];
                 _split.Panel2.Controls.RemoveAt(i);
                 control.Dispose();
-                _dataTables.Clear();
-                _tabs = null;
             }
+            _dataTables.Clear();
+            _tabs = null;
 
             // Now that the previous results are gone, we can bail early if there is no output.
             if (Output == null ||
@@ -153,9 +156,16 @@ namespace SqlNotebook {
         }
 
         private void ShowHideResultsPane(bool show) {
-            _split.Panel2Collapsed = !show;
-            _hideResultsButton.Visible = show;
-            _showResultsButton.Visible = !show;
+            if (_split.Panel2.Controls.Count == 0) {
+                // There is nothing to show in the results panel.
+                _split.Panel2Collapsed = true;
+                _hideResultsButton.Visible = false;
+                _showResultsButton.Visible = false;
+            } else {
+                _split.Panel2Collapsed = !show;
+                _hideResultsButton.Visible = show;
+                _showResultsButton.Visible = !show;
+            }
         }
 
         private void Execute() {
