@@ -94,6 +94,9 @@ void Notebook::Init() {
     InstallCustomFunctions();
 
     ReadUserDataFromDatabase();
+
+    Execute("DROP TABLE IF EXISTS _sqlnotebook_userdata;");
+    Execute("DROP TABLE IF EXISTS _sqlnotebook_version;");
 }
 
 /*static*/ int Notebook::GetFileVersion(String^ filePath) {
