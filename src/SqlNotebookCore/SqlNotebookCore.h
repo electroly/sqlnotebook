@@ -3,8 +3,8 @@
 #include <vector>
 #include <msclr/gcroot.h>
 #include "../sqlite3/sqlite3-ex.h"
-#include "NotebookTempFiles.h"
 using namespace SqlNotebookScript;
+using namespace SqlNotebookScript::Utils;
 using namespace System;
 using namespace System::Data;
 using namespace System::Collections::Generic;

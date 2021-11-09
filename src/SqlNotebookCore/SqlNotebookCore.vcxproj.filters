@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="SqlNotebookCore.h" />
-    <ClInclude Include="NotebookTempFiles.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
@@ -11,6 +10,5 @@
     <ClCompile Include="AdoModules.cpp" />
     <ClCompile Include="CustomFunctions.cpp" />
     <ClCompile Include="GenericSqliteModuleImpl.cpp" />
-    <ClCompile Include="NotebookTempFiles.cpp" />
   </ItemGroup>
 </Project>

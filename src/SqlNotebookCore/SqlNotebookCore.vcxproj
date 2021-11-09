@@ -90,7 +90,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="NotebookTempFiles.h" />
     <ClInclude Include="SqlNotebookCore.h" />
   </ItemGroup>
   <ItemGroup>
@@ -99,7 +98,6 @@
     <ClCompile Include="GenericSqliteModuleImpl.cpp" />
     <ClCompile Include="Notebook.cpp" />
     <ClCompile Include="AdoModules.cpp" />
-    <ClCompile Include="NotebookTempFiles.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
