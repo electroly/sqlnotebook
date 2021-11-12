@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SqlNotebookCore;
+using SqlNotebookScript;
+using SqlNotebookScript.Core;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebook {

@@ -1,5 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SqlNotebookCore;
+using SqlNotebookScript.Core;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
 using System;

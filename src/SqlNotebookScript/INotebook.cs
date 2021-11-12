@@ -1,20 +1,20 @@
 using System.Collections.Generic;
 
 namespace SqlNotebookScript {
-    public interface INotebook {
-        void Execute(string sql);
-        void Execute(string sql, IReadOnlyList<object> args);
-        void Execute(string sql, IReadOnlyDictionary<string, object> args);
-        SimpleDataTable Query(string sql, int maxRows);
-        SimpleDataTable Query(string sql, IReadOnlyList<object> args, int maxRows);
-        SimpleDataTable Query(string sql, IReadOnlyDictionary<string, object> args, int maxRows);
-        object QueryValue(string sql);
-        object QueryValue(string sql, IReadOnlyList<object> args);
-        object QueryValue(string sql, IReadOnlyDictionary<string, object> args);
-        IReadOnlyList<Token> Tokenize(string input);
-        NotebookUserData UserData { get; }
-        bool IsTransactionActive();
-    }
+    //public interface INotebook {
+    //    void Execute(string sql);
+    //    void Execute(string sql, IReadOnlyList<object> args);
+    //    void Execute(string sql, IReadOnlyDictionary<string, object> args);
+    //    SimpleDataTable Query(string sql, int maxRows);
+    //    SimpleDataTable Query(string sql, IReadOnlyList<object> args, int maxRows);
+    //    SimpleDataTable Query(string sql, IReadOnlyDictionary<string, object> args, int maxRows);
+    //    object QueryValue(string sql);
+    //    object QueryValue(string sql, IReadOnlyList<object> args);
+    //    object QueryValue(string sql, IReadOnlyDictionary<string, object> args);
+    //    IReadOnlyList<Token> Tokenize(string input);
+    //    NotebookUserData UserData { get; }
+    //    bool IsTransactionActive();
+    //}
 
     public sealed class NotebookItemRecord {
         public string Name { get; set; }

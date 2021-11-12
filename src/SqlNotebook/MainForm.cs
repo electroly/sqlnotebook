@@ -2,7 +2,7 @@
 using SqlNotebook.Import.Database;
 using SqlNotebook.Pages;
 using SqlNotebook.Properties;
-using SqlNotebookCore;
+using SqlNotebookScript.Core;
 using SqlNotebookScript.Utils;
 using System;
 using System.Collections.Generic;

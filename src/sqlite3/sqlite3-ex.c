@@ -13,8 +13,9 @@
 #ifdef _DEBUG
 #define SQLITE_MEMDEBUG 1
 #endif
+#define SQLITE_API __declspec(dllexport)
 #include "../../ext/sqlite/sqlite3.c"
 
-int SxGetToken(const unsigned char* z, int* tokenType) {
+__declspec(dllexport) int SxGetToken(const unsigned char* z, int* tokenType) {
     return sqlite3GetToken(z, tokenType);
 }

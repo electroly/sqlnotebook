@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NPOI.SS.UserModel;
+using SqlNotebookScript.Core;
+using SqlNotebookScript.Utils;
+using System;
 using System.IO;
 using System.Linq;
-using NPOI.SS.UserModel;
-using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.Interpreter {
     public sealed class ImportXlsStmtRunner {
-        private readonly INotebook _notebook;
+        private readonly Notebook _notebook;
         private readonly ScriptEnv _env;
         private readonly ScriptRunner _runner;
         private readonly Ast.ImportXlsStmt _stmt;
@@ -26,12 +26,12 @@ namespace SqlNotebookScript.Interpreter {
         private readonly IfConversionFails _ifConversionFails;
 
         // must be run from the SQLite thread
-        public static void Run(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt) {
+        public static void Run(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt) {
             var importer = new ImportXlsStmtRunner(notebook, env, runner, stmt);
             SqlUtil.WithTransaction(notebook, importer.Import);
         }
 
-        private ImportXlsStmtRunner(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt) {
+        private ImportXlsStmtRunner(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt) {
             _notebook = notebook;
             _env = env;
             _runner = runner;

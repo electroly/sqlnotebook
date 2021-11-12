@@ -1,11 +1,12 @@
-﻿using System;
+﻿using SqlNotebookScript.Core;
+using SqlNotebookScript.Utils;
+using System;
 using System.IO;
 using System.Text;
-using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.Interpreter {
     public sealed class ImportTxtStmtRunner {
-        private readonly INotebook _notebook;
+        private readonly Notebook _notebook;
         private readonly ScriptEnv _env;
         private readonly ScriptRunner _runner;
         private readonly Ast.ImportTxtStmt _stmt;
@@ -24,12 +25,12 @@ namespace SqlNotebookScript.Interpreter {
         private readonly Encoding _fileEncoding; // or null for automatic
 
         // must be run from the SQLite thread
-        public static void Run(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportTxtStmt stmt) {
+        public static void Run(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportTxtStmt stmt) {
             var importer = new ImportTxtStmtRunner(notebook, env, runner, stmt);
             SqlUtil.WithTransaction(notebook, importer.Import);
         }
 
-        private ImportTxtStmtRunner(INotebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportTxtStmt stmt) {
+        private ImportTxtStmtRunner(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportTxtStmt stmt) {
             _notebook = notebook;
             _env = env;
             _runner = runner;

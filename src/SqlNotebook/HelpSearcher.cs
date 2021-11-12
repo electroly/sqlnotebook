@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
-using SqlNotebookCore;
+using SqlNotebookScript;
+using SqlNotebookScript.Core;
 using SqlNotebookScript.Utils;
 using System;
 using System.Collections.Generic;

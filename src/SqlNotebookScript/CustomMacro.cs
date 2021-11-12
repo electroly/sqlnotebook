@@ -1,9 +1,10 @@
-﻿using SqlNotebookScript.Interpreter;
+﻿using SqlNotebookScript.Core;
+using SqlNotebookScript.Interpreter;
 using Ast = SqlNotebookScript.Interpreter.Ast;
 
 namespace SqlNotebookScript {
     public abstract class CustomMacro {
-        public INotebook Notebook { get; set; }
+        public Notebook Notebook { get; set; }
 
         // return true if a macro expansion was made, false if not
         public abstract bool Apply(Ast.SqlStmt stmt);

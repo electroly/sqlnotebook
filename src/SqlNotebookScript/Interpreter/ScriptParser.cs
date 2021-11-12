@@ -1,9 +1,9 @@
-﻿using System;
+﻿using SqlNotebookScript.Core;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
-using SqlNotebookScript;
 
 namespace SqlNotebookScript.Interpreter {
     public sealed class SyntaxException : Exception {
@@ -36,10 +36,10 @@ namespace SqlNotebookScript.Interpreter {
     }
 
     public sealed class ScriptParser {
-        private readonly INotebook _notebook;
+        private readonly Notebook _notebook;
         private readonly MacroProcessor _preprocessor;
 
-        public ScriptParser(INotebook notebook) {
+        public ScriptParser(Notebook notebook) {
             _notebook = notebook;
             _preprocessor = new MacroProcessor(notebook);
         }

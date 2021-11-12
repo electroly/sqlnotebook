@@ -1,14 +1,14 @@
 # Release procedure:
-# - Delete src\SqlNotebook\bin\
-# - Delete src\SqlNotebook\obj\
-# - Delete web\site\
+# - rm -Force -Recurse -ErrorAction SilentlyContinue src\SqlNotebook\bin
+# - rm -Force -Recurse -ErrorAction SilentlyContinue src\SqlNotebook\obj
+# - rm -Force -Recurse -ErrorAction SilentlyContinue web\site
 # - Bump AssemblyFileVersion in src\SqlNotebook\Properties\AssemblyInfo.cs
 # - Bump ProductVersion in SqlNotebook.wxs
 # - Update web\appversion.txt with new version and MSI URL
 # - Run ps1\Update-Docs.ps1
 # - In Dev Command Prompt, in src\SqlNotebook:
-#       - msbuild /t:restore /p:Configuration=Release /p:Platform=x64 /p:RuntimeIdentifier=win-x64 SqlNotebook.csproj
-#       - msbuild /t:publish /p:Configuration=Release /p:Platform=x64 /p:PublishProfile=FolderProfile SqlNotebook.csproj
+#       msbuild /t:restore /p:Configuration=Release /p:Platform=x64 /p:RuntimeIdentifier=win-x64 SqlNotebook.csproj
+#       msbuild /t:publish /p:Configuration=Release /p:Platform=x64 /p:PublishProfile=FolderProfile SqlNotebook.csproj
 # - Run ps1\New-Release.ps1
 # - Verify version in SqlNotebook.exe and .msi
 # - Run ps1\Update-Website.ps1
@@ -47,9 +47,11 @@ $tempWxsFilePath = "$srcDir\SqlNotebook\bin\temp.wxs"
 
 Remove-Item "$relDir\portable" -Recurse -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.pdb" -ErrorAction SilentlyContinue
+Remove-Item "$relDir\*.xml" -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.wixpdb" -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.wixobj" -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.wxs" -ErrorAction SilentlyContinue
+Copy-Item -Force "$rootDir\src\sqlite3\bin\x64\Release\sqlite3.dll" "$relDir\sqlite3.dll"
 
 Push-Location $relDir
 
@@ -99,6 +101,7 @@ Set-Content "$relDir\SqlNotebook.wxs" $wxs
 
 copy -force "$srcdir\SqlNotebook\SqlNotebookIcon.ico" "$relDir\SqlNotebookIcon.ico"
 
+& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com "$relDir\sqlite3.dll" | Write-Output
 & $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com "$relDir\SqlNotebook.exe" | Write-Output
 
 & "$wixDir\candle.exe" -nologo -pedantic "$relDir\SqlNotebook.wxs" | Write-Output

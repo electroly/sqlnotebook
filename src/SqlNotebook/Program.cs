@@ -1,4 +1,4 @@
-﻿using SqlNotebookCore;
+﻿using SqlNotebookScript.Core;
 using SqlNotebookScript.Utils;
 using System;
 using System.IO;

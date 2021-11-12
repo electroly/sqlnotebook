@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SqlNotebookScript.Core;
+using System;
 using System.Collections.Generic;
 
 namespace SqlNotebookScript.Interpreter {
@@ -7,10 +8,10 @@ namespace SqlNotebookScript.Interpreter {
     }
 
     public sealed class MacroProcessor {
-        private readonly INotebook _notebook;
+        private readonly Notebook _notebook;
         private readonly List<CustomMacro> _macros = new List<CustomMacro>();
 
-        public MacroProcessor(INotebook notebook) {
+        public MacroProcessor(Notebook notebook) {
             _notebook = notebook;
             LoadMacros();
         }

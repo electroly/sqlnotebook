@@ -1,9 +1,7 @@
-﻿using System;
+﻿using SqlNotebookScript.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SqlNotebookScript;
 
 namespace SqlNotebookScript.Interpreter {
     public sealed class TokenQueue {
@@ -11,9 +9,9 @@ namespace SqlNotebookScript.Interpreter {
         private int _peekIndex;
         private readonly int _eofLocation;
 
-        public INotebook Notebook { get; }
+        public Notebook Notebook { get; }
 
-        public TokenQueue(IEnumerable<Token> input, INotebook notebook) {
+        public TokenQueue(IEnumerable<Token> input, Notebook notebook) {
             Notebook = notebook;
             _tokens = input.ToList();
             if (_tokens.Any()) {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
-using SqlNotebookCore;
+using SqlNotebookScript.Core;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
 

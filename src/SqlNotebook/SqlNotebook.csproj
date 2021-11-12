@@ -1,62 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <IsWebBootstrapper>true</IsWebBootstrapper>
-    <PublishUrl>..\..\publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Web</InstallFrom>
-    <UpdateEnabled>true</UpdateEnabled>
-    <UpdateMode>Background</UpdateMode>
-    <UpdateInterval>2</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>https://sqlnotebook.com/install/</InstallUrl>
-    <UpdateUrl>https://sqlnotebook.com/install/</UpdateUrl>
-    <SupportUrl>https://sqlnotebook.com</SupportUrl>
-    <ProductName>SQL Notebook</ProductName>
-    <PublisherName>Brian Luft</PublisherName>
-    <WebPage>publish.html</WebPage>
-    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>0.6.0.0</ApplicationVersion>
-    <UseApplicationTrust>true</UseApplicationTrust>
-    <PublishWizardCompleted>true</PublishWizardCompleted>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <NoWarn>$(NoWarn);CA1416</NoWarn>
     <Platforms>x64</Platforms>
     <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>A5AFC4D045E7C07EF0B3A3F3EDEBE97B371E7E3B</ManifestCertificateThumbprint>
-    <ManifestKeyFile></ManifestKeyFile>
-    <GenerateManifests>true</GenerateManifests>
-    <SignManifests>false</SignManifests>
-    <ApplicationIcon>SqlNotebookIcon.ico</ApplicationIcon>
-    <StartupObject>SqlNotebook.Program</StartupObject>
-    <ManifestTimestampUrl></ManifestTimestampUrl>
-    <DelaySign>true</DelaySign>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	<ApplicationIcon>SqlNotebookIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\ThemeVS2012Light.csproj" />
     <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\WinFormsUI.csproj" />
     <ProjectReference Include="..\..\ext\Windows-API-Code-Pack\source\WindowsAPICodePack\Core\Core.csproj" />
     <ProjectReference Include="..\..\ext\Windows-API-Code-Pack\source\WindowsAPICodePack\Shell\Shell.csproj" />
-    <ProjectReference Include="..\SqlNotebookCore\SqlNotebookCore.vcxproj" />
     <ProjectReference Include="..\SqlNotebookScript\SqlNotebookScript.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <FileAssociation Include=".sqlnb">
-      <Visible>False</Visible>
-      <Description>SQL Notebook File</Description>
-      <Progid>SqlNotebook.File</Progid>
-      <DefaultIcon>SqlNotebookIcon.ico</DefaultIcon>
-    </FileAssociation>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.1.2.30" />
@@ -1540,4 +1500,7 @@
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /Y $(ProjectDir)..\sqlite3\bin\$(Platform)\$(Configuration)\sqlite3.dll $(TargetDir)sqlite3.dll" />
+  </Target>
 </Project>

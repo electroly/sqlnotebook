@@ -1,15 +1,16 @@
-﻿using System;
+﻿using SqlNotebookScript.Core;
+using SqlNotebookScript.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.Interpreter {
     public sealed class ScriptRunner {
-        private readonly INotebook _notebook;
+        private readonly Notebook _notebook;
         private readonly IReadOnlyDictionary<Type, Action<Ast.Stmt, ScriptEnv>> _stmtRunners;
         private readonly IReadOnlyDictionary<string, string> _scripts; // lowercase script name -> script code
 
-        public ScriptRunner(INotebook notebook, IReadOnlyDictionary<string, string> scripts) {
+        public ScriptRunner(Notebook notebook, IReadOnlyDictionary<string, string> scripts) {
             _notebook = notebook;
             _scripts = scripts;
             _stmtRunners = new Dictionary<Type, Action<Ast.Stmt, ScriptEnv>> {

@@ -1,7 +1,8 @@
-﻿using System;
+﻿using SqlNotebookScript.Core;
+using SqlNotebookScript.Interpreter;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using SqlNotebookScript.Interpreter;
 using Ast = SqlNotebookScript.Interpreter.Ast;
 
 namespace SqlNotebookScript.Utils {
@@ -27,7 +28,7 @@ namespace SqlNotebookScript.Utils {
         }
 
         public static void Import(string[] srcColNames, IEnumerable<object[]> dataRows, Ast.ImportTable importTable,
-        bool temporaryTable, bool truncateExistingTable, IfConversionFails ifConversionFails, INotebook notebook,
+        bool temporaryTable, bool truncateExistingTable, IfConversionFails ifConversionFails, Notebook notebook,
         ScriptRunner runner, ScriptEnv env) {
             Ast.ImportColumn[] dstColNodes;
             string[] dstColNames;
@@ -47,7 +48,7 @@ namespace SqlNotebookScript.Utils {
                 string.Join(", ", Enumerable.Range(0, numRows).Select(x => row));
         }
 
-        public static void VerifyColumnsExist(string[] colNames, string tableName, INotebook notebook) {
+        public static void VerifyColumnsExist(string[] colNames, string tableName, Notebook notebook) {
             var tableInfo = notebook.Query($"PRAGMA TABLE_INFO ({tableName.DoubleQuote()})", -1);
             var nameColIndex = tableInfo.GetIndex("name");
             var actualColNames = tableInfo.Rows.Select(x => x[nameColIndex].ToString().ToLower()).ToList();
@@ -179,7 +180,7 @@ namespace SqlNotebookScript.Utils {
 
         public static void CreateOrTruncateTable(IReadOnlyList<string> srcColNames, Ast.ImportColumn[] dstColNodes,
         IReadOnlyList<string> dstColNames, string dstTableName, bool temporaryTable, bool truncateExistingTable, 
-        INotebook notebook) {
+        Notebook notebook) {
             // create the table if it doesn't already exist.
             var columnDefs = new List<string>();
             if (dstColNodes.All(x => x == null)) {
@@ -215,7 +216,7 @@ namespace SqlNotebookScript.Utils {
         }
 
         public static void InsertDataRows(IEnumerable<object[]> rows, string[] dstColNames,
-        Ast.ImportColumn[] dstColNodes, string dstTableName, IfConversionFails ifConversionFails, INotebook notebook) {
+        Ast.ImportColumn[] dstColNodes, string dstTableName, IfConversionFails ifConversionFails, Notebook notebook) {
             var dstColCount = dstColNames.Where(x => x != null).Count();
             var insertSql = GetInsertSql(dstTableName, dstColCount, numRows: 1);
             var insertArgs = new List<object>();
@@ -252,13 +253,13 @@ namespace SqlNotebookScript.Utils {
             }
         }
 
-        public static void WithTransaction(INotebook notebook, Action action) =>
+        public static void WithTransaction(Notebook notebook, Action action) =>
             WithTransactionCore(notebook, action, rollback: false);
  
-        public static void WithRollbackTransaction(INotebook notebook, Action action) =>
+        public static void WithRollbackTransaction(Notebook notebook, Action action) =>
             WithTransactionCore(notebook, action, rollback: true);
 
-        private static void WithTransactionCore(INotebook notebook, Action action, bool rollback) {
+        private static void WithTransactionCore(Notebook notebook, Action action, bool rollback) {
             var didBeginTransaction = false;
             if (!notebook.IsTransactionActive()) {
                 notebook.Execute("BEGIN");
@@ -277,13 +278,13 @@ namespace SqlNotebookScript.Utils {
             }
         }
 
-        public static T WithTransaction<T>(INotebook notebook, Func<T> func) =>
+        public static T WithTransaction<T>(Notebook notebook, Func<T> func) =>
             WithTransactionCore<T>(notebook, func, rollback: false);
 
-        public static T WithRollbackTransaction<T>(INotebook notebook, Func<T> func) =>
+        public static T WithRollbackTransaction<T>(Notebook notebook, Func<T> func) =>
             WithTransactionCore<T>(notebook, func, rollback: true);
 
-        private static T WithTransactionCore<T>(INotebook notebook, Func<T> func, bool rollback) {
+        private static T WithTransactionCore<T>(Notebook notebook, Func<T> func, bool rollback) {
             var value = default(T);
             WithTransactionCore(notebook, () => {
                 value = func();
