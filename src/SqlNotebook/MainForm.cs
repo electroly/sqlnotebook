@@ -2,6 +2,7 @@
 using SqlNotebook.Import.Database;
 using SqlNotebook.Pages;
 using SqlNotebook.Properties;
+using SqlNotebookScript;
 using SqlNotebookScript.Core;
 using SqlNotebookScript.Utils;
 using System;
@@ -10,7 +11,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -669,9 +669,7 @@ namespace SqlNotebook {
 
         public static async Task<bool> IsUpdateAvailable() {
             try {
-                using var client = new WebClient();
-                var appversion = await client.DownloadStringTaskAsync(
-                    "https://sqlnotebook.com/appversion.txt?" + DateTime.Now.Date);
+                var appversion = await SharedHttp.Client.GetStringAsync($"https://sqlnotebook.com/appversion.txt?{Guid.NewGuid()}");
                 var data = appversion.Split('\n').Select(x => x.Trim()).ToList();
                 var version = data[0];
                 if (Application.ProductVersion != version) {
