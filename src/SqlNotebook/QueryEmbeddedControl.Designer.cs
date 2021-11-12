@@ -253,10 +253,5 @@ namespace SqlNotebook {
         private System.Windows.Forms.ToolStripButton _hideResultsButton;
         private System.Windows.Forms.ToolStripButton _showResultsButton;
         private System.Windows.Forms.ToolStripMenuItem _limitRowsOnPageMenu;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
     }
 }

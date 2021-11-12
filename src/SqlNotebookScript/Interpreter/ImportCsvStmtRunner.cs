@@ -14,8 +14,6 @@ namespace SqlNotebookScript.Interpreter {
         private readonly ScriptRunner _runner;
         private readonly Ast.ImportCsvStmt _stmt;
 
-        private string _separator = ",";
-
         // option values
         private readonly long _skipLines;
         private readonly long? _takeLines;

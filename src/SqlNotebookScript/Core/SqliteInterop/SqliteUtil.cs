@@ -63,12 +63,14 @@ public static class SqliteUtil {
             case bool x:
                 sqlite3_result_int(ctx, x ? 1 : 0);
                 break;
+#pragma warning disable CS0618 // Type or member is obsolete
             case NpgsqlTypes.NpgsqlDate x:
                 ResultText16(ctx, ((DateTime)x).ToString("yyyy-MM-dd"));
                 break;
             case NpgsqlTypes.NpgsqlDateTime x:
                 ResultText16(ctx, ((DateTime)x).ToString("yyyy-MM-dd HH:mm:ss.fff"));
                 break;
+#pragma warning restore CS0618 // Type or member is obsolete
             case DateTime x:
                 ResultText16(ctx, x.ToString("yyyy-MM-dd HH:mm:ss.fff"));
                 break;
