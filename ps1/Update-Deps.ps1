@@ -22,9 +22,8 @@ if (-not (Test-Path $downloadsDir)) {
 
 function Update-WindowsApiCodePack {
     $wapiDir = Join-Path $extDir "Windows-API-Code-Pack"
-    if (-not (Test-Path $wapiDir)) {
-        mkdir $wapiDir
-    }
+    Remove-Item -Force -Recurse $wapiDir -ErrorAction SilentlyContinue
+    mkdir $wapiDir
 
     $wapiFilename = [System.IO.Path]::GetFileName($wapiUrl)
     $wapiFilePath = Join-Path $downloadsDir $wapiFilename
@@ -34,7 +33,6 @@ function Update-WindowsApiCodePack {
     }
     VerifyHash $wapiFilePath $wapiHash
     Write-Host "Expanding: $wapiFilePath"
-    Remove-Item -Force -Recurse "$wapiDir\*" -ErrorAction SilentlyContinue
     Expand-Archive -LiteralPath $wapiFilePath -DestinationPath $wapiDir
     Move-Item "$wapiDir\Windows-*\*" "$wapiDir\"
     Remove-Item "$wapiDir\Windows-*"
@@ -47,13 +45,17 @@ function Update-WindowsApiCodePack {
         $txt = $txt.Replace("net5.0-windows", "net6.0-windows")
         [System.IO.File]::WriteAllText($csproj, $txt)
     }
+
+    # No idea why this patch is needed
+    $cs = [System.IO.File]::ReadAllText("$wapiDir\source\WindowsAPICodePack\Shell\Resources\LocalizedMessages.Designer.cs")
+    $cs = $cs.Replace("Microsoft.WindowsAPICodePack.Resources", "Microsoft.WindowsAPICodePack.Shell.Resources")
+    [System.IO.File]::WriteAllText("$wapiDir\source\WindowsAPICodePack\Shell\Resources\LocalizedMessages.Designer.cs", $cs)
 }
 
 function Update-Sqlite {
     $sqliteDir = Join-Path $extDir "sqlite"
-    if (-not (Test-Path $sqliteDir)) {
-        mkdir $sqliteDir
-    }
+    Remove-Item -Force -Recurse $sqliteDir -ErrorAction SilentlyContinue
+    mkdir $sqliteDir
 
     # code
     $sqliteCodeFilename = [System.IO.Path]::GetFileName($sqliteCodeUrl)
@@ -86,8 +88,8 @@ function Update-Sqlite {
     Remove-Item -Force -Recurse "$sqliteDir\sqlite-doc" -ErrorAction SilentlyContinue
     Rename-Item -LiteralPath "$sqliteDir\$sqliteDocDirName" "sqlite-doc"
 
-    # update enum TokenType in INotebook.cs
-    $notebookCsFilePath = "$rootDir\src\SqlNotebookScript\INotebook.cs"
+    # update enum TokenType.cs
+    $notebookCsFilePath = "$rootDir\src\SqlNotebookScript\TokenType.cs"
     if (-not (Test-Path $notebookCsFilePath)) {
         throw "File not found: $notebookCsFilePath"
     }
@@ -115,7 +117,7 @@ function Update-Sqlite {
                 }
             }
 
-            $tokenTypeEnumCode += "        $properName = $number,`r`n"
+            $tokenTypeEnumCode += "    $properName = $number,`r`n"
         } elseif ($sqliteLine.Contains('End of parse.h')) {
             break
         }
@@ -130,7 +132,7 @@ function Update-Sqlite {
         throw "Can't find TokenType's starting newline in $notebookCsFilePath"
     }
     $startIndex++
-    $endIndex = $notebookCs.IndexOf('    }', $startIndex)
+    $endIndex = $notebookCs.IndexOf('}', $startIndex)
     if ($endIndex -eq -1) {
         throw "Can't find TokenType's end brace in $notebookCsFilePath"
     }
