@@ -1,13 +1,19 @@
 # Release procedure:
 # - rm -Force -Recurse -ErrorAction SilentlyContinue src\SqlNotebook\bin
 # - rm -Force -Recurse -ErrorAction SilentlyContinue src\SqlNotebook\obj
+# - rm -Force -Recurse -ErrorAction SilentlyContinue src\SqlNotebookScript\bin
+# - rm -Force -Recurse -ErrorAction SilentlyContinue src\SqlNotebookScript\obj
+# - rm -Force -Recurse -ErrorAction SilentlyContinue src\sqlite3\bin
+# - rm -Force -Recurse -ErrorAction SilentlyContinue src\sqlite3\obj
+# - rm -Force -Recurse -ErrorAction SilentlyContinue src\packages
 # - rm -Force -Recurse -ErrorAction SilentlyContinue web\site
 # - Bump AssemblyFileVersion in src\SqlNotebook\Properties\AssemblyInfo.cs
 # - Bump ProductVersion in SqlNotebook.wxs
 # - Update web\appversion.txt with new version and MSI URL
 # - Run ps1\Update-Docs.ps1
 # - In Dev Command Prompt, in src\SqlNotebook:
-#       msbuild /t:restore /p:Configuration=Release /p:Platform=x64 /p:RuntimeIdentifier=win-x64 SqlNotebook.csproj
+#       msbuild /t:restore /p:Configuration=Release /p:Platform=x64 SqlNotebook.csproj
+#       msbuild /t:build /p:Configuration=Release /p:Platform=x64 ..\sqlite3\sqlite3.vcxproj
 #       msbuild /t:publish /p:Configuration=Release /p:Platform=x64 /p:PublishProfile=FolderProfile SqlNotebook.csproj
 # - Run ps1\New-Release.ps1
 # - Verify version in SqlNotebook.exe and .msi
@@ -64,6 +70,10 @@ rm $zipFilePath -ErrorAction SilentlyContinue
 rm "$relDir\SqlNotebook.wixobj" -ErrorAction SilentlyContinue
 rm "$relDir\SqlNotebook.wxs" -ErrorAction SilentlyContinue
 
+& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com "$relDir\sqlite3.dll" | Write-Output
+& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com "$relDir\SqlNotebook.exe" | Write-Output
+Copy-Item -Force "$srcdir\SqlNotebook\SqlNotebookIcon.ico" "$relDir\SqlNotebookIcon.ico"
+
 #
 # Generate portable ZIP
 #
@@ -98,11 +108,6 @@ $filesXml = $filesXml.Substring(0, $filesXml.LastIndexOf('</Directory>')).Replac
 
 $wxs = (Get-Content "$srcdir\SqlNotebook.wxs").Replace("<!--FILES-->", $filesXml).Replace("<!--REFS-->", $refsXml)
 Set-Content "$relDir\SqlNotebook.wxs" $wxs
-
-copy -force "$srcdir\SqlNotebook\SqlNotebookIcon.ico" "$relDir\SqlNotebookIcon.ico"
-
-& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com "$relDir\sqlite3.dll" | Write-Output
-& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com "$relDir\SqlNotebook.exe" | Write-Output
 
 & "$wixDir\candle.exe" -nologo -pedantic "$relDir\SqlNotebook.wxs" | Write-Output
 if (-not (Test-Path "$relDir\SqlNotebook.wixobj")) {
