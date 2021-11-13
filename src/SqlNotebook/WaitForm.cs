@@ -167,13 +167,17 @@ public partial class WaitForm : ZForm {
             } catch (Exception ex) {
                 ResultException = ex;
             }
-            while (!IsHandleCreated) {
+            while (!IsHandleCreated && !IsDisposed) {
                 Thread.Sleep(1);
             }
-            BeginInvoke(new MethodInvoker(() => {
-                DialogResult = ResultException == null ? DialogResult.OK : DialogResult.Abort;
-                Close();
-            }));
+            if (!IsDisposed) {
+                BeginInvoke(new MethodInvoker(() => {
+                    if (DialogResult != DialogResult.Cancel) {
+                        DialogResult = ResultException == null ? DialogResult.OK : DialogResult.Abort;
+                    }
+                    Close();
+                }));
+            }
         });
 
         if (TaskbarManager.IsPlatformSupported) {
@@ -229,6 +233,7 @@ public partial class WaitForm : ZForm {
     }
 
     private void CancelButton_Click(object sender, EventArgs e) {
+        _cancelButton.Enabled = false;
         CancelRequested?.Invoke(this, EventArgs.Empty);
     }
 }

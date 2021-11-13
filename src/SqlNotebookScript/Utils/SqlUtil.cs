@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using SqlNotebookScript.Core;
 using SqlNotebookScript.Interpreter;
 using Ast = SqlNotebookScript.Interpreter.Ast;
@@ -251,6 +252,22 @@ public static class SqlUtil {
                 }
                 notebook.Execute(insertSql, insertArgs);
             }
+        }
+    }
+
+    public static void WithCancellableTransaction(Notebook notebook, Action action, CancellationToken cancel) {
+        if (notebook.IsTransactionActive()) {
+            throw new InvalidOperationException("There is already a transaction in progress.");
+        }
+        notebook.Execute("BEGIN");
+        cancel.Register(() => notebook.BeginUserCancel());
+        try {
+            action();
+            notebook.Execute("COMMIT");
+        } catch {
+            notebook.EndUserCancel();
+            notebook.Execute("ROLLBACK");
+            throw;
         }
     }
 

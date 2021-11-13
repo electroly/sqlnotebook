@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
-using SqlNotebookScript;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
 
@@ -15,7 +14,6 @@ namespace SqlNotebook;
 public partial class QueryEmbeddedControl : UserControl {
     public const int MAX_GRID_ROWS = 10_000;
     private readonly NotebookManager _manager;
-    private readonly bool _isPageContext;
     private readonly Ui _ui;
     private ScriptOutput _output;
 
@@ -63,7 +61,6 @@ public partial class QueryEmbeddedControl : UserControl {
     public QueryEmbeddedControl(NotebookManager manager, bool isPageContext) {
         InitializeComponent();
         _manager = manager;
-        _isPageContext = isPageContext;
         _toolStrip.SetMenuAppearance();
 
         BackColor = Color.FromArgb(250, 250, 250);
@@ -174,8 +171,9 @@ public partial class QueryEmbeddedControl : UserControl {
         try {
             _manager.CommitOpenEditors();
             var sql = SqlText;
-            var output = WaitForm.Go(TopLevelControl, "Script", "Running your script...", out var success, () =>
-                _manager.ExecuteScript(sql, maxRows: MAX_GRID_ROWS));
+            var output = WaitForm.Go(TopLevelControl, "Script", "Running your script...", out var success, () => {
+                return _manager.ExecuteScript(sql, maxRows: MAX_GRID_ROWS);
+            });
             if (!success) {
                 return;
             };
@@ -251,9 +249,10 @@ public partial class QueryEmbeddedControl : UserControl {
 
         var sql = SqlText;
         var output = Output;
+        var tabIndex = _tabs.SelectedIndex;
         WaitForm.GoWithCancel(TopLevelControl, "Send", $"Sending {fullCount:#,##0} rows to \"{name}\"...", out var success, cancel => {
             _manager.Notebook.Invoke(() => {
-                SqlUtil.WithTransaction(_manager.Notebook, () => {
+                SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
                     _manager.ExecuteScript(createSql);
                     if (!rerun) {
                         foreach (DataRow row in dt.Rows) {
@@ -274,7 +273,6 @@ public partial class QueryEmbeddedControl : UserControl {
                     var tablesTabOffset =
                         (output.ScalarResult != null ? 1 : 0) +
                         (output.TextOutput.Any() ? 1 : 0);
-                    var tabIndex = _tabs.SelectedIndex;
 
                     if (tabIndex == scalarResultTabIndex) {
                         _manager.Notebook.Execute(insertSql, new object[] { output.ScalarResult });
@@ -290,7 +288,7 @@ public partial class QueryEmbeddedControl : UserControl {
                             _manager.Notebook.Execute(insertSql, row);
                         }
                     }
-                });
+                }, cancel);
             });
         });
         _manager.SetDirty();
