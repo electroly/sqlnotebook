@@ -12,7 +12,7 @@ namespace SqlNotebook.Pages {
         private readonly NotebookManager _manager;
         private QueryEmbeddedControl _queryControl;
 
-        public string SqlText { get; set; } = "SELECT * FROM sqlite_master";
+        public string SqlText { get; set; } = "";
         public ScriptOutput Output { get; set; } = null;
         public int MaxDisplayRows { get; set; } = 10;
         public bool ShowSql { get; set; } = true;
