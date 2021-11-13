@@ -34,11 +34,9 @@ namespace SqlNotebook {
             _toolStrip.Padding = new(this.Scaled(1), 0, 0, 0);
             _toolStrip.BackColor = SystemColors.Window;
 
-            var dpiScale = DeviceDpi / 96d;
-            var scaled16 = (int)(16 * dpiScale);
             ImageList imageList = new() {
                 ColorDepth = ColorDepth.Depth32Bit,
-                ImageSize = new(scaled16, scaled16),
+                ImageSize = new(this.Scaled(16), this.Scaled(16)),
             };
             
             // Same order as the ICON_* constants.

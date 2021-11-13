@@ -238,7 +238,6 @@
             this._detailsGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this._detailsGrid.RowHeadersVisible = false;
             this._detailsGrid.RowHeadersWidth = 62;
-            this._detailsGrid.RowTemplate.Height = 33;
             this._detailsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this._detailsGrid.Size = new System.Drawing.Size(334, 257);
             this._detailsGrid.TabIndex = 2;
