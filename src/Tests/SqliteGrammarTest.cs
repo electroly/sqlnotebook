@@ -1,87 +1,87 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SqlNotebookScript.Core;
-using SqlNotebookScript.Interpreter;
-using SqlNotebookScript.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SqlNotebookScript.Core;
+using SqlNotebookScript.Interpreter;
+using SqlNotebookScript.Utils;
 
-namespace Tests {
-    [TestClass]
-    public class SqliteGrammarTest {
-        [TestMethod]
-        public void TestSqlStatements() {
-            NotebookTempFiles.Init();
+namespace Tests;
 
-            var filePath = Path.Combine(Path.GetTempPath(), "SqliteGrammarTestDb");
-            File.WriteAllBytes(filePath, Array.Empty<byte>());
+[TestClass]
+public class SqliteGrammarTest {
+    [TestMethod]
+    public void TestSqlStatements() {
+        NotebookTempFiles.Init();
 
-            // these are other SQLite DBs we will attach to, to test schema names
-            var otherFilePath = Path.Combine(Path.GetTempPath(), "SqliteGrammarOtherDb");
-            File.WriteAllBytes(otherFilePath, Resources.OtherDb);
+        var filePath = Path.Combine(Path.GetTempPath(), "SqliteGrammarTestDb");
+        File.WriteAllBytes(filePath, Array.Empty<byte>());
 
-            var other2FilePath = Path.Combine(Path.GetTempPath(), "SqliteGrammarOtherDb2");
-            File.WriteAllBytes(other2FilePath, Resources.OtherDb);
+        // these are other SQLite DBs we will attach to, to test schema names
+        var otherFilePath = Path.Combine(Path.GetTempPath(), "SqliteGrammarOtherDb");
+        File.WriteAllBytes(otherFilePath, Resources.OtherDb);
 
-            try {
-                using var notebook = new Notebook(filePath, true);
-                notebook.Execute("ATTACH DATABASE ? AS other", new[] { filePath });
+        var other2FilePath = Path.Combine(Path.GetTempPath(), "SqliteGrammarOtherDb2");
+        File.WriteAllBytes(other2FilePath, Resources.OtherDb);
 
-                var stmts =
-                    from line in Resources.SqlTests.Replace('\r', '\n').Split('\n')
-                    let shouldFail = line.StartsWith("<ERR>")
-                    let trimLine = line.Replace("<ERR>", "").Trim()
-                    where trimLine.Any() && !trimLine.StartsWith("--")
-                    select new { Cmd = trimLine, ShouldFail = shouldFail };
+        try {
+            using var notebook = new Notebook(filePath, true);
+            notebook.Execute("ATTACH DATABASE ? AS other", new[] { filePath });
 
-                var errors = new List<string>();
+            var stmts =
+                from line in Resources.SqlTests.Replace('\r', '\n').Split('\n')
+                let shouldFail = line.StartsWith("<ERR>")
+                let trimLine = line.Replace("<ERR>", "").Trim()
+                where trimLine.Any() && !trimLine.StartsWith("--")
+                select new { Cmd = trimLine, ShouldFail = shouldFail };
 
-                foreach (var stmt in stmts) {
-                    // try first in SQLite directly to validate the test
-                    try {
-                        notebook.Execute(stmt.Cmd, new Dictionary<string, object> {
-                            ["@other2_path"] = other2FilePath,
-                            ["@int"] = 1,
-                            ["@str"] = "hello"
-                        });
-                        if (stmt.ShouldFail) {
-                            errors.Add($"Should have failed, but SQLite accepted.\n{stmt.Cmd}");
-                            continue;
-                        }
-                    } catch (Exception ex) {
-                        if (!stmt.ShouldFail) {
-                            errors.Add($"Should have passed, but SQLite rejected.\n{stmt.Cmd}\n" +
-                                $"SQLite error: " + ex.GetExceptionMessage());
-                            continue;
-                        }
-                    }
+            var errors = new List<string>();
 
-                    // then try with our parser to see if we match SQLite
-                    var tokens = notebook.Tokenize(stmt.Cmd);
-                    var q = new TokenQueue(tokens, notebook);
-                    var result = SqliteParser.ReadStmt(q, out var ast);
-                    var success = result.InvalidMessage == null && result.IsValid &&
-                        tokens.Count == result.NumValidTokens;
-                    if (stmt.ShouldFail && success) {
-                        errors.Add($"Should have failed, but we accepted.\n{stmt.Cmd}");
+            foreach (var stmt in stmts) {
+                // try first in SQLite directly to validate the test
+                try {
+                    notebook.Execute(stmt.Cmd, new Dictionary<string, object> {
+                        ["@other2_path"] = other2FilePath,
+                        ["@int"] = 1,
+                        ["@str"] = "hello"
+                    });
+                    if (stmt.ShouldFail) {
+                        errors.Add($"Should have failed, but SQLite accepted.\n{stmt.Cmd}");
                         continue;
-                    } else if (!stmt.ShouldFail && !success) {
-                        errors.Add($"Should have passed, but we rejected.\n{stmt.Cmd}\n" +
-                            $"InvalidMessage: {result.InvalidMessage}\nIsValid: {result.IsValid}\n" +
-                            $"NumValidTokens: {result.NumValidTokens}");
+                    }
+                } catch (Exception ex) {
+                    if (!stmt.ShouldFail) {
+                        errors.Add($"Should have passed, but SQLite rejected.\n{stmt.Cmd}\n" +
+                            $"SQLite error: " + ex.GetExceptionMessage());
                         continue;
                     }
                 }
 
-                if (errors.Any()) {
-                    Assert.Fail(string.Join("\n\n", errors));
+                // then try with our parser to see if we match SQLite
+                var tokens = notebook.Tokenize(stmt.Cmd);
+                var q = new TokenQueue(tokens, notebook);
+                var result = SqliteParser.ReadStmt(q, out var ast);
+                var success = result.InvalidMessage == null && result.IsValid &&
+                    tokens.Count == result.NumValidTokens;
+                if (stmt.ShouldFail && success) {
+                    errors.Add($"Should have failed, but we accepted.\n{stmt.Cmd}");
+                    continue;
+                } else if (!stmt.ShouldFail && !success) {
+                    errors.Add($"Should have passed, but we rejected.\n{stmt.Cmd}\n" +
+                        $"InvalidMessage: {result.InvalidMessage}\nIsValid: {result.IsValid}\n" +
+                        $"NumValidTokens: {result.NumValidTokens}");
+                    continue;
                 }
-            } finally {
-                File.Delete(filePath);
-                File.Delete(otherFilePath);
-                File.Delete(other2FilePath);
             }
+
+            if (errors.Any()) {
+                Assert.Fail(string.Join("\n\n", errors));
+            }
+        } finally {
+            File.Delete(filePath);
+            File.Delete(otherFilePath);
+            File.Delete(other2FilePath);
         }
     }
 }

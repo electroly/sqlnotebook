@@ -1,20 +1,20 @@
 ﻿using System.Data;
 using System.Windows.Forms;
 
-namespace SqlNotebook.Import {
-    public partial class ImportPreviewControl : UserControl {
-        private readonly DataGridView _grid;
+namespace SqlNotebook.Import;
 
-        public ImportPreviewControl(DataTable table) {
-            InitializeComponent();
+public partial class ImportPreviewControl : UserControl {
+    private readonly DataGridView _grid;
 
-            Controls.Add(_grid = DataGridViewUtil.NewDataGridView());
-            _grid.Dock = DockStyle.Fill;
-            _grid.DataSource = table;
+    public ImportPreviewControl(DataTable table) {
+        InitializeComponent();
 
-            Disposed += delegate {
-                table.Dispose();
-            };
-        }
+        Controls.Add(_grid = DataGridViewUtil.NewDataGridView());
+        _grid.Dock = DockStyle.Fill;
+        _grid.DataSource = table;
+
+        Disposed += delegate {
+            table.Dispose();
+        };
     }
 }

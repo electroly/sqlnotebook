@@ -3,113 +3,113 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-namespace SqlNotebook.Pages {
-    public sealed class TextBlockControl : BlockControl {
-        private SqlTextControl _textBox;
+namespace SqlNotebook.Pages;
 
-        public string BlockText { get; set; } = "";
+public sealed class TextBlockControl : BlockControl {
+    private SqlTextControl _textBox;
 
-        public TextBlockControl() {
-            _hover.Click += Hover_Click;
+    public string BlockText { get; set; } = "";
+
+    public TextBlockControl() {
+        _hover.Click += Hover_Click;
+    }
+
+    private readonly StringFormat _stringFormat = new(StringFormatFlags.FitBlackBox);
+
+    public override int CalculateHeight() {
+        if (EditMode) {
+            return this.Scaled(250);
         }
 
-        private readonly StringFormat _stringFormat = new(StringFormatFlags.FitBlackBox);
+        var opt = UserOptions.Instance;
+        using var g = CreateGraphics();
+        var codeFont = opt.GetCodeFont();
+        var textWidth = ClientSize.Width - 2 * HorizontalMargin;
+        var size = g.MeasureString(
+            BlockText.Replace("\r", "").Replace("\t", "    "),
+            codeFont,
+            textWidth,
+            _stringFormat).ToSize();
+        return Math.Max(this.Scaled(40), size.Height + 2 * VerticalMargin);
+    }
 
-        public override int CalculateHeight() {
-            if (EditMode) {
-                return this.Scaled(250);
-            }
+    protected override void OnPaint(Graphics g, UserOptions opt, Color[] colors, Color backColor) {
+        // User's text
+        var codeFont = opt.GetCodeFont();
+        var textWidth = ClientSize.Width - 2 * HorizontalMargin;
+        using SolidBrush brush = new(colors[UserOptionsColor.GRID_PLAIN]);
+        g.DrawString(
+            BlockText.Replace("\r", "").Replace("\t", "    "),
+            codeFont,
+            brush,
+            new RectangleF(
+                HorizontalMargin, VerticalMargin,
+                textWidth, ClientSize.Height
+            ),
+            _stringFormat);
+    }
 
-            var opt = UserOptions.Instance;
-            using var g = CreateGraphics();
-            var codeFont = opt.GetCodeFont();
-            var textWidth = ClientSize.Width - 2 * HorizontalMargin;
-            var size = g.MeasureString(
-                BlockText.Replace("\r", "").Replace("\t", "    "),
-                codeFont,
-                textWidth,
-                _stringFormat).ToSize();
-            return Math.Max(this.Scaled(40), size.Height + 2 * VerticalMargin);
+    private void Hover_Click(object sender, EventArgs e) {
+        StartEditing();
+    }
+
+    public override void StartEditing() {
+        if (EditMode) {
+            return;
         }
 
-        protected override void OnPaint(Graphics g, UserOptions opt, Color[] colors, Color backColor) {
-            // User's text
-            var codeFont = opt.GetCodeFont();
-            var textWidth = ClientSize.Width - 2 * HorizontalMargin;
-            using SolidBrush brush = new(colors[UserOptionsColor.GRID_PLAIN]);
-            g.DrawString(
-                BlockText.Replace("\r", "").Replace("\t", "    "),
-                codeFont,
-                brush,
-                new RectangleF(
-                    HorizontalMargin, VerticalMargin,
-                    textWidth, ClientSize.Height
-                ),
-                _stringFormat);
+        EditMode = true;
+        Cursor = Cursors.Default;
+
+        var (acceptButton, table, panel) = CreateStandardEditModeLayout();
+        _textBox = new(readOnly: false, syntaxColoring: false, wrap: true, lineNumbers: true) {
+            Dock = DockStyle.Fill,
+            Margin = Padding.Empty,
+            BorderStyle = BorderStyle.FixedSingle,
+            SqlText = BlockText,
+        };
+        panel.Controls.Add(_textBox);
+        Controls.Add(table);
+        _textBox.Focus();
+
+        acceptButton.Click += delegate {
+            StopEditing();
+        };
+
+        Height = CalculateHeight();
+        Invalidate(true);
+        RaiseBlockClicked();
+    }
+
+    public override void StopEditing() {
+        if (!EditMode) {
+            return;
         }
 
-        private void Hover_Click(object sender, EventArgs e) {
-            StartEditing();
+        UpdatePropertiesFromEditMode();
+        EditMode = false;
+        Cursor = Cursors.Hand;
+        for (var i = Controls.Count - 1; i >= 0; i--) {
+            Controls.RemoveAt(i);
         }
+        _textBox = null;
+        Height = CalculateHeight();
+        Invalidate(true);
+        RaiseBlockClicked();
+    }
 
-        public override void StartEditing() {
-            if (EditMode) {
-                return;
-            }
+    private void UpdatePropertiesFromEditMode() => BlockText = _textBox.SqlText;
 
-            EditMode = true;
-            Cursor = Cursors.Default;
-
-            var (acceptButton, table, panel) = CreateStandardEditModeLayout();
-            _textBox = new(readOnly: false, syntaxColoring: false, wrap: true, lineNumbers: true) {
-                Dock = DockStyle.Fill,
-                Margin = Padding.Empty,
-                BorderStyle = BorderStyle.FixedSingle,
-                SqlText = BlockText,
-            };
-            panel.Controls.Add(_textBox);
-            Controls.Add(table);
-            _textBox.Focus();
-
-            acceptButton.Click += delegate {
-                StopEditing();
-            };
-
-            Height = CalculateHeight();
-            Invalidate(true);
-            RaiseBlockClicked();
-        }
-
-        public override void StopEditing() {
-            if (!EditMode) {
-                return;
-            }
-
+    public override void Serialize(BinaryWriter writer) {
+        if (EditMode) {
             UpdatePropertiesFromEditMode();
-            EditMode = false;
-            Cursor = Cursors.Hand;
-            for (var i = Controls.Count - 1; i >= 0; i--) {
-                Controls.RemoveAt(i);
-            }
-            _textBox = null;
-            Height = CalculateHeight();
-            Invalidate(true);
-            RaiseBlockClicked();
         }
+        writer.Write(BlockText);
+    }
 
-        private void UpdatePropertiesFromEditMode() => BlockText = _textBox.SqlText;
-
-        public override void Serialize(BinaryWriter writer) {
-            if (EditMode) {
-                UpdatePropertiesFromEditMode();
-            }
-            writer.Write(BlockText);
-        }
-
-        public override void Deserialize(BinaryReader reader) {
-            BlockText = reader.ReadString();
-            Height = CalculateHeight();
-            Invalidate(true);
-        }
+    public override void Deserialize(BinaryReader reader) {
+        BlockText = reader.ReadString();
+        Height = CalculateHeight();
+        Invalidate(true);
     }
 }

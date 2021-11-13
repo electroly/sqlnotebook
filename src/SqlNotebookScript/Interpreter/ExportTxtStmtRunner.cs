@@ -1,76 +1,76 @@
-﻿using SqlNotebookScript.Core;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
+using SqlNotebookScript.Core;
 
-namespace SqlNotebookScript.Interpreter {
-    public sealed class ExportTxtStmtRunner {
-        private readonly Notebook _notebook;
-        private readonly ScriptEnv _env;
-        private readonly ScriptRunner _runner;
-        private readonly Ast.ExportTxtStmt _stmt;
+namespace SqlNotebookScript.Interpreter;
 
-        // arguments
-        private readonly string _filePath;
+public sealed class ExportTxtStmtRunner {
+    private readonly Notebook _notebook;
+    private readonly ScriptEnv _env;
+    private readonly ScriptRunner _runner;
+    private readonly Ast.ExportTxtStmt _stmt;
 
-        // options
-        private readonly bool _truncateExistingFile;
-        private readonly Encoding _fileEncoding;
+    // arguments
+    private readonly string _filePath;
 
-        // must be run from the SQLite thread
-        public static void Run(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ExportTxtStmt stmt) {
-            var exporter = new ExportTxtStmtRunner(notebook, env, runner, stmt);
-            exporter.Export();
-        }
+    // options
+    private readonly bool _truncateExistingFile;
+    private readonly Encoding _fileEncoding;
 
-        private ExportTxtStmtRunner(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ExportTxtStmt stmt) {
-            _notebook = notebook;
-            _env = env;
-            _runner = runner;
-            _stmt = stmt;
+    // must be run from the SQLite thread
+    public static void Run(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ExportTxtStmt stmt) {
+        var exporter = new ExportTxtStmtRunner(notebook, env, runner, stmt);
+        exporter.Export();
+    }
 
-            _filePath = GetFilePath();
+    private ExportTxtStmtRunner(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ExportTxtStmt stmt) {
+        _notebook = notebook;
+        _env = env;
+        _runner = runner;
+        _stmt = stmt;
 
-            foreach (var option in _stmt.OptionsList.GetOptionKeys()) {
-                switch (option) {
-                    case "TRUNCATE_EXISTING_FILE ":
-                        _truncateExistingFile = _stmt.OptionsList.GetOptionBool(option, _runner, _env, false);
-                        break;
+        _filePath = GetFilePath();
 
-                    case "FILE_ENCODING":
-                        _fileEncoding =
-                            _stmt.OptionsList.GetOptionEncoding(option, _runner, _env);
-                        break;
+        foreach (var option in _stmt.OptionsList.GetOptionKeys()) {
+            switch (option) {
+                case "TRUNCATE_EXISTING_FILE ":
+                    _truncateExistingFile = _stmt.OptionsList.GetOptionBool(option, _runner, _env, false);
+                    break;
 
-                    default:
-                        throw new Exception($"\"{option}\" is not a recognized option name.");
-                }
-            }
+                case "FILE_ENCODING":
+                    _fileEncoding =
+                        _stmt.OptionsList.GetOptionEncoding(option, _runner, _env);
+                    break;
 
-            if (_fileEncoding == null) {
-                _fileEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+                default:
+                    throw new Exception($"\"{option}\" is not a recognized option name.");
             }
         }
 
-        private void Export() {
-            var fileMode = _truncateExistingFile ? FileMode.Create : FileMode.Append;
-            using (var stream = File.Open(_filePath, fileMode, FileAccess.Write, FileShare.None)) 
-            using (var writer = new StreamWriter(stream, _fileEncoding)) {
-                var sdt = _notebook.Query(_stmt.SelectStmt.Sql, _env.Vars, -1);
-                foreach (var row in sdt.Rows) {
-                    writer.WriteLine(string.Join("", row));
-                }
+        if (_fileEncoding == null) {
+            _fileEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+        }
+    }
+
+    private void Export() {
+        var fileMode = _truncateExistingFile ? FileMode.Create : FileMode.Append;
+        using (var stream = File.Open(_filePath, fileMode, FileAccess.Write, FileShare.None)) 
+        using (var writer = new StreamWriter(stream, _fileEncoding)) {
+            var sdt = _notebook.Query(_stmt.SelectStmt.Sql, _env.Vars, -1);
+            foreach (var row in sdt.Rows) {
+                writer.WriteLine(string.Join("", row));
             }
         }
+    }
 
-        private string GetFilePath() {
-            var filePath = _runner.EvaluateExpr<string>(_stmt.FilenameExpr, _env);
-            var dirPath = Path.GetDirectoryName(filePath);
-            if (Directory.Exists(dirPath)) {
-                return filePath;
-            } else {
-                throw new Exception($"The output folder was not found: \"{dirPath}\"");
-            }
+    private string GetFilePath() {
+        var filePath = _runner.EvaluateExpr<string>(_stmt.FilenameExpr, _env);
+        var dirPath = Path.GetDirectoryName(filePath);
+        if (Directory.Exists(dirPath)) {
+            return filePath;
+        } else {
+            throw new Exception($"The output folder was not found: \"{dirPath}\"");
         }
     }
 }

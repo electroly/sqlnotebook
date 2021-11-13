@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel;
 
-namespace SqlNotebook.Import {
-    public enum ColumnHeadersOption {
-        [Description("Cell range includes headers")]
-        Present,
+namespace SqlNotebook.Import;
 
-        [Description("No column headers")]
-        NotPresent
-    }
+public enum ColumnHeadersOption {
+    [Description("Cell range includes headers")]
+    Present,
+
+    [Description("No column headers")]
+    NotPresent
 }

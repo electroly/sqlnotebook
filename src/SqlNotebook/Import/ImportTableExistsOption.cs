@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel;
 
-namespace SqlNotebook.Import {
-    public enum ImportTableExistsOption {
-        [Description("Append new rows")]
-        AppendNewRows,
+namespace SqlNotebook.Import;
 
-        [Description("Delete existing rows")]
-        DeleteExistingRows,
+public enum ImportTableExistsOption {
+    [Description("Append new rows")]
+    AppendNewRows,
 
-        [Description("Drop table and re-create")]
-        DropTable
-    }
+    [Description("Delete existing rows")]
+    DeleteExistingRows,
+
+    [Description("Drop table and re-create")]
+    DropTable
 }

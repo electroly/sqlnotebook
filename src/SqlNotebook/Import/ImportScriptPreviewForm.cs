@@ -1,29 +1,28 @@
-﻿using SqlNotebook.Import;
+﻿using System.Windows.Forms;
 using SqlNotebookScript;
-using System.Windows.Forms;
 
-namespace SqlNotebook.Import {
-    public partial class ImportScriptPreviewForm : ZForm {
-        public ImportScriptPreviewForm(string sql, SimpleDataTable table) {
-            InitializeComponent();
+namespace SqlNotebook.Import;
 
-            SqlTextControl textbox = new(true) {
-                Dock = DockStyle.Fill
-            };
-            textbox.SqlText = sql;
-            _scriptPanel.Controls.Add(textbox);
+public partial class ImportScriptPreviewForm : ZForm {
+    public ImportScriptPreviewForm(string sql, SimpleDataTable table) {
+        InitializeComponent();
 
-            ImportPreviewControl grid = new(table.ToDataTable()) { Dock = DockStyle.Fill };
-            _previewPanel.Controls.Add(grid);
+        SqlTextControl textbox = new(true) {
+            Dock = DockStyle.Fill
+        };
+        textbox.SqlText = sql;
+        _scriptPanel.Controls.Add(textbox);
 
-            Ui ui = new(this, 150, 40);
-            ui.Init(_table);
-            ui.Init(_split, 0.5);
-            ui.InitHeader(_scriptLabel);
-            ui.InitHeader(_previewLabel);
-            ui.Init(_buttonFlow);
-            ui.MarginTop(_buttonFlow);
-            ui.Init(_okButton);
-        }
+        ImportPreviewControl grid = new(table.ToDataTable()) { Dock = DockStyle.Fill };
+        _previewPanel.Controls.Add(grid);
+
+        Ui ui = new(this, 150, 40);
+        ui.Init(_table);
+        ui.Init(_split, 0.5);
+        ui.InitHeader(_scriptLabel);
+        ui.InitHeader(_previewLabel);
+        ui.Init(_buttonFlow);
+        ui.MarginTop(_buttonFlow);
+        ui.Init(_okButton);
     }
 }
