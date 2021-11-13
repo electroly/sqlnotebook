@@ -34,6 +34,19 @@ public partial class WaitForm : ZForm {
         return result;
     }
 
+    public static void GoWithCancel(IWin32Window owner, string title, string text, out bool success, Action<CancellationToken> action) {
+        using CancellationTokenSource cts = new();
+        GoCore(owner, title, text, out success, () => action(cts.Token), cancelAction: () => cts.Cancel());
+    }
+
+    public static T GoWithCancel<T>(IWin32Window owner, string title, string text, out bool success, Func<CancellationToken, T> func) {
+        T result = default;
+        GoWithCancel(owner, title, text, out success, action: cancel => {
+            result = func(cancel);
+        });
+        return result;
+    }
+
     // The action is uncancelable, so just let it finish and forget about it. This is the worst kind of
     // cancellation so we give it an irritating name to discourage its use.
     public static void GoWithCancelByWalkingAway(
@@ -81,7 +94,9 @@ public partial class WaitForm : ZForm {
         return;
     }
 
-    private static void GoCore(IWin32Window owner, string title, string text, out bool success, Action action) {
+    private static void GoCore(IWin32Window owner, string title, string text, out bool success, Action action,
+        Action cancelAction = null
+        ) {
         success = false;
 
         // Try running the action briefly before pulling up the wait form, to avoid a flicker of the wait form for
@@ -102,9 +117,12 @@ public partial class WaitForm : ZForm {
                 return;
             }
         } else {
-            using WaitForm f = new(title, text, () => task.GetAwaiter().GetResult(), allowCancel: false);
+            using WaitForm f = new(title, text, () => task.GetAwaiter().GetResult(), allowCancel: cancelAction != null);
+            f.CancelRequested += delegate {
+                cancelAction?.Invoke();
+            };
             var result = f.ShowDialog(owner);
-            if (result != DialogResult.OK) {
+            if (result != DialogResult.OK && result != DialogResult.Cancel) {
                 Ui.ShowError(owner, title, f.ResultException);
                 return;
             }

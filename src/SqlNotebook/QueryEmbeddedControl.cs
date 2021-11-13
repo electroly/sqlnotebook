@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
+using SqlNotebookScript;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
 
@@ -233,13 +234,8 @@ public partial class QueryEmbeddedControl : UserControl {
         }
         var name = f.SelectedName;
 
-        if (fullCount != dt.Rows.Count) {
-            TaskDialogPage page = new() {
-                Caption = "Send to Table",
-                Heading = "Your query will be executed. Proceed?", 
-
-            };
-
+        var rerun = fullCount != dt.Rows.Count;
+        if (rerun) {
             var choice = Ui.ShowTaskDialog(this, "Your query will be executed. Proceed?", "Send to Table",
                 new[] { Ui.OK, Ui.CANCEL });
             if (choice != Ui.OK) {
@@ -253,12 +249,46 @@ public partial class QueryEmbeddedControl : UserControl {
 
         var insertSql = SqlUtil.GetInsertSql(name, dt.Columns.Count);
 
-        WaitForm.Go(TopLevelControl, "Send", $"Sending {dt.Rows.Count:#,##0} rows to \"{name}\"...", out var success, () => {
+        var sql = SqlText;
+        var output = Output;
+        WaitForm.GoWithCancel(TopLevelControl, "Send", $"Sending {fullCount:#,##0} rows to \"{name}\"...", out var success, cancel => {
             _manager.Notebook.Invoke(() => {
                 SqlUtil.WithTransaction(_manager.Notebook, () => {
                     _manager.ExecuteScript(createSql);
-                    foreach (DataRow row in dt.Rows) {
-                        _manager.Notebook.Execute(insertSql, row.ItemArray);
+                    if (!rerun) {
+                        foreach (DataRow row in dt.Rows) {
+                            cancel.ThrowIfCancellationRequested();
+                            _manager.Notebook.Execute(insertSql, row.ItemArray);
+                        }
+                        return;
+                    }
+
+                    output = _manager.ExecuteScript(sql);
+                    var scalarResultTabIndex =
+                        output.ScalarResult != null ? 0
+                        : -1;
+                    var textTabIndex =
+                        output.ScalarResult == null && output.TextOutput.Any() ? 0 :
+                        output.ScalarResult != null && output.TextOutput.Any() ? 1 :
+                        -1;
+                    var tablesTabOffset =
+                        (output.ScalarResult != null ? 1 : 0) +
+                        (output.TextOutput.Any() ? 1 : 0);
+                    var tabIndex = _tabs.SelectedIndex;
+
+                    if (tabIndex == scalarResultTabIndex) {
+                        _manager.Notebook.Execute(insertSql, new object[] { output.ScalarResult });
+                    } else if (tabIndex == textTabIndex) {
+                        foreach (var line in output.TextOutput) {
+                            cancel.ThrowIfCancellationRequested();
+                            _manager.Notebook.Execute(insertSql, new object[] { line });
+                        }
+                    } else {
+                        var table = output.DataTables[tabIndex - tablesTabOffset];
+                        foreach (var row in table.Rows) {
+                            cancel.ThrowIfCancellationRequested();
+                            _manager.Notebook.Execute(insertSql, row);
+                        }
                     }
                 });
             });
