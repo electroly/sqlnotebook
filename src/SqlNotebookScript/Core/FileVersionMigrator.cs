@@ -3,6 +3,7 @@ using SqlNotebookScript.Utils;
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -100,11 +101,40 @@ public static class FileVersionMigrator {
             }
         }
 
-        // remove any Note and Console items from the notebook
+        // remove any Console items and convert any Note items
         for (var i = userData.Items.Count - 1; i >= 0; i--) {
-            var type = userData.Items[i].Type;
-            if (type == "Note" || type == "Console") {
+            var item = userData.Items[i];
+            var type = item.Type;
+
+            if (type == "Console") {
                 userData.Items.RemoveAt(i);
+                continue;
+            }
+
+            if (type == "Note") {
+                userData.Items.RemoveAt(i);
+                
+                // Create a new page item to replace it.
+                HtmlAgilityPack.HtmlDocument doc = new();
+                doc.LoadHtml(item.Data);
+                var text = WebUtility.HtmlDecode(doc.DocumentNode.InnerText);
+
+                using MemoryStream memoryStream = new();
+                using (GZipStream gzipStream = new(memoryStream, CompressionLevel.Fastest)) {
+                    using BinaryWriter writer = new(gzipStream);
+
+                    writer.Write(1); // Count of blocks in the page
+                    writer.Write((byte)1); // Type: Text block
+                    writer.Write(text); // Text block data
+                }
+
+                userData.Items.Add(new() {
+                    Type = "Page",
+                    Name = item.Name,
+                    Data = Convert.ToBase64String(memoryStream.ToArray())
+                });
+
+                continue;
             }
         }
 
