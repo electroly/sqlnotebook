@@ -37,7 +37,7 @@ namespace SqlNotebook.Pages {
             public Rectangle ScalarResultBounds;
             public int GridRowHeight;
             public int GridCellTextYOffset;
-            public List<(int NumRows, Rectangle Bounds)> Grids;
+            public List<(int NumRows, Rectangle Bounds, Rectangle RowCountBounds)> Grids;
             public int TotalHeight;
         }
 
@@ -99,10 +99,12 @@ namespace SqlNotebook.Pages {
                 if (Output != null) {
                     foreach (var table in Output.DataTables) {
                         var numRows = Math.Min(MaxDisplayRows, table.Rows.Count);
+                        Rectangle countRect = new(HorizontalMargin, lastBounds.Bottom + spacingBetweenBlocks,
+                            maxContentWidth, textHeight);
                         Rectangle gridRect = new(
-                            HorizontalMargin, lastBounds.Bottom + spacingBetweenBlocks,
+                            HorizontalMargin, countRect.Bottom,
                             maxContentWidth, layout.GridRowHeight * (numRows + 1));
-                        layout.Grids.Add((numRows, gridRect));
+                        layout.Grids.Add((numRows, gridRect, countRect));
                         lastBounds = gridRect;
                     }
                 }
@@ -149,7 +151,15 @@ namespace SqlNotebook.Pages {
 
             for (var tableIndex = 0; tableIndex < (Output?.DataTables?.Count ?? 0); tableIndex++) {
                 var table = Output.DataTables[tableIndex];
-                var (numRows, gridBounds) = layout.Grids[tableIndex];
+                var (numRows, gridBounds, countBounds) = layout.Grids[tableIndex];
+
+                var countText =
+                    table.FullCount != table.Rows.Count
+                    ? $"{table.FullCount:#,##0} row{(table.FullCount == 1 ? "" : "s")} ({numRows} shown)"
+                    : $"{table.FullCount:#,##0} row{(table.FullCount == 1 ? "" : "s")}";
+                var countTextHeight = g.MeasureString(countText, gridFont).Height;
+                g.DrawString(countText, gridFont, gridTextBrush,
+                    new PointF(countBounds.Left, countBounds.Top));
 
                 // Measure the widths of the values in each column, among rows we intend to show.
                 var columnWidths = new int[table.Columns.Count];

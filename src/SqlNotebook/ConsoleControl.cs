@@ -141,13 +141,11 @@ namespace SqlNotebook {
                 }
 
                 foreach (var simpleDataTable in output.DataTables) {
-                    var s = simpleDataTable.Rows.Count == 1 ? "" : "s";
-
                     Label label = new() {
                         AutoSize = true,
                         Text = simpleDataTable.FullCount > MAX_GRID_ROWS
-                            ? $"{simpleDataTable.FullCount:#,##0} row{s} ({MAX_GRID_ROWS:#,##0} shown)"
-                            : $"{simpleDataTable.FullCount:#,##0} row{s}",
+                            ? $"{simpleDataTable.FullCount:#,##0} row{(simpleDataTable.FullCount == 1 ? "" : "s")} ({MAX_GRID_ROWS:#,##0} shown)"
+                            : $"{simpleDataTable.FullCount:#,##0} row{(simpleDataTable.FullCount == 1 ? "" : "s")}",
                         Margin = _outputCountMargin,
                     };
 
