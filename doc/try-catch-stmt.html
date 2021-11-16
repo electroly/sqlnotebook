@@ -1,49 +1,33 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-    <title>TRY/CATCH Statement</title>
-  </head>
-  <body>
-    <h1><code>TRY/CATCH</code> Statement</h1>
-    Executes the <span style="font-style: italic;">statement-to-try</span>
-    statements in order until successful completion or until one of the
-    statements throws an error. If an error is thrown, then <span
-      style="font-style: italic;">statement-if-error</span> statements
-    are executed. The statements in the <code>CATCH</code> block may
-    use the <a href="error-message-func.html"><code>ERROR_MESSAGE</code></a>
-    function to access the thrown message.<br>
-    <h2>Syntax</h2>
-    <img moz-do-not-send="true" src="art/rr-try-statement.svg" alt=""
-      class="railroad" width="682" height="156">
-    <h2>Arguments</h2>
-    <ul class="args">
-      <li> <span style="font-weight: bold;">statement-to-try</span>
-        (statement)<br>
-        The statements to execute. These statements may <a
-          href="throw-stmt.html"><code>THROW</code></a> an error,
-        causing execution to divert to the <span style="font-style:
-          italic;">statement-if-error</span> statements. </li>
-      <li> <span style="font-weight: bold;">statement-if-error</span>
-        (statement)<br>
-        The statements to execute if any <span style="font-style:
-          italic;">statement-to-try</span> throws an error. These
-        statements may use the <a href="error-message-func.html"><code>ERROR_MESSAGE</code></a>
-        function to access the thrown message. </li>
-    </ul>
-    <h2>Examples</h2>
-    <ul class="examples">
-      <li><code>BEGIN TRY<br>
-          &nbsp;&nbsp;&nbsp; THROW 'Foo';<br>
-          END TRY<br>
-          BEGIN CATCH<br>
-          &nbsp;&nbsp;&nbsp; PRINT ERROR_MESSAGE();<br>
-          END CATCH</code><br>
-        Prints "Foo".</li>
-    </ul>
-    <p><br>
-    </p>
-    <ul class="examples">
-    </ul>
-  </body>
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>TRY/CATCH Statement</title>
+</head>
+<body>
+  <h1><code>TRY/CATCH</code> Statement</h1>Executes the <span style="font-style: italic;">statement-to-try</span>
+  statements in order until successful completion or until one of the statements throws an error. If an error is
+  thrown, then <span style="font-style: italic;">statement-if-error</span> statements are executed. The statements in
+  the <code>CATCH</code> block may use the <a href="error-message-func.html"><code>ERROR_MESSAGE</code></a> function to
+  access the thrown message.<br>
+  <h2>Syntax</h2><img moz-do-not-send="true" src="art/rr-try-statement.svg" alt="" class="railroad" width="682" height=
+  "156">
+  <h2>Parameters</h2>
+  <ul class="args">
+    <li>
+      <i>statement-to-try</i>: statement<br>
+      The statements to execute. These statements may <a href="throw-stmt.html"><code>THROW</code></a> an error,
+      causing execution to divert to the <span style="font-style: italic;">statement-if-error</span> statements.
+    </li>
+    <li>
+      <i>statement-if-error</i>: statement<br>
+      The statements to execute if any <span style="font-style: italic;">statement-to-try</span> throws an error. These
+      statements may use the <a href="error-message-func.html"><code>ERROR_MESSAGE</code></a> function to access the
+      thrown message.
+    </li>
+  </ul>
+  <h2>Example</h2>
+  <pre><i>-- Prints "Foo".</i><br>BEGIN TRY<br>    THROW 'Foo';<br>END TRY<br>BEGIN CATCH<br>    PRINT ERROR_MESSAGE();<br>END CATCH</pre>
+  <ul class="examples"></ul>
+</body>
 </html>

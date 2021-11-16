@@ -9,41 +9,22 @@
   "font-style: italic;">condition</span> expression must evaluate to the integer 0 or 1.
   <h2>Syntax</h2><img moz-do-not-send="true" src="art/rr-if-statement.svg" alt="" class="railroad" width="720" height=
   "244">
-  <h2>Arguments</h2>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><span style="font-weight: bold;">condition</span> (integer, 0 or 1)<br>
+    <li><i>condition</i>: integer (0-1)<br>
     If this expression evaluates to 1, then the <span style="font-style: italic;">statement-if-true</span> statements
     are executed. &nbsp;Otherwise, the <span style="font-style: italic;">statement-if-false</span> statements are
     executed.</li>
-    <li><span style="font-weight: bold;">statement-if-true</span> (statement)<br>
+    <li><i>statement-if-true</i>: statement<br>
     The statements to execute if the condition is 1. &nbsp;If more than one <span style=
     "font-style: italic;">statement-if-true</span> statement is desired, the <code>BEGIN</code> and <code>END</code>
     keywords must be used.</li>
-    <li><span style="font-weight: bold;">statement-if-false</span> (statement)<br>
+    <li><i>statement-if-false</i>: statement<br>
     The statements to execute if the condition is 0. &nbsp;If more than one <span style=
     "font-style: italic;">statement-if-false</span> statement is desired, the <code>BEGIN</code> and <code>END</code>
     keywords must be used.</li>
   </ul>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>IF 1 PRINT 'Hi';</code><br>
-    Prints "Hi".</li>
-    <li><code>IF 0 PRINT 'Hi';</code><br>
-    Prints nothing.</li>
-    <li><code>IF 1 + 1 = 2 PRINT 'Foo' ELSE PRINT 'Bar';</code><br>
-    Prints "Foo".</li>
-    <li><code>IF 2 &gt; 3<br>
-    &nbsp; &nbsp; PRINT 'Foo'<br>
-    ELSE<br>
-    &nbsp; &nbsp; BEGIN<br>
-    &nbsp; &nbsp; PRINT 'Bar';<br>
-    &nbsp; &nbsp; PRINT 'Baz';<br>
-    &nbsp; &nbsp; END</code><br>
-    Prints "Bar" and "Baz".</li>
-    <li><code>IF @x = 'foo' PRINT 'x is foo'<br>
-    ELSE IF @x = 'bar' PRINT 'x is bar'<br>
-    ELSE PRINT 'x is neither foo nor bar'</code><br>
-    Prints whether the variable <code>@x</code> is "foo", "bar", or neither.</li>
-  </ul><br>
+  <h2>Example</h2>
+  <pre>DECLARE PARAMETER @foo = 111;<br>DECLARE PARAMETER @bar = 222;<br><br><i>-- The simplest IF tests a condition and executes a single</i><i><br></i><i>-- statement if true.</i><br>IF 1  <i>-- Always true.</i><br>    PRINT 'Hi';  <i>-- Always prints.</i><br><br>IF @foo = 123<br>    PRINT 'Hi';  <i>-- Prints or not depending on @foo.</i><br><br><i>-- An ELSE block will run if the IF condition is false.</i><i><br></i>IF @foo &gt; @bar<br>    PRINT 'Foo';<br>ELSE<br>    PRINT 'Bar';<br><br><i>-- Check a series of conditions with ELSE IF.</i><br>IF @foo = 111<br>    PRINT 'First condition'<br>ELSE IF @bar = 111<br>    PRINT 'Second condition'<br>ELSE IF @foo = 222 AND @bar = 222<br>    PRINT 'Third condition'<br>ELSE<br>    PRINT 'None of the above'<br><br><i>-- Add BEGIN and END to any block to execute multiple statements.</i><br>IF @foo = 111 BEGIN<br>    PRINT 'Hello...'<br>    PRINT 'World!'<br>END<br></pre>
 </body>
 </html>

@@ -34,7 +34,7 @@ public sealed class ExportTxtStmtRunner {
 
         foreach (var option in _stmt.OptionsList.GetOptionKeys()) {
             switch (option) {
-                case "TRUNCATE_EXISTING_FILE ":
+                case "TRUNCATE_EXISTING_FILE":
                     _truncateExistingFile = _stmt.OptionsList.GetOptionBool(option, _runner, _env, false);
                     break;
 

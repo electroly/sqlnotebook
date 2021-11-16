@@ -8,16 +8,13 @@
   <h1><code>LIST_FILES</code> Function</h1>
   <p>Returns a table containing the files in a particular folder, optionally recursing into subfolders. If a folder
   cannot be accessed, then it is skipped silently. This function is used in the <code>FROM</code> clause of a
-  <code>SELECT</code> statement and can participate in <code>JOIN</code>s as if it were a table.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>LIST_FILES(<i>root-path</i>, [<i>recursive</i>])</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  <code>SELECT</code> statement and can participate in joins as if it were a table.</p>
+  <h2>Syntax</h2><code>LIST_FILES(<i>root-path</i>, [<i>recursive</i>])</code><br>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><b>root-path</b> (text expression)<br>
+    <li><i>root-path</i>: text<br>
     The absolute path of the folder on disk in which to search for files.</li>
-    <li><b>recursive</b> (integer expression, optional)<br>
+    <li><i>recursive</i>: integer (optional)<br>
     If specified as non-zero, then all files in all subdirectories, recursively, will be returned.</li>
   </ul>
   <h2>Return Value</h2>
@@ -54,15 +51,8 @@
       </tbody>
     </table>
   </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>SELECT * FROM LIST_FILES('C:\');</code><br>
-    Returns a table listing all the files in the root C:\ directory.</li>
-    <li><code>SELECT file_path FROM LIST_FILES('C:\Users\', 1) LIMIT 50;</code><br>
-    Returns a table listing the first 50 file paths in the C:\Users\ directory and all subdirectories within it,
-    recursively.</li>
-  </ul>
-  <p><br></p>
+  <h2>Example</h2>
+  <pre><i>-- Returns a table listing all the files in the<br>-- root C:\ directory.</i><br>SELECT * FROM LIST_FILES('C:\');<br><br><i>-- Returns a table listing the first 50 file</i><i><br></i><i>-- paths in the C:\Users\ directory and all</i><i><br></i><i>-- subdirectories within it, recursively.</i><br>SELECT file_path FROM LIST_FILES('C:\Users\', 1) LIMIT 50;</pre>
   <ul class="examples"></ul>
 </body>
 </html>

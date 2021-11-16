@@ -21,38 +21,33 @@
   data type to be specified. Variables follow the SQLite convention of allowing any data type to be stored.</p>
   <h2>Syntax</h2><img moz-do-not-send="true" src="art/rr-declare-statement.svg" alt="" class="railroad" width="702"
   height="99">
-  <h2>Arguments</h2>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><code style="font-weight: bold;">PARAMETER</code> (keyword)<br>
+    <li><tt>PARAMETER</tt> (keyword)<br>
     If specified, then the variable is a parameter to the script, for which callers using the <code>EXECUTE</code>
     statement can specify an argument value. If the <span style="font-style: italic;">initial-value</span> argument is
     specified, then the parameter is optional and may be omitted by <code>EXECUTE</code> callers. If no <span style=
     "font-style: italic;">initial-value</span> is specified, then callers must provide an argument value for this
     parameter.</li>
-    <li><span style="font-weight: bold;">variable-name</span> (identifier)<br>
+    <li><i>variable-name</i> (identifier)<br>
     A name beginning with an at sign (<code>@</code>), dollar sign (<code>$</code>), or colon
     (<code>:</code>).&nbsp;The name must not have been previously declared in this script.&nbsp;To change the value of
     an existing variable, use the <code>SET</code> statement.</li>
-    <li><span style="font-weight: bold;">initial-value</span> (expression)<br>
+    <li><i>initial-value</i>: scalar<br>
     If provided, the variable will be assigned this value. It may be a scalar expression or a parentheses-enclosed
     <code>SELECT</code> statement. If not provided, the variable will be assigned a value of <code>NULL</code>. The
     value can be changed after declaration using the <code>SET</code> statement.</li>
   </ul>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>DECLARE @myvar = 1 + 2;</code><br>
-    Creates a variable called <code>@myvar</code> and assigns it a value of 3.</li>
-    <li><code>DECLARE @num = (SELECT COUNT(*) FROM mytable);</code><br>
-    Creates a variable called <code>@num</code> and sets it to the number of rows in <code>mytable</code>.</li>
-    <li><code>DECLARE @foo;</code><br>
-    Creates a variable called <code>@foo</code> and sets it to <code>NULL</code>.</li>
-    <li><code>DECLARE PARAMETER @requiredParam;</code><br>
-    Creates a parameter variable called <code>@requiredParam</code>. Because there is no <span style=
-    "font-style: italic;">initial-value</span> specified, the caller must provide a value for this parameter.</li>
-    <li><code>DECLARE PARAMETER @optionalParam = 5;</code><br>
-    Creates a parameter variable called <code>@optionalParam</code>. Because an <span style=
-    "font-style: italic;">initial-value</span> of 5 is specified, the caller is not required to provide a value for
-    this parameter, but may do so if it wants to override the default value.</li>
-  </ul><br>
+  <h2>Example</h2>
+  <pre><i>-- @a, @b, and @c are local variables.</i><br>DECLARE @a = 1 + 2;<br>PRINT @a;  <i>-- "3"</i><br><br>DECLARE @b = (SELECT COUNT(*) FROM sqlite_master);<br>PRINT @b;  <i>-- "0"</i><br><br>DECLARE @c;<br>IF @c IS NULL<br>    PRINT 'c is null';  <i>-- Prints.</i><br><br><i>-- Creates a parameter variable called @requiredParam. Because</i><i><br></i><i>-- there is no initial value specified, the caller of this script</i><i><br></i><i>-- must provide a value for this parameter.</i><br>DECLARE PARAMETER @requiredParam;<br><br><i>-- Creates a parameter variable called @optionalParam. Because</i><i><br></i><i>-- an initial value of 5 is specified, the caller is not required</i><i><br></i><i>-- to provide a value for this parameter, but may do so if it wants</i><i><br></i><i>-- to override the default value.</i><br>DECLARE PARAMETER @optionalParam = 5;<br></pre>
+  <h2>See Also</h2>
+  <ul>
+    <li>
+      <a moz-do-not-send="true" href="set-stmt.html"><tt>SET</tt> Statement</a><br>
+    </li>
+    <li>
+      <a moz-do-not-send="true" href="execute-stmt.html"><tt>EXECUTE</tt> Statement</a><br>
+    </li>
+  </ul>
 </body>
 </html>

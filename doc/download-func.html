@@ -7,23 +7,14 @@
 <body>
   <h1><code>DOWNLOAD</code> Function</h1>
   <p>Downloads a file from an HTTP/HTTPS site and returns its contents as a string.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>DOWNLOAD(<i>url</i>)</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  <h2>Syntax</h2><code>DOWNLOAD(<i>url</i>)</code><br>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><b>url</b> (text expression)<br>
+    <li><i>url</i>: text<br>
     The URL of the file to download.</li>
   </ul>
-  <h2>Return Value</h2>
-  <blockquote>
-    A string containing the contents of the file.
-  </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>PRINT DOWNLOAD('http://google.com/robots.txt')</code><br>
-    Prints many lines of text starting with "User-agent: *".</li>
-  </ul><br>
+  <h2>Return Value</h2>A string containing the contents of the file.<br>
+  <h2>Example</h2>
+  <pre><i>-- Prints "Sitemap: https://sqlnotebook.com/sitemap.txt"</i><br>PRINT DOWNLOAD('https://sqlnotebook.com/robots.txt')<br></pre>
 </body>
 </html>

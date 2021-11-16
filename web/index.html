@@ -1,69 +1,72 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-
-<head>
-<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
-<link href="sqlnotebook.css" rel="stylesheet">
-<title>SQL Notebook</title>
-</head>
-
-<body>
-
-<style>
-.c-keyword {
-	color: #009688;
-}
-.c-number {
-	color: #808080;
-}
-.c-string {
-	color: #D10015;
-}
-.c-comment {
-	color: #008000;
-}
-img#index-screenshot { zoom: 0.5; }
-@media only screen and (max-width: 900px) and (min-width: 650px) {
-    img#index-screenshot { zoom: 0.375; }
-}
-@media only screen and (max-width: 650px) and (min-width: 400px) {
-    img#index-screenshot { zoom: 0.25; }
-}
-@media only screen and (max-width: 400px) {
-    img#index-screenshot { zoom: 0.15; }
-}
+  <head>
+    <meta http-equiv="content-type" content="text/html;
+      charset=windows-1252">
+    <title></title>
+  </head>
+  <body>
+    <style>
+.c-keyword { color: #009688; }
+.c-number { color: #808080; }
+.c-string { color: #D10015; }
+.c-comment { color: #008000; }
 </style>
-<p><strong>SQL Notebook is a free Windows app for exploring and manipulating tabular data.</strong> It is powered by a supercharged
-<a href="https://www.sqlite.org/">SQLite</a> engine, supporting both <a href="https://en.wikipedia.org/wiki/SQL-92">standard 
-SQL</a> queries and SQL Notebook-specific commands. Everything you need to answer analysis questions about your data, regardless 
-of its format or origin, is built into SQL Notebook.</p>
-<p style="text-align: center"><a href="https://github.com/electroly/sqlnotebook/releases" style="text-decoration: underline; font-weight: bold;">Download SQL Notebook</a></p>
-<p style="text-align: center"><img alt="Screenshot of SQL Notebook" src="art/main-screenshot-1.png" width="1499" height="1220" id="index-screenshot">&nbsp;</p>
+    <p><strong>SQL Notebook is a Windows app for casual data
+        exploration.</strong> Import your data from CSV, Excel,
+      Microsoft SQL Server, PostgreSQL, and MySQL. Use <a
+        moz-do-not-send="true" href="https://jupyter.org/">Jupyter</a>-style
 
-<h2>Easily import and export data</h2>
-<p>CSV, JSON, and Excel files can be imported into the notebook as 
-    local SQLite tables. A graphical import wizard and <code>IMPORT</code> script commands are both available.</p>
-<p>Microsoft SQL Server, PostgreSQL, and MySQL tables can be linked 
-    into the notebook and queried interchangeably with local tables. Remote data is not physically copied into the notebook 
-    file unless requested; instead, the data source is queried on-the-fly.</p>
-<p>Tables and scripts can be exported in CSV format.</p>
 
-<h2>Run quick queries or write sophisticated scripts</h2>
-<p>Enter SQL commands interactively and press F5 to execute.
-Invoke sub-scripts using `EXECUTE` and pass parameters using `DECLARE PARAMETER`.
-Any combination of data sources can be used together in the same SQL query, including cross-file, cross-database, and cross-server queries.</p>
 
-<h2>Use familiar programming constructs</h2>
-<p>Users with prior SQL or other programming language experience will feel right at home in SQL Notebook.
-All common programming constructs from other programming languages are available, in addition to standard SQLite queries and commands.</p>
-<div style="overflow-x: auto; overflow-y: hidden;"><table>
-    <tr>
-        <td style="border-width: 0">
-        <pre><span class="c-keyword">FOR</span> <em>:i</em> <span class="c-number">= 1</span> <span class="c-keyword">TO</span> <span 
-        class="c-number">100</span><span class="c-keyword">
+
+
+      <i>pages</i> for ad hoc exploration and <b>scripts</b> for
+      reusable queries. SQL Notebook is powered by an extended <a
+        href="https://www.sqlite.org/">SQLite</a> engine, supporting
+      both <a href="https://en.wikipedia.org/wiki/SQL-92">standard SQL</a>
+      queries and custom SQL Notebook commands.<br>
+    </p>
+    <p style="text-align: center"><a
+        href="https://github.com/electroly/sqlnotebook/releases"
+        style="text-decoration: underline; font-weight: bold;">Download
+        SQL Notebook</a></p>
+    <p style="text-align: center"><img alt="Screenshot of SQL Notebook"
+        src="art/main-screenshot-1.png" id="index-screenshot"
+        moz-do-not-send="true" class="scale" width="600" height="488">&nbsp;</p>
+    <h2>Easily import and export data</h2>
+    <p>CSV and Excel files can be imported into the notebook as local
+      tables. A graphical import wizard and <code>IMPORT</code> script
+      commands are both available.</p>
+    <p>Microsoft SQL Server, PostgreSQL, and MySQL tables can be linked
+      into the notebook and queried interchangeably with local tables.
+      Create a live, real-time link to the server for access to
+      up-to-date data, or copy a snapshot of the data into your notebook
+      for faster queries.<br>
+    </p>
+    <p>Tables and scripts can be exported in CSV format.</p>
+    <h2>Run quick queries or write sophisticated scripts</h2>
+    <p>Enter SQL commands interactively and press F5 to execute. Invoke
+      sub-scripts using <a moz-do-not-send="true"
+        href="execute-stmt.html"><tt>EXECUTE</tt></a> and pass
+      parameters using <tt><a moz-do-not-send="true"
+          href="declare-stmt.html">DECLARE PARAMETER</a></tt>. Any
+      combination of data sources can be used together in the same SQL
+      query, including cross-file, cross-database, and cross-server
+      queries.</p>
+    <h2>Use familiar programming constructs</h2>
+    <p>Users with prior SQL or other programming language experience
+      will feel right at home in SQL Notebook. All common programming
+      constructs from other programming languages are available, in
+      addition to standard SQLite queries and commands.</p>
+    <div style="overflow-x: auto; overflow-y: hidden;">
+      <table>
+        <tbody>
+          <tr>
+            <td style="border-width: 0">
+              <pre><span class="c-keyword">FOR</span> <em>:i</em> <span class="c-number">= 1</span> <span class="c-keyword">TO</span> <span class="c-number">100</span><span class="c-keyword">
 BEGIN</span>
-    <span class="c-keyword">IF</span> <em>:i</em> <span class="c-keyword">%</span> 3 <span class="c-number">= 0</span> <span 
-        class="c-keyword">AND</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
+    <span class="c-keyword">IF</span> <em>:i</em> <span class="c-keyword">%</span> 3 <span class="c-number">= 0</span> <span class="c-keyword">AND</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
         <span class="c-keyword">PRINT</span> <span class="c-string">'FizzBuzz'</span>
     <span class="c-keyword">ELSE IF</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">3 = 0</span>
         <span class="c-keyword">PRINT</span> <span class="c-string">'Fizz'</span>
@@ -72,79 +75,89 @@ BEGIN</span>
     <span class="c-keyword">ELSE</span>
         <span class="c-keyword">PRINT</span> <em>:i</em>
 <span class="c-keyword">END</span></pre>
-        </td>
-        <td style="border-width: 0">
-        <pre><span class="c-keyword">SELECT</span>
+            </td>
+            <td style="border-width: 0">
+              <pre><span class="c-keyword">SELECT</span>
     <span class="c-keyword">CASE</span>
-        <span class="c-keyword">WHEN</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0</span> <span 
-        class="c-keyword">AND</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
+        <span class="c-keyword">WHEN</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0</span> <span class="c-keyword">AND</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
             <span class="c-keyword">THEN</span> <span class="c-string">'FizzBuzz'</span>
         <span class="c-keyword">WHEN</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0
-            </span><span 
-        class="c-keyword">THEN</span> <span class="c-string">'Fizz'</span>
+            </span><span class="c-keyword">THEN</span> <span class="c-string">'Fizz'</span>
         <span class="c-keyword">WHEN</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0
-            </span><span 
-        class="c-keyword">THEN</span> <span class="c-string">'Buzz'</span>
+            </span><span class="c-keyword">THEN</span> <span class="c-string">'Buzz'</span>
         <span class="c-keyword">ELSE</span> number
     <span class="c-keyword">END</span>
 <span class="c-keyword">FROM</span> RANGE<span class="c-number">(1, 100)</span></pre>
-        </td>
-    </tr>
-</table></div>
-<p>Learn more in the <a href="doc.html">documentation</a>:</p>
-<ul>
-    <li>Variables (<a href="declare-stmt.html"><code>DECLARE</code></a>, <a href="set-stmt.html"><code>SET</code></a>)</li>
-    <li>Control flow (<a href="if-stmt.html"><code>IF</code>/<code>ELSE</code></a>, <a href="for-stmt.html"><code>FOR</code></a>,
-    <a href="while-stmt.html"><code>WHILE</code></a>)</li>
-    <li>Error handling (<a href="throw-stmt.html"><code>THROW</code></a>, <a href="try-catch-stmt.html"><code>TRY</code>/<code>CATCH</code></a>)</li>
-    <li>Stored procedures (<a href="execute-stmt.html"><code>EXECUTE</code></a>)</li>
-</ul>
-<h2>Access a rich library of built-in functionality</h2>
-<p>SQL Notebook is a &quot;batteries included&quot; solution to everyday data analysis needs. A wide variety of functionality 
-is immediately available out of the box.</p>
-<pre style="overflow-x: auto; overflow-y: hidden;"><span class="c-comment">-- Access the filesystem</span><span class="c-keyword">
-SELECT</span> filename <span class="c-keyword">FROM</span> list_files<span class="c-number">(</span><span 
-class="c-string">'C:\'</span><span class="c-number">)</span> <span class="c-keyword">WHERE</span> extension <span 
-class="c-keyword">IN</span> <span class="c-number">(</span><span 
-class="c-string">'.csv'</span><span class="c-number">, </span><span class="c-string">'.xls'</span><span class="c-number">);
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Learn more in the <a href="doc.html">documentation</a>:</p>
+    <ul>
+      <li>Variables (<a href="declare-stmt.html"><code>DECLARE</code></a>,
+        <a href="set-stmt.html"><code>SET</code></a>)</li>
+      <li>Control flow (<a href="if-stmt.html"><code>IF</code>/<code>ELSE</code></a>,
+        <a href="for-stmt.html"><code>FOR</code></a>, <a
+          href="while-stmt.html"><code>WHILE</code></a>)</li>
+      <li>Error handling (<a href="throw-stmt.html"><code>THROW</code></a>,
+        <a href="try-catch-stmt.html"><code>TRY</code>/<code>CATCH</code></a>)</li>
+      <li>Stored procedures (<a href="execute-stmt.html"><code>EXECUTE</code></a>)</li>
+    </ul>
+    <h2>Access a rich library of built-in functionality</h2>
+    <p>SQL Notebook is a "batteries included" solution to everyday data
+      analysis needs. A wide variety of functionality is immediately
+      available out of the box.</p>
+    <pre style="overflow-x: auto; overflow-y: hidden;"><span class="c-comment">-- Access the filesystem</span><span class="c-keyword">
+SELECT</span> filename <span class="c-keyword">FROM</span> list_files<span class="c-number">(</span><span class="c-string">'C:\'</span><span class="c-number">)</span> <span class="c-keyword">WHERE</span> extension <span class="c-keyword">IN</span> <span class="c-number">(</span><span class="c-string">'.csv'</span><span class="c-number">, </span><span class="c-string">'.xls'</span><span class="c-number">);
 
 </span><span class="c-comment">-- Parse CSV and other types of files on-the-fly</span>
-<span class="c-keyword">SELECT</span> <span class="c-number">*</span> <span class="c-keyword">FROM</span> READ_CSV<span 
-class="c-number">(</span><span class="c-string">'C:\MyData.csv'</span><span class="c-number">);
+<span class="c-keyword">SELECT</span> <span class="c-number">*</span> <span class="c-keyword">FROM</span> READ_CSV<span class="c-number">(</span><span class="c-string">'C:\MyData.csv'</span><span class="c-number">);
 
 </span><span class="c-comment">-- Import data files into new or existing tables</span>
-<span class="c-keyword">IMPORT XLS</span> <span class="c-string">'C:\Workbook.xls'</span> <span class="c-keyword">WORKSHEET</span> <span 
-class="c-string">'Sheet2'</span> <span class="c-keyword">INTO</span> my_table<span class="c-number">;
+<span class="c-keyword">IMPORT XLS</span> <span class="c-string">'C:\Workbook.xls'</span> <span class="c-keyword">WORKSHEET</span> <span class="c-string">'Sheet2'</span> <span class="c-keyword">INTO</span> my_table<span class="c-number">;
 
 </span><span class="c-comment">-- Manipulate dates and times with familiar built-in functions</span>
-<span class="c-keyword">SELECT</span> <span class="c-keyword">*</span><span 
-class="c-number">, </span>DATEADD<span class="c-number">(</span><span class="c-string">'day'</span><span 
-class="c-number">, -1,</span> date_col<span class="c-number">)</span> <span class="c-keyword">AS</span> previous_day <span class="c-keyword">FROM</span> my_table<span class="c-number">;
+<span class="c-keyword">SELECT</span> <span class="c-keyword">*</span><span class="c-number">, </span>DATEADD<span class="c-number">(</span><span class="c-string">'day'</span><span class="c-number">, -1,</span> date_col<span class="c-number">)</span> <span class="c-keyword">AS</span> previous_day <span class="c-keyword">FROM</span> my_table<span class="c-number">;
 
 <span class="c-comment">-- And more!</span></span></pre>
-<p>Learn more in the <a href="doc.html">documentation</a>:</p>
-<ul>
-    <li>Full-featured import and export statements (<a href="import-csv-stmt.html"><code>IMPORT CSV</code></a>,
-    <a href="import-xls-stmt.html"><code>IMPORT XLS</code></a>, <a href="export-txt-stmt.html"><code>EXPORT TXT</code></a>)</li>
-    <li>Quick functions for reading files (<a href="list-files-func.html"><code>LIST_FILES</code></a>,
-    <a href="read-csv-func.html"><code>READ_CSV</code></a>, <a href="read-file-func.html"><code>READ_FILE</code></a>,
-    <a href="download-func.html"><code>DOWNLOAD</code></a>)</li>
-    <li>Date and time handling (<a href="date-part-func.html"><code>DATEPART</code></a>, <a href="date-add-func.html">
-    <code>DATEADD</code></a>, <a href="date-diff-func.html"><code>DATEDIFF</code></a>, <a href="get-date-func.html">
-    <code>GETDATE</code></a>)</li>
-    <li>Array values (<a href="array-func.html"><code>ARRAY</code></a>, <a href="array-count-func.html"><code>ARRAY_COUNT</code></a>,
-    <a href="array-get-func.html"><code>ARRAY_GET</code></a>, <a href="array-set-func.html"><code>ARRAY_SET</code></a>)</li>
-</ul>
-<h2>Extensive application help is just an "F1" away</h2>
-<p>A fully searchable in-application help system is ready to answer your questions. Press F1 to view the index of help documents, 
-or enter a keyword into the &quot;Search Help&quot; box in the upper-right corner of the SQL Notebook window. Both SQLite 
-and SQL Notebook documentation is included. Every available statement and function is documented. <a href="doc.html">The 
-documentation is also available online</a>.</p>
-<h2>It's free!</h2>
-<p>SQL Notebook is free and open source software available under the popular <a href="license.html">MIT 
-license</a>.</p>
-<p><a href="https://github.com/electroly/sqlnotebook/releases">Download and install SQL Notebook now!</a>&nbsp;</p>
+    <p>Learn more in the <a href="doc.html">documentation</a>:</p>
+    <ul>
+      <li>Full-featured import and export statements (<a
+          href="import-csv-stmt.html"><code>IMPORT CSV</code></a>, <a
+          href="import-xls-stmt.html"><code>IMPORT XLS</code></a>, <a
+          href="export-txt-stmt.html"><code>EXPORT TXT</code></a>)</li>
+      <li>Quick functions for reading files (<a
+          href="list-files-func.html"><code>LIST_FILES</code></a>, <a
+          href="read-csv-func.html"><code>READ_CSV</code></a>, <a
+          href="read-file-func.html"><code>READ_FILE</code></a>, <a
+          href="download-func.html"><code>DOWNLOAD</code></a>)</li>
+      <li>Date and time handling (<a href="date-part-func.html"><code>DATEPART</code></a>,
+        <a href="date-add-func.html"> <code>DATEADD</code></a>, <a
+          href="date-diff-func.html"><code>DATEDIFF</code></a>, <a
+          href="get-date-func.html"> <code>GETDATE</code></a>)</li>
+      <li>Array values (<a href="array-func.html"><code>ARRAY</code></a>,
+        <a href="array-count-func.html"><code>ARRAY_COUNT</code></a>, <a
+          href="array-get-func.html"><code>ARRAY_GET</code></a>, <a
+          href="array-set-func.html"><code>ARRAY_SET</code></a>)</li>
+    </ul>
+    <h2>Extensive application help is just an "F1" away</h2>
+    <p>A fully searchable in-application help system is ready to answer
+      your questions. Press F1 to view the index of help documents, or
+      enter a keyword into the "Search Help" box in the upper-right
+      corner of the SQL Notebook window. Both SQLite and SQL Notebook
+      documentation is included. Every available statement and function
+      is documented. <a href="doc.html">The documentation is also
+        available online</a>.</p>
+    <h2>It's free!</h2>
+    <p>SQL Notebook is free and open source software available under the
+      popular <a href="license.html">MIT license</a>.</p>
+    <p><a href="https://github.com/electroly/sqlnotebook/releases">Download
 
-</body>
 
+
+
+
+        and install SQL Notebook now!</a>&nbsp;</p>
+  </body>
 </html>

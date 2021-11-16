@@ -7,25 +7,14 @@
 <body>
   <h1><code>YEAR</code> Function</h1>
   <p>Returns the year part of a date/time string.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>YEAR(<i>date</i>)</code>
-  </blockquote>
+  <h2>Syntax</h2><code>YEAR(<i>date</i>)</code><br>
   <h2>Arguments</h2>
   <ul class="args">
-    <li><b>date</b> (date/time expression)<br>
+    <li><i>date</i>: text<br>
     A text value that can be parsed into a date/time.</li>
   </ul>
-  <h2>Return Value</h2>
-  <blockquote>
-    An integer representing the specified year.
-  </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>PRINT YEAR('2016-03-07');</code><br>
-    Prints 2016.</li>
-    <li><code>PRINT YEAR('2015-07-23 22:06:53.742 -04:00');</code><br>
-    Prints 2015.</li>
-  </ul><br>
+  <h2>Return Value</h2>An integer representing the specified year.<br>
+  <h2>Example</h2>
+  <pre>PRINT YEAR('2016-03-07');  <i>-- "2016"</i><br>PRINT YEAR('2015-07-23 22:06:53.742 -04:00');  <i>-- "2015"</i><br></pre>
 </body>
 </html>

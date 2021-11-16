@@ -8,29 +8,15 @@
   <h1><code>ISDATE</code> Function</h1>
   <p>Determines whether the specified value is a text string that can be parsed into a date/time with or without a time
   zone offset.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>ISDATE(<i>value</i>)</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  <h2>Syntax</h2><code>ISDATE(<i>value</i>)</code><br>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><b>value</b> (expression)<br>
+    <li><i>value</i>: scalar<br>
     The value to inspect.</li>
   </ul>
-  <h2>Return Value</h2>
-  <blockquote>
-    Returns 1 if <i>value</i> is a valid date/time string, and returns 0 if not.
-  </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>PRINT ISDATE('2016-03-07');</code><br>
-    Prints 1.</li>
-    <li><code>PRINT ISDATE(1234);</code><br>
-    Prints 0.</li>
-    <li><code>PRINT ISDATE('foo');</code><br>
-    Prints 0.</li>
-    <li><code>PRINT ISDATE('2016-01-23 22:06:53.742 -04:00');</code><br>
-    Prints 1.</li>
-  </ul><br>
+  <h2>Return Value</h2>Returns 1 if <i>value</i> is a valid date/time string, and returns 0 if not.<br>
+  <h2>Example</h2>
+  <pre>PRINT ISDATE('2016-03-07');  <i>-- "1"</i><br>PRINT ISDATE(1234);  <i>-- "0"</i><br>PRINT ISDATE('foo');  <i>-- "0"</i><br>PRINT ISDATE('2016-01-23 22:06:53.742 -04:00');  <i>-- "1"</i>
+</pre>
 </body>
 </html>

@@ -6,28 +6,23 @@
 </head>
 <body>
   <h1><code>ARRAY</code> Function</h1>
-  <p>Creates an array from the specified arguments. Arrays are encoded as BLOBs. They can be stored in tables and
-  variables and passed as arguments to functions, just like any other value. Large arrays should be avoided for
-  performance reasons; for large amounts of data, consider using a dedicated table.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>ARRAY([<i>value1</i>], [<i>value2</i>], ...)</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  <p>Creates an array from the specified arguments. Arrays are represented using the SQLite "BLOB" data type. They can
+  be stored in tables and variables and passed as arguments to functions, just like any other value. Large arrays
+  should be avoided for performance reasons. For large amounts of data, consider using a dedicated table.</p>
+  <h2>Syntax</h2><code>ARRAY([<i>value</i>], ...)</code><br>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><b>value1</b>, <b>value2</b>, ... (expression)<br>
+    <li><i>value</i>, ...: scalar<br>
     The values to include in the array.</li>
   </ul>
-  <h2>Return Value</h2>
-  <blockquote>
-    A <code>BLOB</code> value containing the encoded array.
-  </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>DECLARE @data = ARRAY(1, 2, 3);</code><br>
-    Assigns a 3-item array to the variable <code>@data</code>.</li>
-    <li><code>PRINT <a href="array-get-func.html">ARRAY_GET</a>(ARRAY(1, 2, 3), 2)</code><br>
-    Prints 3.</li>
-  </ul><br>
+  <h2>Return Value</h2>A <code>BLOB</code> value containing the encoded array.<br>
+  <h2>Example</h2>
+  <pre>DECLARE @data = ARRAY(111, 222, 333);<br>PRINT ARRAY_GET(@data, 0);  <i>-- "111"</i><br>PRINT ARRAY_GET(@data, 2);  <i>-- "333"<br></i></pre>
+  <h2>See Also</h2>
+  <ul>
+    <li>
+      <a moz-do-not-send="true" href="array-get-func.html"><tt>ARRAY_GET</tt> Function</a><br>
+    </li>
+  </ul>
 </body>
 </html>

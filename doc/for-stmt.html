@@ -13,39 +13,27 @@
   iteration of the loop started by using the <a href="continue-stmt.html"><code>CONTINUE</code></a> statement.
   <h2>Syntax</h2><img moz-do-not-send="true" src="art/rr-for-statement.svg" alt="" class="railroad" width="721" height=
   "165">
-  <h2>Arguments</h2>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><span style="font-weight: bold;">variable-name</span> (variable name)<br>
+    <li><i>variable-name</i>: variable name<br>
     The name of the counter variable. The variable name must begin with an at sign (<code>@</code>), dollar sign
     (<code>$</code>), or colon (<code>:</code>). The variable need not be previously declared; the <code>FOR</code>
     statement acts as a variable declaration if needed. This variable will receive an integer value that changes with
     each iteration of the loop.</li>
-    <li><span style="font-weight: bold;">first-number</span> (integer)<br>
+    <li><i>first-number</i>: integer<br>
     The value of the counter variable on the first iteration of the loop.</li>
-    <li><span style="font-weight: bold;">last-number</span> (integer)<br>
+    <li><i>last-number</i>: integer<br>
     The loop stops if the counter steps past this value.</li>
-    <li><span style="font-weight: bold;">step</span> (integer, optional)<br>
+    <li><i>step</i>: integer (optional)<br>
     The number to add to the counter variable on each iteration. If <span style=
     "font-style: italic;">first-number</span> ≤ <span style="font-style: italic;">last-number</span> then the default
     step is 1, otherwise the default step is -1.</li>
-    <li><span style="font-weight: bold;">stmt</span> (statement)<br>
+    <li><i>statement</i>: statement<br>
     The statements to execute on each iteration of the loop. &nbsp;If more than one <span style=
-    "font-style: italic;">stmt</span> is desired, the <code>BEGIN</code> and <code>END</code> keywords must be
+    "font-style: italic;">statement</span> is desired, the <code>BEGIN</code> and <code>END</code> keywords must be
     used.<br></li>
   </ul>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>FOR @counter&nbsp;= 1 TO 10<br>
-    &nbsp; &nbsp; PRINT @counter;</code><br>
-    Prints the numbers 1 to 10 (inclusive) in increasing order.</li>
-    <li><code>FOR @counter&nbsp;= 10 TO 1<br>
-    &nbsp; &nbsp; PRINT @counter;</code><br>
-    Prints the numbers 10 to 1 (inclusive) in decreasing order.</li>
-    <li><code>FOR @counter&nbsp;= 1 TO 10 STEP 2<br>
-    &nbsp; &nbsp; PRINT @counter;</code><br>
-    Prints the odd numbers 1 to 9 (inclusive) in increasing order.</li>
-  </ul>
-  <p><br></p>
-  <ul class="examples"></ul>
+  <h2>Example</h2>
+  <pre><i>-- Prints the numbers: 1, 2, 3, 4, 5.</i><br>FOR @i = 1 TO 5<br>    PRINT @i;<br><br><i>-- Prints the numbers: 5, 4, 3, 2, 1.</i><br>FOR @i = 5 TO 1<br>    PRINT @i;<br><br><i>-- Prints the numbers: 1, 3, 5, 9.</i><br>FOR @i = 1 TO 10 STEP 2<br>    PRINT @i;</pre>
 </body>
 </html>

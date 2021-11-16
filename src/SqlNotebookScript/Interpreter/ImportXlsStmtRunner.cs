@@ -17,14 +17,14 @@ public sealed class ImportXlsStmtRunner {
     private readonly object _whichSheet; // 1-based number or string name
 
     // option values
-    private readonly int _firstRowIndex; // 0-based index
-    private readonly int? _lastRowIndex; // 0-based index
-    private readonly int _firstColumnIndex; // 0-based index
-    private readonly int? _lastColumnIndex; // 0-based index
+    private readonly int _firstRowIndex = 0; // 0-based index
+    private readonly int? _lastRowIndex = null; // 0-based index
+    private readonly int _firstColumnIndex = 0; // 0-based index
+    private readonly int? _lastColumnIndex = null; // 0-based index
     private readonly bool _headerRow = true;
-    private readonly bool _truncateExistingTable;
-    private readonly bool _temporaryTable;
-    private readonly IfConversionFails _ifConversionFails;
+    private readonly bool _truncateExistingTable = false;
+    private readonly bool _temporaryTable = false;
+    private readonly IfConversionFails _ifConversionFails = IfConversionFails.ImportAsText;
 
     // must be run from the SQLite thread
     public static void Run(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt) {
@@ -74,7 +74,7 @@ public sealed class ImportXlsStmtRunner {
 
                 case "LAST_COLUMN":
                     var lastColumnValue = _stmt.OptionsList.GetOption<object>(option, _runner, _env, null);
-                    if (lastColumnValue.Equals(0)) {
+                    if (lastColumnValue is long b && b == 0) {
                         _lastColumnIndex = null;
                         break;
                     }

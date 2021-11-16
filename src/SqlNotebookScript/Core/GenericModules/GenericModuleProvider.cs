@@ -239,7 +239,7 @@ public sealed class GenericModuleProvider : IDisposable {
             // set info.aConstraintUsage[i]
             Sqlite3IndexConstraintUsage constraintUsage = new() {
                 argvIndex = argvIndex,
-                omit = 1,
+                omit = 0,
             };
             var constraintUsagePtr = info.aConstraintUsage + i * Marshal.SizeOf<Sqlite3IndexConstraintUsage>();
             Marshal.StructureToPtr(constraintUsage, constraintUsagePtr, false);
@@ -357,7 +357,12 @@ public sealed class GenericModuleProvider : IDisposable {
             var hiddenCount = customTableFunction.HiddenColumnCount;
             var hiddenValues = new object[hiddenCount];
             for (var i = 0; i < argc; i++) {
-                hiddenValues[filter[i]] = GetArg(Marshal.ReadIntPtr(argv + i * IntPtr.Size));
+                var filterI = filter[i];
+                if (filterI >= 0 && filterI < hiddenValues.Length) {
+                    hiddenValues[filterI] = GetArg(Marshal.ReadIntPtr(argv + i * IntPtr.Size));
+                } else {
+                    System.Diagnostics.Debugger.Break();
+                }
             }
 
             cursorMetadata.Enumerator = customTableFunction.Execute(hiddenValues).GetEnumerator();

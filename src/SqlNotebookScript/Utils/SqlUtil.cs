@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using SqlNotebookScript.Core;
@@ -29,33 +30,44 @@ public static class SqlUtil {
         return null;
     }
 
-    public static void Import(string[] srcColNames, IEnumerable<object[]> dataRows, Ast.ImportTable importTable,
-    bool temporaryTable, bool truncateExistingTable, IfConversionFails ifConversionFails, Notebook notebook,
-    ScriptRunner runner, ScriptEnv env) {
-        Ast.ImportColumn[] dstColNodes;
-        string[] dstColNames;
-
+    public static void Import(
+        IReadOnlyList<string> srcColNames,
+        IEnumerable<object[]> dataRows,
+        Ast.ImportTable importTable,
+        bool temporaryTable,
+        bool truncateExistingTable,
+        IfConversionFails ifConversionFails,
+        Notebook notebook,
+        ScriptRunner runner,
+        ScriptEnv env
+        ) {
         var dstTableName = runner.EvaluateIdentifierOrExpr(importTable.TableName, env);
-        GetDestinationColumns(importTable.ImportColumns, runner, env, srcColNames,
-            out dstColNodes, out dstColNames);
-        CreateOrTruncateTable(srcColNames, dstColNodes, dstColNames, dstTableName, temporaryTable,
-            truncateExistingTable, notebook);
-        VerifyColumnsExist(dstColNames, dstTableName, notebook);
-        InsertDataRows(dataRows, dstColNames, dstColNodes, dstTableName, ifConversionFails, notebook);
+        var mappings = GetImportColumnMappings(importTable.ImportColumns, runner, env, srcColNames);
+        if (!mappings.Any()) {
+            throw new Exception("No columns chosen for import.");
+        }
+        CreateOrTruncateTable(mappings, dstTableName, temporaryTable, truncateExistingTable, notebook);
+        VerifyColumnsExist(mappings.Select(x => x.DstColumnName), dstTableName, notebook);
+        InsertDataRows(dataRows, srcColNames, mappings, dstTableName, ifConversionFails, notebook);
     }
 
-    public static string GetInsertSql(string tableName, int numValues, int numRows = 1) {
-        var row = $"({string.Join(", ", Enumerable.Range(1, numValues).Select(x => $"?"))})";
-        return $"INSERT INTO {tableName.DoubleQuote()} VALUES " + 
-            string.Join(", ", Enumerable.Range(0, numRows).Select(x => row));
+    public static string GetInsertSql(string tableName, IReadOnlyList<ImportColumnMapping> mappings) {
+        var columns = string.Join(", ", mappings.Select(x => x.DstColumnName.DoubleQuote()));
+        var values = string.Join(", ", Enumerable.Range(1, mappings.Count).Select(x => $"?"));
+        return $"INSERT INTO {tableName.DoubleQuote()} ({columns}) VALUES ({values})";
     }
 
-    public static void VerifyColumnsExist(string[] colNames, string tableName, Notebook notebook) {
+    public static string GetInsertSql(string tableName, int numColumns) {
+        var values = string.Join(", ", Enumerable.Range(1, numColumns).Select(x => $"?"));
+        return $"INSERT INTO {tableName.DoubleQuote()} VALUES ({values})";
+    }
+
+    public static void VerifyColumnsExist(IEnumerable<string> colNames, string tableName, Notebook notebook) {
         var tableInfo = notebook.Query($"PRAGMA TABLE_INFO ({tableName.DoubleQuote()})", -1);
         var nameColIndex = tableInfo.GetIndex("name");
-        var actualColNames = tableInfo.Rows.Select(x => x[nameColIndex].ToString().ToLower()).ToList();
-        foreach (var name in colNames.Where(x => x != null)) {
-            if (!actualColNames.Contains(name.ToLower())) {
+        var actualColNames = tableInfo.Rows.Select(x => x[nameColIndex].ToString().ToLowerInvariant()).ToHashSet();
+        foreach (var name in colNames) {
+            if (!actualColNames.Contains(name.ToLowerInvariant())) {
                 throw new Exception($"The table \"{tableName}\" does not contain the column \"{name}\".");
             }
         }
@@ -81,18 +93,30 @@ public static class SqlUtil {
                 return true;
 
             case Ast.TypeConversion.Integer:
-                if (rawValue is int || rawValue is long || rawValue is string) {
-                    parsedValue = Convert.ToInt64(rawValue);
-                    return true;
-                } else {
+                {
+                    if (rawValue is string s) {
+                        if (long.TryParse(s, out var num)) {
+                            parsedValue = num;
+                            return true;
+                        }
+                    } else if (rawValue is int || rawValue is long || rawValue is double) {
+                        parsedValue = Convert.ToInt64(rawValue);  // Round floating points.
+                        return true;
+                    }
                     return false;
                 }
 
             case Ast.TypeConversion.Real:
-                if (rawValue is int || rawValue is long || rawValue is double || rawValue is string) {
-                    parsedValue = Convert.ToDouble(rawValue);
-                    return true;
-                } else {
+                {
+                    if (rawValue is string s) {
+                        if (double.TryParse(s, out var num)) {
+                            parsedValue = num;
+                            return true;
+                        }
+                    } else if (rawValue is int || rawValue is long || rawValue is double) {
+                        parsedValue = Convert.ToDouble(rawValue);
+                        return true;
+                    }
                     return false;
                 }
 
@@ -129,11 +153,20 @@ public static class SqlUtil {
         }
     }
 
-    public static void GetDestinationColumns(IEnumerable<Ast.ImportColumn> importColumns, ScriptRunner runner,
-        ScriptEnv env, IReadOnlyList<string> srcColNames, out Ast.ImportColumn[] dstColNodes,
-        out string[] dstColNames
+    public readonly record struct ImportColumnMapping {
+        public string SrcColumnName { get; init; }
+        public string DstColumnName { get; init; }
+        public Ast.ImportColumn ImportColumn { get; init; }
+    }
+
+    public static List<ImportColumnMapping> GetImportColumnMappings(
+        IEnumerable<Ast.ImportColumn> importColumns,
+        ScriptRunner runner,
+        ScriptEnv env,
+        IReadOnlyList<string> srcColNames
         ) {
-        // if there is no column list specified, then all columns are imported with default settings.
+        // If there is no column list specified, then all columns are imported with default settings.
+        // Just fake a list of ImportColumn objects in that case.
         if (!importColumns.Any()) {
             importColumns =
                 srcColNames.Select(x => new Ast.ImportColumn {
@@ -142,70 +175,62 @@ public static class SqlUtil {
                 }).ToList();
         }
 
-        var lowercaseSrcColNames = srcColNames.Select(x => x.ToLower()).ToArray();
-        var lowercaseDstColNames = new HashSet<string>(); // to ensure we don't have duplicate column names
-        dstColNodes = new Ast.ImportColumn[srcColNames.Count];
-        dstColNames = new string[srcColNames.Count];
-        foreach (var importCol in importColumns) {
-            var name = runner.EvaluateIdentifierOrExpr(importCol.ColumnName, env);
-
-            var colIndex = lowercaseSrcColNames.IndexOf(name.ToLower());
-            if (colIndex.HasValue) {
-                if (dstColNodes[colIndex.Value] == null) {
-                    dstColNodes[colIndex.Value] = importCol;
-                } else {
-                    throw new Exception($"The input column \"{name}\" was specified more than once in the column list.");
-                }
-            } else {
-                // the user specified a column name that does not exist in the CSV file
-                throw new ExceptionEx($"The column \"{name}\" does not exist in the CSV file.",
-                    $"The columns that were found are: {string.Join(", ", srcColNames.Select(DoubleQuote))}");
-            }
-
-            // apply the user's rename if specified
-            string dstName;
-            if (importCol.AsName != null) {
-                dstName = runner.EvaluateIdentifierOrExpr(importCol.AsName, env);
-            } else {
-                dstName = name;
-            }
-            dstColNames[colIndex.Value] = dstName;
-
-            // ensure this isn't a duplicate destination column name
-            if (lowercaseDstColNames.Contains(dstName.ToLower())) {
-                throw new Exception($"The column \"{dstName}\" was specified more than once as a destination column name.");
-            } else {
-                lowercaseDstColNames.Add(dstName.ToLower());
+        // Evaluate all the provided column names.
+        Dictionary<Ast.ImportColumn, string> importColumnNames = new();
+        Dictionary<Ast.ImportColumn, string> importColumnAsNames = new();
+        foreach (var c in importColumns) {
+            importColumnNames.Add(c, runner.EvaluateIdentifierOrExpr(c.ColumnName, env));
+            if (c.AsName != null) {
+                importColumnAsNames.Add(c, runner.EvaluateIdentifierOrExpr(c.AsName, env));
             }
         }
+
+        var mappings = (
+            from c in importColumns
+            let srcColName = importColumnNames[c]
+            let dstColName = importColumnAsNames.TryGetValue(c, out var asName) ? asName : srcColName
+            select new ImportColumnMapping {
+                SrcColumnName = srcColName,
+                DstColumnName = dstColName,
+                ImportColumn = c
+            }).ToList();
+
+        // Ensure there aren't any duplicate destination column names.
+        var duplicateDstColName = (
+            from c in importColumns
+            let dstColName = importColumnAsNames.TryGetValue(c, out var asName) ? asName : importColumnNames[c]
+            group dstColName by dstColName.ToLowerInvariant() into sameNameGroup
+            where sameNameGroup.Count() > 1
+            select sameNameGroup.First()
+            ).FirstOrDefault();
+        if (duplicateDstColName != null) {
+            throw new Exception($"The target column name \"{duplicateDstColName}\" was specified multiple times in the column list.");
+        }
+
+        return mappings;
     }
 
-    public static void CreateOrTruncateTable(IReadOnlyList<string> srcColNames, Ast.ImportColumn[] dstColNodes,
-    IReadOnlyList<string> dstColNames, string dstTableName, bool temporaryTable, bool truncateExistingTable, 
-    Notebook notebook) {
+    public static void CreateOrTruncateTable(
+        IReadOnlyList<ImportColumnMapping> mappings,
+        string dstTableName,
+        bool temporaryTable,
+        bool truncateExistingTable, 
+        Notebook notebook
+        ) {
         // create the table if it doesn't already exist.
         var columnDefs = new List<string>();
-        if (dstColNodes.All(x => x == null)) {
-            // the user did not specify a column list, so all columns will be included
-            columnDefs.AddRange(srcColNames.Select(SqlUtil.DoubleQuote));
-        } else {
-            // the user specified which columns to include
-            for (int i = 0; i < dstColNodes.Length; i++) {
-                if (dstColNodes[i] != null) {
-                    var name = dstColNames[i];
-                    var type = dstColNodes[i].TypeConversion?.ToString() ?? "";
-                    string sqlType = "";
-                    if (dstColNodes[i].TypeConversion.HasValue) {
-                        switch (dstColNodes[i].TypeConversion.Value) {
-                            case Ast.TypeConversion.Integer: sqlType = "integer"; break;
-                            case Ast.TypeConversion.Real: sqlType = "real"; break;
-                            default: sqlType = "text"; break;
-                        }
-                    }
-
-                    columnDefs.Add($"{name.DoubleQuote()} {sqlType}");
-                }
+        foreach (var mapping in mappings) {
+            var name = mapping.DstColumnName;
+            string sqlType = "";
+            if (mapping.ImportColumn.TypeConversion.HasValue) {
+                sqlType = mapping.ImportColumn.TypeConversion.Value switch {
+                    Ast.TypeConversion.Integer => "integer",
+                    Ast.TypeConversion.Real => "real",
+                    _ => "text",
+                };
             }
+
+            columnDefs.Add($"{name.DoubleQuote()} {sqlType}");
         }
         var columnDefsList = string.Join(", ", columnDefs);
         var sql = $"CREATE {(temporaryTable ? "TEMPORARY" : "")} TABLE IF NOT EXISTS " +
@@ -217,24 +242,39 @@ public static class SqlUtil {
         }
     }
 
-    public static void InsertDataRows(IEnumerable<object[]> rows, string[] dstColNames,
-    Ast.ImportColumn[] dstColNodes, string dstTableName, IfConversionFails ifConversionFails, Notebook notebook) {
-        var dstColCount = dstColNames.Where(x => x != null).Count();
-        var insertSql = GetInsertSql(dstTableName, dstColCount, numRows: 1);
+    public static void InsertDataRows(
+        IEnumerable<object[]> rows,
+        IReadOnlyList<string> srcColNames,
+        IReadOnlyList<ImportColumnMapping> mappings,
+        string dstTableName,
+        IfConversionFails ifConversionFails,
+        Notebook notebook
+        ) {
+        // Find the source column index for each source mapping.
+        var sourceColumnIndices = new int[mappings.Count];
+        for (var i = 0; i < mappings.Count; i++) {
+            var srcColIndex = -1;
+            for (var j = 0; j < srcColNames.Count; j++) {
+                if (mappings[i].SrcColumnName.Equals(srcColNames[j], StringComparison.OrdinalIgnoreCase)) {
+                    srcColIndex = j;
+                    break;
+                }
+            }
+            Debug.Assert(srcColIndex != -1);  // Should have been checked already.
+            sourceColumnIndices[i] = srcColIndex;
+        }
+
+        var insertSql = GetInsertSql(dstTableName, mappings);
         var insertArgs = new List<object>();
         foreach (var row in rows) {
             insertArgs.Clear();
-            bool skipRow = false;
-            for (int j = 0; j < Math.Min(row.Length, dstColNames.Length); j++) {
-                if (dstColNames[j] == null) {
-                    continue; // column not chosen to be imported
-                }
-                var originalValue = row[j];
-                var typeConversion = dstColNodes[j].TypeConversion ?? Ast.TypeConversion.Text;
-                object converted;
-                bool error = !TryParseValue(originalValue, typeConversion, out converted);
+            var skipRow = false;
+            for (var mappingIndex = 0; mappingIndex < mappings.Count; mappingIndex++) {
+                var srcColIndex = sourceColumnIndices[mappingIndex];
+                var originalValue = srcColIndex < row.Length ? row[srcColIndex] : "";
+                var typeConversion = mappings[mappingIndex].ImportColumn.TypeConversion ?? Ast.TypeConversion.Text;
 
-                if (!error) {
+                if (TryParseValue(originalValue, typeConversion, out var converted)) {
                     insertArgs.Add(converted);
                 } else if (ifConversionFails == IfConversionFails.ImportAsText) {
                     insertArgs.Add(originalValue.ToString());
@@ -247,9 +287,6 @@ public static class SqlUtil {
                 }
             }
             if (!skipRow) {
-                while (insertArgs.Count < dstColCount) {
-                    insertArgs.Add(null);
-                }
                 notebook.Execute(insertSql, insertArgs);
             }
         }

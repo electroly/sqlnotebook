@@ -7,28 +7,23 @@
 <body>
   <h1><code>ARRAY_APPEND</code> Function</h1>
   <p>Creates a new array by copying an existing array and appending one or more elements to the end. The existing array
-  is not modified.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>ARRAY_APPEND(<i>array</i>, <i>value1</i>, [<i>value2</i>], ...)</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  is not modified.<br></p>
+  <h2>Syntax</h2><code>ARRAY_APPEND(<i>array</i>, <i>value</i>, ...)</code><br>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><b>array</b> (blob expression)<br>
+    <li><i>array</i>: blob<br>
     The existing array to copy.</li>
-    <li><b>value1</b>, <b>value2</b>, ... (expression)<br>
-    The values to append to the array.</li>
+    <li><i>value</i>, ...: scalar<br>
+    One or more values to append to the array.</li>
   </ul>
-  <h2>Return Value</h2>
-  <blockquote>
-    The new array, with the new values appended to the end.
-  </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>DECLARE @x = ARRAY_APPEND(<a href="array-func.html">ARRAY</a>(1, 2, 3), 99, 100)</code><br>
-    Assigns a 5-element array containing 1, 2, 3, 99, 100 to <code>@x</code>.</li>
+  <h2>Return Value</h2>The new array, formed from the original array plus the new values at the end.<br>
+  <h2>Example</h2>
+  <pre>DECLARE @a = ARRAY(111, 222, 333);<br>DECLARE @b = ARRAY_APPEND(@a, 999, 1000);<br>PRINT @a;  <i>-- "[111, 222, 333]"</i><br>PRINT @b;  <i>-- "[111, 222, 333, 999, 1000]"</i></pre>
+  <h2>See Also</h2>
+  <ul>
+    <li>
+      <a moz-do-not-send="true" href="array-func.html"><tt>ARRAY</tt> Function</a><br>
+    </li>
   </ul>
-  <p><br></p>
-  <ul class="examples"></ul>
 </body>
 </html>

@@ -7,27 +7,23 @@
 <body>
   <h1><code>ARRAY_GET</code> Function</h1>
   <p>Retrieves an element at a specified index in an array.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>ARRAY_GET(<i>array</i>, <i>element-index</i>)</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  <h2>Syntax</h2><code>ARRAY_GET(<i>array</i>, <i>element-index</i>)</code><br>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><b>array</b> (blob expression)<br>
+    <li><i>array</i>: blob<br>
     The array from which to read an element.</li>
-    <li><b>element-index</b> (integer expression)<br>
+    <li><i>element-index</i>: integer<br>
     Zero-based index into the array.</li>
   </ul>
-  <h2>Return Value</h2>
-  <blockquote>
-    The specified array element, or <code>NULL</code> if the index is outside the bounds of the array.
-  </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>PRINT ARRAY_GET(<a href="array-func.html">ARRAY</a>(1, 2, 3), 2)</code><br>
-    Prints 3.</li>
-    <li><code>DECLARE @x = ARRAY_GET(<a href="array-func.html">ARRAY</a>(1, 2, 3), 10)</code><br>
-    Assigns <code>NULL</code> to <code>@x</code>.</li>
-  </ul><br>
+  <h2>Return Value</h2>The specified array element, or <code>NULL</code> if the index is outside the bounds of the
+  array.<br>
+  <h2>Example</h2>
+  <pre>DECLARE @a = ARRAY(1, 2, 3);<br>PRINT ARRAY_GET(@a, 2);  <i>-- "3"</i><br>DECLARE @b = ARRAY_GET(@a, 10);  <i>-- @b is NULL</i><br>IF @b IS NULL PRINT 'Null!';  <i>-- Prints.</i><br></pre>
+  <h2>See Also</h2>
+  <ul>
+    <li>
+      <a moz-do-not-send="true" href="array-func.html"><tt>ARRAY</tt> Function</a><br>
+    </li>
+  </ul>
 </body>
 </html>

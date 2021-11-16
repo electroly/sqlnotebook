@@ -1,0 +1,3 @@
+PRINT DATEFROMPARTS(2015, 1, 2);  -- "2015-01-02"
+--output--
+2015-01-02

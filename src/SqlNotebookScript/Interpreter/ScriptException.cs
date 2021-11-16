@@ -3,5 +3,5 @@
 namespace SqlNotebookScript.Interpreter;
 
 public class ScriptException : Exception {
-    public ScriptException(string message) : base(message) { }
+    public ScriptException(string message, Exception innerException = null) : base(message, innerException) { }
 }

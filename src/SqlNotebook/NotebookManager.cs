@@ -160,22 +160,24 @@ public sealed class NotebookManager {
         return items;
     }
 
-    public string NewScript() {
-        return NewItem(NotebookItemType.Script.ToString());
-    }
+    public string NewScript() => NewItem(NotebookItemType.Script);
 
-    public string NewPage() {
-        return NewItem(NotebookItemType.Page.ToString());
-    }
+    public string NewPage() => NewItem(NotebookItemType.Page);
 
-    private string NewItem(string type, string name = null, string data = null) {
+    public string NewItem(NotebookItemType type, string name = null, string data = null) {
+        var existingNames = Notebook.UserData.Items.Select(x => x.Name.ToLowerInvariant()).ToHashSet();
         if (name == null) {
-            var existingNames = new HashSet<string>(Notebook.UserData.Items.Select(x => x.Name.ToLower()));
             int i;
-            for (i = 1; existingNames.Contains($"{type.ToLower()}{i}"); i++) { }
+            for (i = 1; existingNames.Contains($"{type.ToString().ToLowerInvariant()}{i}"); i++) {}
             name = $"{type}{i}";
+        } else if (existingNames.Contains(name.ToLowerInvariant())) {
+            throw new Exception($"There is already a notebook item named \"{name}\".");
         }
-        var itemRec = new NotebookItemRecord { Name = name, Data = data ?? "", Type = type };
+        var itemRec = new NotebookItemRecord {
+            Name = name,
+            Data = data ?? "",
+            Type = type.ToString()
+        };
         Notebook.UserData.Items.Add(itemRec);
         Rescan(notebookItemsOnly: true);
         SetDirty();

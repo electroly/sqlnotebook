@@ -9,23 +9,13 @@
   console output.<br>
   <h2>Syntax</h2><img moz-do-not-send="true" src="art/rr-print-statement.svg" alt="" class="railroad" width="288"
   height="62">
-  <h2>Arguments</h2>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><span style="font-weight: bold;">expression</span> (any expression)<br>
+    <li><i>expression</i>: scalar<br>
     The value to be printed.</li>
   </ul>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>PRINT 5;</code><br>
-    Prints 5.</li>
-    <li><code>PRINT 1 + 2;</code><br>
-    Prints 3.</li>
-    <li><code>PRINT 'Hello world';</code><br>
-    Prints "Hello world".</li>
-    <li><code>PRINT (SELECT COUNT(*) FROM mytable);</code><br>
-    Prints the number of rows in <code>mytable</code>.</li>
-  </ul>
-  <p><br></p>
+  <h2>Example</h2>
+  <pre>PRINT 5;<br>PRINT 1 + 2;<br>PRINT 'Hello world';<br>PRINT (SELECT COUNT(*) FROM sqlite_master);<br></pre>
   <ul class="examples"></ul>
 </body>
 </html>

@@ -10,7 +10,7 @@ public sealed class ListXlsWorksheetsFunction : CustomTableFunction {
     public override string Name => "list_xls_worksheets";
 
     public override string CreateTableSql =>
-        @"CREATE TABLE list_xls_worksheets (_file_path HIDDEN, number INTEGER, name)";
+        @"CREATE TABLE list_xls_worksheets (_file_path HIDDEN, number INTEGER, name TEXT)";
 
     public override int HiddenColumnCount => 1;
 

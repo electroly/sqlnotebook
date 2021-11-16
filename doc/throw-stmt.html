@@ -9,10 +9,10 @@
   "try-catch-stmt.html"><code>CATCH</code></a> block.
   <h2>Syntax</h2><img moz-do-not-send="true" src="art/rr-throw-statement.svg" alt="" class="railroad" width="341"
   height="75">
-  <h2>Arguments</h2>
+  <h2>Parameters</h2>
   <ul class="args">
     <li>
-      <span style="font-weight: bold;">error-message</span> (any expression, optional)<br>
+      <i>error-message</i>: scalar (optional)<br>
       The values to be returned from the&nbsp;<a href="error-message-func.html"><code>ERROR_MESSAGE</code></a>
       function. If not provided, then the value from the last thrown error is retained; this allows a
       <code>CATCH</code> block to re-throw an error without changing it.
@@ -23,7 +23,7 @@
     <li><code>THROW 'Oops';</code><br>
     Throws an error such that <code>ERROR_MESSAGE()</code> returns "Oops".</li>
     <li><code>THROW;</code><br>
-    Re-throws the last thrown error without changing it.</li>
-  </ul><br>
+    Re-throws the last thrown error without changing it. Do this inside of a <tt>CATCH</tt> block.<br></li>
+  </ul>
 </body>
 </html>

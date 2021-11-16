@@ -15,9 +15,6 @@ public sealed class ScriptEnv {
     public bool DidReturn { get; set; }
     public bool DidBreak { get; set; }
     public bool DidContinue { get; set; }
-    public bool DidThrow { get; set; }
-
-    public object ErrorMessage { get; set; }
 
     public int MaxRows { get; set; } = -1;
 }

@@ -10,7 +10,10 @@ using SqlNotebookScript.Utils;
 namespace Tests;
 
 [TestClass]
-public class SqliteGrammarTest {
+public sealed class SqliteGrammarTest {
+    [ClassInitialize]
+    public static void Init(TestContext context) => GlobalInit.Init();
+
     [TestMethod]
     public void TestSqlStatements() {
         NotebookTempFiles.Init();

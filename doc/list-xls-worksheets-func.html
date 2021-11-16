@@ -8,15 +8,12 @@
   <h1><code>LIST_XLS_WORKSHEETS</code> Function</h1>
   <p>Returns a table containing the names and index numbers of the worksheets in a particular Excel workbook. The
   workbook may be in <code>.XLS</code> or <code>.XLSX</code> format. This is a table-valued function that can be used
-  in the <code>FROM</code> clause of a <code>SELECT</code> statement and can participate in <code>JOIN</code>s as if it
-  were a table.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>LIST_XLS_WORKSHEETS(<i>file-path</i>)</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  in the <code>FROM</code> clause of a <code>SELECT</code> statement and can participate in joins as if it were a
+  table.</p>
+  <h2>Syntax</h2><code>LIST_XLS_WORKSHEETS(<i>file-path</i>)</code><br>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><b>file-path</b> (string)<br>
+    <li><i>file-path</i>: text<br>
     The absolute path of the <code>.XLS</code> or <code>.XLSX</code> workbook to inspect.</li>
   </ul>
   <h2>Return Value</h2>
@@ -44,15 +41,8 @@
       </tbody>
     </table>
   </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>SELECT * FROM LIST_XLS_WORKSHEETS('C:\Workbook.xls');</code><br>
-    Returns a table listing all the worksheets in the "Workbook.xls" file.</li>
-    <li><code>SELECT name FROM LIST_XLS_WORKSHEETS('C:\Workbook.xls') WHERE number = 2;</code><br>
-    Returns the name of the second worksheet in "Workbook.xls", or an empty table if there are fewer than 2 worksheets
-    in the workbook.</li>
-  </ul>
-  <p><br></p>
+  <h2>Example</h2>
+  <pre><i>-- Returns a table listing all the worksheets.</i><br>SELECT * FROM LIST_XLS_WORKSHEETS('C:\Workbook.xls');<br><br><i>-- Returns the name of the second worksheet, or an</i><i><br></i><i>-- empty table if there are fewer than 2 worksheets</i><i><br></i><i>-- in the workbook.</i><br>SELECT name FROM LIST_XLS_WORKSHEETS('C:\Workbook.xls') WHERE number = 2;<br></pre>
   <ul class="examples"></ul>
 </body>
 </html>

@@ -1,0 +1,10 @@
+BEGIN TRY
+    EXECUTE Script2;
+END TRY
+BEGIN CATCH
+    PRINT ERROR_MESSAGE();
+END CATCH
+--script--
+THROW 'Oops';
+--output--
+Oops

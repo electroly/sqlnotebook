@@ -41,6 +41,6 @@ public sealed class ReadFileFunction : CustomTableFunction {
         } else {
             lines = File.ReadAllLines(filePath, Encoding.GetEncoding((int)encoding));
         }
-        return lines.Select((x, i) => new object[] { filePath, encoding, i, x });
+        return lines.Select((x, i) => new object[] { filePath, encoding, i + 1, x });
     }
 }

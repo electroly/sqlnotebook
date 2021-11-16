@@ -7,27 +7,20 @@
 <body>
   <h1><code>DATEFROMPARTS</code> Function</h1>
   <p>Returns a string formatted like "2015-12-25" based on the provided year, month, and day values.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>DATEFROMPARTS(<i>year</i>, <i>month</i>, <i>day</i>)</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  <h2>Syntax</h2><code>DATEFROMPARTS(<i>year</i>, <i>month</i>, <i>day</i>)</code><br>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><b>year</b> (integer expression)<br>
+    <li><i>year</i>: integer<br>
     Four-digit year.</li>
-    <li><b>month</b> (integer expression, 1-12)<br>
+    <li><i>month</i>: integer (1-12)<br>
     Calendar month specified as a 1-based integer.</li>
-    <li><b>day</b> (integer expression, 1-31)<br>
+    <li><i>day</i>: integer (1-31)<br>
     Day of the month specified as a 1-based integer.</li>
   </ul>
-  <h2>Return Value</h2>
-  <blockquote>
-    A string formatted like "2015-12-25".
-  </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>PRINT DATEFROMPARTS(2015, 1, 2);</code><br>
-    Prints "2015-01-02".</li>
-  </ul><br>
+  <h2>Return Value</h2>A string formatted like "2015-12-25". An error is raised if the arguments do not specify a valid
+  date.<br>
+  <h2>Example</h2>
+  <pre>PRINT DATEFROMPARTS(2015, 1, 2);  <i>-- "2015-01-02"</i><br><br><i>-- Raises an error because there is no February 31, 2021.</i><br>PRINT DATEFROMPARTS(2021, 2, 31);
+</pre>
 </body>
 </html>

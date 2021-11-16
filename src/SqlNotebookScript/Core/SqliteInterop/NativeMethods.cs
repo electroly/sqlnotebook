@@ -116,7 +116,7 @@ public static class NativeMethods {
     [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_result_text16", SetLastError = false)]
     public static extern void sqlite3_result_text16(IntPtr pCtx, IntPtr z, int n, IntPtr xDel);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_result_text16", SetLastError = false)]
+    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_result_blob64", SetLastError = false)]
     public static extern void sqlite3_result_blob64(IntPtr pCtx, IntPtr z, ulong n, IntPtr xDel);
 
     [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_result_null", SetLastError = false)]

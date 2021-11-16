@@ -1,0 +1,10 @@
+PRINT ISDATE('2016-03-07');  -- "1"
+PRINT ISDATE(1234);  -- "0"
+PRINT ISDATE('foo');  -- "0"
+PRINT ISDATE('2016-01-23 22:06:53.742 -04:00');  -- "1"
+
+--output--
+1
+0
+0
+1

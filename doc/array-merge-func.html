@@ -7,24 +7,20 @@
 <body>
   <h1><code>ARRAY_MERGE</code> Function</h1>
   <p>Creates a new array by merging two or more arrays, in order.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>ARRAY_MERGE(<i>array1</i>, <i>array2</i>, [<i>array3</i>], ...)</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  <h2>Syntax</h2><code>ARRAY_MERGE(<i>array1</i>, <i>array2</i>, [<i>array3</i>], ...)</code><br>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><b>array1</b>, <b>array2</b>, <b>array3</b>, ... (blob expression)<br>
+    <li><i>array1</i>, <i>array2</i>, <i>array3</i>, ...: blob<br>
     The arrays to merge together.</li>
   </ul>
-  <h2>Return Value</h2>
-  <blockquote>
-    A new array formed by merging the arrays together.
-  </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>DECLARE @x = ARRAY_MERGE(</code><code><a href="array-func.html">ARRAY</a></code><code>(1, 2), ARRAY(3,
-    4));</code><br>
-    Assigns a 4-element array to <code>@x</code> containing 1, 2, 3, 4.</li>
-  </ul><br>
+  <h2>Return Value</h2>A new array formed by merging the arrays together.<br>
+  <h2>Example</h2>
+  <pre>DECLARE @a = ARRAY(111, 222);<br>DECLARE @b = ARRAY(333, 444);<br>DECLARE @c = ARRAY_MERGE(@a, @b);<br>PRINT @c;  <i>-- "[111, 222, 333, 444]"<br></i></pre>
+  <h2>See Also</h2>
+  <ul>
+    <li>
+      <a moz-do-not-send="true" href="array-func.html"><tt>ARRAY</tt> Function</a><br>
+    </li>
+  </ul>
 </body>
 </html>

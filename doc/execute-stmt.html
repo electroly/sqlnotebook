@@ -8,7 +8,7 @@
   <h1><code>EXECUTE</code> Statement</h1>Executes the script called <span style=
   "font-style: italic;">script-name</span>, which may be enclosed in quotes if the script name contains spaces or
   special characters. If a <span style="font-style: italic;">result-variable</span> is specified, then that variable
-  will contain the scalar value, if any, returned from the script. The <span style=
+  will receive the scalar value, if any, returned from the script. The <span style=
   "font-style: italic;">result-variable</span> does not need to be declared beforehand; the <code>EXECUTE</code>
   statement itself will declare the variable if it does not exist. If the script does not call <code>RETURN</code>,
   then the return value is <code>NULL</code>.<br>
@@ -21,36 +21,27 @@
   statement is used.<br>
   <h2>Syntax</h2><img moz-do-not-send="true" src="art/rr-execute-statement.svg" alt="" class="railroad" width="639"
   height="227">
-  <h2>Arguments</h2>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><span style="font-weight: bold;">result-variable</span> (variable name)<br>
+    <li><i>result-variable</i>: variable name<br>
     If provided, this is a variable name beginning with an at sign (<code>@</code>), dollar sign (<code>$</code>), or
     colon (<code>:</code>) that the return value of the script will be assigned to. The variable may be declared
     beforehand, but does not need to be. The <code>EXECUTE</code> statement acts as a variable declaration if the
     variable does not exist.</li>
-    <li><span style="font-weight: bold;">script-name</span> (identifier or string)<br>
+    <li><i>script-name</i>: text or identifier<br>
     The name of the script to execute.</li>
-    <li><span style="font-weight: bold;">parameter-name</span> (variable name)<br>
+    <li><i>parameter-name</i>: variable name<br>
     The name of the parameter variable inside the script called <span style="font-style: italic;">script-name</span>
     whose argument value is being set.</li>
-    <li><span style="font-weight: bold;">argument-value</span> (expression)<br>
+    <li><i>argument-value</i>: scalar<br>
     The value to pass to the script for the parameter called <span style=
     "font-style: italic;">parameter-name</span>.</li>
-    <li><code style="font-weight: bold;">DEFAULT</code> (keyword)<br>
+    <li><tt>DEFAULT</tt> (keyword)<br>
     If <code>DEFAULT</code> is specified instead of an <span style="font-style: italic;">argument-value</span>, then
     the parameter will use its default value. This is equivalent to omitting the parameter.</li>
   </ul>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>EXECUTE Script2;</code><br>
-    Executes the script named "Script2" using default values for all parameters and ignoring the return value.</li>
-    <li><code>EXECUTE @returnValue = Script2;</code><br>
-    Executes the script named "Script2" and stores the return value in the variable <code>@returnValue</code>.</li>
-    <li><code>EXECUTE 'My Script';</code><br>
-    Executes the script named "My Script".</li>
-    <li><code>EXECUTE Script2 @foo = 1, @bar = 2;</code><br>
-    Executes the script named "Script2" and passes two argument values. &nbsp;<code>@foo</code> and <code>@bar</code>
-    refer to parameters defined using <code>DECLARE PARAMETER</code> inside "Script2".</li>
-  </ul><br>
+  <h2>Example</h2>
+  <pre><i>-- Executes the script named "Script2" using default</i><i><br></i><i>-- values for all parameters and ignoring the return value.</i><br>EXECUTE Script2;<br><br><i>-- Executes the script named "Script2" and stores the</i><i><br></i><i>-- return value in the variable @returnValue.</i><br>EXECUTE @returnValue = Script2;<br><br><i>-- Executes the script named "My Script", using quotes</i><i><br></i><i>-- because the name contains whitespace.</i>
+EXECUTE 'My Script';<br><br><i>-- Executes the script named "Script2" and passes two</i><i><br></i><i>-- argument values. @foo and @bar refer to parameters</i><i><br></i><i>-- defined using DECLARE PARAMETER inside "Script2".</i><br>EXECUTE Script2 @foo = 1, @bar = 2;<br><br></pre>
 </body>
 </html>

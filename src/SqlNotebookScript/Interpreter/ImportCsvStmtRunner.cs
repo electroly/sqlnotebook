@@ -16,13 +16,13 @@ public sealed class ImportCsvStmtRunner {
     private readonly Ast.ImportCsvStmt _stmt;
 
     // option values
-    private readonly long _skipLines;
-    private readonly long? _takeLines;
+    private readonly long _skipLines = 0;
+    private readonly long? _takeLines = null;
     private readonly bool _headerRow = true;
-    private readonly bool _truncateExistingTable;
-    private readonly bool _temporaryTable;
-    private readonly Encoding _fileEncoding; // or null for automatic
-    private readonly IfConversionFails _ifConversionFails;
+    private readonly bool _truncateExistingTable = false;
+    private readonly bool _temporaryTable = false;
+    private readonly Encoding _fileEncoding = null; // or null for automatic
+    private readonly IfConversionFails _ifConversionFails = IfConversionFails.ImportAsText;
 
     // must be run from the SQLite thread
     public static void Run(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportCsvStmt stmt) {
@@ -44,6 +44,9 @@ public sealed class ImportCsvStmtRunner {
 
                 case "TAKE_LINES":
                     _takeLines = _stmt.OptionsList.GetOptionLong(option, _runner, _env, -1, minValue: -1);
+                    if (_takeLines == -1) {
+                        _takeLines = null;
+                    }
                     break;
 
                 case "HEADER_ROW":
@@ -83,41 +86,26 @@ public sealed class ImportCsvStmtRunner {
         }
 
         var filePath = GetFilePath();
-        using (var stream = File.OpenRead(filePath))
-        using (var bufferedStream = new BufferedStream(stream))
-        using (var parser = NewParser(bufferedStream, separator)) {
-            var parserBuffer = new TextFieldParserBuffer(parser);
+        using var stream = File.OpenRead(filePath);
+        using var bufferedStream = new BufferedStream(stream);
+        using var parser = NewParser(bufferedStream, separator);
+        var parserBuffer = new TextFieldParserBuffer(parser);
 
-            // skip the specified number of initial file lines
-            for (int i = 0; i < _skipLines && !parserBuffer.EndOfData; i++) {
-                parserBuffer.SkipLine();
-            }
-
-            // consume the header row if present.  invent generic column names if not.
-            var srcColNames = ReadColumnNames(parserBuffer);
-
-            // if the user specified a column list, then check to make sure all of the specified column names exist
-            // in the list we just read.  indices in dstColNodes/dstColNames match up with srcColNames, and some
-            // elements of dstColNodes may be null if the user does not want to include certain CSV columns.
-            // all dstColNodes elements will be null if the user specified no columns explicitly, which means they
-            // want to include all columns.
-            Ast.ImportColumn[] dstColNodes;
-            string[] dstColNames;
-            SqlUtil.GetDestinationColumns(_stmt.ImportTable.ImportColumns, _runner, _env, srcColNames,
-                out dstColNodes, out dstColNames);
-
-            // create or truncate the target table, if necessary.
-            var dstTableName = _runner.EvaluateIdentifierOrExpr(_stmt.ImportTable.TableName, _env);
-            SqlUtil.CreateOrTruncateTable(srcColNames, dstColNodes, dstColNames, dstTableName, _temporaryTable,
-                _truncateExistingTable, _notebook);
-
-            // ensure that the target table has all of the requested column names.
-            SqlUtil.VerifyColumnsExist(dstColNames, dstTableName, _notebook);
-
-            // read the data rows and insert into the target table.
-            SqlUtil.InsertDataRows(GetRows(parserBuffer), dstColNames, dstColNodes, dstTableName, _ifConversionFails,
-                _notebook);
+        // skip the specified number of initial file lines
+        for (int i = 0; i < _skipLines && !parserBuffer.EndOfData; i++) {
+            parserBuffer.SkipLine();
         }
+
+        SqlUtil.Import(
+            ReadColumnNames(parserBuffer),
+            GetRows(parserBuffer),
+            _stmt.ImportTable,
+            _temporaryTable,
+            _truncateExistingTable,
+            _ifConversionFails,
+            _notebook,
+            _runner,
+            _env);
     }
 
     private IEnumerable<object[]> GetRows(TextFieldParserBuffer parser) {
@@ -177,15 +165,24 @@ public sealed class ImportCsvStmtRunner {
     }
 
     private TextFieldParser NewParser(Stream stream, string separator) {
-        var x = _fileEncoding == null
-            ? new TextFieldParser(stream)
-            : new TextFieldParser(stream, _fileEncoding, false);
-        x.HasFieldsEnclosedInQuotes = true;
+        // Detect the presence of a UTF-8 BOM and arrange to handle it if this is an automatic or UTF-8 encoding.
+        var isUtf8 =
+            (_fileEncoding?.CodePage ?? 0) switch {
+                0 => true,
+                65001 => true,
+                _ => false,
+            };
+
+        TextFieldParser textFieldParser =
+            isUtf8 ? new(stream, Encoding.UTF8, true) :
+            _fileEncoding != null ? new(stream, _fileEncoding, false) :
+            new(stream);
+        textFieldParser.HasFieldsEnclosedInQuotes = true;
         if (separator == "") {
             separator = ",";
         }
-        x.SetDelimiters(separator);
-        return x;
+        textFieldParser.SetDelimiters(separator);
+        return textFieldParser;
     }
 
     // allow a line to be read, un-read, and then read again

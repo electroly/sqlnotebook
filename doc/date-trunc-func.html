@@ -8,14 +8,11 @@
   <h1><code>DATE_TRUNC</code> Function</h1>
   <p>Returns a new date by finding the nearest specified calendar or clock division prior to the specified source
   date.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>DATE_TRUNC(<em>date-part</em>, <em>date</em>)</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  <h2>Syntax<br></h2><tt>DATE_TRUNC(<i>date-part</i>, <i>date</i>)</tt><br>
+  <h2>Parameters</h2>
   <ul class="args">
     <li>
-      <strong>date-part</strong> (text)<br>
+      <i>date-part</i>: text<br>
       One of the following predefined strings:
       <ul class="enum">
         <li><code>year</code>, <code>yy</code>, <code>yyyy</code></li>
@@ -32,23 +29,14 @@
         <li><code>tzoffset</code>, <code>tz</code></li>
       </ul>
     </li>
-    <li><strong>date</strong> (date/time)<br>
+    <li><i>date</i>: text<br>
     A text value that can be parsed into a date/time with time zone offset. If no time zone is specified in the string,
     then the system's local time zone is assumed.</li>
   </ul>
-  <h2>Return Value</h2>
-  <blockquote>
-    A date/time with time zone offset (i.e. a string like "2016-07-23 21:00:00.000 -04:00"), calculated by finding the
-    nearest specified time division prior to the specified&nbsp;<span style="font-style: italic">date</span>.
-  </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>PRINT DATE_TRUNC('month', '2016-07-23 12:23:00');</code><br>
-    Prints a date in the system's local time zone like "2016-07-01 00:00:00.000 -04:00".</li>
-    <li><code>PRINT DATE_TRUNC('week', '2015-08-03 12:41:25 +5');</code><br>
-    Prints "2015-08-02 00:00:00.000 +05:00".</li>
-    <li><code>PRINT DATE_TRUNC('hh', '2015-02-03 12:41:25 +2:30');</code><br>
-    Prints "2015-02-03 12:00:00.000 +02:30".</li>
-  </ul><br>
+  <h2>Return Value<br></h2>A date/time with time zone offset (i.e. a string like "2016-07-23 21:00:00.000 -04:00"),
+  calculated by finding the nearest specified time division prior to the specified&nbsp;<i>date</i>.<br>
+  <h2>Example</h2>
+  <pre><i>-- Prints a date in the system's local time zone like "2016-07-01 00:00:00.000 -04:00".</i><br>PRINT DATE_TRUNC('month', '2016-07-23 12:23:00');<br><br><i>-- Prints "2015-08-02 00:00:00.000 +05:00".</i>
+PRINT DATE_TRUNC('week', '2015-08-03 12:41:25 +5');<br><br><i>-- Prints "2015-02-03 12:00:00.000 +02:30".</i><br>PRINT DATE_TRUNC('hh', '2015-02-03 12:41:25 +2:30');<br></pre>
 </body>
 </html>

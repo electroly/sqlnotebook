@@ -7,27 +7,23 @@
 <body>
   <h1><code>ARRAY_CONCAT</code> Function</h1>
   <p>Creates a string by concatenating the elements of an array together with an optional separator.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>ARRAY_CONCAT(<i>array</i>, [<i>separator</i>])</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  <h2>Syntax</h2><code>ARRAY_CONCAT(<i>array</i>, [<i>separator</i>])</code><br>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><b>array</b> (blob expression)<br>
+    <li><i>array</i>: blob<br>
     The array whose elements will be concatenated together.</li>
-    <li><b>separator</b> (string expression, optional)<br>
+    <li><i>separator</i>: text (optional)<br>
     If provided, the array elements will be separated using this string. By default there is no separator.</li>
   </ul>
-  <h2>Return Value</h2>
-  <blockquote>
-    A string formed by concatenating the elements of <i>array</i> using an optional <i>separator</i>.
-  </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>PRINT ARRAY_CONCAT(<a href="array-func.html">ARRAY</a>('A', 'B', 'C'));</code><br>
-    Prints "ABC".</li>
-    <li><code>PRINT ARRAY_CONCAT(<a href="array-func.html">ARRAY</a>(1, 2, 3), '|');</code><br>
-    Prints "1|2|3".</li>
-  </ul><br>
+  <h2>Return Value</h2>A string formed by concatenating the elements of <i>array</i> using an optional
+  <i>separator</i>.<br>
+  <h2>Example</h2>
+  <pre>PRINT ARRAY_CONCAT(ARRAY('A', 'B', 'C'));  <i>-- "ABC"</i><br>PRINT ARRAY_CONCAT(ARRAY(1, 2, 3), '-');  <i>-- "1-2-3"</i><br></pre>
+  <h2>See Also</h2>
+  <ul>
+    <li>
+      <a moz-do-not-send="true" href="array-func.html"><tt>ARRAY</tt> Function</a><br>
+    </li>
+  </ul>
 </body>
 </html>

@@ -8,23 +8,13 @@
   <h1><code>TO_DATE</code> Function</h1>
   <p>Attempts to convert the <span style="font-style: italic;">input</span> value to a date string formatted
   like&nbsp;"2016-07-23".</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>TO_DATE(<span style="font-style: italic;">input</span>)</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  <h2>Syntax</h2><code>TO_DATE(<span style="font-style: italic;">input</span>)</code><br>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li>
-      <b>input</b> (text)<br>
-      The input string that can be parsed as a date. Internally, <span style="font-style: italic;">input</span> is
-      parsed&nbsp;by the .NET <a href="https://msdn.microsoft.com/en-us/library/bb301909(v=vs.110).aspx" target=
-      "_blank"><code>DateTimeOffset.TryParse</code></a> method.
-    </li>
+    <li><i>input</i>: text<br>
+    The input string that can be parsed as a date.</li>
   </ul>
-  <h2>Return Value</h2>
-  <blockquote>
-    A date string formatted like "2016-07-23".
-  </blockquote>
+  <h2>Return Value</h2>A date string formatted like "2016-07-23".<br>
   <h2>Examples</h2>
   <ul class="examples">
     <li><code>PRINT TO_DATE('2016/5/9 5:39 PM');</code><br>

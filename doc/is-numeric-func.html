@@ -7,27 +7,16 @@
 <body>
   <h1><code>ISNUMERIC</code> Function</h1>
   <p>Determines whether a given value is or can be converted to a numeric data type.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>ISNUMERIC(<i>value</i>)</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  <h2>Syntax</h2><code>ISNUMERIC(<i>value</i>)</code><br>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><b>value</b> (expression)<br>
+    <li><i>value</i>: scalar<br>
     The value to inspect.</li>
   </ul>
-  <h2>Return Value</h2>
-  <blockquote>
-    If the value can be converted to a numeric data type, then 1 is returned. If not, then 0 is returned.
-  </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>PRINT ISNUMERIC('A');</code><br>
-    Prints 0.</li>
-    <li><code>PRINT ISNUMERIC('123');</code><br>
-    Prints 1.</li>
-    <li><code>PRINT ISNUMERIC(3.14);</code><br>
-    Prints 1.</li>
-  </ul><br>
+  <h2>Return Value</h2>If the value can be converted to a numeric data type, then 1 is returned. If not, then 0 is
+  returned.<br>
+  <h2>Example<br></h2>
+  <pre>PRINT ISNUMERIC('A');  <i>-- "0"</i><br>PRINT ISNUMERIC('123');  <i>-- "1"</i><br>PRINT ISNUMERIC(3.14);  <i>-- "1"</i>
+</pre>
 </body>
 </html>

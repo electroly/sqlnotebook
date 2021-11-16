@@ -38,7 +38,6 @@ public static class CustomFunctionsProvider {
     }
 
     private static void ErrorMessage(IntPtr ctx, int argc, IntPtr argv) {
-        // TODO
-        SqliteUtil.Result(ctx, null);
+        SqliteUtil.Result(ctx, Notebook.ErrorMessage);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using SqlNotebookScript.Core;
 using SqlNotebookScript.Utils;
@@ -13,7 +14,6 @@ public sealed class ImportTxtStmtRunner {
     private readonly Ast.ImportTxtStmt _stmt;
 
     // arguments
-    private readonly string _filePath;
     private readonly string _tableName;
     private readonly string _lineNumberColumnName; // may be null
     private readonly string _textColumnName; // may be null
@@ -37,7 +37,6 @@ public sealed class ImportTxtStmtRunner {
         _runner = runner;
         _stmt = stmt;
 
-        _filePath = GetFilePath();
         _tableName = _runner.EvaluateIdentifierOrExpr(_stmt.TableName, _env);
         _lineNumberColumnName = _stmt.LineNumberColumnName == null ? null : _runner.EvaluateIdentifierOrExpr(_stmt.LineNumberColumnName, _env);
         _textColumnName = _stmt.TextColumnName == null ? null : _runner.EvaluateIdentifierOrExpr(_stmt.TextColumnName, _env);
@@ -50,6 +49,9 @@ public sealed class ImportTxtStmtRunner {
 
                 case "TAKE_LINES":
                     _takeLines = _stmt.OptionsList.GetOptionLong(option, _runner, _env, -1, minValue: -1);
+                    if (_takeLines == -1) {
+                        _takeLines = null;
+                    }
                     break;
 
                 case "TRUNCATE_EXISTING_TABLE":
@@ -71,32 +73,46 @@ public sealed class ImportTxtStmtRunner {
     }
 
     private void Import() {
-        using (var reader = NewReader(GetFilePath())) {
-            // skip the specified number of initial file lines
-            for (int i = 0; i < _skipLines && !reader.EndOfStream; i++) {
-                reader.ReadLine();
-            }
+        using var stream = File.OpenRead(GetFilePath());
+        using var reader = NewReader(stream);
 
-            CreateOrTruncateTable();
+        // skip the specified number of initial file lines
+        for (int i = 0; i < _skipLines && !reader.EndOfStream; i++) {
+            reader.ReadLine();
+        }
 
-            if (_textColumnName != null) {
-                SqlUtil.VerifyColumnsExist(new[] { _lineNumberColumnName, _textColumnName }, _tableName, _notebook);
-            }
+        CreateOrTruncateTable();
 
-            var insertSql = GetInsertSql();
-            var args = new object[2];
-            for (long i = 0; (!_takeLines.HasValue || i < _takeLines.Value) && !reader.EndOfStream; i++) {
-                args[0] = i;
-                args[1] = reader.ReadLine();
-                _notebook.Execute(insertSql, args);
-            }
+        if (_textColumnName != null) {
+            SqlUtil.VerifyColumnsExist(new[] { _lineNumberColumnName, _textColumnName }, _tableName, _notebook);
+        }
+
+        var insertSql = GetInsertSql();
+        var args = new object[2];
+        for (long i = 0; (!_takeLines.HasValue || i < _takeLines.Value) && !reader.EndOfStream; i++) {
+            args[0] = i + 1;
+            args[1] = reader.ReadLine();
+            _notebook.Execute(insertSql, args);
         }
     }
 
-    private StreamReader NewReader(string filePath) {
+    private StreamReader NewReader(Stream fileStream) {
+        var encoding = _fileEncoding;
+
+        // Detect the presence of a UTF-8 BOM and arrange to handle it if this is an automatic or UTF-8 encoding.
+        var isUtf8 =
+            (encoding?.CodePage ?? 0) switch {
+                0 => true,
+                65001 => true,
+                _ => false,
+            };
+        if (isUtf8) {
+            return new (fileStream, Encoding.UTF8, true);
+        }
+
         return _fileEncoding == null
-            ? new StreamReader(filePath)
-            : new StreamReader(filePath, _fileEncoding, false);
+            ? new(fileStream)
+            : new(fileStream, _fileEncoding, false);
     }
 
     private string GetFilePath() {

@@ -61,21 +61,23 @@ public sealed class ScriptRunner {
     }
 
     public void Execute(Ast.Script script, ScriptEnv env) {
-        ExecuteBlock(script.Block, env);
+        try {
+            ExecuteBlock(script.Block, env);
 
-        if (env.DidBreak) {
-            throw new ScriptException($"Attempted to BREAK outside of a WHILE loop.");
-        } else if (env.DidContinue) {
-            throw new ScriptException($"Attempted to CONTINUE outside of a WHILE loop.");
-        } else if (env.DidThrow) {
-            throw new UncaughtErrorScriptException(env.ErrorMessage);
+            if (env.DidBreak) {
+                throw new ScriptException($"Attempted to BREAK outside of a WHILE loop.");
+            } else if (env.DidContinue) {
+                throw new ScriptException($"Attempted to CONTINUE outside of a WHILE loop.");
+            }
+        } catch (Exception ex) {
+            throw new UncaughtErrorScriptException(ex.GetExceptionMessage(), ex);
         }
     }
 
     private void ExecuteBlock(Ast.Block block, ScriptEnv env) {
         foreach (var stmt in block.Statements) {
             ExecuteStmt(stmt, env);
-            if (env.DidReturn || env.DidBreak || env.DidContinue || env.DidThrow) {
+            if (env.DidReturn || env.DidBreak || env.DidContinue) {
                 return;
             }
         }
@@ -89,9 +91,6 @@ public sealed class ScriptRunner {
     private void ExecuteSqlStmt(Ast.SqlStmt stmt, ScriptEnv env) {
         foreach (var beforeStmt in stmt.RunBefore) {
             ExecuteStmt(beforeStmt, env);
-            if (env.DidThrow) {
-                return;
-            }
         }
 
         try {
@@ -102,9 +101,6 @@ public sealed class ScriptRunner {
         } finally {
             foreach (var afterStmt in stmt.RunAfter) {
                 ExecuteStmt(afterStmt, env);
-                if (env.DidThrow) {
-                    break;
-                }
             }
         }
     }
@@ -134,7 +130,7 @@ public sealed class ScriptRunner {
             if (stmt.InitialValue != null) {
                 env.Vars[name] = EvaluateExpr(stmt.InitialValue, env);
             } else {
-                env.Vars[name] = 0L;
+                env.Vars[name] =  DBNull.Value;
             }
         }
     }
@@ -169,7 +165,7 @@ public sealed class ScriptRunner {
             condition = EvaluateExpr<long>(stmt.Condition, env);
             if (condition == 1) {
                 ExecuteBlock(stmt.Block, env);
-                if (env.DidReturn || env.DidThrow) {
+                if (env.DidReturn) {
                     return;
                 } else if (env.DidBreak) {
                     env.DidBreak = false;
@@ -211,7 +207,7 @@ public sealed class ScriptRunner {
             env.Vars[stmt.VariableName] = counter;
 
             ExecuteBlock(stmt.Block, env);
-            if (env.DidReturn || env.DidThrow) {
+            if (env.DidReturn) {
                 return;
             } else if (env.DidBreak) {
                 env.DidBreak = false;
@@ -258,20 +254,16 @@ public sealed class ScriptRunner {
         var script = parser.Parse(GetScriptCode(stmt.ScriptName));
         var subEnv = new ScriptEnv();
         foreach (var arg in stmt.Arguments) {
-            subEnv.Vars[arg.Name.ToLower()] = EvaluateExpr(arg.Value, env);
+            if (arg.Value != null) {
+                subEnv.Vars[arg.Name.ToLower()] = EvaluateExpr(arg.Value, env);
+            }
         }
-        try {
-            runner.Execute(script, subEnv);
-        } catch (UncaughtErrorScriptException ex) {
-            env.ErrorMessage = ex.ErrorMessage;
-            env.DidThrow = true;
-            return;
-        }
+        runner.Execute(script, subEnv);
         env.Output.Append(subEnv.Output);
         var returnCode = subEnv.Output.ScalarResult;
         if (stmt.ReturnVariableName != null) {
             var name = stmt.ReturnVariableName.ToLower();
-            env.Vars[name] = returnCode ?? 0L;
+            env.Vars[name] = returnCode ?? DBNull.Value;
         }
     }
 
@@ -284,63 +276,44 @@ public sealed class ScriptRunner {
 
     private void ExecuteThrowStmt(Ast.ThrowStmt stmt, ScriptEnv env) {
         if (stmt.HasErrorValues) {
-            var errorMessage = EvaluateExpr(stmt.Message, env); ;
-            Throw(env, errorMessage);
+            var errorMessage = EvaluateExpr(stmt.Message, env);
+            Throw(errorMessage.ToString());
         } else {
-            env.DidThrow = true;
+            Throw(Notebook.ErrorMessage);
         }
     }
 
-    private void Throw(ScriptEnv env, object errorMessage) {
-        env.ErrorMessage = errorMessage;
-        env.DidThrow = true;
-
-        // make the error message available via the error_message() function
-        _notebook.UserData.LastError.ErrorMessage = env.ErrorMessage;
+    private static void Throw(string errorMessage) {
+        throw new ScriptException(errorMessage);
     }
 
     private void ExecuteRethrowStmt(Ast.RethrowStmt stmt, ScriptEnv env) {
-        env.DidThrow = true;
+        Throw(Notebook.ErrorMessage);
     }
 
     private void ExecuteTryCatchStmt(Ast.TryCatchStmt stmt, ScriptEnv env) {
-        ExecuteBlock(stmt.TryBlock, env);
-        if (env.DidThrow) {
-            env.DidThrow = false;
+        try {
+            ExecuteBlock(stmt.TryBlock, env);
+        } catch (Exception ex) {
+            Notebook.ErrorMessage = ex.GetExceptionMessage();
             ExecuteBlock(stmt.CatchBlock, env);
         }
     }
 
     private void ExecuteImportCsvStmt(Ast.ImportCsvStmt stmt, ScriptEnv env) {
-        try {
-            ImportCsvStmtRunner.Run(_notebook, env, this, stmt);
-        } catch (Exception ex) {
-            Throw(env, ex.GetExceptionMessage());
-        }
+        ImportCsvStmtRunner.Run(_notebook, env, this, stmt);
     }
 
     private void ExecuteImportXlsStmt(Ast.ImportXlsStmt stmt, ScriptEnv env) {
-        try {
-            ImportXlsStmtRunner.Run(_notebook, env, this, stmt);
-        } catch (Exception ex) {
-            Throw(env, ex.GetExceptionMessage());
-        }
+        ImportXlsStmtRunner.Run(_notebook, env, this, stmt);
     }
 
     private void ExecuteImportTxtStmt(Ast.ImportTxtStmt stmt, ScriptEnv env) {
-        try {
-            ImportTxtStmtRunner.Run(_notebook, env, this, stmt);
-        } catch (Exception ex) {
-            Throw(env, ex.GetExceptionMessage());
-        }
+        ImportTxtStmtRunner.Run(_notebook, env, this, stmt);
     }
 
     private void ExecuteExportTxtStmt(Ast.ExportTxtStmt stmt, ScriptEnv env) {
-        try {
-            ExportTxtStmtRunner.Run(_notebook, env, this, stmt);
-        } catch (Exception ex) {
-            Throw(env, ex.GetExceptionMessage());
-        }
+        ExportTxtStmtRunner.Run(_notebook, env, this, stmt);
     }
 
     public T EvaluateExpr<T>(Ast.Expr expr, ScriptEnv env) {

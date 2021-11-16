@@ -1,0 +1,6 @@
+DECLARE @a = ARRAY(111, 222);
+DECLARE @b = ARRAY(333, 444);
+DECLARE @c = ARRAY_MERGE(@a, @b);
+PRINT @c;  -- "[111, 222, 333, 444]"
+--output--
+[111, 222, 333, 444]

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>RANGE Function</title>
+</head>
+<body>
+  <h1><code>INTEGER_RANGE</code> Function</h1>
+  <p>Returns a table containing a list of <i>count</i> integers. The first number is <i>start</i>, and the following
+  numbers are produced by successively incrementing by <i>step</i> (1 by default). This function is used in the
+  <code>FROM</code> clause of a <code>SELECT</code> statement and can participate in joins if it were a table.</p>
+  <h2>Syntax</h2><code>INTEGER_RANGE(<i>start</i>, <i>count</i>, [<i>step</i>])</code><br>
+  <h2>Parameters</h2>
+  <ul class="args">
+    <li><i>start</i>: integer<br>
+    The first number.</li>
+    <li><i>count</i>: integer<br>
+    Specifies how many rows to return in the table.</li>
+    <li><i>step</i>: integer (optional)<br>
+    Specifies the increment used to produce each new value in the list. By default, a step of 1 is used, which
+    generates consecutive integers.</li>
+  </ul>
+  <h2>Return Value</h2>A table with a single column named <code>number</code>.<br>
+  <h2>Example</h2>
+  <pre><i>-- Returns a 10-row table containing the numbers</i><i><br></i><i>-- 1 through 10 in ascending order.</i><br>SELECT number FROM INTEGER_RANGE(1, 10);<br><br><i>-- Returns a 10-row table containing the numbers</i><i><br></i><i>-- 10 through 1 in descending order.</i><br>SELECT number FROM INTEGER_RANGE(10, 10, -1);<br><br><i>-- Another way to generate a 10-row table containing</i><i><br></i><i>-- the numbers 10 through 1 in descending order.</i><br>SELECT number FROM INTEGER_RANGE(1, 10) ORDER BY number DESC;<br><br><i>-- Returns 5 rows: 1, 3, 5, 7, 9.</i><br>SELECT number FROM INTEGER_RANGE(1, 5, 2);<br></pre>
+</body>
+</html>

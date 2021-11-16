@@ -7,50 +7,37 @@
 <body>
   <h1><code>READ_FILE</code> Function</h1>
   <p>Reads a file line-by-line and returns it in a table. This function is used in the <code>FROM</code> clause of a
-  <code>SELECT</code> statement and can participate in <code>JOIN</code>s as if it were a table.</p>
-  <h2>Syntax</h2>
-  <blockquote>
-    <code>READ_FILE(<i>file-path</i>, [<i>file-encoding</i>])</code>
-  </blockquote>
-  <h2>Arguments</h2>
+  <code>SELECT</code> statement and can participate in joins as if it were a table.</p>
+  <h2>Syntax</h2><code>READ_FILE(<i>file-path</i>, [<i>file-encoding</i>])</code><br>
+  <h2>Parameters<br></h2>
   <ul class="args">
-    <li><b>file-path</b> (string expression)<br>
+    <li><i>file-path</i>: text<br>
     The absolute path to the text file to read.</li>
-    <li><b>file-encoding</b> (integer expression, optional, 0-65535, default: 0)<br>
+    <li><i>file-encoding</i>: integer (optional, 0-65535, default: 0)<br>
     Indicates the text encoding to use when reading the file. Specify 0 to detect the encoding automatically. Any
     nonzero integer is treated as a Windows code page number.</li>
   </ul>
-  <h2>Return Value</h2>
-  <blockquote>
-    A table with the following columns:
-    <table>
-      <thead>
-        <tr>
-          <th>Column name</th>
-          <th>Example value</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><code>number</code></td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <td><code>line</code></td>
-          <td>"First line of the file"</td>
-        </tr>
-      </tbody>
-    </table>
-  </blockquote>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>SELECT * FROM READ_FILE('C:\temp\file.txt') ORDER BY number DESC LIMIT 50;</code><br>
-    Returns a table containing the last 50 lines in "file.txt" in reverse order.</li>
-    <li><code>SELECT * FROM READ_FILE('C:\ShiftJIS.txt', 932);</code><br>
-    Returns a table containing the contents of "ShiftJIS.txt", which is read using the Japanese Shift-JIS encoding
-    (code page 932).</li>
-  </ul>
-  <p><br></p>
+  <h2>Return Value</h2>A table with the following columns:
+  <table>
+    <thead>
+      <tr>
+        <th>Column name</th>
+        <th>Example value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>number</code></td>
+        <td>1<br></td>
+      </tr>
+      <tr>
+        <td><code>line</code></td>
+        <td>"First line of the file"</td>
+      </tr>
+    </tbody>
+  </table>
+  <h2>Example</h2>
+  <pre><i>-- Returns a table containing the last 50 lines</i><i><br></i><i>-- in "file.txt" in reverse order.</i><br>SELECT *<br>FROM READ_FILE('C:\temp\file.txt')<br>ORDER BY number DESC<br>LIMIT 50;<br><br><i>-- Returns a table containing the contents of</i><i><br></i><i>-- "ShiftJIS.txt", which is read using the Japanese</i><i><br></i><i>-- Shift-JIS encoding (code page 932).</i><br>SELECT * FROM READ_FILE('C:\ShiftJIS.txt', 932);</pre>
   <ul class="examples"></ul>
 </body>
 </html>

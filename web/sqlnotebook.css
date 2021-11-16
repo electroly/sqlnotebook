@@ -122,8 +122,20 @@ table#nav td {
     vertical-align: middle;
     padding: 0;
 }
-@media only screen and (max-width: 700px) {
+@media only screen and (max-width: 600px) {
     iframe#github-star { display: none; }
     span#header-doc-long { display: none; }
     span#header-doc-short { display: inline; }
+}
+@media only screen and (min-width: 600px) and (max-width: 750px) {
+    img.scale { zoom: 0.8 }
+}
+@media only screen and (min-width: 450px) and (max-width: 600px) {
+    img.scale { zoom: 0.6 }
+}
+@media only screen and (min-width: 300px) and (max-width: 450px) {
+    img.scale { zoom: 0.4 }
+}
+@media only screen and (max-width: 300px) {
+    img.scale { display: none; }
 }

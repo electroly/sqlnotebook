@@ -51,6 +51,7 @@ public sealed class Notebook : IDisposable {
     private bool _cancelling;
 
     public NotebookUserData UserData { get; set; }
+    public static string ErrorMessage { get; set; }
 
     public Notebook(string filePath, bool isNew) {
         _workingCopyFilePath = NotebookTempFiles.GetTempFilePath(".working-copy");

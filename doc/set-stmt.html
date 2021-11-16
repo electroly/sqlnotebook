@@ -10,23 +10,17 @@
   <a href="declare-stmt.html"><code>DECLARE</code></a> statement to declare variables.
   <h2>Syntax</h2><img moz-do-not-send="true" src="art/rr-set-statement.svg" alt="" class="railroad" width="461" height=
   "62">
-  <h2>Arguments</h2>
+  <h2>Parameters</h2>
   <ul class="args">
-    <li><span style="font-weight: bold;">variable-name</span> (identifier)<br>
+    <li><i>variable-name</i>: identifier<br>
     A name beginning with an at sign (<code>@</code>), dollar sign (<code>$</code>), or colon
     (<code>:</code>).&nbsp;The name must have been previously declared in this script.</li>
-    <li><span style="font-weight: bold;">new-value</span> (expression)<br>
+    <li><i>new-value</i>: scalar<br>
     The value to assign to the variable. It may be a scalar expression or a parentheses-enclosed <code>SELECT</code>
     statement.</li>
   </ul>
-  <h2>Examples</h2>
-  <ul class="examples">
-    <li><code>SET @myvar = 1 + 2;</code><br>
-    Assign 3 to the previously-declared variable called <code>@myvar</code>.</li>
-    <li><code>SET @num = (SELECT COUNT(*) FROM mytable);</code><br>
-    Sets the variable <code>@num</code>&nbsp;to the number of rows in <code>mytable</code>.</li>
-  </ul>
-  <p><br></p>
+  <h2>Example</h2>
+  <pre>DECLARE @a = 1;<br>SET @a = 2;</pre>
   <ul class="examples"></ul>
 </body>
 </html>

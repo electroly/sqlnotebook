@@ -1,9 +1,11 @@
-﻿namespace SqlNotebookScript.Interpreter;
+﻿using System;
+
+namespace SqlNotebookScript.Interpreter;
 
 public sealed class UncaughtErrorScriptException : ScriptException {
-    public object ErrorMessage { get; }
-    public UncaughtErrorScriptException(object errorMessage)
-        : base(errorMessage.ToString()) {
+    public string ErrorMessage { get; }
+    public UncaughtErrorScriptException(string errorMessage, Exception innerException = null)
+        : base(errorMessage.ToString(), innerException) {
         ErrorMessage = errorMessage;
     }
 }
