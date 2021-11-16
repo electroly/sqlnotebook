@@ -212,6 +212,7 @@ function Update-DocWebsite {
     copy .\favicon.ico .\site\
     copy .\robots.txt .\site\
     copy .\sitemap.txt .\site\
+    copy .\github-btn.html .\site\
 
     WriteFile .\site\index.html (FormatHtmlPage "" .\index.html "Open source tool for tabular data exploration and manipulation.")
     WriteFile .\site\license.html (FormatHtmlPage "License" ..\src\SqlNotebook\ThirdPartyLicenses.html "SQL Notebook is freely available under the MIT license.")
