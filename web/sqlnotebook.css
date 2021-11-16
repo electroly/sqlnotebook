@@ -122,6 +122,9 @@ table#nav td {
     vertical-align: middle;
     padding: 0;
 }
+.gray-border {
+    box-shadow: #c0c0c0 0 3px 6px;
+}
 @media only screen and (max-width: 600px) {
     iframe#github-star { display: none; }
     span#header-doc-long { display: none; }

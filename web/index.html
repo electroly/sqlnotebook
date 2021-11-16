@@ -21,7 +21,11 @@
 
 
 
-      <i>pages</i> for ad hoc exploration and <b>scripts</b> for
+
+
+
+
+      <i>pages</i> for ad hoc exploration and <i>scripts</i> for
       reusable queries. SQL Notebook is powered by an extended <a
         href="https://www.sqlite.org/">SQLite</a> engine, supporting
       both <a href="https://en.wikipedia.org/wiki/SQL-92">standard SQL</a>
@@ -31,10 +35,15 @@
         href="https://github.com/electroly/sqlnotebook/releases"
         style="text-decoration: underline; font-weight: bold;">Download
         SQL Notebook</a></p>
-    <p style="text-align: center"><img alt="Screenshot of SQL Notebook"
-        src="art/main-screenshot-1.png" id="index-screenshot"
-        moz-do-not-send="true" class="scale" width="600" height="488">&nbsp;</p>
-    <h2>Easily import and export data</h2>
+    <p style="text-align: center"><a href="art/main-screenshot-1.png"><img
+          src="art/main-screenshot.png" id="index-screenshot"
+          class="scale gray-border" moz-do-not-send="true" alt=""
+          width="475" border="0" height="432"></a><br>
+      &nbsp;</p>
+    <h2>Easily import and export data<a href="art/import-screenshot.png"><img
+          moz-do-not-send="true" src="art/import-screenshot.png" alt=""
+          class="scale gray-border" width="300" vspace="10" border="0"
+          align="right" hspace="10" height="231"></a></h2>
     <p>CSV and Excel files can be imported into the notebook as local
       tables. A graphical import wizard and <code>IMPORT</code> script
       commands are both available.</p>
@@ -46,53 +55,38 @@
     </p>
     <p>Tables and scripts can be exported in CSV format.</p>
     <h2>Run quick queries or write sophisticated scripts</h2>
-    <p>Enter SQL commands interactively and press F5 to execute. Invoke
-      sub-scripts using <a moz-do-not-send="true"
-        href="execute-stmt.html"><tt>EXECUTE</tt></a> and pass
-      parameters using <tt><a moz-do-not-send="true"
+    <p>Enter SQL commands and press F5 to execute. Invoke sub-scripts
+      using <a moz-do-not-send="true" href="execute-stmt.html"><tt>EXECUTE</tt></a>
+      and pass parameters using <tt><a moz-do-not-send="true"
           href="declare-stmt.html">DECLARE PARAMETER</a></tt>. Any
       combination of data sources can be used together in the same SQL
       query, including cross-file, cross-database, and cross-server
-      queries.</p>
-    <h2>Use familiar programming constructs</h2>
+      queries.<br>
+    </p>
+    <p>A page can contain multiple query and text blocks. Group related
+      queries onto a page and use a text block to document them.<br>
+    </p>
+    <h2>Use familiar programming constructs<a
+        href="art/script-screenshot.png"><img moz-do-not-send="true"
+          src="art/script-screenshot.png" alt="" class="scale
+          gray-border" width="300" vspace="10" border="0" align="right"
+          hspace="10" height="253"></a></h2>
     <p>Users with prior SQL or other programming language experience
       will feel right at home in SQL Notebook. All common programming
       constructs from other programming languages are available, in
-      addition to standard SQLite queries and commands.</p>
-    <div style="overflow-x: auto; overflow-y: hidden;">
-      <table>
-        <tbody>
-          <tr>
-            <td style="border-width: 0">
-              <pre><span class="c-keyword">FOR</span> <em>:i</em> <span class="c-number">= 1</span> <span class="c-keyword">TO</span> <span class="c-number">100</span><span class="c-keyword">
-BEGIN</span>
-    <span class="c-keyword">IF</span> <em>:i</em> <span class="c-keyword">%</span> 3 <span class="c-number">= 0</span> <span class="c-keyword">AND</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
-        <span class="c-keyword">PRINT</span> <span class="c-string">'FizzBuzz'</span>
-    <span class="c-keyword">ELSE IF</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">3 = 0</span>
-        <span class="c-keyword">PRINT</span> <span class="c-string">'Fizz'</span>
-    <span class="c-keyword">ELSE IF</span> <em>:i</em> <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
-        <span class="c-keyword">PRINT</span> <span class="c-string">'Buzz'</span>
-    <span class="c-keyword">ELSE</span>
-        <span class="c-keyword">PRINT</span> <em>:i</em>
-<span class="c-keyword">END</span></pre>
-            </td>
-            <td style="border-width: 0">
-              <pre><span class="c-keyword">SELECT</span>
-    <span class="c-keyword">CASE</span>
-        <span class="c-keyword">WHEN</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0</span> <span class="c-keyword">AND</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
-            <span class="c-keyword">THEN</span> <span class="c-string">'FizzBuzz'</span>
-        <span class="c-keyword">WHEN</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0
-            </span><span class="c-keyword">THEN</span> <span class="c-string">'Fizz'</span>
-        <span class="c-keyword">WHEN</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0
-            </span><span class="c-keyword">THEN</span> <span class="c-string">'Buzz'</span>
-        <span class="c-keyword">ELSE</span> number
-    <span class="c-keyword">END</span>
-<span class="c-keyword">FROM</span> RANGE<span class="c-number">(1, 100)</span></pre>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      addition to standard SQLite queries and commands.<br>
+    </p>
+    <pre><span class="c-keyword">SELECT</span>
+  <span class="c-keyword">CASE</span>
+    <span class="c-keyword">WHEN</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0</span> <span class="c-keyword">AND</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0</span>
+      <span class="c-keyword">THEN</span> <span class="c-string">'FizzBuzz'</span>
+    <span class="c-keyword">WHEN</span> number <span class="c-keyword">%</span> <span class="c-number">3 = 0
+      </span><span class="c-keyword">THEN</span> <span class="c-string">'Fizz'</span>
+    <span class="c-keyword">WHEN</span> number <span class="c-keyword">%</span> <span class="c-number">5 = 0
+      </span><span class="c-keyword">THEN</span> <span class="c-string">'Buzz'</span>
+    <span class="c-keyword">ELSE</span> number
+  <span class="c-keyword">END</span>
+<span class="c-keyword">FROM</span> INTEGER_RANGE<span class="c-number">(1, 100);</span></pre>
     <p>Learn more in the <a href="doc.html">documentation</a>:</p>
     <ul>
       <li>Variables (<a href="declare-stmt.html"><code>DECLARE</code></a>,
@@ -153,6 +147,10 @@ SELECT</span> filename <span class="c-keyword">FROM</span> list_files<span class
     <p>SQL Notebook is free and open source software available under the
       popular <a href="license.html">MIT license</a>.</p>
     <p><a href="https://github.com/electroly/sqlnotebook/releases">Download
+
+
+
+
 
 
 
