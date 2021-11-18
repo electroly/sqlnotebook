@@ -13,9 +13,6 @@
   <ItemGroup>
     <ClCompile Include="sqlite3-ex.c" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="sqlite3-ex.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{34743FAD-099D-4DB8-B8A6-C863FEC91C77}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

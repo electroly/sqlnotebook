@@ -126,7 +126,11 @@ public partial class WaitForm : ZForm {
                 cancelAction?.Invoke();
             };
             var result = f.ShowDialog(owner);
-            if (result != DialogResult.OK && result != DialogResult.Cancel) {
+            if (result == DialogResult.Cancel) {
+                success = false;
+                return;
+            }
+            if (result != DialogResult.OK) {
                 Ui.ShowError(owner, title, f.ResultException);
                 return;
             }

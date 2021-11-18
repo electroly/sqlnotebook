@@ -14,6 +14,8 @@ using static SqlNotebookScript.Core.SqliteInterop.NativeMethods;
 namespace SqlNotebookScript.Core;
 
 public sealed class Notebook : IDisposable {
+    public static bool CancelInProgress { get; set; } = false;
+
     private const int CURRENT_FILE_VERSION = 2;
 
     private delegate void FreeDelegate(IntPtr p);
@@ -48,7 +50,6 @@ public sealed class Notebook : IDisposable {
     private string _originalFilePath;
     private readonly string _workingCopyFilePath;
     private IntPtr _sqlite; // sqlite3*
-    private bool _cancelling;
 
     public NotebookUserData UserData { get; set; }
     public static string ErrorMessage { get; set; }
@@ -596,12 +597,12 @@ public sealed class Notebook : IDisposable {
     }
 
     public void BeginUserCancel() {
-        _cancelling = true;
+        CancelInProgress = true;
         sqlite3_interrupt(_sqlite);
     }
 
     public void EndUserCancel() {
-        _cancelling = false;
+        CancelInProgress = false;
     }
 
     public IReadOnlyDictionary<string, string> GetScripts() {
@@ -618,5 +619,5 @@ public sealed class Notebook : IDisposable {
         return sqlite3_get_autocommit(_sqlite) == 0;
     }
 
-    private bool GetCancelling() => _cancelling;
+    private bool GetCancelling() => CancelInProgress;
 }

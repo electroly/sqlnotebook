@@ -174,8 +174,13 @@ public partial class QueryEmbeddedControl : UserControl {
         try {
             _manager.CommitOpenEditors();
             var sql = SqlText;
-            var output = WaitForm.Go(TopLevelControl, "Script", "Running your script...", out var success, () => {
-                return _manager.ExecuteScript(sql, maxRows: MAX_GRID_ROWS);
+            var output = WaitForm.GoWithCancel(TopLevelControl, "Script", "Running your script...", out var success, cancel => {
+                cancel.Register(() => _manager.Notebook.BeginUserCancel());
+                try {
+                    return _manager.ExecuteScript(sql, maxRows: MAX_GRID_ROWS);
+                } finally {
+                    _manager.Notebook.EndUserCancel();
+                }
             });
             if (!success) {
                 return;

@@ -300,22 +300,29 @@ public partial class MainForm : ZForm {
         UserControlDockContent f = null;
         Func<string> getName = null;
         var dockAreas = DockAreas.Document | DockAreas.Float;
+        UserControl control = null;
+        IDocumentControl doc = null;
         if (item.Type == NotebookItemType.Script) {
-            QueryDocumentControl doc = new(item.Name, _manager, this);
-                
-            f = new UserControlDockContent(item.Name, doc, dockAreas) {
+            var queryControl = new QueryDocumentControl(item.Name, _manager, this);
+            doc = queryControl;
+            control = queryControl;
+            f = new UserControlDockContent(item.Name, control, dockAreas) {
                 Icon = Resources.script32Ico
             };
             ApplySaveOnClose(f, doc);
             getName = () => doc.ItemName;
         } else if (item.Type == NotebookItemType.Table || item.Type == NotebookItemType.View) {
-            var doc = new TableDocumentControl(_manager, item.Name);
-            f = new UserControlDockContent(item.Name, doc, dockAreas) {
+            var tableControl = new TableDocumentControl(_manager, item.Name);
+            doc = tableControl;
+            control = tableControl;
+            f = new UserControlDockContent(item.Name, control, dockAreas) {
                 Icon = Resources.table32Ico
             };
         } else if (item.Type == NotebookItemType.Page) {
-            PageControl doc = new(item.Name, _manager, this);
-            f = new UserControlDockContent(item.Name, doc, dockAreas) {
+            var pageControl = new PageControl(item.Name, _manager, this);
+            doc = pageControl;
+            control = pageControl;
+            f = new UserControlDockContent(item.Name, control, dockAreas) {
                 Icon = Resources.script32Ico
             };
             ApplySaveOnClose(f, doc);
@@ -332,6 +339,17 @@ public partial class MainForm : ZForm {
         }
 
         f.Show(_dockPanel);
+
+        if (doc is IDocumentControlOpenNotification openNotification) {
+            try {
+                openNotification.OnOpen();
+            } catch (OperationCanceledException) {
+                f.Close();
+            } catch (Exception ex) {
+                Ui.ShowError(this, "Error", ex);
+                f.Close();
+            }
+        }
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e) {

@@ -1,16 +1,18 @@
-﻿using Microsoft.Data.SqlClient;
-using MySql.Data.MySqlClient;
-using Npgsql;
-using SqlNotebookScript.Core.ModuleDelegates;
-using SqlNotebookScript.Core.SqliteInterop;
-using SqlNotebookScript.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
+using Npgsql;
+using SqlNotebookScript.Core.ModuleDelegates;
+using SqlNotebookScript.Core.SqliteInterop;
+using SqlNotebookScript.Utils;
 using static SqlNotebookScript.Core.SqliteInterop.NativeMethods;
 
 namespace SqlNotebookScript.Core.AdoModules;
@@ -238,7 +240,7 @@ public abstract class AdoModuleProvider : IDisposable {
             Debug.WriteLine("AdoCreate");
         }
 
-        var vtab = IntPtr.Zero; // AdoTable*
+        var vtabNative = IntPtr.Zero; // AdoTable*
         var adoCreateInfo = _adoCreateInfos[(int)pAux];
 
         try {
@@ -274,23 +276,16 @@ public abstract class AdoModuleProvider : IDisposable {
             {
                 var adoTableSize = Marshal.SizeOf<Sqlite3Vtab>();
                 adoTableMetadataKey = _nextMetadataKey++;
-                vtab = Marshal.AllocHGlobal(adoTableSize); // matching free is in AdoDestroy
-                ZeroMemory(vtab, (IntPtr)adoTableSize);
-                var adoTable = Marshal.PtrToStructure<Sqlite3Vtab>(vtab);
-                adoTable.MetadataKey = adoTableMetadataKey;
-                Marshal.StructureToPtr(adoTable, vtab, false);
-            }
-
-            // Get the row count.
-            long initialRowCount;
-            {
-                using var command = connection.CreateCommand();
-                command.CommandText = "SELECT COUNT(1) FROM " + adoQuotedCombinedName;
-                initialRowCount = Convert.ToInt64(command.ExecuteScalar());
+                vtabNative = Marshal.AllocHGlobal(adoTableSize); // matching free is in AdoDestroy
+                ZeroMemory(vtabNative, (IntPtr)adoTableSize);
+                var vtab = Marshal.PtrToStructure<Sqlite3Vtab>(vtabNative);
+                vtab.MetadataKey = adoTableMetadataKey;
+                Marshal.StructureToPtr(vtab, vtabNative, false);
             }
 
             // Take a sample of rows and compute some basic statistics.
             Dictionary<string, double> estimatedRowsPercentByColumn = new();
+            int sampleSize = 0;
             {
                 IDbCommand command = null;
                 IDataReader reader = null;
@@ -317,7 +312,6 @@ public abstract class AdoModuleProvider : IDisposable {
                     }
 
                     var row = new object[colCount];
-                    int sampleSize = 0;
                     while (reader.Read()) {
                         sampleSize++;
                         reader.GetValues(row);
@@ -352,7 +346,7 @@ public abstract class AdoModuleProvider : IDisposable {
                 AdoSchemaName = adoSchemaName,
                 ColumnNames = columnNames,
                 ConnectionCreator = adoCreateInfo.ConnectionCreator,
-                InitialRowCount = initialRowCount,
+                InitialRowCount = sampleSize,
                 EstimatedRowsPercentByColumn = estimatedRowsPercentByColumn,
             });
 
@@ -375,16 +369,15 @@ public abstract class AdoModuleProvider : IDisposable {
             SqliteUtil.ThrowIfError(db,
                 sqlite3_declare_vtab(db, createSqlNative.Ptr));
 
-            Marshal.WriteIntPtr(ppVTab, vtab);
+            Marshal.WriteIntPtr(ppVTab, vtabNative);
             return SQLITE_OK;
         } catch (Exception ex) {
-            if (vtab != IntPtr.Zero) {
-                Marshal.FreeHGlobal(vtab);
+            if (vtabNative != IntPtr.Zero) {
+                Marshal.FreeHGlobal(vtabNative);
             }
                     
             // Allocate an unmanaged error string using sqlite3_malloc
-            var message = $"AdoCreate: {ex.GetErrorMessage()}";
-            var messageUtf8Bytes = _utf8.GetBytes(message);
+            var messageUtf8Bytes = _utf8.GetBytes(ex.GetErrorMessage());
             var messageNative = sqlite3_malloc(messageUtf8Bytes.Length + 1);
             Marshal.Copy(messageUtf8Bytes, 0, messageNative, messageUtf8Bytes.Length);
             Marshal.WriteByte(messageNative + messageUtf8Bytes.Length, 0);
@@ -555,11 +548,16 @@ public abstract class AdoModuleProvider : IDisposable {
 
         var adoCursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
         var adoCursorMetadata = _cursorMetadatas[adoCursor.MetadataKey];
-
-        adoCursorMetadata.Reader.Dispose();
-        adoCursorMetadata.Command.Dispose();
-        adoCursorMetadata.Connection.Dispose();
         _cursorMetadatas.Remove(adoCursor.MetadataKey);
+
+        // Don't block for these because it could take awhile.
+        Task.Run(() => {
+            var stopwatch = Stopwatch.StartNew();
+            adoCursorMetadata.Reader?.Dispose();
+            adoCursorMetadata.Command?.Dispose();
+            adoCursorMetadata.Connection?.Dispose();
+            Debug.WriteLine($"Disposing ADO cursor took {stopwatch.Elapsed}");
+        });
 
         Marshal.FreeHGlobal(pCur);
         return SQLITE_OK;
@@ -624,7 +622,18 @@ public abstract class AdoModuleProvider : IDisposable {
                 }
             }
 
-            cursorMetadata.Reader = cursorMetadata.Command.ExecuteReader();
+            // Run ExecuteReader() on the thread pool so we can respond to sqlite interruption here by walking away.
+            var vtab = Marshal.PtrToStructure<Sqlite3Vtab>(cursor.pVtab);
+            var readerTask = Task.Run(() => cursorMetadata.Command.ExecuteReader());
+
+            while (!readerTask.IsCompleted) {
+                if (Notebook.CancelInProgress) {
+                    return SQLITE_INTERRUPT;
+                }
+                Thread.Sleep(100);
+            }
+
+            cursorMetadata.Reader = readerTask.GetAwaiter().GetResult();
             cursorMetadata.ReaderSql = sql;
             cursorMetadata.IsEof = !cursorMetadata.Reader.Read();
             return SQLITE_OK;

@@ -12,7 +12,6 @@ public sealed class SqlServerImportSession : ImportSessionBase<SqlConnectionStri
     public override string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
         string schema;
         string table;
-        string combinedQuotedName;
         if (sourceTableName.Contains(".")) {
             var parts = sourceTableName.Split(new[] { '.' }, 2);
             schema = parts[0];

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
@@ -8,7 +7,7 @@ using SqlNotebookScript.Utils;
 
 namespace SqlNotebook;
 
-public partial class TableDocumentControl : UserControl, IDocumentControl {
+public partial class TableDocumentControl : UserControl, IDocumentControl, IDocumentControlOpenNotification {
     private readonly NotebookManager _manager;
     private readonly string _tableName;
     private readonly DataGridView _grid;
@@ -24,32 +23,36 @@ public partial class TableDocumentControl : UserControl, IDocumentControl {
         _grid.Dock = DockStyle.Fill;
         _tablePanel.Controls.Add(_grid);
 
-        Load += delegate {
-            var simpleDataTable = WaitForm.Go(TopLevelControl, "Table", "Reading table data...", out var success, () =>
-                _manager.Notebook.SpecialReadOnlyQuery(
-                    $"SELECT * FROM {_tableName.DoubleQuote()} LIMIT 1000",
-                    new Dictionary<string, object>()));
-            if (!success) {
-                return;
-            }
+        Ui ui = new(this, false);
+        ui.Init(_scriptBtn, Resources.script_go, Resources.script_go32);
+    }
 
-            var dt = new DataTable();
-            foreach (var col in simpleDataTable.Columns) {
-                dt.Columns.Add(col);
+    public void OnOpen() {
+        var simpleDataTable = WaitForm.GoWithCancel(TopLevelControl, "Table", "Reading table...\r\n" + _tableName, out var success, cancel => {
+            cancel.Register(() => _manager.Notebook.BeginUserCancel());
+            try {
+                return _manager.Notebook.Query($"SELECT * FROM {_tableName.DoubleQuote()} LIMIT 1000", 1000);
+            } finally {
+                _manager.Notebook.EndUserCancel();
             }
-            foreach (var row in simpleDataTable.Rows) {
-                var dtRow = dt.NewRow();
-                dtRow.ItemArray = row;
-                dt.Rows.Add(dtRow);
-            }
-            _grid.DataSource = dt;
-            _grid.AutoSizeColumns(this.Scaled(500));
+        });
+        if (!success) {
+            throw new OperationCanceledException();
+        }
 
-            Ui ui = new(this, false);
-            ui.Init(_scriptBtn, Resources.script_go, Resources.script_go32);
+        var dt = new DataTable();
+        foreach (var col in simpleDataTable.Columns) {
+            dt.Columns.Add(col);
+        }
+        foreach (var row in simpleDataTable.Rows) {
+            var dtRow = dt.NewRow();
+            dtRow.ItemArray = row;
+            dt.Rows.Add(dtRow);
+        }
+        _grid.DataSource = dt;
+        _grid.AutoSizeColumns(this.Scaled(500));
 
-            _query = $"SELECT\r\n{string.Join(",\r\n", simpleDataTable.Columns.Select(x => "    " + x.DoubleQuote()))}\r\nFROM {_tableName.DoubleQuote()}\r\nLIMIT 1000;\r\n";
-        };
+        _query = $"SELECT\r\n{string.Join(",\r\n", simpleDataTable.Columns.Select(x => "    " + x.DoubleQuote()))}\r\nFROM {_tableName.DoubleQuote()}\r\nLIMIT 1000;\r\n";
     }
 
     // IDocumentControl
