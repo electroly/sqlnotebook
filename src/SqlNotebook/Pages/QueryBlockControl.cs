@@ -333,6 +333,7 @@ public sealed class QueryBlockControl : BlockControl {
         panel.Controls.Add(QueryControl);
         Controls.Add(table);
         QueryControl.TextControl.Focus();
+        QueryControl.Dirty += delegate { RaiseDirty(); };
 
         acceptButton.Click += delegate {
             StopEditing();

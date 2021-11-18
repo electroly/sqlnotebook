@@ -46,6 +46,11 @@ public abstract class BlockControl : UserControl {
     public virtual void StartEditing() { }
     public virtual void StopEditing() { }
 
+    public event EventHandler Dirty;
+    protected void RaiseDirty() {
+        Dirty?.Invoke(this, EventArgs.Empty);
+    }
+
     public abstract void Serialize(BinaryWriter writer);
     public abstract void Deserialize(BinaryReader reader);
 

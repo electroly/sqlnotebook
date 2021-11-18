@@ -180,6 +180,7 @@ namespace SqlNotebook {
             this._optionsShowSqlMenu.Name = "_optionsShowSqlMenu";
             this._optionsShowSqlMenu.Size = new System.Drawing.Size(364, 34);
             this._optionsShowSqlMenu.Text = "Show SQL on page";
+            this._optionsShowSqlMenu.Click += new System.EventHandler(this.AppearanceMenu_Click);
             // 
             // _optionsShowResultsMenu
             // 
@@ -189,6 +190,7 @@ namespace SqlNotebook {
             this._optionsShowResultsMenu.Name = "_optionsShowResultsMenu";
             this._optionsShowResultsMenu.Size = new System.Drawing.Size(364, 34);
             this._optionsShowResultsMenu.Text = "Show results on page";
+            this._optionsShowResultsMenu.Click += new System.EventHandler(this.AppearanceMenu_Click);
             // 
             // _limitRowsOnPageMenu
             // 

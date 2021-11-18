@@ -71,6 +71,7 @@ public sealed class TextBlockControl : BlockControl {
         panel.Controls.Add(_textBox);
         Controls.Add(table);
         _textBox.Focus();
+        _textBox.SqlTextChanged += delegate { RaiseDirty(); };
 
         acceptButton.Click += delegate {
             StopEditing();

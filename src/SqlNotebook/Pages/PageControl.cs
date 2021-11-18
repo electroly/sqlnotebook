@@ -191,6 +191,11 @@ public sealed class PageControl : UserControl, IDocumentControl {
 
         block.BlockClicked += Block_BlockClicked;
         block.BlockMoved += Block_BlockMoved;
+        block.Dirty += Block_Dirty;
+    }
+
+    private void Block_Dirty(object sender, EventArgs e) {
+        _manager.SetDirty();
     }
 
     private void Block_BlockClicked(object sender, EventArgs e) {

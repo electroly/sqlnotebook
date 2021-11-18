@@ -57,6 +57,7 @@ public partial class QueryEmbeddedControl : UserControl {
         }
     }
     public event EventHandler SqlTextChanged;
+    public event EventHandler Dirty;
 
     public QueryEmbeddedControl(NotebookManager manager, bool isPageContext) {
         InitializeComponent();
@@ -69,7 +70,10 @@ public partial class QueryEmbeddedControl : UserControl {
             Dock = DockStyle.Fill,
             Padding = Padding.Empty,
         };
-        TextControl.SqlTextChanged += (sender, e) => SqlTextChanged?.Invoke(sender, e);
+        TextControl.SqlTextChanged += (sender, e) => {
+            SqlTextChanged?.Invoke(sender, e);
+            Dirty?.Invoke(this, EventArgs.Empty);
+        };
         TextControl.TextBox.KeyDown += TextControl_KeyDown;
         _sqlPanel.Controls.Add(TextControl);
 
@@ -98,6 +102,7 @@ public partial class QueryEmbeddedControl : UserControl {
 
     private void ExecuteButton_Click(object sender, EventArgs e) {
         Execute();
+        Dirty?.Invoke(this, EventArgs.Empty);
     }
 
     private void SetOutput() {
@@ -319,5 +324,10 @@ public partial class QueryEmbeddedControl : UserControl {
         foreach (ToolStripMenuItem item in _limitRowsOnPageMenu.DropDownItems) {
             item.Checked = ReferenceEquals(sender, item);
         }
+        Dirty?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void AppearanceMenu_Click(object sender, EventArgs e) {
+        Dirty?.Invoke(this, EventArgs.Empty);
     }
 }
