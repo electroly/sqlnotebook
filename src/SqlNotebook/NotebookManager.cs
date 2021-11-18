@@ -277,6 +277,7 @@ public sealed class NotebookManager {
         var isCaseChange = item.Name.ToLower() == lcNewName;
 
         switch (item.Type) {
+            case NotebookItemType.Page:
             case NotebookItemType.Script:
                 if (!isCaseChange) {
                     // is the new name already in use?
