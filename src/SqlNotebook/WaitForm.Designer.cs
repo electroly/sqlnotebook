@@ -37,11 +37,11 @@
             // _infoTxt
             // 
             this._infoTxt.AutoEllipsis = true;
-            this._infoTxt.AutoSize = true;
+            this._infoTxt.Dock = System.Windows.Forms.DockStyle.Fill;
             this._infoTxt.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this._infoTxt.Location = new System.Drawing.Point(59, 0);
             this._infoTxt.Name = "_infoTxt";
-            this._infoTxt.Size = new System.Drawing.Size(291, 32);
+            this._infoTxt.Size = new System.Drawing.Size(519, 312);
             this._infoTxt.TabIndex = 0;
             this._infoTxt.Text = "Running your SQL query...";
             // 
@@ -103,7 +103,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.CancelButton = this._cancelButton;
             this.ClientSize = new System.Drawing.Size(581, 358);
             this.ControlBox = false;
             this.Controls.Add(this._table);

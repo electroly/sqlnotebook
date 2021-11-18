@@ -17,11 +17,9 @@ public sealed class SqlServerImportSession : ImportSessionBase<SqlConnectionStri
             var parts = sourceTableName.Split(new[] { '.' }, 2);
             schema = parts[0];
             table = parts[1];
-            combinedQuotedName = $"{schema.DoubleQuote()}.{table.DoubleQuote()}";
         } else {
             schema = "";
             table = sourceTableName;
-            combinedQuotedName = sourceTableName.DoubleQuote();
         }
         return $"CREATE VIRTUAL TABLE {notebookTableName.DoubleQuote()} USING mssql ('{_builder.ConnectionString.Replace("'", "''")}', '{table.Replace("'", "''")}', '{schema.Replace("'", "''")}')";
     }
@@ -34,13 +32,12 @@ public sealed class SqlServerImportSession : ImportSessionBase<SqlConnectionStri
         var tableNames = new List<string>();
         using (var cmd = connection.CreateCommand()) {
             cmd.CommandText = "SELECT table_name, table_schema FROM INFORMATION_SCHEMA.TABLES ORDER BY table_name";
-            using (var reader = cmd.ExecuteReader()) {
-                while (reader.Read()) {
-                    var tableName = reader.GetString(0);
-                    var tableSchema = reader.GetString(1);
-                    var combinedName = tableSchema == "dbo" ? tableName : $"{tableSchema}.{tableName}";
-                    tableNames.Add(combinedName);
-                }
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read()) {
+                var tableName = reader.GetString(0);
+                var tableSchema = reader.GetString(1);
+                var combinedName = tableSchema == "dbo" ? tableName : $"{tableSchema}.{tableName}";
+                tableNames.Add(combinedName);
             }
         }
         TableNames = tableNames;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using SqlNotebookScript.Core;
 using SqlNotebookScript.Utils;
@@ -47,16 +48,20 @@ public sealed class DatabaseImporter {
             copyData = frm.CopyData;
         }
 
-        WaitForm.Go(_owner, "Import", "Importing tables...", out _, () => {
+        WaitForm.GoWithCancel(_owner, "Import", "Importing tables...", out _, cancel => {
             _notebook.Invoke(() => {
                 _notebook.Execute("BEGIN");
 
                 try {
-                    DoDatabaseImport(selectedTables, copyData, session);
+                    cancel.Register(() => _manager.Notebook.BeginUserCancel());
+                    DoDatabaseImport(selectedTables, copyData, session, cancel);
                     _notebook.Execute("COMMIT");
                 } catch {
+                    _manager.Notebook.EndUserCancel();
                     try { _notebook.Execute("ROLLBACK"); } catch { }
                     throw;
+                } finally {
+                    _manager.Notebook.EndUserCancel();
                 }
             });
         });
@@ -64,8 +69,12 @@ public sealed class DatabaseImporter {
         _manager.SetDirty();
     }
 
-    private void DoDatabaseImport(IReadOnlyList<DatabaseImportTablesForm.SelectedTable> selectedTables, bool copyData, IImportSession dbSession) {
+    private void DoDatabaseImport(IReadOnlyList<DatabaseImportTablesForm.SelectedTable> selectedTables, bool copyData,
+        IImportSession dbSession, CancellationToken cancel
+        ) {
         foreach (var selectedTable in selectedTables) {
+            cancel.ThrowIfCancellationRequested();
+            WaitForm.WaitText = $"Importing tables...\r\n{selectedTable.SourceName}";
             if (copyData) {
                 if (_notebook.QueryValue("SELECT name FROM sqlite_master WHERE name = '__temp_import'") != null) {
                     _notebook.Execute("DROP TABLE __temp_import");

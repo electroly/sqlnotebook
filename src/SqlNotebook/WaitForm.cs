@@ -19,9 +19,13 @@ public partial class WaitForm : ZForm {
     // Set this at startup.
     public static Form MainAppForm { private get; set; }
 
+    // Set this at any time to change the active WaitForm's text.
+    public static string WaitText { get; set; }
+
     public event EventHandler CancelRequested;
     public Task WaitTask { get; }
     public Exception ResultException { get; private set; }
+    public bool DidCancel { get; private set; }
 
     public static void Go(IWin32Window owner, string title, string text, out bool success, Action action) =>
         GoCore(owner, title, text, out success, action);
@@ -83,7 +87,7 @@ public partial class WaitForm : ZForm {
             };
             var result = f.ShowDialog(owner);
             if (result != DialogResult.OK) {
-                if (!(f.ResultException is OperationCanceledException)) {
+                if (f.ResultException is not OperationCanceledException) {
                     Ui.ShowError(owner, title, f.ResultException);
                 }
                 return;
@@ -172,7 +176,9 @@ public partial class WaitForm : ZForm {
             }
             if (!IsDisposed) {
                 BeginInvoke(new MethodInvoker(() => {
-                    if (DialogResult != DialogResult.Cancel) {
+                    if (DidCancel) {
+                        DialogResult = DialogResult.Cancel;
+                    } else {
                         DialogResult = ResultException == null ? DialogResult.OK : DialogResult.Abort;
                     }
                     Close();
@@ -180,15 +186,23 @@ public partial class WaitForm : ZForm {
             }
         });
 
+        _timer = new() {
+            Interval = 16,
+            Enabled = true
+        };
+
+        WaitText = text;
+        _timer.Tick += delegate {
+            if (!DidCancel && WaitText != _infoTxt.Text) {
+                _infoTxt.Text = WaitText;
+            }
+        };
+
         if (TaskbarManager.IsPlatformSupported) {
             // It seems like the indeterminate progressbar state isn't shown on Windows 10. Let's fake a progress
             // by asymptotically approaching 90% with a hand-tweaked curve that seems to be OK most of the time.
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal, MainAppForm.Handle);
             var stopwatch = Stopwatch.StartNew();
-            _timer = new() {
-                Interval = 16,
-                Enabled = true
-            };
             var lastValue = 0;
             _timer.Tick += delegate {
                 try {
@@ -233,6 +247,11 @@ public partial class WaitForm : ZForm {
     }
 
     private void CancelButton_Click(object sender, EventArgs e) {
+        if (DidCancel) {
+            return;
+        }
+        DidCancel = true;
+        _infoTxt.Text = "Cancelling...";
         _cancelButton.Enabled = false;
         CancelRequested?.Invoke(this, EventArgs.Empty);
     }
