@@ -7,7 +7,6 @@ namespace SqlNotebook;
 
 public partial class ExportForm : ZForm {
     public NotebookItem NotebookItem { get; private set; }
-    private ImageList _paddedImageList;
 
     public ExportForm(IEnumerable<string> scripts, IEnumerable<string> tables, IEnumerable<string> views) {
         InitializeComponent();
