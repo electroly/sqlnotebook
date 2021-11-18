@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using SqlNotebook.Properties;
 
 namespace SqlNotebook;
 
@@ -11,7 +12,6 @@ public partial class ExportForm : ZForm {
     public ExportForm(IEnumerable<string> scripts, IEnumerable<string> tables, IEnumerable<string> views) {
         InitializeComponent();
         using var g = CreateGraphics();
-        _list.SmallImageList = _paddedImageList = _imageList.PadListViewIcons(g);
 
         Ui ui = new(this, 75, 25);
         ui.Init(_table);
@@ -23,6 +23,15 @@ public partial class ExportForm : ZForm {
         ui.Init(_openBtn);
         ui.Init(_saveBtn);
         ui.Init(_cancelBtn);
+
+        ImageList imageList = new() {
+            ColorDepth = ColorDepth.Depth32Bit,
+            ImageSize = new(this.Scaled(16), this.Scaled(16)),
+        };
+        imageList.Images.Add(Ui.GetScaledIcon(this, Resources.script, Ui.ShiftImage(Resources.script32, 0, 1), dispose: false));
+        imageList.Images.Add(Ui.GetScaledIcon(this, Resources.table, Resources.table32, dispose: false));
+        imageList.Images.Add(Ui.GetScaledIcon(this, Resources.filter, Resources.filter32, dispose: false));
+        _list.SmallImageList = imageList;
 
         foreach (var name in scripts) {
             var lvi = _list.Items.Add(name);

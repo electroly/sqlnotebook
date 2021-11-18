@@ -23,18 +23,15 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ColumnHeader _columnHeader;
             System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Scripts", System.Windows.Forms.HorizontalAlignment.Center);
             System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Tables", System.Windows.Forms.HorizontalAlignment.Center);
             System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Views", System.Windows.Forms.HorizontalAlignment.Center);
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportForm));
             this._helpLabel = new System.Windows.Forms.Label();
             this._openBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
             this._saveBtn = new System.Windows.Forms.Button();
             this._list = new System.Windows.Forms.ListView();
-            this._imageList = new System.Windows.Forms.ImageList(this.components);
             this._table = new System.Windows.Forms.TableLayoutPanel();
             this._buttonFlow = new System.Windows.Forms.FlowLayoutPanel();
             _columnHeader = new System.Windows.Forms.ColumnHeader();
@@ -106,28 +103,16 @@
             listViewGroup2,
             listViewGroup3});
             this._list.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this._list.HideSelection = false;
             this._list.LabelWrap = false;
             this._list.Location = new System.Drawing.Point(3, 35);
             this._list.MultiSelect = false;
             this._list.Name = "_list";
-            this._list.ShowGroups = false;
             this._list.Size = new System.Drawing.Size(643, 553);
-            this._list.SmallImageList = this._imageList;
             this._list.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this._list.TabIndex = 1;
             this._list.UseCompatibleStateImageBehavior = false;
             this._list.View = System.Windows.Forms.View.Details;
             this._list.SelectedIndexChanged += new System.EventHandler(this.List_SelectedIndexChanged);
-            // 
-            // _imageList
-            // 
-            this._imageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this._imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("_imageList.ImageStream")));
-            this._imageList.TransparentColor = System.Drawing.Color.Transparent;
-            this._imageList.Images.SetKeyName(0, "script.png");
-            this._imageList.Images.SetKeyName(1, "table.png");
-            this._imageList.Images.SetKeyName(2, "filter.png");
             // 
             // _table
             // 
@@ -189,7 +174,6 @@
         private System.Windows.Forms.Button _cancelBtn;
         private System.Windows.Forms.Button _saveBtn;
         private System.Windows.Forms.ListView _list;
-        private System.Windows.Forms.ImageList _imageList;
         private System.Windows.Forms.TableLayoutPanel _table;
         private System.Windows.Forms.FlowLayoutPanel _buttonFlow;
         private System.Windows.Forms.Label _helpLabel;
