@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
 using SqlNotebookScript.Utils;
@@ -11,6 +12,7 @@ public partial class TableDocumentControl : UserControl, IDocumentControl {
     private readonly NotebookManager _manager;
     private readonly string _tableName;
     private readonly DataGridView _grid;
+    private string _query;
 
     public TableDocumentControl(NotebookManager manager, string tableName) {
         InitializeComponent();
@@ -45,6 +47,8 @@ public partial class TableDocumentControl : UserControl, IDocumentControl {
 
             Ui ui = new(this, false);
             ui.Init(_scriptBtn, Resources.script_go, Resources.script_go32);
+
+            _query = $"SELECT\r\n{string.Join(",\r\n", simpleDataTable.Columns.Select(x => "    " + x.DoubleQuote()))}\r\nFROM {_tableName.DoubleQuote()}\r\nLIMIT 1000;\r\n";
         };
     }
 
@@ -54,7 +58,7 @@ public partial class TableDocumentControl : UserControl, IDocumentControl {
 
     private void ScriptBtn_Click(object sender, EventArgs e) {
         var name = _manager.NewScript();
-        _manager.SetItemData(name, $"SELECT * FROM {_tableName.DoubleQuote()} LIMIT 1000");
+        _manager.SetItemData(name, _query);
         _manager.OpenItem(new NotebookItem(NotebookItemType.Script, name));
     }
 }
