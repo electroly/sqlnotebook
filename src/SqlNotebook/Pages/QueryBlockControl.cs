@@ -11,8 +11,8 @@ namespace SqlNotebook.Pages;
 
 public sealed class QueryBlockControl : BlockControl {
     private readonly NotebookManager _manager;
-    private QueryEmbeddedControl _queryControl;
-
+    
+    public QueryEmbeddedControl QueryControl { get; private set; }
     public string SqlText { get; set; } = "";
     public ScriptOutput Output { get; set; } = null;
     public int MaxDisplayRows { get; set; } = 10;
@@ -320,7 +320,7 @@ public sealed class QueryBlockControl : BlockControl {
         EditMode = true;
         Cursor = Cursors.Default;
         var (acceptButton, table, panel) = CreateStandardEditModeLayout();
-        _queryControl = new(_manager, isPageContext: true) {
+        QueryControl = new(_manager, isPageContext: true) {
             Dock = DockStyle.Fill,
             BorderStyle = BorderStyle.FixedSingle,
             Margin = Padding.Empty,
@@ -330,9 +330,9 @@ public sealed class QueryBlockControl : BlockControl {
             ShowSql = ShowSql,
             ShowResults = ShowResults,
         };
-        panel.Controls.Add(_queryControl);
+        panel.Controls.Add(QueryControl);
         Controls.Add(table);
-        _queryControl.TextControl.Focus();
+        QueryControl.TextControl.Focus();
 
         acceptButton.Click += delegate {
             StopEditing();
@@ -354,18 +354,18 @@ public sealed class QueryBlockControl : BlockControl {
         for (var i = Controls.Count - 1; i >= 0; i--) {
             Controls.RemoveAt(i);
         }
-        _queryControl = null;
+        QueryControl = null;
         Height = CalculateHeight();
         Invalidate(true);
         RaiseBlockClicked();
     }
 
     private void UpdatePropertiesFromEditMode() {
-        SqlText = _queryControl.SqlText;
-        Output = _queryControl.Output;
-        MaxDisplayRows = _queryControl.MaxRows;
-        ShowSql = _queryControl.ShowSql;
-        ShowResults = _queryControl.ShowResults;
+        SqlText = QueryControl.SqlText;
+        Output = QueryControl.Output;
+        MaxDisplayRows = QueryControl.MaxRows;
+        ShowSql = QueryControl.ShowSql;
+        ShowResults = QueryControl.ShowResults;
     }
 
     public override void Deserialize(BinaryReader reader) {

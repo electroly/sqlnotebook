@@ -97,9 +97,22 @@ public sealed class PageControl : UserControl, IDocumentControl {
 
     private void LoadPage() {
         try {
+            var index = 1; // Start at 1 because the top divider is already in place.
+
             var serializedData = _manager.GetItemData(ItemName);
             if (string.IsNullOrEmpty(serializedData)) {
-                return; // New page; nothing to load
+                // New page. By default let's add an empty query.
+                QueryBlockControl queryBlock = new(_manager);
+                InsertBlock(queryBlock, index++);
+                
+                DividerBlockControl bottomDivider = new();
+                bottomDivider.AddBlock += Divider_AddPart;
+                InsertBlock(bottomDivider, index++);
+
+                queryBlock.StartEditing();
+                queryBlock.QueryControl.TextControl.TextBox.Focus();
+
+                return;
             }
 
             using MemoryStream memoryStream = new(Convert.FromBase64String(serializedData));
@@ -108,7 +121,6 @@ public sealed class PageControl : UserControl, IDocumentControl {
 
             var numBlocks = reader.ReadInt32();
 
-            var index = 1; // Start at 1 because the top divider is already in place.
             for (var i = 0; i < numBlocks; i++) {
                 var blockType = reader.ReadByte();
                 BlockControl blockControl = blockType switch {
