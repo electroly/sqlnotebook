@@ -205,10 +205,11 @@ public partial class MainForm : ZForm {
         Load += async delegate {
             _manager.Rescan();
 
-            // open first item named "Script*" or "Main"
+            // open first item named "Page*", "Script*" or "Main"
             var items =
                 from x in _manager.Items
                 where
+                    x.Name.StartsWith("Page", StringComparison.OrdinalIgnoreCase) ||
                     x.Name.StartsWith("Script", StringComparison.OrdinalIgnoreCase) ||
                     x.Name.Equals("Main", StringComparison.OrdinalIgnoreCase)
                 orderby x.Name.ToUpperInvariant()
