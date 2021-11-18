@@ -212,6 +212,7 @@ public partial class ImportXlsForm : ZForm {
             });
         }
         _grid.DataSource = dataTable;
+        _grid.AutoSizeColumns(this.Scaled(500));
         var rowNumber = 1;
         foreach (DataGridViewRow row in _grid.Rows) {
             row.HeaderCell.Value = $"{rowNumber}";

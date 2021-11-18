@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace SqlNotebook;
@@ -6,17 +7,18 @@ namespace SqlNotebook;
 public static class DataGridViewUtil {
     public static DataGridView NewDataGridView(
         bool rowHeadersVisible = false,
-        bool autoGenerateColumns = true
+        bool autoGenerateColumns = true,
+        bool allowColumnResize = true
         ) {
-        DataGridView grid = new() {
+        DoubleBufferedDataGridView grid = new() {
             AutoSize = true,
-            AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells,
+            AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None,
             AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None,
             AutoGenerateColumns = autoGenerateColumns,
             AllowUserToAddRows = false,
             AllowUserToDeleteRows = false,
             AllowUserToOrderColumns = false,
-            AllowUserToResizeColumns = false,
+            AllowUserToResizeColumns = allowColumnResize,
             AllowUserToResizeRows = false,
             ReadOnly = true,
             BorderStyle = BorderStyle.None,
@@ -30,7 +32,6 @@ public static class DataGridViewUtil {
             RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing,
             ShowCellToolTips = false,
         };
-        grid.EnableDoubleBuffering();
         AttachFontColorEventHandler(grid);
         return grid;
     }
@@ -104,5 +105,35 @@ public static class DataGridViewUtil {
                 e.Handled = true;
             }
         };
+    }
+
+    private sealed class DoubleBufferedDataGridView : DataGridView {
+        private bool _drawVerticalResizeLine;
+        private int _verticalResizeLineX;
+
+        public DoubleBufferedDataGridView() {
+            DoubleBuffered = true;
+        }
+
+        protected override void OnPaint(PaintEventArgs e) {
+            base.OnPaint(e);
+            if (_drawVerticalResizeLine) {
+                var colors = UserOptions.Instance.GetColors();
+                using Pen pen = new(colors[UserOptionsColor.GRID_PLAIN]) { DashStyle = DashStyle.Dot };
+                e.Graphics.DrawLine(pen, _verticalResizeLineX, ColumnHeadersHeight, _verticalResizeLineX, ClientSize.Height);
+            }
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e) {
+            base.OnMouseMove(e);
+            if (e.Button == MouseButtons.Left && Cursor == Cursors.SizeWE) {
+                _drawVerticalResizeLine = true;
+                _verticalResizeLineX = e.X;
+                Invalidate();
+            } else {
+                _drawVerticalResizeLine = false;
+                Invalidate();
+            }
+        }
     }
 }

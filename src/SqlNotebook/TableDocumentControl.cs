@@ -41,7 +41,7 @@ public partial class TableDocumentControl : UserControl, IDocumentControl {
                 dt.Rows.Add(dtRow);
             }
             _grid.DataSource = dt;
-            _grid.AutoSizeColumns(this.Scaled(300));
+            _grid.AutoSizeColumns(this.Scaled(500));
 
             Ui ui = new(this, false);
             ui.Init(_scriptBtn, Resources.script_go, Resources.script_go32);

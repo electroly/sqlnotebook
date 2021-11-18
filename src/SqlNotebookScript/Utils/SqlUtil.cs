@@ -260,7 +260,9 @@ public static class SqlUtil {
                     break;
                 }
             }
-            Debug.Assert(srcColIndex != -1);  // Should have been checked already.
+            if (srcColIndex == -1) {
+                throw new Exception($"There is no source column named \"{mappings[i].SrcColumnName}\".");
+            }
             sourceColumnIndices[i] = srcColIndex;
         }
 

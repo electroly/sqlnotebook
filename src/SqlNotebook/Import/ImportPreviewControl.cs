@@ -12,6 +12,7 @@ public partial class ImportPreviewControl : UserControl {
         Controls.Add(_grid = DataGridViewUtil.NewDataGridView());
         _grid.Dock = DockStyle.Fill;
         _grid.DataSource = table;
+        _grid.AutoSizeColumns(this.Scaled(500));
 
         Disposed += delegate {
             table.Dispose();

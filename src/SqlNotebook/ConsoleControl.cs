@@ -162,7 +162,7 @@ public partial class ConsoleControl : UserControl {
 
                 _outputFlow.Controls.Add(label);
 
-                var grid = DataGridViewUtil.NewDataGridView();
+                var grid = DataGridViewUtil.NewDataGridView(allowColumnResize: false);
                 grid.Margin = _outputTableMargin;
                 grid.ContextMenuStrip = _contextMenuStrip;
                 grid.ScrollBars = ScrollBars.None;

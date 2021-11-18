@@ -123,12 +123,10 @@ public partial class QueryEmbeddedControl : UserControl {
         List<DataGridView> grids = new(dataTables.Count);
         foreach (var table in dataTables) {
             var grid = DataGridViewUtil.NewDataGridView();
-            grid.AllowUserToResizeColumns = true;
-            grid.AllowUserToOrderColumns = true;
+            grids.Add(grid);
             grid.Dock = DockStyle.Fill;
             grid.DataSource = table.DataTable;
             grid.Margin = Padding.Empty;
-            grids.Add(grid);
         }
 
         // Show a tab control with one grid per tab.
@@ -149,7 +147,7 @@ public partial class QueryEmbeddedControl : UserControl {
             _tabs.TabPages.Add(page);
             _ui.Init(page);
             page.Controls.Add(grids[i]);
-            grids[i].AutoSizeColumns(this.Scaled(300));
+            grids[i].AutoSizeColumns(this.Scaled(500));
         }
         ShowHideResultsPane(show: true);
     }
