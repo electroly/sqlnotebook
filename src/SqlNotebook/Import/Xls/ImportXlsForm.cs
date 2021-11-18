@@ -264,11 +264,6 @@ public partial class ImportXlsForm : ZForm {
                 columnName = $"column{columnIndex + 1}";
             }
 
-            // Uniquify the name.
-            while (columnNames.Contains(columnName)) {
-
-            }
-
             columnNames.Add(columnName);
         }
 
