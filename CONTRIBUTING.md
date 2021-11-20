@@ -1,23 +1,22 @@
 # Contributors Guide
 
 Use a Windows machine with at least 8GB RAM.
+In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
 
-- Install Visual Studio Community 2022.
-    - Include ".NET desktop development" workload
-    - Include "Desktop development with C++" workload
-    - Include "C++/CLI support for v143 build tools (Latest)" component
-- Install WSL with Ubuntu 20.04 with `tidy`, `unix2dos`, and `pwsh`.
+- Install [Visual Studio Community 2022](https://visualstudio.microsoft.com/vs/).
+    - Include ".NET desktop development" workload.
+    - Include "Desktop development with C++" workload.
+- Install [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/) with Ubuntu 20.04, and install `tidy`, `unix2dos`, and `pwsh` inside.
     ```
     sudo apt-get update
-    sudo apt-get install tidy dos2unix
-    sudo apt-get install -y wget apt-transport-https software-properties-common
+    sudo apt-get install -y wget apt-transport-https software-properties-common tidy dos2unix
     wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
     sudo dpkg -i packages-microsoft-prod.deb
     sudo apt-get update
     sudo apt-get install -y powershell
     ```
-- Install SeaMonkey.
-- Install WiX Toolset.
+- Install [SeaMonkey](https://www.seamonkey-project.org/releases/). Open it, Edit > Preferences > Appearance. Set "When SeaMonkey starts up, open..." to Composer.
+- Install [WiX Toolset](https://wixtoolset.org/releases/).
 
 ## How to build from source
 
@@ -86,4 +85,4 @@ Use a Windows machine with at least 8GB RAM.
     choco apikey -k <chocolatey api key> -source https://chocolatey.org/
     choco push .\sqlnotebook.X.X.X.nupkg -s https://chocolatey.org/
     ```
-- Commit changes using commit message "Update Chocolatey to version X.X.X", and push.
+- Commit changes using commit message "Update website and Chocolatey to version X.X.X", and push.
