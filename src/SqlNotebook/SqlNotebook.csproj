@@ -258,48 +258,6 @@
     <None Update="doc\art\main-screenshot.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="doc\art\rr-declare-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="doc\art\rr-execute-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="doc\art\rr-export-txt-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="doc\art\rr-for-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="doc\art\rr-if-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="doc\art\rr-import-csv-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="doc\art\rr-import-txt-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="doc\art\rr-import-xls-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="doc\art\rr-print-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="doc\art\rr-return-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="doc\art\rr-set-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="doc\art\rr-throw-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="doc\art\rr-try-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="doc\art\rr-while-statement.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="doc\art\script-screenshot.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -1534,6 +1492,6 @@
     </Compile>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y $(ProjectDir)..\sqlite3\bin\$(Platform)\$(Configuration)\sqlite3.dll $(TargetDir)sqlite3.dll" />
+    <Exec Command="copy /Y $(ProjectDir)..\SqlNotebookDb\bin\$(Platform)\$(Configuration)\sqlite3.dll $(TargetDir)sqlite3.dll" />
   </Target>
 </Project>

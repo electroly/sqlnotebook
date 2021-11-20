@@ -1,34 +1,3 @@
-# Release procedure:
-# - rm -Force -Recurse -ErrorAction SilentlyContinue src\SqlNotebook\bin
-# - rm -Force -Recurse -ErrorAction SilentlyContinue src\SqlNotebook\obj
-# - rm -Force -Recurse -ErrorAction SilentlyContinue src\SqlNotebookScript\bin
-# - rm -Force -Recurse -ErrorAction SilentlyContinue src\SqlNotebookScript\obj
-# - rm -Force -Recurse -ErrorAction SilentlyContinue src\sqlite3\bin
-# - rm -Force -Recurse -ErrorAction SilentlyContinue src\sqlite3\obj
-# - rm -Force -Recurse -ErrorAction SilentlyContinue src\packages
-# - rm -Force -Recurse -ErrorAction SilentlyContinue web\site
-# - Bump AssemblyFileVersion in src\SqlNotebook\Properties\AssemblyInfo.cs
-# - Bump ProductVersion in SqlNotebook.wxs
-# - Update web\appversion.txt with new version and MSI URL
-# - Run ps1\Update-Docs.ps1
-# - In Dev Command Prompt, in src\SqlNotebook:
-#       msbuild /t:restore /p:Configuration=Release /p:Platform=x64 SqlNotebook.csproj
-#       msbuild /t:build /p:Configuration=Release /p:Platform=x64 ..\sqlite3\sqlite3.vcxproj
-#       msbuild /t:publish /p:Configuration=Release /p:Platform=x64 /p:PublishProfile=FolderProfile SqlNotebook.csproj
-# - Run ps1\New-Release.ps1
-# - Verify version in SqlNotebook.exe and .msi
-# - Run ps1\Update-Website.ps1
-# - Create release on GitHub, upload zip and msi.
-# - Upload web\site to sqlnotebook.com/. Make public.
-# - Update src\chocolatey\sqlnotebook.nuspec with version
-# - Update src\chocolatey\tools\chocolateyInstall.ps1 with MSI URL
-# - Run choco pack
-# - Run choco apikey -k <chocolatey api key> -source https://chocolatey.org/
-# - Run choco push .\sqlnotebook.X.X.X.nupkg -s https://chocolatey.org/
-# - Commit changes using commit message "Version X.X.X"
-# - Push origin master
-# - Make release on GitHub
-
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 3
 Add-Type -AssemblyName System.IO.Compression
@@ -57,7 +26,7 @@ Remove-Item "$relDir\*.xml" -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.wixpdb" -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.wixobj" -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.wxs" -ErrorAction SilentlyContinue
-Copy-Item -Force "$rootDir\src\sqlite3\bin\x64\Release\sqlite3.dll" "$relDir\sqlite3.dll"
+Copy-Item -Force "$rootDir\src\SqlNotebookDb\bin\x64\Release\sqlite3.dll" "$relDir\sqlite3.dll"
 
 Push-Location $relDir
 

@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y $(ProjectDir)..\sqlite3\bin\$(Platform)\$(Configuration)\sqlite3.dll $(TargetDir)sqlite3.dll" />
+    <Exec Command="copy /Y $(ProjectDir)..\SqlNotebookDb\bin\$(Platform)\$(Configuration)\sqlite3.dll $(TargetDir)sqlite3.dll" />
   </Target>
 
 </Project>

@@ -12,8 +12,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsUI", "..\ext\dockpa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThemeVS2012Light", "..\ext\dockpanelsuite\WinFormsUI\ThemeVS2012Light.csproj", "{4ED4FDB5-9FD0-49E6-876D-1635F727C755}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "sqlite3\sqlite3.vcxproj", "{34743FAD-099D-4DB8-B8A6-C863FEC91C77}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlNotebookScript", "SqlNotebookScript\SqlNotebookScript.csproj", "{2255C461-80D4-419C-AA57-60AF7D2C6305}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{19717C6A-E7B7-4996-8556-DF3CDADD347A}"
@@ -23,6 +21,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shell", "..\ext\Windows-API-Code-Pack\source\WindowsAPICodePack\Shell\Shell.csproj", "{6600E45B-E354-48A9-AA23-CA276102E7BE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "..\ext\Windows-API-Code-Pack\source\WindowsAPICodePack\Core\Core.csproj", "{8B591728-BA7E-4E84-B103-E4971A984A68}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SqlNotebookDb", "SqlNotebookDb\SqlNotebookDb.vcxproj", "{34743FAD-099D-4DB8-B8A6-C863FEC91C77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,12 +54,6 @@ Global
 		{4ED4FDB5-9FD0-49E6-876D-1635F727C755}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4ED4FDB5-9FD0-49E6-876D-1635F727C755}.Release|x64.ActiveCfg = Release|Any CPU
 		{4ED4FDB5-9FD0-49E6-876D-1635F727C755}.Release|x64.Build.0 = Release|Any CPU
-		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Debug|x64.ActiveCfg = Debug|x64
-		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Debug|x64.Build.0 = Debug|x64
-		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Release|Any CPU.ActiveCfg = Release|x64
-		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Release|x64.ActiveCfg = Release|x64
-		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Release|x64.Build.0 = Release|x64
 		{2255C461-80D4-419C-AA57-60AF7D2C6305}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2255C461-80D4-419C-AA57-60AF7D2C6305}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2255C461-80D4-419C-AA57-60AF7D2C6305}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -90,6 +84,14 @@ Global
 		{8B591728-BA7E-4E84-B103-E4971A984A68}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8B591728-BA7E-4E84-B103-E4971A984A68}.Release|x64.ActiveCfg = Release|Any CPU
 		{8B591728-BA7E-4E84-B103-E4971A984A68}.Release|x64.Build.0 = Release|Any CPU
+		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Debug|Any CPU.Build.0 = Debug|x64
+		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Debug|x64.ActiveCfg = Debug|x64
+		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Debug|x64.Build.0 = Debug|x64
+		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Release|Any CPU.ActiveCfg = Release|x64
+		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Release|Any CPU.Build.0 = Release|x64
+		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Release|x64.ActiveCfg = Release|x64
+		{34743FAD-099D-4DB8-B8A6-C863FEC91C77}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
