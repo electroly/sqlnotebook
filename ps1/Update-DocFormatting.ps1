@@ -13,10 +13,7 @@ foreach ($svgFilePath in ([System.IO.Directory]::GetFiles("$docDir/art", "*.svg"
     [System.IO.File]::WriteAllText($svgFilePath, $svg)
 }
 
-$htmlFilenames = Get-Item (Join-Path $docDir "*.html") | % { $_.Name }
-foreach ($htmlFilename in $htmlFilenames) {
-    echo $htmlFilename
-    $htmlFilePath = Join-Path $docDir $htmlFilename
+function Format($htmlFilePath) {
     $tempFilePath = "$htmlFilePath.tmp"
     Remove-Item -Force $tempFilePath -ErrorAction SilentlyContinue
 
@@ -38,3 +35,11 @@ foreach ($htmlFilename in $htmlFilenames) {
     & unix2dos --quiet "$htmlFilePath"
     Remove-Item -Force $tempFilePath
 }
+
+$htmlFilePaths = [System.IO.Directory]::GetFiles($docDir, "*.html")
+foreach ($filePath in $htmlFilePaths) {
+    echo $filePath
+    Format $filePath
+}
+
+Format "$rootDir/web/index.html"
