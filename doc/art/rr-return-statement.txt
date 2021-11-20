@@ -1,6 +1,0 @@
-Diagram(
-    'RETURN',
-    Optional(
-        NonTerminal('return-value')
-    )
-)

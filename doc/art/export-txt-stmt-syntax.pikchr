@@ -1,0 +1,50 @@
+linerad = 10px
+linewid *= 0.5
+
+ENT: circle radius 10%
+arrow 2*arrowht
+EXP: oval "EXPORT" fit
+arrow 4*arrowht
+TXT: oval "TXT" fit
+arrow 6*arrowht
+NAM: box "filename" fit
+arrow right 2*arrowht then down 2.5*EXP.ht then left even with .5<EXP.w,NAM.e>
+arrow left even with ENT then down 1.25*EXP.ht then right
+oval "FROM" fit
+arrow 2*arrowht
+oval "(" fit
+arrow 2*arrowht
+box "select-statement" fit
+arrow 2*arrowht
+RP1: oval ")" fit
+arrow right 2*arrowht then down 0.75*EXP.ht
+arrow down 0.5*EXP.ht then left even with .5<EXP.w,NAM.e>
+arrow left even with ENT then down 1.25*EXP.ht then right
+oval "OPTIONS" fit
+arrow 2*arrowht
+oval "(" fit
+arrow 4*arrowht
+OPTKEY: box "key" fit
+arrow 2*arrowht
+oval ":" fit
+arrow 2*arrowht
+OPTVAL: box "value" fit
+arrow 3*arrowht
+oval ")" fit
+arrow 6*arrowht
+SEMI: oval ";" fit
+arrow 2*arrowht
+EXIT: circle same
+
+TEXT: oval "TEXT" fit with .w at 1.25*TXT.ht below TXT.w
+arrow right 2*arrowht then up even with TXT.w then to NAM.w
+
+arrow from EXP.e right 2*arrowht then down even with TEXT.w then to TEXT.w
+
+arrow from RP1.e right 6*arrowht
+arrow right 4*arrowht then down even with SEMI.w then to SEMI.w
+
+arrow from OPTVAL.e right 1*arrowht then down 0.75*EXP.ht
+arrow down 0.5*EXP.ht then left even with .5<OPTKEY.w,OPTVAL.e>
+oval "," fit
+arrow left even with OPTKEY.w - (2*arrowht, 0) then up even with OPTKEY.w then to OPTKEY.w

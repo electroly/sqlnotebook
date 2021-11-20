@@ -1,0 +1,67 @@
+linerad = 10px
+linewid *= 0.5
+
+# row 1
+ENT: circle radius 10%
+arrow 2*arrowht
+IMP: oval "IMPORT" fit
+arrow 4*arrowht
+TXT: oval "TXT" fit
+arrow 6*arrowht
+FIL: box "filename" fit
+arrow 2*arrowht
+oval "INTO" fit
+arrow 2*arrowht
+TAB: box "table-name" fit
+arrow right 2*arrowht then down 2.5*IMP.ht then left even with .5<IMP.w,TAB.e>
+A1: arrow left even with ENT then down 0.75*IMP.ht
+
+right
+TEXT: oval "TEXT" fit with .w at 1.25*IMP.ht below TXT.w
+arrow right 2*arrowht then up even with FIL.w then to FIL.w
+
+arrow from IMP.e right 1*arrowht then down even with TEXT.w then to TEXT.w
+
+# row 2
+arrow from A1.end down 0.5*IMP.ht then right 2*arrowht
+LPAR: oval "(" fit
+arrow 2*arrowht
+box "line-number-column-name" fit
+arrow 2*arrowht
+oval "," fit
+arrow 2*arrowht
+box "text-column-name" fit
+arrow 2*arrowht
+RPAR: oval ")" fit
+arrow right 2*arrowht then down 1.25*IMP.ht then left even with .5<LPAR.w,RPAR.e>
+A3: arrow left even with ENT then down 2*arrowht
+
+arrow from A1.end down 3.5*arrowht
+arrow to A3.end
+
+# row 4
+arrow from A3.end down 0.5*IMP.ht then right 2*arrowht
+OPT: oval "OPTIONS" fit
+arrow 2*arrowht
+oval "(" fit
+arrow 4*arrowht
+OPTKEY: box "key" fit
+arrow 2*arrowht
+oval ":" fit
+arrow 2*arrowht
+OPTVAL: box "value" fit
+arrow 3*arrowht
+OPTEND: oval ")" fit
+arrow right 2*arrowht then down 2.25*IMP.ht then left even with .5<OPT.w,OPTEND.e>
+arrow left even with ENT then down 1*IMP.ht
+SEMI: oval ";" fit
+arrow 2*arrowht
+EXIT: circle same
+
+arrow from OPTVAL.e right 1*arrowht then down 0.75*IMP.ht
+arrow down 0.5*IMP.ht then left even with .5<OPTKEY.w,OPTVAL.e>
+oval "," fit
+arrow left even with OPTKEY.w - (2*arrowht,0) then up even with OPTKEY.w then to OPTKEY.w
+
+arrow from A3.end down 5*arrowht
+arrow to SEMI.n

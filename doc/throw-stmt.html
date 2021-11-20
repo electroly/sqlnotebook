@@ -7,12 +7,12 @@
 <body>
   <h1><code>THROW</code> Statement</h1>Throws an error, causing code execution to jump to an enclosing <a href=
   "try-catch-stmt.html"><code>CATCH</code></a> block.
-  <h2>Syntax</h2><img moz-do-not-send="true" src="art/rr-throw-statement.svg" alt="" class="railroad" width="341"
-  height="75">
+  <h2>Syntax</h2>
+  <p><tt>THROW;</tt><tt><br></tt> <tt>THROW <i>error-message</i>;</tt><br></p>
   <h2>Parameters</h2>
   <ul class="args">
     <li>
-      <i>error-message</i>: scalar (optional)<br>
+      <i>error-message</i>: text (optional)<br>
       The values to be returned from the&nbsp;<a href="error-message-func.html"><code>ERROR_MESSAGE</code></a>
       function. If not provided, then the value from the last thrown error is retained; this allows a
       <code>CATCH</code> block to re-throw an error without changing it.

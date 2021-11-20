@@ -1,0 +1,48 @@
+linerad = 10px
+linewid *= 0.5
+
+ENT: circle radius 10%
+arrow 4*arrowht
+EXC: oval "EXEC" fit
+arrow 8*arrowht
+
+A1: arrow right 1*arrowht then down 1*EXC.ht then right 2*arrowht
+box "result-variable" fit
+arrow 2*arrowht
+oval "=" fit
+arrow right 2*arrowht
+A2: arrow right 1*arrowht then up 1*EXC.ht then right 2*arrowht
+arrow from A1.start to .5<A1.start,A2.end>
+arrow to A2.end
+NAM: box "script-name" fit
+
+EXCU: oval "EXECUTE" fit with .w at 1.25*EXC.ht below EXC.w
+arrow right 2*arrowht then up even with EXC.w then to A1.start
+
+arrow from ENT.e right 2*arrowht then down even with EXCU.w then to EXCU.w
+
+right
+PAR: box "parameter-name" fit with .w at 2.5*EXC.ht below EXCU.w + (4*arrowht,0)
+arrow 2*arrowht
+oval "=" fit
+A3: arrow 4*arrowht
+box "argument-value" fit
+A4: arrow 3*arrowht
+arrow from A3.start right 2*arrowht then down 1.25*EXC.ht then right 2*arrowht
+oval "DEFAULT" fit
+arrow right 5*arrowht then up even with A4.end then to A4.end
+arrow right 2*arrowht then down 2.5*EXC.ht then left even with .5<PAR.w,A4.end>
+oval "," fit
+arrow left even with PAR.w - (2*arrowht,0) then up even with PAR.w then to PAR.w
+
+arrow from NAM.e right 2*arrowht then down 2.5*EXC.ht then left 3*arrowht
+arrow left even with .5<EXC.w,NAM.e>
+arrow left even with EXC.w then down even with PAR.w then to PAR.w
+
+arrow from A4.start right 14*arrowht
+SEMI: oval ";" fit
+arrow 2*arrowht
+EXIT: circle same
+
+arrow from NAM.e right 2*arrowht then down 3*EXC.ht
+arrow down even with SEMI.w then to SEMI.w

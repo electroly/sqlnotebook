@@ -1,0 +1,27 @@
+linerad = 10px
+linewid *= 0.5
+
+ENT: circle radius 10%
+arrow 2*arrowht
+DEC: oval "DECLARE" fit
+arrow right 1*arrowht then down 1*DEC.ht then right 2*arrowht
+PAR: oval "PARAMETER" fit
+arrow right 2*arrowht
+arrow right 1*arrowht then up 1*DEC.ht then right 2*arrowht
+VAR: box "name" fit
+arrow 3*arrowht
+EQL: oval "=" fit
+arrow 2*arrowht
+VAL: box "value" fit
+arrow 4*arrowht
+SEMI: oval ";" fit
+arrow 2*arrowht
+EXIT: circle same
+
+# [DECLARE]-->-->[name]
+arrow from DEC.e to .5<DEC.e,VAR.w>
+arrow to VAR.w
+
+# [name]----->(;)
+A1: arrow from VAR.e right 1*arrowht then up 1*DEC.ht then right even with .5<EQL.w,VAL.e>
+arrow from A1.end right even with 1*arrowht east of VAL.e then down even with SEMI.w then to SEMI.w

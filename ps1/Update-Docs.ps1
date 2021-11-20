@@ -206,13 +206,19 @@ function Update-DocWebsite {
     copy .\appversion.txt .\site\
     copy .\sqlnotebook.css .\site\
     copy .\art\*.* .\site\art\
-    copy "$docDir\art\*.png" .\site\art\
-    copy "$docDir\art\*.svg" .\site\art\
     copy .\error.html .\site\
     copy .\favicon.ico .\site\
     copy .\robots.txt .\site\
     copy .\sitemap.txt .\site\
     copy .\github-btn.html .\site\
+
+    copy -Force "$docDir\art\*.svg" .\site\art\
+    foreach ($filePath in [System.IO.Directory]::GetFiles("$webDir\site\art", "*.svg")) {
+        $svg = [System.IO.File]::ReadAllText($filePath);
+        $tagIndex = $svg.IndexOf('</svg>', 1)
+        $svg = $svg.Substring(0, $tagIndex) + '<style>text { font-family: "Segoe UI", sans-serif; }</style>' + "`r`n" + $svg.Substring($tagIndex)
+        [System.IO.File]::WriteAllText($filePath, $svg)
+    }
 
     WriteFile .\site\index.html (FormatHtmlPage "" .\index.html "Open source tool for tabular data exploration and manipulation.")
     WriteFile .\site\license.html (FormatHtmlPage "License" ..\src\SqlNotebook\ThirdPartyLicenses.html "SQL Notebook is freely available under the MIT license.")

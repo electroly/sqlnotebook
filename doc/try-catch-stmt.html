@@ -10,8 +10,10 @@
   thrown, then <span style="font-style: italic;">statement-if-error</span> statements are executed. The statements in
   the <code>CATCH</code> block may use the <a href="error-message-func.html"><code>ERROR_MESSAGE</code></a> function to
   access the thrown message.<br>
-  <h2>Syntax</h2><img moz-do-not-send="true" src="art/rr-try-statement.svg" alt="" class="railroad" width="682" height=
-  "156">
+  <h2>Syntax</h2><tt>BEGIN TRY</tt><tt><br></tt> <tt>&nbsp;&nbsp;&nbsp; [<i>statement-to-try</i></tt><tt>]<br></tt>
+  <tt>&nbsp;&nbsp;&nbsp; ...</tt><tt><br></tt> <tt>END TRY</tt><tt><br></tt> <tt>BEGIN CATCH</tt><tt><br></tt>
+  <tt>&nbsp;&nbsp;&nbsp; [<i>statement-if-error</i></tt><tt>]<br></tt> <tt>&nbsp;&nbsp;&nbsp; ...</tt><tt><br></tt>
+  <tt>END CATCH</tt><br>
   <h2>Parameters</h2>
   <ul class="args">
     <li>

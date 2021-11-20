@@ -8,20 +8,18 @@
   <h1><code>WHILE</code> Statement</h1>Repeatedly executes the provided&nbsp;statements as long as the <span style=
   "font-style: italic;">condition</span> expression evaluates to the integer 1.<br>
   <br>
-  The loop may be terminated without regard to the expression by using the <a href=
+  The loop may be ended without regard to the <i>condition</i> expression by using the <a href=
   "break-stmt.html"><code>BREAK</code></a> statement. The loop may be restarted by using the <a href=
   "continue-stmt.html"><code>CONTINUE</code></a> statement.
-  <h2>Syntax</h2><img moz-do-not-send="true" src="art/rr-while-statement.svg" alt="" class="railroad" width="624"
-  height="120">
+  <h2>Syntax</h2><img src="art/while-stmt-syntax.svg" alt="" class="railroad" moz-do-not-send="true" width="628"
+  height="99"><br>
   <h2>Parameters</h2>
   <ul class="args">
     <li><i>condition</i>: integer (0-1)<br>
-    If this expression evaluates to 1, then the <span style="font-style: italic;">stmt</span> statements are executed.
-    &nbsp;Otherwise, the loop is terminated.</li>
+    If this expression evaluates to 1, then the statements are executed. &nbsp;Otherwise, the loop is terminated.</li>
     <li><i>statement</i>: statement<br>
-    The statements to execute if the condition is 1. &nbsp;If more than one <span style=
-    "font-style: italic;">stmt</span> is desired, the <code>BEGIN</code> and <code>END</code> keywords must be
-    used.<br></li>
+    The statements to execute if the condition is 1. &nbsp;If more than one statement is desired, the
+    <code>BEGIN</code> and <code>END</code> keywords must be used.<br></li>
   </ul>
   <h2>Example</h2>
   <pre><i>-- Prints the numbers 1 to 10 in increasing order.</i><br>DECLARE @counter = 1;<br>WHILE @counter &lt;= 10 BEGIN<br>    PRINT @counter;<br>    SET @counter = @counter + 1;<br>END<br></pre>

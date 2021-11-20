@@ -1,4 +1,0 @@
-Diagram(
-    'PRINT',
-    NonTerminal('expression')
-)

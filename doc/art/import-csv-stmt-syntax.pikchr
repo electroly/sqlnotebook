@@ -1,0 +1,87 @@
+linerad = 10px
+linewid *= 0.5
+
+# row 1
+ENT: circle radius 10%
+arrow 2*arrowht
+IMP: oval "IMPORT" fit
+arrow 2*arrowht
+oval "CSV" fit
+arrow 2*arrowht
+box "filename" fit
+arrow 2*arrowht
+oval "INTO" fit
+arrow 2*arrowht
+TAB: box "table-name" fit
+arrow right 2*arrowht then down 1*IMP.ht then left even with .5<IMP.w,TAB.e>
+A1: arrow left even with ENT then down 0.75*IMP.ht
+
+# row 2
+arrow down 0.5*IMP.ht then right 2*arrowht
+oval "(" fit
+arrow 4*arrowht
+SRCCOL: box "column-name" fit
+arrow right 1*arrowht then down 1*IMP.ht then right 2*arrowht
+AS: oval "AS" fit
+arrow 2*arrowht
+DSTCOL: box "target-column-name" fit
+A4: arrow right 1*arrowht then up 1*IMP.ht then right 2*arrowht
+arrow right 1*arrowht then down 1*IMP.ht then right 2*arrowht
+TYP: box "data-type" fit
+A5: arrow right 1*arrowht then up 1*IMP.ht then right 2*arrowht
+A6: arrow right 4*arrowht
+oval ")" fit
+arrow right 2*arrowht then down 3.5*IMP.ht then left even with .5<IMP.w,TYP.e>
+A3: arrow left even with ENT then down 0.75*IMP.ht
+
+arrow from SRCCOL.e right even with .5<AS.w,DSTCOL.e>
+arrow to A4.end
+
+arrow from A4.end right even with .5<TYP.w,TYP.e>
+arrow to A5.end
+
+arrow from A6.start right 1*arrowht then down 0.75*IMP.ht
+arrow down 1.5*IMP.ht then left even with 0.5<SRCCOL.w,A6.start>
+oval "," fit
+arrow left even with SRCCOL.w - (2*arrowht,0) then up even with SRCCOL.w then to SRCCOL.w
+
+arrow from A1.end down 6*arrowht
+arrow to A3.end
+
+# row 3
+arrow from A3.end down 0.5*IMP.ht then right 2*arrowht
+SEP1: oval "SEPARATOR" fit
+arrow 2*arrowht
+SEP2: box "separator" fit
+arrow right 2*arrowht then down 1*IMP.ht then left even with .5<SEP1.w,SEP2.e>
+A2: arrow left even with ENT then down 1*IMP.ht
+
+arrow from A3.end down 3*arrowht
+arrow to A2.end
+
+# row 4
+arrow from A2.end down 0.5*IMP.ht then right 2*arrowht
+OPT: oval "OPTIONS" fit
+arrow 2*arrowht
+oval "(" fit
+arrow 4*arrowht
+OPTKEY: box "key" fit
+arrow 2*arrowht
+oval ":" fit
+arrow 2*arrowht
+OPTVAL: box "value" fit
+arrow 3*arrowht
+OPTEND: oval ")" fit
+arrow right 2*arrowht then down 2.25*IMP.ht then left even with .5<OPT.w,OPTEND.e>
+arrow left even with ENT then down 1*IMP.ht
+SEMI: oval ";" fit
+arrow 2*arrowht
+EXIT: circle same
+
+arrow from OPTVAL.e right 1*arrowht then down 0.75*IMP.ht
+arrow down 0.5*IMP.ht then left even with .5<OPTKEY.w,OPTVAL.e>
+oval "," fit
+arrow left even with OPTKEY.w - (2*arrowht,0) then up even with OPTKEY.w then to OPTKEY.w
+
+arrow from A2.end down 5*arrowht
+arrow to SEMI.n

@@ -1,0 +1,58 @@
+linerad = 10px
+linewid *= 0.5
+
+ENT: circle radius 10%
+arrow 2*arrowht
+IF: oval "IF" fit
+arrow 2*arrowht
+CND: box "condition" fit
+arrow right 2*arrowht then down 0.75*IF.ht
+arrow down 0.5*IF.ht then left even with .5<IF.w,CND.e>
+A1: arrow left even with ENT then down 2*IF.ht then right 2*arrowht
+
+# row 2
+arrow from A1.end right 1*arrowht then up 0.75*IF.ht then right 2*arrowht
+STT1: box "statement-if-true" fit
+
+arrow from A1.end right 1*arrowht then down 0.75*IF.ht then right 2*arrowht
+oval "BEGIN" fit
+arrow 4*arrowht
+STT2: box "statement-if-true" fit
+arrow 3*arrowht
+ENDT: oval "END" fit
+A2: arrow right 2*arrowht then up 0.75*IF.ht then right 2*arrowht
+
+arrow from STT2.e right 1*arrowht then down 1*IF.ht then left even with .5<STT2.e,STT2.w>
+arrow left even with STT2.w - (2*arrowht,0) then up even with STT2.w then to STT2.w
+
+arrow from STT1.e right even with .5<STT1.e,A2.end>
+A3: arrow right even with ENDT.e + (2*arrowht,0) then down 0.75*IF.ht then right 2*arrowht
+arrow right 2*arrowht then down 0.75*IF.ht
+arrow down 1.75*IF.ht then left even with .5<ENT,A3.end>
+A4: arrow left even with ENT then down 2*IF.ht then right 2*arrowht
+
+# row 3
+oval "ELSE" fit
+A7: arrow 2*arrowht
+
+arrow from A7.end right 1*arrowht then up 0.75*IF.ht then right 2*arrowht
+STF1: box "statement-if-false" fit
+
+arrow from A7.end right 1*arrowht then down 0.75*IF.ht then right 2*arrowht
+oval "BEGIN" fit
+arrow 4*arrowht
+STF2: box "statement-if-false" fit
+arrow 3*arrowht
+ENDF: oval "END" fit
+A5: arrow right 2*arrowht then up 0.75*IF.ht then right 6*arrowht
+
+arrow from STF2.e right 1*arrowht then down 1*IF.ht then left even with .5<STF2.e,STF2.w>
+arrow left even with STF2.w - (2*arrowht,0) then up even with STF2.w then to STF2.w
+
+arrow from STF1.e right even with .5<STF1.e,A5.end>
+A6: arrow right even with ENDF.e + (2*arrowht,0) then down 0.75*IF.ht then right 6*arrowht
+EXIT: circle same
+
+arrow from A2.end right 5*arrowht
+arrow right 3*arrowht then down 6*arrowht
+arrow down even with EXIT.w then to EXIT.w

@@ -1,0 +1,28 @@
+linerad = 10px
+linewid *= 0.5
+
+ENT: circle radius 10%
+arrow 2*arrowht
+WHI: oval "WHILE" fit
+arrow 2*arrowht
+CND: box "condition" fit
+A1: arrow 2*arrowht
+
+# row 2
+arrow from A1.end right 1*arrowht then up 0.75*WHI.ht then right 2*arrowht
+ST1: box "statement" fit
+
+arrow from A1.end right 1*arrowht then down 0.75*WHI.ht then right 2*arrowht
+oval "BEGIN" fit
+arrow 4*arrowht
+ST2: box "statement" fit
+arrow 3*arrowht
+END: oval "END" fit
+A2: arrow right 2*arrowht then up 0.75*WHI.ht then right 2*arrowht
+
+arrow from ST2.e right 1*arrowht then down 1*WHI.ht then left even with .5<ST2.e,ST2.w>
+arrow left even with ST2.w - (2*arrowht,0) then up even with ST2.w then to ST2.w
+
+arrow from ST1.e right even with .5<ST1.e,A2.end>
+A3: arrow right even with END.e + (2*arrowht,0) then down 0.75*WHI.ht then right 2*arrowht
+circle same

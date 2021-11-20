@@ -32,11 +32,13 @@ Use a Windows machine with at least 8GB RAM.
 
 ## How to generate railroad diagram files
 
-- https://railroad.omegatower.net/generator.html
-- Copy-paste the .txt file from `doc/art` into the page.
-- Click "Save" to download the .svg.
-- Copy to `doc/art`.
-- Use SeaMonkey Composer to delete the image in the corresponding HTML page, then re-add it. Set its `class="railroad"` attribute.
+- https://pikchr.org/home/pikchrshow
+- Save the Pikchr source to a .pikchr file in `doc/art`.
+- Click the copy SVG button on the website, paste into a .svg file.
+- Get dimensions from the first line of the SVG file.
+- Use SeaMonkey Composer to delete the image in the corresponding HTML page, then re-add it.
+    - Set the image dimensions.
+    - Set its `class="railroad"` attribute.
 - Run `ps1/Update-Docs.ps1` to rebuild the website and integrated help.
 
 ## How to update SQLite

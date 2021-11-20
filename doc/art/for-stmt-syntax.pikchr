@@ -1,0 +1,44 @@
+linerad = 10px
+linewid *= 0.5
+
+ENT: circle radius 10%
+arrow 2*arrowht
+FOR: oval "FOR" fit
+arrow 2*arrowht
+box "variable-name" fit
+arrow 2*arrowht
+oval "=" fit
+arrow 2*arrowht
+FST: box "first-number" fit
+arrow 2*arrowht
+TO: oval "TO" fit
+arrow 2*arrowht
+LST: box "last-number" fit
+
+STP: oval "STEP" fit with .w at 2.5*FOR.ht below FOR.w
+arrow 2*arrowht
+STPB: box "step" fit
+
+STA: box "statement" fit with .w at 5*FOR.ht below FOR.w
+
+right
+BEG: oval "BEGIN" fit with .w at 1.25*FOR.ht below STA.w
+arrow 4*arrowht
+STB: box "statement" fit
+arrow 4*arrowht
+oval "END" fit
+arrow 2*arrowht
+arrow 25*arrowht
+EXIT: circle same
+
+A1: arrow from LST.e right then down 1.25*FOR.ht then left even with .5<FOR.w,LST.e>
+A2: arrow from A1.end left even with ENT.w then down 2*FOR.ht
+arrow from A1.end left even with ENT.w then down 1.25*FOR.ht then to STP.w
+A3: arrow from STPB.e right then down 1.25*FOR.ht then left even with .5<STP.w,STPB.w>
+arrow from A3.end left even with ENT.w then down even with STA.w then to STA.w
+arrow from A2.end down even with STA.w then to STA.w
+arrow from A2.end down even with BEG.w then to BEG.w
+A4: arrow from STB.e right arrowht*2 then down 1*FOR.ht then left even with .5<STB.w,STB.e>
+A5: arrow from A4.end left even with STB.w left 2*arrowht then up even with STB.w then to STB.w
+A6: arrow from STA.e right even with END.e right 2*arrowht
+arrow from A6.end right then down even with EXIT.w then to EXIT.w

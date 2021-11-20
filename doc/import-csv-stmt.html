@@ -8,8 +8,8 @@
   <h1><code>IMPORT</code> <code>CSV</code> Statement</h1>
   <p>Imports a CSV (comma-separated values) file from disk into a notebook table. This statement is the scripting
   equivalent of the visual import wizard accessed via the Import menu.</p>
-  <h2>Syntax</h2><img src="art/rr-import-csv-statement.svg" alt="" class="railroad" moz-do-not-send="true" width="859"
-  height="321"><br>
+  <h2>Syntax</h2><img moz-do-not-send="true" src="art/import-csv-stmt-syntax.svg" alt="" class="railroad" width="810"
+  height="465"><br>
   <h2>Parameters</h2>
   <ul class="args">
     <li><i>filename</i>: text<br>
@@ -18,7 +18,7 @@
     The name of the notebook table to import the CSV file into. If the table does not exist, it will be created. If it
     does exist, by default new rows will be appended, but the <code>TRUNCATE_EXISTING_TABLE</code> option can be used
     to overwrite the existing table data.</li>
-    <li><i>sep</i>: text<br>
+    <li><i>separator</i>: text<br>
     The separator between values in a row. By default this is a comma for CSV files, but semicolons and tabs are
     popular. The string "Tab" is interpreted as a tab character.<br></li>
     <li><i>column-name</i>: text or identifier<br>
