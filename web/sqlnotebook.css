@@ -8,9 +8,10 @@ html {
 body {
     font-family: 'Segoe UI', sans-serif;
     margin: 0 auto;
-    max-width: 800px;
+    max-width: 900px;
     line-height: 150%;
     padding: 15px;
+    color: #444444;
 }
 a#title {
     color: black;
@@ -64,8 +65,11 @@ div.caption {
     font-style: italic;
     color: gray;
 }
-ul.args li, ul.opts li, .examples li {
+li {
     margin-bottom: 15px;
+}
+ul#nav li, ul.doc-list li, ul.enum li, ul.tight li {
+    margin-bottom: 0;
 }
 ul.enum {
     margin-top: 5px;
@@ -123,7 +127,16 @@ table#nav td {
     padding: 0;
 }
 .gray-border {
-    box-shadow: #c0c0c0 0 3px 6px;
+    box-shadow: #2ca089 0 2px 3px;
+}
+div.screenshot-border {
+    display: inline-block;
+    border-radius: 4px;
+    background: #9addd0;
+    padding: 10px;
+}
+div.screenshot-border img {
+    vertical-align: middle;
 }
 @media only screen and (max-width: 600px) {
     iframe#github-star { display: none; }
