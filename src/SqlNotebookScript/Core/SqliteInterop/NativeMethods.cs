@@ -151,6 +151,9 @@ public static class NativeMethods {
     [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_prepare16_v2", SetLastError = false)]
     public static extern int sqlite3_prepare16_v2(IntPtr db, IntPtr zSql, int nBytes, IntPtr ppStmt, IntPtr pzTail);
 
+    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_reset", SetLastError = false)]
+    public static extern int sqlite3_reset(IntPtr pStmt);
+
     [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_clear_bindings", SetLastError = false)]
     public static extern int sqlite3_clear_bindings(IntPtr pStmt);
 

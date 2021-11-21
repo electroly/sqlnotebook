@@ -27,6 +27,7 @@
             this._infoTxt = new System.Windows.Forms.Label();
             this._table = new System.Windows.Forms.TableLayoutPanel();
             this._spinner = new System.Windows.Forms.Panel();
+            this._progressLabel = new System.Windows.Forms.Label();
             this._buttonFlow = new System.Windows.Forms.FlowLayoutPanel();
             this._cancelButton = new System.Windows.Forms.Button();
             this._spinnerTimer = new System.Windows.Forms.Timer(this.components);
@@ -37,26 +38,29 @@
             // _infoTxt
             // 
             this._infoTxt.AutoEllipsis = true;
-            this._infoTxt.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._infoTxt.AutoSize = true;
             this._infoTxt.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this._infoTxt.Location = new System.Drawing.Point(59, 0);
+            this._infoTxt.Location = new System.Drawing.Point(3, 0);
             this._infoTxt.Name = "_infoTxt";
-            this._infoTxt.Size = new System.Drawing.Size(519, 312);
+            this._infoTxt.Size = new System.Drawing.Size(291, 32);
             this._infoTxt.TabIndex = 0;
             this._infoTxt.Text = "Running your SQL query...";
             // 
             // _table
             // 
             this._table.ColumnCount = 2;
+            this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this._table.Controls.Add(this._infoTxt, 1, 0);
-            this._table.Controls.Add(this._spinner, 0, 0);
-            this._table.Controls.Add(this._buttonFlow, 1, 1);
+            this._table.Controls.Add(this._infoTxt, 0, 0);
+            this._table.Controls.Add(this._spinner, 1, 0);
+            this._table.Controls.Add(this._progressLabel, 0, 1);
+            this._table.Controls.Add(this._buttonFlow, 0, 3);
             this._table.Dock = System.Windows.Forms.DockStyle.Fill;
             this._table.Location = new System.Drawing.Point(0, 0);
             this._table.Name = "_table";
-            this._table.RowCount = 2;
+            this._table.RowCount = 4;
+            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.Size = new System.Drawing.Size(581, 358);
@@ -64,28 +68,44 @@
             // 
             // _spinner
             // 
-            this._spinner.Location = new System.Drawing.Point(3, 3);
+            this._spinner.Location = new System.Drawing.Point(528, 3);
             this._spinner.Name = "_spinner";
+            this._table.SetRowSpan(this._spinner, 3);
             this._spinner.Size = new System.Drawing.Size(50, 50);
             this._spinner.TabIndex = 5;
             this._spinner.Paint += new System.Windows.Forms.PaintEventHandler(this.Spinner_Paint);
+            // 
+            // _progressLabel
+            // 
+            this._progressLabel.AutoSize = true;
+            this._progressLabel.Location = new System.Drawing.Point(3, 32);
+            this._progressLabel.Name = "_progressLabel";
+            this._progressLabel.Size = new System.Drawing.Size(81, 25);
+            this._progressLabel.TabIndex = 7;
+            this._progressLabel.Text = "Progress";
+            this._progressLabel.Visible = false;
             // 
             // _buttonFlow
             // 
             this._buttonFlow.AutoSize = true;
             this._buttonFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._buttonFlow.BackColor = System.Drawing.SystemColors.Control;
+            this._table.SetColumnSpan(this._buttonFlow, 2);
             this._buttonFlow.Controls.Add(this._cancelButton);
-            this._buttonFlow.Dock = System.Windows.Forms.DockStyle.Right;
-            this._buttonFlow.Location = new System.Drawing.Point(460, 315);
+            this._buttonFlow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._buttonFlow.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this._buttonFlow.Location = new System.Drawing.Point(3, 314);
             this._buttonFlow.Name = "_buttonFlow";
-            this._buttonFlow.Size = new System.Drawing.Size(118, 40);
+            this._buttonFlow.Size = new System.Drawing.Size(575, 41);
             this._buttonFlow.TabIndex = 6;
             // 
             // _cancelButton
             // 
-            this._cancelButton.Location = new System.Drawing.Point(3, 3);
+            this._cancelButton.AutoSize = true;
+            this._cancelButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._cancelButton.Location = new System.Drawing.Point(499, 3);
             this._cancelButton.Name = "_cancelButton";
-            this._cancelButton.Size = new System.Drawing.Size(112, 34);
+            this._cancelButton.Size = new System.Drawing.Size(73, 35);
             this._cancelButton.TabIndex = 0;
             this._cancelButton.Text = "Cancel";
             this._cancelButton.UseVisualStyleBackColor = true;
@@ -103,6 +123,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(581, 358);
             this.ControlBox = false;
             this.Controls.Add(this._table);
@@ -118,6 +139,7 @@
             this._table.ResumeLayout(false);
             this._table.PerformLayout();
             this._buttonFlow.ResumeLayout(false);
+            this._buttonFlow.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -130,5 +152,6 @@
         private System.Windows.Forms.Timer _spinnerTimer;
         private System.Windows.Forms.FlowLayoutPanel _buttonFlow;
         private System.Windows.Forms.Button _cancelButton;
+        private System.Windows.Forms.Label _progressLabel;
     }
 }

@@ -11,7 +11,6 @@ namespace SqlNotebook;
 
 public partial class WaitForm : ZForm {
     private readonly Stopwatch _stopwatch;
-    private readonly Brush _brush;
     private readonly Pen _pen;
     private readonly float _penWidth;
     private readonly System.Windows.Forms.Timer _timer;
@@ -21,6 +20,7 @@ public partial class WaitForm : ZForm {
 
     // Set this at any time to change the active WaitForm's text.
     public static string WaitText { get; set; }
+    public static string ProgressText { get; set; }
 
     public event EventHandler CancelRequested;
     public Task WaitTask { get; }
@@ -85,7 +85,7 @@ public partial class WaitForm : ZForm {
             f.CancelRequested += delegate {
                 cts.Cancel();
             };
-            var result = f.ShowDialog(owner);
+            var result = f.ShowDialogWithPositioning(owner);
             if (result != DialogResult.OK) {
                 if (f.ResultException is not OperationCanceledException) {
                     Ui.ShowError(owner, title, f.ResultException);
@@ -125,7 +125,7 @@ public partial class WaitForm : ZForm {
             f.CancelRequested += delegate {
                 cancelAction?.Invoke();
             };
-            var result = f.ShowDialog(owner);
+            var result = f.ShowDialogWithPositioning(owner);
             if (result == DialogResult.Cancel) {
                 success = false;
                 return;
@@ -140,32 +140,55 @@ public partial class WaitForm : ZForm {
         return;
     }
 
+    private DialogResult ShowDialogWithPositioning(IWin32Window owner) {
+        DialogResult result;
+        if (owner != null) {
+            result = ShowDialog(owner);
+        } else {
+            StartPosition = FormStartPosition.CenterScreen;
+            result = ShowDialog();
+        }
+
+        return result;
+    }
+
     private WaitForm(string title, string text, Action action, bool allowCancel) {
         InitializeComponent();
         Text = title;
         _infoTxt.Text = text;
         _stopwatch = Stopwatch.StartNew();
 
-        Ui ui = new(this, 75, allowCancel ? 10 : 8);
+        Ui ui = new(this, 75, allowCancel ? 12 : 10, padded: false);
         ui.Init(_table);
         ui.Init(_infoTxt);
         _infoTxt.Margin = Padding.Empty;
+        ui.MarginLeft(_infoTxt);
+        ui.MarginTop(_infoTxt);
+        ui.MarginBottom(_infoTxt);
+        ui.Init(_progressLabel);
+        _progressLabel.Margin = Padding.Empty;
+        ui.MarginLeft(_progressLabel);
+        ui.MarginBottom(_progressLabel);
         ui.Init(_spinner);
-        ui.MarginRight(_spinner, 2);
+        ui.MarginLeft(_spinner);
+        ui.MarginTop(_spinner);
+        ui.MarginRight(_spinner, 3);
         if (allowCancel) {
             ui.Init(_buttonFlow);
             ui.Init(_cancelButton);
+            ui.MarginTop(_cancelButton);
+            ui.MarginRight(_cancelButton);
+            ui.MarginBottom(_cancelButton);
         } else {
             _buttonFlow.Visible = false;
         }
         _spinner.Size = new(ui.XWidth(4), ui.XWidth(4));
         _spinner.EnableDoubleBuffering();
 
-        _penWidth = Math.Max(1, ui.XWidth(0.4));
-        _brush = new SolidBrush(Color.FromArgb(0, 122, 204));
-        _pen = new(_brush, _penWidth);
+        _penWidth = this.Scaled(2);
+        _infoTxt.ForeColor = Color.FromArgb(0, 51, 171);
+        _pen = new(_infoTxt.ForeColor, _penWidth);
         Disposed += delegate {
-            _brush.Dispose();
             _pen.Dispose();
         };
 
@@ -196,9 +219,21 @@ public partial class WaitForm : ZForm {
         };
 
         WaitText = text;
+        ProgressText = null;
         _timer.Tick += delegate {
-            if (!DidCancel && WaitText != _infoTxt.Text) {
-                _infoTxt.Text = WaitText;
+            if (!DidCancel) {
+                if (WaitText != _infoTxt.Text) {
+                    _infoTxt.Text = WaitText;
+                }
+                if (ProgressText != null && ProgressText != _progressLabel.Text) {
+                    if (!_progressLabel.Visible) {
+                        _progressLabel.Visible = true;
+                    }
+                    _progressLabel.Text = ProgressText;
+                }
+                if (ProgressText == null && _progressLabel.Visible) {
+                    _progressLabel.Visible = false;
+                }
             }
         };
 
@@ -234,7 +269,7 @@ public partial class WaitForm : ZForm {
 
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-        e.Graphics.FillRectangle(SystemBrushes.Control, e.ClipRectangle);
+        e.Graphics.FillRectangle(Brushes.White, e.ClipRectangle);
 
         var size = _spinner.ClientSize;
         RectangleF rect = new(_penWidth, _penWidth, size.Width - 2 * _penWidth, size.Height - 2 * _penWidth);
@@ -255,7 +290,9 @@ public partial class WaitForm : ZForm {
             return;
         }
         DidCancel = true;
+        _timer.Stop();
         _infoTxt.Text = "Cancelling...";
+        _progressLabel.Visible = false;
         _cancelButton.Enabled = false;
         CancelRequested?.Invoke(this, EventArgs.Empty);
     }

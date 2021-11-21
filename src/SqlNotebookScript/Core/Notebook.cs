@@ -5,6 +5,7 @@ using SqlNotebookScript.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -343,9 +344,8 @@ public sealed class Notebook : IDisposable {
         }
     }
 
-    public object QueryValue(string sql) {
-        return QueryValue(sql, Array.Empty<object>());
-    }
+    public object QueryValue(string sql) =>
+        QueryValue(sql, Array.Empty<object>());
 
     public object QueryValue(string sql, IReadOnlyDictionary<string, object> args) =>
         GetSingleValue(Query(sql, args, -1));
@@ -358,6 +358,8 @@ public sealed class Notebook : IDisposable {
         ? dt.Rows[0].GetValue(0)
         : null;
 
+    public PreparedStatement Prepare(string sql) => new(_sqlite, sql);
+
     private static SimpleDataTable QueryCore(
         string sql,
         IReadOnlyDictionary<string, object> namedArgs,
@@ -367,173 +369,16 @@ public sealed class Notebook : IDisposable {
         Func<bool> cancelling,
         int maxRows
         ) {
-        System.Diagnostics.Debug.Assert(maxRows != 0); // -1 is unrestricted, not zero
-
         if (cancelling != null && cancelling()) {
             throw new OperationCanceledException();
         }
 
-        // namedArgs has lowercase keys
-        var stmt = IntPtr.Zero; // sqlite3_stmt*
-        try {
-            // prepare the statement
-            using NativeString sqlNative = new(sql);
-            using NativeBuffer stmtNative = new(IntPtr.Size);
-            SqliteUtil.ThrowIfError(db,
-                sqlite3_prepare_v2(
-                    db, sqlNative.Ptr, sqlNative.ByteCount, stmtNative.Ptr, IntPtr.Zero));
-            stmt = Marshal.ReadIntPtr(stmtNative.Ptr);
-            if (stmt == IntPtr.Zero) {
-                throw new Exception("Invalid statement.");
-            }
-
-            // bind the arguments
-            SqliteUtil.ThrowIfError(db, sqlite3_clear_bindings(stmt));
-            int paramCount = sqlite3_bind_parameter_count(stmt);
-            for (int i = 1; i <= paramCount; i++) {
-                object value;
-
-                if (namedArgs != null) {
-                    var paramName = Marshal.PtrToStringUTF8(sqlite3_bind_parameter_name(stmt, i));
-                    if (!namedArgs.TryGetValue(paramName.ToLowerInvariant(), out value)) {
-                        throw new ArgumentException($"Missing value for SQL parameter \"{paramName}\".");
-                    }
-                } else if (orderedArgs != null) {
-                    value = orderedArgs[i - 1];
-                } else {
-                    throw new ArgumentException($"{nameof(namedArgs)} or {nameof(orderedArgs)} must be non-null.");
-                }
-
-                if (value == null) {
-                    SqliteUtil.ThrowIfError(db, sqlite3_bind_null(stmt, i));
-                } else {
-                    switch (value) {
-                        case DBNull:
-                            SqliteUtil.ThrowIfError(db, sqlite3_bind_null(stmt, i));
-                            break;
-                        case int intValue:
-                            SqliteUtil.ThrowIfError(db, sqlite3_bind_int(stmt, i, intValue));
-                            break;
-                        case long longValue:
-                            SqliteUtil.ThrowIfError(db, sqlite3_bind_int64(stmt, i, longValue));
-                            break;
-                        case double dblValue:
-                            SqliteUtil.ThrowIfError(db, sqlite3_bind_double(stmt, i, dblValue));
-                            break;
-                        case byte[] arr: 
-                            {
-                                // SQLite will take ownership of this blob and call our free function when it's done.
-                                var copy = Marshal.AllocHGlobal(arr.Length);
-                                Marshal.Copy(arr, 0, copy, arr.Length);
-                                SqliteUtil.ThrowIfError(db,
-                                    sqlite3_bind_blob64(
-                                        stmt, i, copy, (ulong)arr.Length, _freeFunc.Value.Ptr));
-                                break;
-                            }
-                        default:
-                            {
-                                var strValue = value.ToString();
-                                var bytes = Encoding.Unicode.GetBytes(strValue);
-
-                                // SQLite will take ownership of this string and call our free function when it's done.
-                                var strNative = Marshal.AllocHGlobal(bytes.Length + 1);
-                                Marshal.Copy(bytes, 0, strNative, bytes.Length);
-                                Marshal.WriteByte(strNative + bytes.Length, 0);
-
-                                SqliteUtil.ThrowIfError(db,
-                                    sqlite3_bind_text16(
-                                        stmt, i, strNative, bytes.Length, _freeFunc.Value.Ptr));
-                                break;
-                            }
-                    }
-                }
-            }
-
-            // execute the statement
-            List<string> columnNames = new();
-            int columnCount = 0;
-            if (returnResult) {
-                columnCount = sqlite3_column_count(stmt);
-                for (int i = 0; i < columnCount; i++) {
-                    var columnName = Marshal.PtrToStringUni(sqlite3_column_name16(stmt, i));
-                    columnNames.Add(columnName);
-                }
-            }
-
-            // read the results
-            List<object[]> rows = new();
-            long fullCount = 0;
-            while (true) {
-                if (cancelling != null && cancelling()) {
-                    throw new OperationCanceledException();
-                }
-
-                int ret = sqlite3_step(stmt);
-                if (ret == SQLITE_DONE) {
-                    break;
-                } else if (ret == SQLITE_ROW) {
-                    fullCount++;
-                    if (maxRows >= 0 && fullCount > maxRows) {
-                        // Keep counting, but don't read the rows.
-                        continue;
-                    }
-                    if (returnResult) {
-                        var rowData = new object[columnCount];
-                        for (int i = 0; i < columnCount; i++) {
-                            switch (sqlite3_column_type(stmt, i)) {
-                                case SQLITE_INTEGER:
-                                    rowData[i] = sqlite3_column_int64(stmt, i);
-                                    break;
-                                case SQLITE_FLOAT:
-                                    rowData[i] = sqlite3_column_double(stmt, i);
-                                    break;
-                                case SQLITE_TEXT:
-                                    rowData[i] = Marshal.PtrToStringUni(sqlite3_column_text16(stmt, i));
-                                    break;
-                                case SQLITE_BLOB: {
-                                    var cb = sqlite3_column_bytes(stmt, i);
-                                    var sourceBuffer = sqlite3_column_blob(stmt, i);
-                                    var copy = new byte[cb];
-                                    Marshal.Copy(sourceBuffer, copy, 0, cb);
-                                    rowData[i] = copy;
-                                    break;
-                                }
-                                case SQLITE_NULL:
-                                    rowData[i] = DBNull.Value;
-                                    break;
-                                default:
-                                    throw new InvalidOperationException("Unrecognized result from sqlite3_column_type().");
-                            }
-                        }
-                        rows.Add(rowData);
-                    }
-                } else if (ret == SQLITE_READONLY) {
-                    throw new InvalidOperationException("Unable to write to a read-only notebook file.");
-                } else if (ret == SQLITE_BUSY || ret == SQLITE_LOCKED) {
-                    throw new InvalidOperationException("The notebook file is locked by another application.");
-                } else if (ret == SQLITE_CORRUPT) {
-                    throw new InvalidOperationException("The notebook file is corrupted.");
-                } else if (ret == SQLITE_NOTADB) {
-                    throw new InvalidOperationException("This is not an SQLite database file.");
-                } else if (ret == SQLITE_INTERRUPT) {
-                    throw new OperationCanceledException("SQL query canceled by the user.");
-                } else if (ret == SQLITE_ERROR) {
-                    SqliteUtil.ThrowIfError(db, SQLITE_ERROR);
-                } else {
-                    throw new InvalidOperationException($"Unrecognized result ({ret}) from sqlite3_step().");
-                }
-            }
-
-            if (returnResult) {
-                return new SimpleDataTable(columnNames, rows, fullCount);
-            } else {
-                return null;
-            }
-        } finally {
-            if (stmt != IntPtr.Zero) {
-                _ = sqlite3_finalize(stmt);
-            }
-        }
+        using PreparedStatement statement = new(db, sql);
+        var argArray =
+            namedArgs != null ? statement.GetArgs(namedArgs) :
+            orderedArgs is object[] a ? a :
+            orderedArgs.ToArray();
+        return statement.Execute(argArray, returnResult, maxRows, CancellationToken.None);
     }
 
     public void SaveAs(string filePath) {

@@ -101,7 +101,7 @@ public partial class MainForm : ZForm {
         if (isNew) {
             _notebook = new Notebook(filePath, isNew);
         } else {
-            _notebook = WaitForm.Go(null, "SQL Notebook", $"Opening notebook \"{Path.GetFileNameWithoutExtension(filePath)}\"", out var success, () =>
+            _notebook = WaitForm.Go(null, "SQL Notebook", $"Opening \"{Path.GetFileNameWithoutExtension(filePath)}\"...", out var success, () =>
                 new Notebook(filePath, isNew));
             if (!success) {
                 Close();

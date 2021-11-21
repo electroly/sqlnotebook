@@ -21,10 +21,9 @@ public sealed class MySqlImportSession : ImportSessionBase<MySqlConnectionString
         var tableNames = new List<string>();
         using (var cmd = connection.CreateCommand()) {
             cmd.CommandText = "SELECT table_name FROM information_schema.tables ORDER BY table_name";
-            using (var reader = cmd.ExecuteReader()) {
-                while (reader.Read()) {
-                    tableNames.Add(reader.GetString(0));
-                }
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read()) {
+                tableNames.Add(reader.GetString(0));
             }
         }
         TableNames = tableNames;

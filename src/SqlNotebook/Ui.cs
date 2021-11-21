@@ -297,6 +297,12 @@ public sealed class Ui {
         control.Margin = m;
     }
 
+    public void MarginLeft(Control control, double width = 2) {
+        var m = control.Margin;
+        m.Left = XWidth(width);
+        control.Margin = m;
+    }
+
     public void MarginRight(Control control, double width = 2) {
         var m = control.Margin;
         m.Right = XWidth(width);
