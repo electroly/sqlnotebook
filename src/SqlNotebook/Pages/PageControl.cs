@@ -240,6 +240,7 @@ public sealed class PageControl : UserControl, IDocumentControl {
             foreach (var queryBlockControl in queryBlockControls) {
                 var output = queryBlockControl.ExecuteOnWorkerThread();
                 uiThreadActions.Add(() => {
+                    queryBlockControl.Output?.Dispose();
                     queryBlockControl.Output = output;
                     queryBlockControl.Invalidate();
                 });

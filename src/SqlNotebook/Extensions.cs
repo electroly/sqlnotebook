@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SqlNotebookScript;
+using SqlNotebookScript.DataTables;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebook;

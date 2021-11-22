@@ -55,12 +55,11 @@ public sealed class ExportTxtStmtRunner {
 
     private void Export() {
         var fileMode = _truncateExistingFile ? FileMode.Create : FileMode.Append;
-        using (var stream = File.Open(_filePath, fileMode, FileAccess.Write, FileShare.None)) 
-        using (var writer = new StreamWriter(stream, _fileEncoding)) {
-            var sdt = _notebook.Query(_stmt.SelectStmt.Sql, _env.Vars, -1);
-            foreach (var row in sdt.Rows) {
-                writer.WriteLine(string.Join("", row));
-            }
+        using var stream = File.Open(_filePath, fileMode, FileAccess.Write, FileShare.None);
+        using var writer = new StreamWriter(stream, _fileEncoding);
+        using var sdt = _notebook.Query(_stmt.SelectStmt.Sql, _env.Vars, -1);
+        foreach (var row in sdt.Rows) {
+            writer.WriteLine(string.Join("", row));
         }
     }
 

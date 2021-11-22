@@ -1,30 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using SqlNotebookScript.Utils;
 
-namespace SqlNotebookScript;
+namespace SqlNotebookScript.DataTables;
 
-public sealed class SimpleDataTable {
-    private readonly IReadOnlyDictionary<string, int> _columnIndices;
+public abstract class SimpleDataTable : IDisposable {
+    protected IReadOnlyDictionary<string, int> _columnIndices;
 
-    public IReadOnlyList<string> Columns { get; }
-    public IReadOnlyList<object[]> Rows { get; }
-    public long FullCount { get; }
-
-    public SimpleDataTable(IReadOnlyList<string> columns, IReadOnlyList<object[]> rows, long fullCount) {
-        Columns = columns;
-        Rows = rows;
-    
-        var dict = new Dictionary<string, int>();
-        int i = 0;
-        foreach (var columnName in columns) {
-            dict[columnName] = i++;
-        }
-        _columnIndices = dict;
-
-        FullCount = fullCount == 0 ? rows.Count : fullCount;
-    }
+    public IReadOnlyList<string> Columns { get; protected set; }
+    public IReadOnlyList<object[]> Rows { get; protected set; }
+    public long FullCount { get; protected set; }
 
     public object Get(int rowNumber, string column) {
         var row = Rows[rowNumber];
@@ -69,15 +56,16 @@ public sealed class SimpleDataTable {
 
         // Rows
         var rowCount = reader.ReadInt32();
-        List<object[]> rows = new(rowCount);
+        using SimpleDataTableBuilder builder = new(columns);
+        var row = new object[columnCount];
         for (var i = 0; i < rowCount; i++) {
-            var row = new object[columnCount];
             for (var j = 0; j < columnCount; j++) {
                 row[j] = reader.ReadScalar();
             }
-            rows.Add(row);
+            builder.AddRow(row);
         }
-
-        return new(columns, rows, fullCount);
+        return builder.Build(fullCount);
     }
+
+    public abstract void Dispose();
 }

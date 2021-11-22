@@ -27,6 +27,10 @@ public sealed class QueryBlockControl : BlockControl {
         this.EnableDoubleBuffering();
 
         UserOptions.OnUpdate(this, Invalidate);
+
+        Disposed += delegate {
+            Output?.Dispose();
+        };
     }
 
     private struct MeasuredLayout {

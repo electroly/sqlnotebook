@@ -147,7 +147,7 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
 
         void Consume(object[][] buffer, int batchCount, long totalSoFar) {
             for (var i = 0; i < batchCount; i++) {
-                insertStmt.Execute(buffer[i], false, -1, cancel);
+                insertStmt.ExecuteStream(buffer[i], null, null, cancel);
                 Interlocked.Increment(ref rowsCopied);
             }
         }

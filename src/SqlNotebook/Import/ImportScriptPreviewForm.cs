@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using SqlNotebookScript;
+using SqlNotebookScript.DataTables;
 
 namespace SqlNotebook.Import;
 

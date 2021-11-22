@@ -63,7 +63,7 @@ public static class SqlUtil {
     }
 
     public static void VerifyColumnsExist(IEnumerable<string> colNames, string tableName, Notebook notebook) {
-        var tableInfo = notebook.Query($"PRAGMA TABLE_INFO ({tableName.DoubleQuote()})", -1);
+        using var tableInfo = notebook.Query($"PRAGMA TABLE_INFO ({tableName.DoubleQuote()})", -1);
         var nameColIndex = tableInfo.GetIndex("name");
         var actualColNames = tableInfo.Rows.Select(x => x[nameColIndex].ToString().ToLowerInvariant()).ToHashSet();
         foreach (var name in colNames) {

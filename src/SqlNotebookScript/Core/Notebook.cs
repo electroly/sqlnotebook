@@ -10,6 +10,7 @@ using System.Threading;
 using SqlNotebookScript.Core.AdoModules;
 using SqlNotebookScript.Core.GenericModules;
 using SqlNotebookScript.Core.SqliteInterop;
+using SqlNotebookScript.DataTables;
 using SqlNotebookScript.Utils;
 using static SqlNotebookScript.Core.SqliteInterop.NativeMethods;
 
@@ -265,7 +266,7 @@ public sealed class Notebook : IDisposable {
 
     private void ReadUserDataFromDatabase() {
         Execute("CREATE TABLE IF NOT EXISTS _sqlnotebook_userdata (json);");
-        var table = Query("SELECT json FROM _sqlnotebook_userdata", -1);
+        using var table = Query("SELECT json FROM _sqlnotebook_userdata", -1);
         if (table.Rows.Count == 0) {
             UserData = new();
             return;
@@ -322,11 +323,11 @@ public sealed class Notebook : IDisposable {
     }
 
     public void Execute(string sql, IReadOnlyDictionary<string, object> args) {
-        QueryCore(sql, ToLowercaseKeys(args), null, false, _sqlite, GetCancelling, -1);
+        using var sdt = QueryCore(sql, ToLowercaseKeys(args), null, false, _sqlite, GetCancelling, -1);
     }
 
     public void Execute(string sql, IReadOnlyList<object> args) {
-        QueryCore(sql, null, args, false, _sqlite, GetCancelling, -1);
+        using var sdt = QueryCore(sql, null, args, false, _sqlite, GetCancelling, -1);
     }
 
     public SimpleDataTable Query(string sql, int maxRows) {
@@ -367,11 +368,15 @@ public sealed class Notebook : IDisposable {
     public object QueryValue(string sql) =>
         QueryValue(sql, Array.Empty<object>());
 
-    public object QueryValue(string sql, IReadOnlyDictionary<string, object> args) =>
-        GetSingleValue(Query(sql, args, -1));
+    public object QueryValue(string sql, IReadOnlyDictionary<string, object> args) {
+        using var sdt = Query(sql, args, -1);
+        return GetSingleValue(sdt);
+    }
 
-    public object QueryValue(string sql, IReadOnlyList<object> args) =>
-        GetSingleValue(Query(sql, args, -1));
+    public object QueryValue(string sql, IReadOnlyList<object> args) {
+        using var sdt = Query(sql, args, -1);
+        return GetSingleValue(sdt);
+    }
 
     private static object GetSingleValue(SimpleDataTable dt) =>
         dt.Rows.Count == 1 && dt.Columns.Count == 1

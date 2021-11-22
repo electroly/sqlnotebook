@@ -614,16 +614,18 @@ public partial class MainForm : ZForm {
             filePath = GetTemporaryExportFilePath();
         }
 
-        WaitForm.GoWithCancel(this, "Export", $"Exporting to file...", out var success, cancel => {
+        WaitForm.GoWithCancel(this, "Export", item.Type == NotebookItemType.Script ? "Running script..." : "Exporting to file...", out var success, cancel => {
             SqlUtil.WithCancellation(_notebook, () => {
+                long rowsCopied = 0;
+                using RowsCopiedProgressUpdateTask updateTask = new(Path.GetFileName(filePath),
+                    () => Interlocked.Read(ref rowsCopied));
+
                 using var stream = File.CreateText(filePath);
                 if (item.Type == NotebookItemType.Script) {
-                    var output = _manager.ExecuteScript($"EXECUTE {item.Name.DoubleQuote()}");
-                    output.WriteCsv(stream);
+                    using var output = _manager.ExecuteScript($"EXECUTE {item.Name.DoubleQuote()}");
+                    WaitForm.WaitText = "Exporting to file...";
+                    output.WriteCsv(stream, () => Interlocked.Increment(ref rowsCopied), cancel);
                 } else {
-                    long rowsCopied = 0;
-                    using RowsCopiedProgressUpdateTask updateTask = new(Path.GetFileName(filePath),
-                        () => Interlocked.Read(ref rowsCopied));
                     using var statement = _notebook.Prepare($"SELECT * FROM {item.Name.DoubleQuote()}");
                     void OnHeader(List<string> columnNames) {
                         stream.WriteLine(string.Join(",", columnNames.Select(CsvUtil.EscapeCsv)));
@@ -742,14 +744,14 @@ public partial class MainForm : ZForm {
 
     private void TransactionCommitMenu_Click(object sender, EventArgs e) {
         WaitForm.Go(this, "Active Transaction", "Committing transaction...", out var success, () => {
-            _manager.ExecuteScript("COMMIT");
+            _manager.ExecuteScriptNoOutput("COMMIT");
         });
         _manager.Rescan();
     }
 
     private void TransactionRollbackMenu_Click(object sender, EventArgs e) {
         WaitForm.Go(this, "Active Transaction", "Rolling back transaction...", out var success, () => {
-            _manager.ExecuteScript("ROLLBACK");
+            _manager.ExecuteScriptNoOutput("ROLLBACK");
         });
         _manager.Rescan();
     }

@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace SqlNotebookScript.Utils;
 
 public static class CsvUtil {
-    public static void WriteCsv(IEnumerable<object[]> rows, StreamWriter writer) {
+    public static void WriteCsv(IEnumerable<object[]> rows, StreamWriter writer, Action onRow = null) {
         foreach (var row in rows) {
             var first = true;
             foreach (var value in row) {
@@ -17,6 +18,7 @@ public static class CsvUtil {
                 writer.Write(EscapeCsv(value));
             }
             writer.WriteLine("");
+            onRow?.Invoke();
         }
     }
 

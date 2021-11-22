@@ -140,7 +140,7 @@ public sealed class NotebookManager {
 
         if (!notebookItemsOnly) {
             // tables and views
-            var dt = Notebook.SpecialReadOnlyQuery(
+            using var dt = Notebook.SpecialReadOnlyQuery(
                 "SELECT name, type, sql FROM sqlite_master WHERE type = 'table' OR type = 'view' ",
                 new Dictionary<string, object>());
             for (int i = 0; i < dt.Rows.Count; i++) {
@@ -223,6 +223,12 @@ public sealed class NotebookManager {
         } else {
             return itemRec.Data;
         }
+    }
+
+    public void ExecuteScriptNoOutput(string code, IReadOnlyDictionary<string, object> args = null,
+        TransactionType transactionType = TransactionType.NoTransaction, int maxRows = -1
+        ) {
+        using var output = ExecuteScriptEx(code, args, transactionType, out _, maxRows);
     }
 
     public ScriptOutput ExecuteScript(string code, IReadOnlyDictionary<string, object> args = null,

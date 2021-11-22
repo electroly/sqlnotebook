@@ -122,7 +122,7 @@ public static class HelpSearcher {
     }
 
     private static List<Result> SearchQuery(Notebook notebook, string keyword) { // run from notebook thread
-        var dt = notebook.Query(
+        using var dt = notebook.Query(
             @"SELECT
                 f.id, d.path, d.book,
                 HIGHLIGHT(docs_fts, 1, '<b>', '</b>'),

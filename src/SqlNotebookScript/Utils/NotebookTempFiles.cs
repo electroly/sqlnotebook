@@ -6,34 +6,33 @@ using System.IO;
 namespace SqlNotebookScript.Utils;
 
 public static class NotebookTempFiles {
-    private static readonly object _lock = new();
-    
-    private static string _filenamePrefix;
-    private static string _path;
-    private static int _count;
-
-    public static void Init() {
+    private static readonly Lazy<(string FilenamePrefix, string Path)> _dir = new(() => {
         using var p = Process.GetCurrentProcess();
-        _filenamePrefix = $"{p.Id}.";
-        _path = Path.Combine(Path.GetTempPath(), "SqlNotebookTemp");
-        Directory.CreateDirectory(_path);
-        DeleteFilesFromThisSession();
-        DeleteFilesFromPreviousSessions();
-    }
+        var filenamePrefix = $"{p.Id}.";
+        var path = Path.Combine(Path.GetTempPath(), "SqlNotebookTemp");
+        Directory.CreateDirectory(path);
+        DeleteFilesFromThisSession(filenamePrefix, path);
+        DeleteFilesFromPreviousSessions(path);
+        return (filenamePrefix, path);
+    });
 
     public static string GetTempFilePath(string extension) {
-        lock (_lock) {
-            var filePath = Path.Combine(_path, $"{_filenamePrefix}{++_count}{extension}");
-            File.WriteAllBytes(filePath, Array.Empty<byte>());
-            return filePath;
-        }
+        var dir = _dir.Value;
+        var filePath = Path.Combine(dir.Path, $"{dir.FilenamePrefix}{Guid.NewGuid()}{extension}");
+        File.WriteAllBytes(filePath, Array.Empty<byte>());
+        return filePath;
     }
 
     public static void DeleteFilesFromThisSession() {
+        var dir = _dir.Value;
+        DeleteFilesFromThisSession(dir.FilenamePrefix, dir.Path);
+    }
+
+    private static void DeleteFilesFromThisSession(string filenamePrefix, string path) {
         try {
-            foreach (var filePath in Directory.GetFiles(_path)) {
+            foreach (var filePath in Directory.GetFiles(path)) {
                 var filename = Path.GetFileName(filePath);
-                if (filename.StartsWith(_filenamePrefix)) {
+                if (filename.StartsWith(filenamePrefix)) {
                     try {
                         File.Delete(filePath);
                     } catch { }
@@ -42,7 +41,7 @@ public static class NotebookTempFiles {
         } catch { }
     }
 
-    private static void DeleteFilesFromPreviousSessions() {
+    private static void DeleteFilesFromPreviousSessions(string path) {
         // This is annoying in the debugger due to the exception that gets thrown below, so skip this when a debugger
         // is attached.
         if (Debugger.IsAttached) {
@@ -53,7 +52,7 @@ public static class NotebookTempFiles {
         HashSet<int> pids = new();
 
         try {
-            foreach (var filePath in Directory.GetFiles(_path)) {
+            foreach (var filePath in Directory.GetFiles(path)) {
                 var filename = Path.GetFileName(filePath);
 
                 // If the first part of the filename matches the PID of a running process, then skip the file for now.

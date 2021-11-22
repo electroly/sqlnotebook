@@ -328,7 +328,7 @@ public sealed class ScriptRunner {
     }
 
     public object EvaluateExpr(Ast.Expr expr, ScriptEnv env) {
-        var dt = _notebook.Query($"SELECT ({expr.Sql})", env.Vars, -1);
+        using var dt = _notebook.Query($"SELECT ({expr.Sql})", env.Vars, -1);
         if (dt.Columns.Count == 1 && dt.Rows.Count == 1) {
             return dt.Rows[0][0];
         } else {

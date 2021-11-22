@@ -25,8 +25,6 @@ public static class Program
         try {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            NotebookTempFiles.Init();
-
             Notebook notebook;
             bool isNew;
             if (Environment.GetCommandLineArgs().Length == 2) {

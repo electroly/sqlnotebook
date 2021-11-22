@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using SqlNotebookScript.Core.SqliteInterop;
+using SqlNotebookScript.DataTables;
 using static SqlNotebookScript.Core.SqliteInterop.NativeMethods;
 
 namespace SqlNotebookScript.Core;
@@ -98,8 +99,9 @@ public sealed class PreparedStatement : IDisposable {
         }
         BindArguments(args);
         ExecuteStatement(returnResult, out var columnNames, out var columnCount);
-        ReadResultsIntoList(returnResult, maxRows, columnCount, out var rows, out var fullCount, cancel);
-        return returnResult ? new SimpleDataTable(columnNames, rows, fullCount) : null;
+        using SimpleDataTableBuilder builder = new(columnNames);
+        ReadResultsIntoTable(returnResult, maxRows, columnCount, builder, out var fullCount, cancel);
+        return builder.Build(fullCount);
     }
 
     public void ExecuteStream(object[] args, Action<List<string>> onHeader, Action<object[]> onRow, CancellationToken cancel) {
@@ -108,9 +110,12 @@ public sealed class PreparedStatement : IDisposable {
         }
         BindArguments(args);
         ExecuteStatement(true, out var columnNames, out var columnCount);
-        onHeader(columnNames);
+        onHeader?.Invoke(columnNames);
         ReadResultsStream(columnCount, onRow, cancel);
     }
+
+    public void ExecuteNoOutput(object[] args, CancellationToken cancel) =>
+        ExecuteStream(args, null, null, cancel);
 
     private void BindArguments(object[] args) {
         SqliteUtil.ThrowIfError(_sqlite, sqlite3_reset(_stmt));
@@ -173,11 +178,11 @@ public sealed class PreparedStatement : IDisposable {
         }
     }
 
-    private void ReadResultsIntoList(bool returnResult, int maxRows, int columnCount, out List<object[]> rows,
+    private void ReadResultsIntoTable(bool returnResult, int maxRows, int columnCount, SimpleDataTableBuilder builder,
         out long fullCount, CancellationToken cancel
         ) {
-        rows = new();
         fullCount = 0;
+        var rowData = new object[columnCount];
         while (true) {
             cancel.ThrowIfCancellationRequested();
 
@@ -193,11 +198,10 @@ public sealed class PreparedStatement : IDisposable {
                         // Keep counting, but don't read the rows.
                         continue;
                     }
-                    var rowData = new object[columnCount];
                     for (int i = 0; i < columnCount; i++) {
                         rowData[i] = GetCellValue(i);
                     }
-                    rows.Add(rowData);
+                    builder.AddRow(rowData);
                 }
                 continue;
             }
@@ -220,7 +224,7 @@ public sealed class PreparedStatement : IDisposable {
                 for (int i = 0; i < columnCount; i++) {
                     rowData[i] = GetCellValue(i);
                 }
-                onRow(rowData);
+                onRow?.Invoke(rowData);
                 continue;
             }
 

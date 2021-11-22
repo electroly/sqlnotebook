@@ -16,8 +16,6 @@ public sealed class SqliteGrammarTest {
 
     [TestMethod]
     public void TestSqlStatements() {
-        NotebookTempFiles.Init();
-
         var filePath = Path.Combine(Path.GetTempPath(), "SqliteGrammarTestDb");
         File.WriteAllBytes(filePath, Array.Empty<byte>());
 

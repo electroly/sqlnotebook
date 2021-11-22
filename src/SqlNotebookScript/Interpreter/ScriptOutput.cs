@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using SqlNotebookScript.DataTables;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.Interpreter;
 
-public sealed class ScriptOutput {
+public sealed class ScriptOutput : IDisposable {
     public List<SimpleDataTable> DataTables { get; } = new();
     public List<string> TextOutput { get; } = new();
     public object ScalarResult { get; set; }
@@ -19,10 +21,11 @@ public sealed class ScriptOutput {
         x.TextOutput.Clear();
     }
 
-    public void WriteCsv(StreamWriter s) {
+    public void WriteCsv(StreamWriter s, Action onRow, CancellationToken cancel) {
         foreach (var dt in DataTables) {
+            cancel.ThrowIfCancellationRequested();
             s.WriteLine(string.Join(",", dt.Columns.Select(CsvUtil.EscapeCsv)));
-            CsvUtil.WriteCsv(dt.Rows, s);
+            CsvUtil.WriteCsv(dt.Rows, s, onRow);
         }
     }
 
@@ -72,5 +75,11 @@ public sealed class ScriptOutput {
         }
 
         return scriptOutput;
+    }
+
+    public void Dispose() {
+        foreach (var sdt in DataTables) {
+            sdt.Dispose();
+        }
     }
 }

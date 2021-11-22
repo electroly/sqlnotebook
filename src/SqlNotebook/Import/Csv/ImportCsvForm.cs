@@ -1,4 +1,5 @@
 ﻿using SqlNotebookScript;
+using SqlNotebookScript.DataTables;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
 using System;
@@ -117,18 +118,18 @@ public partial class ImportCsvForm : ZForm {
                     var importSql =
                         @"IMPORT TXT @filePath INTO @tableName (number, line)
                         OPTIONS (TAKE_LINES: 1000, TEMPORARY_TABLE: 1, FILE_ENCODING: @encoding);";
-                    _manager.ExecuteScript(importSql, new Dictionary<string, object> {
+                    _manager.ExecuteScriptNoOutput(importSql, new Dictionary<string, object> {
                         ["@filePath"] = _filePath,
                         ["@tableName"] = tempTableName,
                         ["@encoding"] = fileEncoding
                     });
 
-                    var dt = _manager.ExecuteScript($"SELECT line FROM {tempTableName.DoubleQuote()} ORDER BY number")
+                    using var dt = _manager.ExecuteScript($"SELECT line FROM {tempTableName.DoubleQuote()} ORDER BY number")
                         .DataTables[0];
 
                     return string.Join(Environment.NewLine, dt.Rows.Select(x => x[0].ToString()));
                 } finally {
-                    _manager.ExecuteScript($"DROP TABLE IF EXISTS {tempTableName.DoubleQuote()}");
+                    _manager.ExecuteScriptNoOutput($"DROP TABLE IF EXISTS {tempTableName.DoubleQuote()}");
                 }
             });
 
@@ -186,7 +187,7 @@ public partial class ImportCsvForm : ZForm {
                     @"IMPORT CSV @filePath INTO @tableName SEPARATOR @sep
                     OPTIONS (SKIP_LINES: @skipLines, TAKE_LINES: 0, HEADER_ROW: @headerRow, TEMPORARY_TABLE: 1, 
                         FILE_ENCODING: @encoding);";
-                _manager.ExecuteScript(importSql, new Dictionary<string, object> {
+                _manager.ExecuteScriptNoOutput(importSql, new Dictionary<string, object> {
                     ["@filePath"] = _filePath,
                     ["@tableName"] = tempTableName,
                     ["@sep"] = separator,
@@ -195,14 +196,14 @@ public partial class ImportCsvForm : ZForm {
                     ["@skipLines"] = skipLines
                 });
 
-                var dt = _manager.ExecuteScript($"PRAGMA TABLE_INFO ({tempTableName.DoubleQuote()})")
+                using var dt = _manager.ExecuteScript($"PRAGMA TABLE_INFO ({tempTableName.DoubleQuote()})")
                     .DataTables[0];
                 var nameCol = dt.GetIndex("name");
                 return dt.Rows.Select(x => x[nameCol].ToString()).ToList();
             });
         } finally {
             await Task.Run(() => {
-                _manager.ExecuteScript($"DROP TABLE IF EXISTS {tempTableName.DoubleQuote()}");
+                _manager.ExecuteScriptNoOutput($"DROP TABLE IF EXISTS {tempTableName.DoubleQuote()}");
             });
         }
     }
@@ -287,17 +288,19 @@ public partial class ImportCsvForm : ZForm {
             script = GetImportSql();
             try {
                 var sql = GetImportSql(100, tableName);
-                _manager.ExecuteScript(sql);
+                _manager.ExecuteScriptNoOutput(sql);
                 table = _manager.ExecuteScript($"SELECT * FROM {tableName.DoubleQuote()}").DataTables[0];
             } finally {
-                _manager.ExecuteScript($"DROP TABLE IF EXISTS {tableName.DoubleQuote()}");
+                _manager.ExecuteScriptNoOutput($"DROP TABLE IF EXISTS {tableName.DoubleQuote()}");
             }
         });
         if (!success) {
             return;
         }
 
-        using ImportScriptPreviewForm previewForm = new(script, table);
-        previewForm.ShowDialog(this);
+        using (table) {
+            using ImportScriptPreviewForm previewForm = new(script, table);
+            previewForm.ShowDialog(this);
+        }
     }
 }

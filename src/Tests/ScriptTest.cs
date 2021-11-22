@@ -15,8 +15,6 @@ public sealed partial class ScriptTest {
     public static void Init(TestContext context) => GlobalInit.Init();
 
     private void TestScript(string scriptRelativePath) {
-        NotebookTempFiles.Init();
-
         // Make a temp directory to store notebook files in.
         var tempDir = Path.Combine(Path.GetTempPath(), "SqlNotebookScriptTest");
         if (Directory.Exists(tempDir)) {
@@ -62,7 +60,7 @@ public sealed partial class ScriptTest {
             foreach (var sql in sqls) {
                 manager.NewItem(NotebookItemType.Script, $"Script{scriptNumber++}", sql);
             }
-            var output = manager.ExecuteScript(sqls[0]);
+            using var output = manager.ExecuteScript(sqls[0]);
 
             // Convert the actual ScriptOutput to text.
             StringBuilder sb = new();

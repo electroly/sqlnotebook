@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace SqlNotebookScript.Utils;
 
@@ -22,7 +23,17 @@ public sealed class TempFile : IDisposable {
             // set large fields to null
             try {
                 File.Delete(FilePath);
-            } catch { }
+            } catch {
+                // try again in a little bit
+                Task.Delay(TimeSpan.FromSeconds(1))
+                    .ContinueWith(t => {
+                        try {
+                            File.Delete(FilePath);
+                        } catch {
+                            // oh well. we'll clean it up at the end of the process, or on the next run.
+                        }
+                    });
+            }
             _disposedValue = true;
         }
     }

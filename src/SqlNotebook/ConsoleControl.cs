@@ -208,7 +208,7 @@ public partial class ConsoleControl : UserControl {
             return;
         }
 
-        var output = WaitForm.Go(TopLevelControl, "Delete", "Executing...", out var success, () =>
+        using var output = WaitForm.Go(TopLevelControl, "Delete", "Executing...", out var success, () =>
             SqlUtil.WithTransaction(_manager.Notebook, () => _manager.ExecuteScript(code, maxRows: MAX_GRID_ROWS)));
         if (!success) {
             return;

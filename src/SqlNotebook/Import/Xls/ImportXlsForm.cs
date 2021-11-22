@@ -469,7 +469,7 @@ public partial class ImportXlsForm : ZForm {
         }
 
         WaitForm.Go(this, "Import", $"Importing XLS file...", out var success, () => {
-            _manager.ExecuteScript(sql, transactionType: NotebookManager.TransactionType.Transaction);
+            _manager.ExecuteScriptNoOutput(sql, transactionType: NotebookManager.TransactionType.Transaction);
         });
         if (!success) {
             return;

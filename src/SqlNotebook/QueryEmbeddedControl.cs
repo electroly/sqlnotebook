@@ -4,6 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
 using SqlNotebookScript.Interpreter;
@@ -257,21 +258,26 @@ public partial class QueryEmbeddedControl : UserControl {
         var insertSql = SqlUtil.GetInsertSql(name, dt.Columns.Count);
 
         var sql = SqlText;
-        var output = Output;
         var tabIndex = _tabs.SelectedIndex;
-        WaitForm.GoWithCancel(TopLevelControl, "Send", $"Sending {fullCount:#,##0} rows to \"{name}\"...", out var success, cancel => {
+        WaitForm.GoWithCancel(TopLevelControl, "Send", rerun ? "Executing your script..." : "Sending results to table...", out var success, cancel => {
+            long rowsCopied = 0;
+            using RowsCopiedProgressUpdateTask progressUpdate = new(name, () => Interlocked.Read(ref rowsCopied));
             _manager.Notebook.Invoke(() => {
                 SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
-                    _manager.ExecuteScript(createSql);
+                    _manager.ExecuteScriptNoOutput(createSql);
+                    using var insertStmt = _manager.Notebook.Prepare(insertSql);
                     if (!rerun) {
                         foreach (DataRow row in dt.Rows) {
                             cancel.ThrowIfCancellationRequested();
-                            _manager.Notebook.Execute(insertSql, row.ItemArray);
+                            insertStmt.ExecuteNoOutput(row.ItemArray, cancel);
+                            Interlocked.Increment(ref rowsCopied);
                         }
                         return;
                     }
 
-                    output = _manager.ExecuteScript(sql);
+                    using var output = _manager.ExecuteScript(sql);
+
+                    WaitForm.WaitText = "Sending results to table...";
                     var scalarResultTabIndex =
                         output.ScalarResult != null ? 0
                         : -1;
@@ -284,17 +290,18 @@ public partial class QueryEmbeddedControl : UserControl {
                         (output.TextOutput.Any() ? 1 : 0);
 
                     if (tabIndex == scalarResultTabIndex) {
-                        _manager.Notebook.Execute(insertSql, new object[] { output.ScalarResult });
+                        insertStmt.ExecuteNoOutput(new object[] { output.ScalarResult }, cancel);
                     } else if (tabIndex == textTabIndex) {
                         foreach (var line in output.TextOutput) {
                             cancel.ThrowIfCancellationRequested();
-                            _manager.Notebook.Execute(insertSql, new object[] { line });
+                            insertStmt.ExecuteNoOutput(new object[] { line }, cancel);
                         }
                     } else {
                         var table = output.DataTables[tabIndex - tablesTabOffset];
                         foreach (var row in table.Rows) {
                             cancel.ThrowIfCancellationRequested();
-                            _manager.Notebook.Execute(insertSql, row);
+                            insertStmt.ExecuteNoOutput(row, cancel);
+                            Interlocked.Increment(ref rowsCopied);
                         }
                     }
                 }, cancel);

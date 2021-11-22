@@ -76,7 +76,7 @@ public static class FileImporter {
     private static bool RunImportScript(string importSql, IWin32Window owner, string filePath,
     NotebookManager manager) {
         WaitForm.Go(owner, "Import", $"Importing \"{Path.GetFileName(filePath)}\"...", out var success, () => {
-            manager.ExecuteScript(importSql, transactionType: NotebookManager.TransactionType.Transaction);
+            manager.ExecuteScriptNoOutput(importSql, transactionType: NotebookManager.TransactionType.Transaction);
         });
 
         manager.Rescan();
