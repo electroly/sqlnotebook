@@ -50,6 +50,10 @@ public sealed class Notebook : IDisposable {
     public NotebookUserData UserData { get; set; }
     public static string ErrorMessage { get; set; }
 
+    // If the AdoModuleProvider gets an error with an underlying query, there's no way to pass it up through SQLite.
+    // So SQLite returns a generic logic error and we store a more specific error message here.
+    public static string SqliteVtabErrorMessage { get; set; }
+
     public static Notebook New() =>
         new(null, true, null, CancellationToken.None);
 
@@ -192,7 +196,7 @@ public sealed class Notebook : IDisposable {
                 sqlite3_user_data(ctx));
             List<object> args = new();
             for (var i = 0; i < argc; i++) {
-                args.Add(GenericModuleProvider.GetArg(Marshal.ReadIntPtr(argv + i * IntPtr.Size)));
+                args.Add(SqlUtil.GetArg(Marshal.ReadIntPtr(argv + i * IntPtr.Size)));
             }
             var result = @delegate(args);
             SqliteUtil.Result(ctx, result);

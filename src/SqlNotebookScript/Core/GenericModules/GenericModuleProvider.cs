@@ -313,31 +313,6 @@ public sealed class GenericModuleProvider : IDisposable {
         }
     }
 
-    public static object GetArg(
-        IntPtr arg // sqlite3_value*
-        ) {
-        switch (sqlite3_value_type(arg)) {
-            case SQLITE_INTEGER:
-                return sqlite3_value_int64(arg);
-            case SQLITE_FLOAT:
-                return sqlite3_value_double(arg);
-            case SQLITE_NULL:
-                return DBNull.Value;
-            case SQLITE_TEXT:
-                return Marshal.PtrToStringUni(sqlite3_value_text16(arg));
-            case SQLITE_BLOB:
-                {
-                    var cb = sqlite3_value_bytes(arg);
-                    var inputArrayNative = sqlite3_value_blob(arg);
-                    var outputArray = new byte[cb];
-                    Marshal.Copy(inputArrayNative, outputArray, 0, cb);
-                    return outputArray;
-                }
-            default:
-                throw new Exception("Data type not supported.");
-        }
-    }
-
     private static int GenericFilter(
         IntPtr pCur, // sqlite3_vtab_cursor*
         int idxNum,
@@ -359,7 +334,7 @@ public sealed class GenericModuleProvider : IDisposable {
             for (var i = 0; i < argc; i++) {
                 var filterI = filter[i];
                 if (filterI >= 0 && filterI < hiddenValues.Length) {
-                    hiddenValues[filterI] = GetArg(Marshal.ReadIntPtr(argv + i * IntPtr.Size));
+                    hiddenValues[filterI] = SqlUtil.GetArg(Marshal.ReadIntPtr(argv + i * IntPtr.Size));
                 } else {
                     System.Diagnostics.Debugger.Break();
                 }

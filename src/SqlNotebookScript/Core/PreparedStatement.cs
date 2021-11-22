@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using SqlNotebookScript.Core.SqliteInterop;
 using SqlNotebookScript.DataTables;
+using SqlNotebookScript.Utils;
 using static SqlNotebookScript.Core.SqliteInterop.NativeMethods;
 
 namespace SqlNotebookScript.Core;
@@ -100,7 +101,7 @@ public sealed class PreparedStatement : IDisposable {
             throw new ArgumentOutOfRangeException($"Expected {_paramCount} argument(s), but {args.Length} were provided.");
         }
         BindArguments(args);
-        ExecuteStatement(returnResult, out var columnNames, out var columnCount);
+        GetColumns(returnResult, out var columnNames, out var columnCount);
         using SimpleDataTableBuilder builder = new(columnNames);
         ReadResultsIntoTable(returnResult, columnCount, builder, out var fullCount, onRow, cancel);
         return builder.Build(fullCount);
@@ -111,7 +112,7 @@ public sealed class PreparedStatement : IDisposable {
             throw new ArgumentOutOfRangeException($"Expected {_paramCount} argument(s), but {args.Length} were provided.");
         }
         BindArguments(args);
-        ExecuteStatement(true, out var columnNames, out var columnCount);
+        GetColumns(true, out var columnNames, out var columnCount);
         onHeader?.Invoke(columnNames);
         ReadResultsStream(columnCount, onRow, cancel);
     }
@@ -120,6 +121,7 @@ public sealed class PreparedStatement : IDisposable {
         ExecuteStream(args, null, null, cancel);
 
     private void BindArguments(object[] args) {
+        Notebook.SqliteVtabErrorMessage = null;
         SqliteUtil.ThrowIfError(_sqlite, sqlite3_reset(_stmt));
         SqliteUtil.ThrowIfError(_sqlite, sqlite3_clear_bindings(_stmt));
         for (var i = 1; i <= _paramCount; i++) {
@@ -168,7 +170,7 @@ public sealed class PreparedStatement : IDisposable {
         }
     }
 
-    private void ExecuteStatement(bool returnResult, out List<string> columnNames, out int columnCount) {
+    private void GetColumns(bool returnResult, out List<string> columnNames, out int columnCount) {
         columnNames = new();
         columnCount = 0;
         if (returnResult) {
@@ -254,6 +256,11 @@ public sealed class PreparedStatement : IDisposable {
                 throw new OperationCanceledException("SQL query canceled by the user.");
 
             case SQLITE_ERROR:
+                if (Notebook.SqliteVtabErrorMessage != null) {
+                    var message = Notebook.SqliteVtabErrorMessage;
+                    Notebook.SqliteVtabErrorMessage = null;
+                    throw new ExceptionEx("A remote database query failed.", message);
+                }
                 SqliteUtil.ThrowIfError(_sqlite, SQLITE_ERROR);
                 break;
 

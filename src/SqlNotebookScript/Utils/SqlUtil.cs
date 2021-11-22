@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using SqlNotebookScript.Core;
 using SqlNotebookScript.Interpreter;
 using Ast = SqlNotebookScript.Interpreter.Ast;
+using static SqlNotebookScript.Core.SqliteInterop.NativeMethods;
+using System.Runtime.InteropServices;
 
 namespace SqlNotebookScript.Utils;
 
@@ -368,6 +369,24 @@ public static class SqlUtil {
             value = func();
         }, rollback);
         return value;
+    }
+
+    public static object GetArg(IntPtr value /* sqlite3_value* */) =>
+        sqlite3_value_type(value) switch {
+            SQLITE_INTEGER => sqlite3_value_int64(value),
+            SQLITE_FLOAT => sqlite3_value_double(value),
+            SQLITE_NULL => DBNull.Value,
+            SQLITE_TEXT => Marshal.PtrToStringUni(sqlite3_value_text16(value)),
+            SQLITE_BLOB => ReadBlobValue(value),
+            _ => throw new Exception("Data type not supported."),
+        };
+
+    private static object ReadBlobValue(IntPtr value) {
+        var cb = sqlite3_value_bytes(value);
+        var inputArrayNative = sqlite3_value_blob(value);
+        var outputArray = new byte[cb];
+        Marshal.Copy(inputArrayNative, outputArray, 0, cb);
+        return outputArray;
     }
 }
 

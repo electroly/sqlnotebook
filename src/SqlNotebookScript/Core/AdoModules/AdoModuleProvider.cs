@@ -571,25 +571,20 @@ public abstract class AdoModuleProvider : IDisposable {
         IntPtr argv // sqlite3_value**
         ) {
         var sql = Marshal.PtrToStringUTF8(idxStr);
+        var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
+        var vtab = Marshal.PtrToStructure<Sqlite3Vtab>(cursor.pVtab);
 
         if (DEBUG) {
             Debug.WriteLine("AdoFilter: " + sql);
         }
 
         try {
-            var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
             var cursorMetadata = _cursorMetadatas[cursor.MetadataKey];
             var args = new object[argc];
 
             for (int i = 0; i < argc; i++) {
                 var argvI = argv + i * IntPtr.Size;
-                args[i] = sqlite3_value_type(argvI) switch {
-                    SQLITE_INTEGER => sqlite3_value_int64(argvI),
-                    SQLITE_FLOAT => sqlite3_value_double(argvI),
-                    SQLITE_NULL => DBNull.Value,
-                    SQLITE_TEXT => Marshal.PtrToStringUni(sqlite3_value_text16(argvI)),
-                    _ => throw new Exception("Data type not supported."),
-                };
+                args[i] = SqlUtil.GetArg(Marshal.ReadIntPtr(argvI));
             }
 
             cursorMetadata.Reader?.Dispose();
@@ -623,7 +618,6 @@ public abstract class AdoModuleProvider : IDisposable {
             }
 
             // Run ExecuteReader() on the thread pool so we can respond to sqlite interruption here by walking away.
-            var vtab = Marshal.PtrToStructure<Sqlite3Vtab>(cursor.pVtab);
             var readerTask = Task.Run(() => cursorMetadata.Command.ExecuteReader());
 
             while (!readerTask.IsCompleted) {
@@ -637,7 +631,8 @@ public abstract class AdoModuleProvider : IDisposable {
             cursorMetadata.ReaderSql = sql;
             cursorMetadata.IsEof = !cursorMetadata.Reader.Read();
             return SQLITE_OK;
-        } catch {
+        } catch (Exception ex) {
+            Notebook.SqliteVtabErrorMessage = ex.GetExceptionMessage();
             return SQLITE_ERROR;
         }
     }
