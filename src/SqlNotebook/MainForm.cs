@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SqlNotebook.Import;
@@ -580,21 +581,20 @@ public partial class MainForm : ZForm {
         NotebookItem item;
         bool doSaveAs;
 
-        using (var f = new ExportForm(scripts, tables, views)) {
-            var result = f.ShowDialog(this);
-            item = f.NotebookItem;
-            if (result == DialogResult.Yes) {
-                doSaveAs = false; // open
-            } else if (result == DialogResult.No) {
-                doSaveAs = true; // save
-            } else {
-                return;
-            }
+        using ExportForm exportForm = new(scripts, tables, views);
+        var result = exportForm.ShowDialog(this);
+        item = exportForm.NotebookItem;
+        if (result == DialogResult.Yes) {
+            doSaveAs = false; // open
+        } else if (result == DialogResult.No) {
+            doSaveAs = true; // save
+        } else {
+            return;
         }
 
         string filePath;
         if (doSaveAs) {
-            var f = new SaveFileDialog {
+            using SaveFileDialog saveFileDialog = new() {
                 AddExtension = true,
                 AutoUpgradeEnabled = true,
                 CheckPathExists = true,
@@ -605,24 +605,36 @@ public partial class MainForm : ZForm {
                 Title = "Save CSV As",
                 ValidateNames = true
             };
-            using (f) {
-                if (f.ShowDialog(this) == DialogResult.OK) {
-                    filePath = f.FileName;
-                } else {
-                    return;
-                }
+            if (saveFileDialog.ShowDialog(this) == DialogResult.OK) {
+                filePath = saveFileDialog.FileName;
+            } else {
+                return;
             }
         } else {
             filePath = GetTemporaryExportFilePath();
         }
 
-        WaitForm.Go(this, "Export", $"Exporting to \"{Path.GetFileName(filePath)}\"...", out var success, () => {
-            var output = _manager.ExecuteScript(
-                item.Type == NotebookItemType.Script
-                ? $"EXECUTE {item.Name.DoubleQuote()}"
-                : $"SELECT * FROM {item.Name.DoubleQuote()}");
-            using var stream = File.CreateText(filePath);
-            output.WriteCsv(stream);
+        WaitForm.GoWithCancel(this, "Export", $"Exporting to file...", out var success, cancel => {
+            SqlUtil.WithCancellation(_notebook, () => {
+                using var stream = File.CreateText(filePath);
+                if (item.Type == NotebookItemType.Script) {
+                    var output = _manager.ExecuteScript($"EXECUTE {item.Name.DoubleQuote()}");
+                    output.WriteCsv(stream);
+                } else {
+                    long rowsCopied = 0;
+                    using RowsCopiedProgressUpdateTask updateTask = new(Path.GetFileName(filePath),
+                        () => Interlocked.Read(ref rowsCopied));
+                    using var statement = _notebook.Prepare($"SELECT * FROM {item.Name.DoubleQuote()}");
+                    void OnHeader(List<string> columnNames) {
+                        stream.WriteLine(string.Join(",", columnNames.Select(CsvUtil.EscapeCsv)));
+                    }
+                    void OnRow(object[] row) {
+                        stream.WriteLine(string.Join(",", row.Select(CsvUtil.EscapeCsv)));
+                        Interlocked.Increment(ref rowsCopied);
+                    }
+                    statement.ExecuteStream(Array.Empty<object>(), OnHeader, OnRow, cancel);
+                }
+            }, cancel);
         });
         if (!success) {
             return;

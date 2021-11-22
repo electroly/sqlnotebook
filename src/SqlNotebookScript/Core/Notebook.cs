@@ -1,9 +1,4 @@
-﻿using SqlNotebookScript.Core.AdoModules;
-using SqlNotebookScript.Core.GenericModules;
-using SqlNotebookScript.Core.SqliteInterop;
-using SqlNotebookScript.Utils;
-using System;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -12,7 +7,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
+using SqlNotebookScript.Core.AdoModules;
+using SqlNotebookScript.Core.GenericModules;
+using SqlNotebookScript.Core.SqliteInterop;
+using SqlNotebookScript.Utils;
 using static SqlNotebookScript.Core.SqliteInterop.NativeMethods;
 
 namespace SqlNotebookScript.Core;
@@ -21,13 +19,6 @@ public sealed class Notebook : IDisposable {
     public static bool CancelInProgress { get; set; } = false;
 
     private const int CURRENT_FILE_VERSION = 2;
-
-    private delegate void FreeDelegate(IntPtr p);
-
-    private static readonly Lazy<(IntPtr Ptr, FreeDelegate Delegate)> _freeFunc = new(() => {
-        FreeDelegate @delegate = Marshal.FreeHGlobal;
-        return (Marshal.GetFunctionPointerForDelegate(@delegate), @delegate);
-    });
 
     private delegate void ExecuteGenericFunctionDelegate(IntPtr a, int b, IntPtr c);
 

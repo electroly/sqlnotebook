@@ -13,7 +13,7 @@ using SqlNotebookScript.Utils;
 
 namespace SqlNotebook.Import.Database;
 
-public abstract class ImportSessionBase<TConnectionStringBuilder> : IImportSession
+public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImportSession
     where TConnectionStringBuilder : DbConnectionStringBuilder, new() {
 
     public abstract string ProductName { get; }
@@ -126,7 +126,7 @@ public abstract class ImportSessionBase<TConnectionStringBuilder> : IImportSessi
         var insertSql = $"INSERT INTO {targetTable.DoubleQuote()} VALUES ({string.Join(", ", Enumerable.Range(0, reader.FieldCount).Select(x => "?"))})";
         using var insertStmt = notebook.Prepare(insertSql);
         long rowsCopied = 0;
-        using StatusUpdateTask statusUpdate = new(targetTable, () => Interlocked.Read(ref rowsCopied));
+        using RowsCopiedProgressUpdateTask statusUpdate = new(targetTable, () => Interlocked.Read(ref rowsCopied));
 
         object[][] NewBuffer() {
             const int CAPACITY = 100; // empirically determined
@@ -153,35 +153,5 @@ public abstract class ImportSessionBase<TConnectionStringBuilder> : IImportSessi
         }
 
         OverlappedProducerConsumer.Go(NewBuffer, Produce, Consume, cancel);
-    }
-
-    private sealed class StatusUpdateTask : IDisposable {
-        private readonly CancellationTokenSource _cts = new();
-        private readonly Thread _thread;
-
-        public StatusUpdateTask(string targetTable, Func<long> rowsCopiedFunc) {
-            var targetTableTruncated =
-                targetTable.Length > 50
-                ? $"{targetTable[..50]}..."
-                : targetTable;
-            _thread = new(new ThreadStart(() => {
-                try {
-                    var interval = TimeSpan.FromMilliseconds(100);
-                    while (!_cts.IsCancellationRequested) {
-                        var n = rowsCopiedFunc();
-                        WaitForm.ProgressText = $"{targetTableTruncated}\r\n{n:#,##0} rows copied";
-                        _cts.Token.WaitHandle.WaitOne(interval);
-                    }
-                } catch { }
-            }));
-            _thread.Start();
-        }
-
-        public void Dispose() {
-            _cts.Cancel();
-            _thread.Join();
-            _cts.Dispose();
-            WaitForm.ProgressText = null;
-        }
     }
 }

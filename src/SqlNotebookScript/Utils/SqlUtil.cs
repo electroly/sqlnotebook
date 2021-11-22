@@ -310,6 +310,15 @@ public static class SqlUtil {
         }
     }
 
+    public static void WithCancellation(Notebook notebook, Action action, CancellationToken cancel) {
+        cancel.Register(() => notebook.BeginUserCancel());
+        try {
+            action();
+        } finally {
+            notebook.EndUserCancel();
+        }
+    }
+
     public static void WithTransaction(Notebook notebook, Action action) =>
         WithTransactionCore(notebook, action, rollback: false);
  

@@ -98,12 +98,23 @@ public sealed class PreparedStatement : IDisposable {
 
     public SimpleDataTable Execute(object[] args, bool returnResult, int maxRows, CancellationToken cancel) {
         Debug.Assert(maxRows != 0); // -1 is unrestricted, not zero
-        if (args.Length != _paramCount)
+        if (args.Length != _paramCount) {
             throw new ArgumentOutOfRangeException($"Expected {_paramCount} argument(s), but {args.Length} were provided.");
+        }
         BindArguments(args);
         ExecuteStatement(returnResult, out var columnNames, out var columnCount);
-        ReadResults(returnResult, maxRows, columnCount, out var rows, out var fullCount, cancel);
+        ReadResultsIntoList(returnResult, maxRows, columnCount, out var rows, out var fullCount, cancel);
         return returnResult ? new SimpleDataTable(columnNames, rows, fullCount) : null;
+    }
+
+    public void ExecuteStream(object[] args, Action<List<string>> onHeader, Action<object[]> onRow, CancellationToken cancel) {
+        if (args.Length != _paramCount) {
+            throw new ArgumentOutOfRangeException($"Expected {_paramCount} argument(s), but {args.Length} were provided.");
+        }
+        BindArguments(args);
+        ExecuteStatement(true, out var columnNames, out var columnCount);
+        onHeader(columnNames);
+        ReadResultsStream(columnCount, onRow, cancel);
     }
 
     private void BindArguments(object[] args) {
@@ -167,7 +178,7 @@ public sealed class PreparedStatement : IDisposable {
         }
     }
 
-    private void ReadResults(bool returnResult, int maxRows, int columnCount, out List<object[]> rows,
+    private void ReadResultsIntoList(bool returnResult, int maxRows, int columnCount, out List<object[]> rows,
         out long fullCount, CancellationToken cancel
         ) {
         rows = new();
@@ -180,69 +191,103 @@ public sealed class PreparedStatement : IDisposable {
                 break;
             }
 
-            switch (ret) {
-                case SQLITE_ROW:
-                    fullCount++;
+            if (ret == SQLITE_ROW) {
+                fullCount++;
+                if (returnResult) {
                     if (maxRows >= 0 && fullCount > maxRows) {
                         // Keep counting, but don't read the rows.
                         continue;
                     }
-                    if (returnResult) {
-                        var rowData = new object[columnCount];
-                        for (int i = 0; i < columnCount; i++) {
-                            switch (sqlite3_column_type(_stmt, i)) {
-                                case SQLITE_INTEGER:
-                                    rowData[i] = sqlite3_column_int64(_stmt, i);
-                                    break;
-                                case SQLITE_FLOAT:
-                                    rowData[i] = sqlite3_column_double(_stmt, i);
-                                    break;
-                                case SQLITE_TEXT:
-                                    rowData[i] = Marshal.PtrToStringUni(sqlite3_column_text16(_stmt, i));
-                                    break;
-                                case SQLITE_BLOB: {
-                                        var cb = sqlite3_column_bytes(_stmt, i);
-                                        var sourceBuffer = sqlite3_column_blob(_stmt, i);
-                                        var copy = new byte[cb];
-                                        Marshal.Copy(sourceBuffer, copy, 0, cb);
-                                        rowData[i] = copy;
-                                        break;
-                                    }
-                                case SQLITE_NULL:
-                                    rowData[i] = DBNull.Value;
-                                    break;
-                                default:
-                                    throw new InvalidOperationException(
-                                        "Unrecognized result from sqlite3_column_type().");
-                            }
-                        }
-                        rows.Add(rowData);
+                    var rowData = new object[columnCount];
+                    for (int i = 0; i < columnCount; i++) {
+                        rowData[i] = GetCellValue(i);
                     }
-                    break;
-
-                case SQLITE_READONLY:
-                    throw new InvalidOperationException("Unable to write to a read-only notebook file.");
-
-                case SQLITE_BUSY:
-                case SQLITE_LOCKED:
-                    throw new InvalidOperationException("The notebook file is locked by another application.");
-
-                case SQLITE_CORRUPT:
-                    throw new InvalidOperationException("The notebook file is corrupted.");
-
-                case SQLITE_NOTADB:
-                    throw new InvalidOperationException("This is not an SQLite database file.");
-
-                case SQLITE_INTERRUPT:
-                    throw new OperationCanceledException("SQL query canceled by the user.");
-
-                case SQLITE_ERROR:
-                    SqliteUtil.ThrowIfError(_sqlite, SQLITE_ERROR);
-                    break;
-
-                default:
-                    throw new InvalidOperationException($"Unrecognized result ({ret}) from sqlite3_step().");
+                    rows.Add(rowData);
+                }
+                continue;
             }
+
+            ThrowError(ret);
         }
+    }
+
+    private void ReadResultsStream(int columnCount, Action<object[]> onRow, CancellationToken cancel) {
+        var rowData = new object[columnCount];
+        while (true) {
+            cancel.ThrowIfCancellationRequested();
+
+            int ret = sqlite3_step(_stmt);
+            if (ret == SQLITE_DONE) {
+                break;
+            }
+
+            if (ret == SQLITE_ROW) {
+                for (int i = 0; i < columnCount; i++) {
+                    rowData[i] = GetCellValue(i);
+                }
+                onRow(rowData);
+                continue;
+            }
+
+            ThrowError(ret);
+        }
+    }
+
+    private void ThrowError(int ret) {
+        switch (ret) {
+            case SQLITE_READONLY:
+                throw new InvalidOperationException("Unable to write to a read-only notebook file.");
+
+            case SQLITE_BUSY:
+            case SQLITE_LOCKED:
+                throw new InvalidOperationException("The notebook file is locked by another application.");
+
+            case SQLITE_CORRUPT:
+                throw new InvalidOperationException("The notebook file is corrupted.");
+
+            case SQLITE_NOTADB:
+                throw new InvalidOperationException("This is not an SQLite database file.");
+
+            case SQLITE_INTERRUPT:
+                throw new OperationCanceledException("SQL query canceled by the user.");
+
+            case SQLITE_ERROR:
+                SqliteUtil.ThrowIfError(_sqlite, SQLITE_ERROR);
+                break;
+
+            default:
+                throw new InvalidOperationException($"Unrecognized result ({ret}) from sqlite3_step().");
+        }
+    }
+
+    private object GetCellValue(int i) {
+        object cellValue;
+        switch (sqlite3_column_type(_stmt, i)) {
+            case SQLITE_INTEGER:
+                cellValue = sqlite3_column_int64(_stmt, i);
+                break;
+            case SQLITE_FLOAT:
+                cellValue = sqlite3_column_double(_stmt, i);
+                break;
+            case SQLITE_TEXT:
+                cellValue = Marshal.PtrToStringUni(sqlite3_column_text16(_stmt, i));
+                break;
+            case SQLITE_BLOB: {
+                    var cb = sqlite3_column_bytes(_stmt, i);
+                    var sourceBuffer = sqlite3_column_blob(_stmt, i);
+                    var copy = new byte[cb];
+                    Marshal.Copy(sourceBuffer, copy, 0, cb);
+                    cellValue = copy;
+                    break;
+                }
+            case SQLITE_NULL:
+                cellValue = DBNull.Value;
+                break;
+            default:
+                throw new InvalidOperationException(
+                    "Unrecognized result from sqlite3_column_type().");
+        }
+
+        return cellValue;
     }
 }
