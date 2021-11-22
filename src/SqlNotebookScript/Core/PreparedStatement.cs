@@ -75,17 +75,12 @@ public sealed class PreparedStatement : IDisposable {
         var args = new object[_paramCount];
         var provided = new bool[_paramCount];
         foreach (var pair in dict) {
-            var found = false;
             for (var paramIndex = 0; paramIndex < _paramCount; paramIndex++) {
                 if (pair.Key.Equals(_paramNames[paramIndex], StringComparison.OrdinalIgnoreCase)) {
                     args[paramIndex] = pair.Value;
                     provided[paramIndex] = true;
-                    found = true;
                     break;
                 }
-            }
-            if (!found) {
-                throw new Exception($"Argument \"{pair.Key}\" was provided, but there is no parameter by that name.");
             }
         }
         for (var i = 0; i < _paramCount; i++) {
