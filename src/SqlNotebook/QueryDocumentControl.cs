@@ -17,14 +17,9 @@ public partial class QueryDocumentControl : UserControl, IDocumentControl {
         ItemName = name;
         _manager = manager;
 
-        _queryControl = new(manager, isPageContext: false);
+        _queryControl = new(manager, isPageContext: false, initialText: _manager.GetItemData(ItemName) ?? "");
         _queryControl.Dock = DockStyle.Fill;
         _queryControl.TextControl.SqlTextChanged += (sender2, e2) => _manager.SetDirty();
         Controls.Add(_queryControl);
-
-        var initialText = _manager.GetItemData(ItemName);
-        if (initialText != null) {
-            _queryControl.SqlText = initialText;
-        }
     }
 }

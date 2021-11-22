@@ -3,13 +3,16 @@ using SqlNotebookScript.Core.GenericModules;
 using SqlNotebookScript.Core.SqliteInterop;
 using SqlNotebookScript.Utils;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using static SqlNotebookScript.Core.SqliteInterop.NativeMethods;
 
 namespace SqlNotebookScript.Core;
@@ -48,25 +51,31 @@ public sealed class Notebook : IDisposable {
             new SqlServerAdoModuleProvider(),
         };
     private List<GenericModuleProvider> _genericModuleProviders = new();
-    private string _originalFilePath;
+    public string OriginalFilePath { get; set; }
     private readonly string _workingCopyFilePath;
     private IntPtr _sqlite; // sqlite3*
 
     public NotebookUserData UserData { get; set; }
     public static string ErrorMessage { get; set; }
 
-    public Notebook(string filePath, bool isNew) {
+    public static Notebook New() =>
+        new(null, true, null, CancellationToken.None);
+
+    public static Notebook Open(string filePath, Action<int> onPercentComplete = null, CancellationToken cancel = default) =>
+        new(filePath, false, onPercentComplete, cancel);
+
+    private Notebook(string filePath, bool isNew, Action<int> onPercentComplete, CancellationToken cancel) {
         _workingCopyFilePath = NotebookTempFiles.GetTempFilePath(".working-copy");
         if (!isNew) {
             try {
-                File.Copy(filePath, _workingCopyFilePath, overwrite: true);
+                CopyFile(filePath, _workingCopyFilePath, onPercentComplete, cancel);
             } catch {
                 File.Delete(_workingCopyFilePath);
                 throw;
             }
         }
 
-        _originalFilePath = filePath;
+        OriginalFilePath = filePath;
         Invoke(Init);
     }
 
@@ -79,7 +88,8 @@ public sealed class Notebook : IDisposable {
             // free unmanaged resources (unmanaged objects) and override finalizer
             // set large fields to null
             if (_sqlite != IntPtr.Zero) {
-                _ = sqlite3_close_v2(_sqlite);
+                var result = sqlite3_close(_sqlite);
+                Debug.Assert(result == SQLITE_OK);
                 _sqlite = IntPtr.Zero;
             }
             
@@ -161,9 +171,6 @@ public sealed class Notebook : IDisposable {
         CustomFunctionsProvider.InstallCustomFunctions(_sqlite);
 
         ReadUserDataFromDatabase();
-
-        Execute("DROP TABLE IF EXISTS _sqlnotebook_userdata;");
-        Execute("DROP TABLE IF EXISTS _sqlnotebook_version;");
     }
 
     private delegate object GenericFunctionExecuteDelegate(IReadOnlyList<object> args);
@@ -203,31 +210,53 @@ public sealed class Notebook : IDisposable {
         }
     }
 
-    public void Save() {
+    public void SaveAs(string filePath, Action<int> onPercentComplete = null, CancellationToken cancel = default) {
+        OriginalFilePath = filePath;
+        Save(onPercentComplete, cancel);
+    }
+
+    public void Save(Action<int> onPercentComplete = null, CancellationToken cancel = default) {
+        Debug.Assert(OriginalFilePath != null);
         if (IsTransactionActive()) {
             throw new Exception("A transaction is active. Execute either \"COMMIT\" or \"ROLLBACK\" to end the transaction before saving.");
         }
 
         WriteFileVersionAndUserDataToDatabase();
 
-        SqliteUtil.ThrowIfError(_sqlite, sqlite3_close_v2(_sqlite));
+        SqliteUtil.ThrowIfError(_sqlite, sqlite3_close(_sqlite));
         _sqlite = IntPtr.Zero;
 
         try {
-            File.Copy(_workingCopyFilePath, _originalFilePath, overwrite: true);
+            var tempFilePath = OriginalFilePath + ".tmp";
+            try {
+                CopyFile(_workingCopyFilePath, tempFilePath, onPercentComplete, cancel);
+                File.Move(tempFilePath, OriginalFilePath, true);
+            } finally {
+                File.Delete(tempFilePath);
+            }
         } finally {
             Init();
         }
     }
 
-    private void WriteFileVersionAndUserDataToDatabase() {
-        // if there is no user data, then write a plain SQLite database without any special SQL Notebook tables
-        if (UserData.Items.Count == 0) {
-            Execute("DROP TABLE IF EXISTS _sqlnotebook_version;");
-            Execute("DROP TABLE IF EXISTS _sqlnotebook_userdata;");
-            return;
+    private static void CopyFile(string src, string dst, Action<int> onPercentComplete, CancellationToken cancel) {
+        using var inputStream = File.Open(src, FileMode.Open, FileAccess.Read, FileShare.Read);
+        var totalBytes = inputStream.Length;
+        using var outputStream = File.Create(dst);
+        
+        void Produce(byte[] buffer, out int batchCount) {
+            batchCount = inputStream.Read(buffer, 0, buffer.Length);
         }
 
+        void Consume(byte[] buffer, int batchCount, long totalSoFar) {
+            outputStream.Write(buffer, 0, batchCount);
+            onPercentComplete((int)(totalSoFar * 100 / totalBytes));
+        }
+
+        OverlappedProducerConsumer.Go(() => new byte[8 * 1_048_576], Produce, Consume, cancel);
+    }
+
+    private void WriteFileVersionAndUserDataToDatabase() {
         Execute("CREATE TABLE IF NOT EXISTS _sqlnotebook_version (version);");
         Execute("DELETE FROM _sqlnotebook_version;");
         Execute("INSERT INTO _sqlnotebook_version (version) VALUES (@version);",
@@ -340,7 +369,7 @@ public sealed class Notebook : IDisposable {
         try {
             return QueryCore(sql, args, null, true, tempSqlite, null, -1);
         } finally {
-            _ = sqlite3_close_v2(tempSqlite);
+            SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_close(tempSqlite));
         }
     }
 
@@ -381,13 +410,8 @@ public sealed class Notebook : IDisposable {
         return statement.Execute(argArray, returnResult, maxRows, CancellationToken.None);
     }
 
-    public void SaveAs(string filePath) {
-        _originalFilePath = filePath;
-        Save();
-    }
-
     public string GetFilePath() {
-        return _originalFilePath;
+        return OriginalFilePath;
     }
 
     public IReadOnlyList<Token> Tokenize(string input) {

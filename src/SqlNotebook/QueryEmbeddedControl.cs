@@ -59,7 +59,7 @@ public partial class QueryEmbeddedControl : UserControl {
     public event EventHandler SqlTextChanged;
     public event EventHandler Dirty;
 
-    public QueryEmbeddedControl(NotebookManager manager, bool isPageContext) {
+    public QueryEmbeddedControl(NotebookManager manager, bool isPageContext, string initialText) {
         InitializeComponent();
         _manager = manager;
         _toolStrip.SetMenuAppearance();
@@ -69,6 +69,7 @@ public partial class QueryEmbeddedControl : UserControl {
         TextControl = new SqlTextControl(false) {
             Dock = DockStyle.Fill,
             Padding = Padding.Empty,
+            SqlText = initialText,
         };
         TextControl.SqlTextChanged += (sender, e) => {
             SqlTextChanged?.Invoke(sender, e);

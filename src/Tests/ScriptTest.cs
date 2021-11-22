@@ -53,9 +53,7 @@ public sealed partial class ScriptTest {
             var sqls = scriptFileText.Split(SCRIPT_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
 
             // Run the SQL.
-            var notebookFilePath = Path.Combine(tempDir, $"{Path.GetFileNameWithoutExtension(scriptFilePath)}.sqlnb");
-            File.WriteAllBytes(notebookFilePath, Array.Empty<byte>());
-            using Notebook notebook = new(notebookFilePath, isNew: true);
+            using Notebook notebook = Notebook.New();
             NotebookManager manager = new(notebook, new());
             foreach (var item in manager.Items.ToList()) {
                 manager.DeleteItem(item);

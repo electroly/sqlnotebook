@@ -80,8 +80,8 @@ public static class NativeMethods {
     [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_open_v2", SetLastError = false)]
     public static extern int sqlite3_open_v2(IntPtr filename, IntPtr ppDb, int flags, IntPtr zVfs);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_close_v2", SetLastError = false)]
-    public static extern int sqlite3_close_v2(IntPtr db);
+    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_close", SetLastError = false)]
+    public static extern int sqlite3_close(IntPtr db);
 
     [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_malloc", SetLastError = false)]
     public static extern IntPtr sqlite3_malloc(int n);

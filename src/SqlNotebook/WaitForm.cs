@@ -237,7 +237,7 @@ public partial class WaitForm : ZForm {
             }
         };
 
-        if (TaskbarManager.IsPlatformSupported) {
+        if (TaskbarManager.IsPlatformSupported && MainAppForm != null && MainAppForm.IsHandleCreated) {
             // It seems like the indeterminate progressbar state isn't shown on Windows 10. Let's fake a progress
             // by asymptotically approaching 90% with a hand-tweaked curve that seems to be OK most of the time.
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal, MainAppForm.Handle);

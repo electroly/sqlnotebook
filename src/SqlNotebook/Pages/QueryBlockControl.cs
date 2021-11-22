@@ -320,11 +320,10 @@ public sealed class QueryBlockControl : BlockControl {
         EditMode = true;
         Cursor = Cursors.Default;
         var (acceptButton, table, panel) = CreateStandardEditModeLayout();
-        QueryControl = new(_manager, isPageContext: true) {
+        QueryControl = new(_manager, isPageContext: true, initialText: SqlText) {
             Dock = DockStyle.Fill,
             BorderStyle = BorderStyle.FixedSingle,
             Margin = Padding.Empty,
-            SqlText = SqlText,
             Output = Output,
             MaxRows = MaxDisplayRows,
             ShowSql = ShowSql,

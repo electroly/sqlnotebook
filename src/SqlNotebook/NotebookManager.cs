@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using SqlNotebookScript;
 using SqlNotebookScript.Core;
@@ -86,19 +87,21 @@ public sealed class NotebookManager {
         HandleHotkeyRequest?.Invoke(this, new HotkeyEventArgs(keyData));
     }
 
-    public void Save() {
+    public void Save(CancellationToken cancel) {
         NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
         Notebook.Invoke(() => {
-            Notebook.Execute("VACUUM");
-            Notebook.Save();
+            Notebook.Save(
+                c => WaitForm.ProgressText = $"{c}% complete",
+                cancel);
         });
     }
 
-    public void SaveAs(string filePath) {
+    public void SaveAs(string filePath, CancellationToken cancel) {
         NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
         Notebook.Invoke(() => {
-            Notebook.Execute("VACUUM");
-            Notebook.SaveAs(filePath);
+            Notebook.SaveAs(filePath,
+                c => WaitForm.ProgressText = $"{c}% complete",
+                cancel);
         });
     }
 

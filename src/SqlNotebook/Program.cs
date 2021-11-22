@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Windows.Forms;
+using SqlNotebookScript.Core;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebook;
@@ -17,36 +18,44 @@ public static class Program
     [STAThread]
     public static void Main()
     {
-        // .NET 5 moves the ANSI code pages into an external encoding provider. Bring it in.
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-        NotebookTempFiles.Init();
-
         Application.SetHighDpiMode(HighDpiMode.SystemAware);
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 
-        string filePath;
-        bool isNew;
-        if (Environment.GetCommandLineArgs().Length == 2) {
-            filePath = Environment.GetCommandLineArgs()[1];
-            isNew = false;
-        } else {
-            filePath = NotebookTempFiles.GetTempFilePath(".sqlnb");
-            isNew = true;
-        }
-
-        if (!File.Exists(filePath)) {
-            MessageBox.Show("File does not exist: " + filePath, "SQL Notebook", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-        }
-
         try {
-            Application.Run(new MainForm(filePath, isNew));
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            NotebookTempFiles.Init();
+
+            Notebook notebook;
+            bool isNew;
+            if (Environment.GetCommandLineArgs().Length == 2) {
+                var filePath = Environment.GetCommandLineArgs()[1];
+                if (!File.Exists(filePath)) {
+                    Ui.ShowError(null, "SQL Notebook", "File does not exist: " + filePath);
+                    return;
+                }
+                notebook = WaitForm.GoWithCancel(
+                    null, "SQL Notebook", $"Opening \"{Truncate(Path.GetFileName(filePath))}\"...", out var success,
+                    cancel => Notebook.Open(filePath,
+                        c => WaitForm.ProgressText = $"{c}% complete",
+                        cancel));
+                if (!success) {
+                    return;
+                }
+                isNew = false;
+            } else {
+                notebook = Notebook.New();
+                isNew = true;
+            }
+
+            Application.Run(new MainForm(notebook, isNew));
         } catch (Exception ex) {
-            MessageBox.Show(ex.GetExceptionMessage(), "SQL Notebook", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Ui.ShowError(null, "SQL Notebook", ex);
         } finally {
             NotebookTempFiles.DeleteFilesFromThisSession();
         }
     }
+
+    private static string Truncate(string filename) => filename.Length > 50 ? $"{filename[..50]}..." : filename;
 }

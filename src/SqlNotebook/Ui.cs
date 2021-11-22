@@ -355,7 +355,12 @@ public sealed class Ui {
             taskDialogPage.Buttons.Add(button);
         }
         taskDialogPage.DefaultButton = taskDialogPage.Buttons[defaultIsFirst ? 0 : buttons.Length - 1];
-        var result = TaskDialog.ShowDialog(owner, taskDialogPage);
+        TaskDialogButton result;
+        if (owner == null) {
+            result = TaskDialog.ShowDialog(taskDialogPage);
+        } else {
+            result = TaskDialog.ShowDialog(owner, taskDialogPage);
+        }
         return result.Text;
     }
 
@@ -370,7 +375,11 @@ public sealed class Ui {
         }
         taskDialogPage.Buttons.Add("OK");
         taskDialogPage.DefaultButton = taskDialogPage.Buttons[0];
-        TaskDialog.ShowDialog(owner, taskDialogPage);
+        if (owner == null) {
+            TaskDialog.ShowDialog(taskDialogPage);
+        } else {
+            TaskDialog.ShowDialog(owner, taskDialogPage);
+        }
     }
 
     public static void ShowError(IWin32Window owner, string title, Exception exception) {
@@ -397,7 +406,11 @@ public sealed class Ui {
 
         taskDialogPage.Buttons.Add("OK");
         taskDialogPage.DefaultButton = taskDialogPage.Buttons[0];
-        TaskDialog.ShowDialog(owner, taskDialogPage);
+        if (owner == null) {
+            TaskDialog.ShowDialog(taskDialogPage);
+        } else {
+            TaskDialog.ShowDialog(owner, taskDialogPage);
+        }
     }
 
     public static Bitmap ShiftImage(Bitmap source, int xOffset, int yOffset) {

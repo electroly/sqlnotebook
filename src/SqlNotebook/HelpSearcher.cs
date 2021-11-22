@@ -22,13 +22,16 @@ public static class HelpSearcher {
                 File.WriteAllBytes(tempFilePath, _cachedNotebookBytes);
             }
             List<Result> results = null;
-            using (Notebook notebook = new(tempFilePath, isNew: !hasCache)) {
+            using (var notebook = hasCache ? Notebook.Open(tempFilePath) : Notebook.New()) {
                 if (!hasCache) {
-                    InitHelpNotebook(notebook);
+                    InitHelpNotebook(notebook, tempFilePath);
                 }
                 notebook.Invoke(() => {
                     results = SearchQuery(notebook, keyword);
                 });
+                if (!hasCache) {
+                    notebook.SaveAs(tempFilePath);
+                }
             }
             if (!hasCache) {
                 _cachedNotebookBytes = File.ReadAllBytes(tempFilePath);
@@ -39,7 +42,7 @@ public static class HelpSearcher {
         }
     }
 
-    private static void InitHelpNotebook(Notebook notebook) {
+    private static void InitHelpNotebook(Notebook notebook, string sqlnbFilePath) {
         var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
         var docDir = Path.Combine(exeDir, "doc");
         var htmlFiles = (
@@ -84,7 +87,6 @@ public static class HelpSearcher {
 
             notebook.Execute("COMMIT");
             notebook.Execute("ANALYZE");
-            notebook.Save();
         });
     }
 

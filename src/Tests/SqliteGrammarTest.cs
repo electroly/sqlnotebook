@@ -29,7 +29,7 @@ public sealed class SqliteGrammarTest {
         File.WriteAllBytes(other2FilePath, Resources.OtherDb);
 
         try {
-            using var notebook = new Notebook(filePath, true);
+            using var notebook = Notebook.New();
             notebook.Execute("ATTACH DATABASE ? AS other", new[] { filePath });
 
             var stmts =

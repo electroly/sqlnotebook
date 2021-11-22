@@ -36,7 +36,7 @@ public partial class MainForm : ZForm {
     private readonly Dictionary<NotebookItem, UserControlDockContent> _openItems
         = new Dictionary<NotebookItem, UserControlDockContent>();
 
-    public MainForm(string filePath, bool isNew) {
+    public MainForm(Notebook notebook, bool isNew) {
         InitializeComponent();
 
         WaitForm.MainAppForm = this;
@@ -97,16 +97,8 @@ public partial class MainForm : ZForm {
         };
         _updateAvailableMenu.Margin = _transactionMenu.Margin = new(ui.XWidth(1), 0, 0, 0);
         _searchTxt.Margin = new(ui.XWidth(1), 0, ui.XWidth(1), 0);
-
-        if (isNew) {
-            _notebook = new Notebook(filePath, isNew);
-        } else {
-            _notebook = WaitForm.Go(null, "SQL Notebook", $"Opening \"{Path.GetFileNameWithoutExtension(filePath)}\"...", out var success, () =>
-                new Notebook(filePath, isNew));
-            if (!success) {
-                Close();
-            }
-        }
+        
+        _notebook = notebook;
         _isNew = isNew;
         _manager = new NotebookManager(_notebook, _isTransactionOpen);
         _databaseImporter = new DatabaseImporter(_manager, this);
@@ -486,7 +478,7 @@ public partial class MainForm : ZForm {
         SaveOpenItems();
 
         if (_isNew || saveAs) {
-            var f = new SaveFileDialog {
+            using SaveFileDialog f = new() {
                 AddExtension = true,
                 AutoUpgradeEnabled = true,
                 CheckPathExists = true,
@@ -497,22 +489,20 @@ public partial class MainForm : ZForm {
                 Title = "Save Notebook As",
                 ValidateNames = true
             };
-            using (f) {
-                if (f.ShowDialog(this) == DialogResult.OK) {
-                    WaitForm.Go(this, "Save", "Saving your notebook...", out var success, () => {
-                        _manager.SaveAs(f.FileName);
-                    });
-                    if (!success) {
-                        return false;
-                    }
-                    _isNew = false;
-                } else {
-                    return false;
-                }
+            if (f.ShowDialog(this) != DialogResult.OK) {
+                return false;
             }
+
+            WaitForm.GoWithCancel(this, "Save", "Saving your notebook...", out var success, cancel => {
+                _manager.SaveAs(f.FileName, cancel);
+            });
+            if (!success) {
+                return false;
+            }
+            _isNew = false;
         } else {
-            WaitForm.Go(this, "Save", "Saving your notebook...", out _, () => {
-                _manager.Save();
+            WaitForm.GoWithCancel(this, "Save", "Saving your notebook...", out _, cancel => {
+                _manager.Save(cancel);
             });
         }
 

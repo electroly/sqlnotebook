@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -123,34 +124,63 @@ public abstract class ImportSessionBase<TConnectionStringBuilder> : IImportSessi
 
         // Copy data
         var insertSql = $"INSERT INTO {targetTable.DoubleQuote()} VALUES ({string.Join(", ", Enumerable.Range(0, reader.FieldCount).Select(x => "?"))})";
-        var insertStmt = notebook.Prepare(insertSql);
+        using var insertStmt = notebook.Prepare(insertSql);
         long rowsCopied = 0;
-        using CancellationTokenSource statusUpdateCts = new();
-        var targetTableTruncated =
-            targetTable.Length > 50
-            ? $"{targetTable[..50]}..."
-            : targetTable;
-        Thread statusUpdateThread = new(new ThreadStart(() => {
-            var interval = TimeSpan.FromMilliseconds(100);
-            while (!statusUpdateCts.IsCancellationRequested) {
-                var n = Interlocked.Read(ref rowsCopied);
-                WaitForm.ProgressText = $"{targetTableTruncated}\r\n{n:#,##0} rows copied";
-                statusUpdateCts.Token.WaitHandle.WaitOne(interval);
-            }
-        }));
-        statusUpdateThread.Start();
+        using StatusUpdateTask statusUpdate = new(targetTable, () => Interlocked.Read(ref rowsCopied));
 
-        try {
-            var row = new object[reader.FieldCount];
-            while (reader.Read()) {
-                cancel.ThrowIfCancellationRequested();
-                reader.GetValues(row);
-                insertStmt.Execute(row, false, -1, cancel);
+        object[][] NewBuffer() {
+            const int CAPACITY = 100; // empirically determined
+            var buffer = new object[CAPACITY][];
+            for (var i = 0; i < CAPACITY; i++) {
+                buffer[i] = new object[reader.FieldCount];
+            }
+            return buffer;
+        }
+
+        void Produce(object[][] buffer, out int batchCount) {
+            batchCount = 0;
+            while (batchCount < buffer.Length && reader.Read()) {
+                reader.GetValues(buffer[batchCount]);
+                batchCount++;
+            }
+        }
+
+        void Consume(object[][] buffer, int batchCount, long totalSoFar) {
+            for (var i = 0; i < batchCount; i++) {
+                insertStmt.Execute(buffer[i], false, -1, cancel);
                 Interlocked.Increment(ref rowsCopied);
             }
-        } finally {
-            statusUpdateCts.Cancel();
-            statusUpdateThread.Join();
+        }
+
+        OverlappedProducerConsumer.Go(NewBuffer, Produce, Consume, cancel);
+    }
+
+    private sealed class StatusUpdateTask : IDisposable {
+        private readonly CancellationTokenSource _cts = new();
+        private readonly Thread _thread;
+
+        public StatusUpdateTask(string targetTable, Func<long> rowsCopiedFunc) {
+            var targetTableTruncated =
+                targetTable.Length > 50
+                ? $"{targetTable[..50]}..."
+                : targetTable;
+            _thread = new(new ThreadStart(() => {
+                try {
+                    var interval = TimeSpan.FromMilliseconds(100);
+                    while (!_cts.IsCancellationRequested) {
+                        var n = rowsCopiedFunc();
+                        WaitForm.ProgressText = $"{targetTableTruncated}\r\n{n:#,##0} rows copied";
+                        _cts.Token.WaitHandle.WaitOne(interval);
+                    }
+                } catch { }
+            }));
+            _thread.Start();
+        }
+
+        public void Dispose() {
+            _cts.Cancel();
+            _thread.Join();
+            _cts.Dispose();
             WaitForm.ProgressText = null;
         }
     }

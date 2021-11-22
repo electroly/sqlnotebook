@@ -55,10 +55,10 @@ public static class FileVersionMigrator {
             return 2; // missing version row; it's still a valid version 2 file
         } finally {
             if (stmt != IntPtr.Zero) {
-                _ = NativeMethods.sqlite3_finalize(stmt);
+                SqliteUtil.ThrowIfError(sqlite, NativeMethods.sqlite3_finalize(stmt));
             }
             if (sqlite != IntPtr.Zero) {
-                _ = NativeMethods.sqlite3_close_v2(sqlite);
+                SqliteUtil.ThrowIfError(IntPtr.Zero, NativeMethods.sqlite3_close(sqlite));
             }
         }
     }
@@ -140,7 +140,7 @@ public static class FileVersionMigrator {
 
         // store the user data in the new table format
         {
-            Notebook notebook = new(dbFile.FilePath, false);
+            using var notebook = Notebook.Open(dbFile.FilePath);
             notebook.UserData = userData;
             notebook.Save();
         }
