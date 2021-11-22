@@ -36,12 +36,7 @@ public sealed class Notebook : IDisposable {
     // Just hang onto these. They are used as unmanaged callbacks.
     private readonly List<object> _delegates = new();
 
-    private List<AdoModuleProvider> _adoModuleProviders =
-        new() {
-            new MySqlAdoModuleProvider(),
-            new PostgreSqlAdoModuleProvider(),
-            new SqlServerAdoModuleProvider(),
-        };
+    private List<AdoModuleProvider> _adoModuleProviders = new();
     private List<GenericModuleProvider> _genericModuleProviders = new();
     public string OriginalFilePath { get; set; }
     private readonly string _workingCopyFilePath;
@@ -150,6 +145,13 @@ public sealed class Notebook : IDisposable {
             sqlite3_open(filePathNative.Ptr, sqliteNative.Ptr));
         _sqlite = Marshal.ReadIntPtr(sqliteNative.Ptr); // sqlite3*
 
+        foreach (var x in _adoModuleProviders) {
+            x.Dispose();
+        }
+        _adoModuleProviders.Clear();
+        _adoModuleProviders.Add(new MySqlAdoModuleProvider());
+        _adoModuleProviders.Add(new PostgreSqlAdoModuleProvider());
+        _adoModuleProviders.Add(new SqlServerAdoModuleProvider());
         foreach (var x in _adoModuleProviders) {
             x.Install(_sqlite);
         }
