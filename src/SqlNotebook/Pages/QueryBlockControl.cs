@@ -420,6 +420,6 @@ public sealed class QueryBlockControl : BlockControl {
     }
 
     public ScriptOutput ExecuteOnWorkerThread() {
-        return _manager.ExecuteScript(SqlText, maxRows: QueryEmbeddedControl.MAX_GRID_ROWS);
+        return _manager.ExecuteScript(SqlText);
     }
 }

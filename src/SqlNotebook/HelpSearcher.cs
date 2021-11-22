@@ -134,8 +134,7 @@ public static class HelpSearcher {
             new Dictionary<string, object> {
                 ["@keyword"] = string.Join(" ", keyword.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(x => x.DoubleQuote()))
-            },
-            -1);
+            });
         return (
             from row in dt.Rows
             let path = (string)row[1]

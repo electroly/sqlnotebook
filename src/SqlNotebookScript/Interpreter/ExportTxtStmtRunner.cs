@@ -57,7 +57,7 @@ public sealed class ExportTxtStmtRunner {
         var fileMode = _truncateExistingFile ? FileMode.Create : FileMode.Append;
         using var stream = File.Open(_filePath, fileMode, FileAccess.Write, FileShare.None);
         using var writer = new StreamWriter(stream, _fileEncoding);
-        using var sdt = _notebook.Query(_stmt.SelectStmt.Sql, _env.Vars, -1);
+        using var sdt = _notebook.Query(_stmt.SelectStmt.Sql, _env.Vars);
         foreach (var row in sdt.Rows) {
             writer.WriteLine(string.Join("", row));
         }

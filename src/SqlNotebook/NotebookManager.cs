@@ -226,15 +226,21 @@ public sealed class NotebookManager {
     }
 
     public void ExecuteScriptNoOutput(string code, IReadOnlyDictionary<string, object> args = null,
-        TransactionType transactionType = TransactionType.NoTransaction, int maxRows = -1
+        TransactionType transactionType = TransactionType.NoTransaction
         ) {
-        using var output = ExecuteScriptEx(code, args, transactionType, out _, maxRows);
+        using var output = ExecuteScriptEx(code, args, transactionType, out _, null);
     }
 
     public ScriptOutput ExecuteScript(string code, IReadOnlyDictionary<string, object> args = null,
-        TransactionType transactionType = TransactionType.NoTransaction, int maxRows = -1
+        TransactionType transactionType = TransactionType.NoTransaction
+        ) {
+        return ExecuteScriptEx(code, args, transactionType, out _, null);
+    }
+
+    public ScriptOutput ExecuteScript(string code, Action onRow, IReadOnlyDictionary<string, object> args = null,
+        TransactionType transactionType = TransactionType.NoTransaction
         ) =>
-        ExecuteScriptEx(code, args, transactionType, out _, maxRows);
+        ExecuteScriptEx(code, args, transactionType, out _, onRow);
 
     public enum TransactionType {
         Transaction,
@@ -242,10 +248,12 @@ public sealed class NotebookManager {
         NoTransaction
     }
 
-    public ScriptOutput ExecuteScriptEx(string code, IReadOnlyDictionary<string, object> args,
-        TransactionType transactionType, out Dictionary<string, object> vars, int maxRows = -1
+    private ScriptOutput ExecuteScriptEx(string code, IReadOnlyDictionary<string, object> args,
+        TransactionType transactionType, out Dictionary<string, object> vars, Action onRow
         ) {
-        var env = new ScriptEnv { MaxRows = maxRows };
+        var env = new ScriptEnv {
+            OnRow = onRow,
+        };
         var output = Invoke(() => {
             var parser = new ScriptParser(Notebook);
             var script = parser.Parse(code);

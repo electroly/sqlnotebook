@@ -92,15 +92,17 @@ public sealed class PreparedStatement : IDisposable {
         return args;
     }
 
-    public SimpleDataTable Execute(object[] args, bool returnResult, int maxRows, CancellationToken cancel) {
-        Debug.Assert(maxRows != 0); // -1 is unrestricted, not zero
+    public SimpleDataTable Execute(object[] args, bool returnResult, CancellationToken cancel) =>
+        Execute(args, returnResult, null, cancel);
+
+    public SimpleDataTable Execute(object[] args, bool returnResult, Action onRow, CancellationToken cancel) {
         if (args.Length != _paramCount) {
             throw new ArgumentOutOfRangeException($"Expected {_paramCount} argument(s), but {args.Length} were provided.");
         }
         BindArguments(args);
         ExecuteStatement(returnResult, out var columnNames, out var columnCount);
         using SimpleDataTableBuilder builder = new(columnNames);
-        ReadResultsIntoTable(returnResult, maxRows, columnCount, builder, out var fullCount, cancel);
+        ReadResultsIntoTable(returnResult, columnCount, builder, out var fullCount, onRow, cancel);
         return builder.Build(fullCount);
     }
 
@@ -178,8 +180,8 @@ public sealed class PreparedStatement : IDisposable {
         }
     }
 
-    private void ReadResultsIntoTable(bool returnResult, int maxRows, int columnCount, SimpleDataTableBuilder builder,
-        out long fullCount, CancellationToken cancel
+    private void ReadResultsIntoTable(bool returnResult, int columnCount, SimpleDataTableBuilder builder,
+        out long fullCount, Action onRow, CancellationToken cancel
         ) {
         fullCount = 0;
         var rowData = new object[columnCount];
@@ -192,9 +194,10 @@ public sealed class PreparedStatement : IDisposable {
             }
 
             if (ret == SQLITE_ROW) {
+                onRow?.Invoke();
                 fullCount++;
                 if (returnResult) {
-                    if (maxRows >= 0 && fullCount > maxRows) {
+                    if (fullCount >= int.MaxValue) {
                         // Keep counting, but don't read the rows.
                         continue;
                     }

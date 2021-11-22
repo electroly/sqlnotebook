@@ -616,15 +616,20 @@ public partial class MainForm : ZForm {
 
         WaitForm.GoWithCancel(this, "Export", item.Type == NotebookItemType.Script ? "Running script..." : "Exporting to file...", out var success, cancel => {
             SqlUtil.WithCancellation(_notebook, () => {
-                long rowsCopied = 0;
-                using RowsCopiedProgressUpdateTask updateTask = new(Path.GetFileName(filePath),
-                    () => Interlocked.Read(ref rowsCopied));
+                long rowCount = 0;
+                using RowProgressUpdateTask updateTask = new(Path.GetFileName(filePath),
+                    () => Interlocked.Read(ref rowCount));
 
                 using var stream = File.CreateText(filePath);
                 if (item.Type == NotebookItemType.Script) {
-                    using var output = _manager.ExecuteScript($"EXECUTE {item.Name.DoubleQuote()}");
+                    updateTask.SetTarget(item.Name);
+                    using var output = _manager.ExecuteScript($"EXECUTE {item.Name.DoubleQuote()}",
+                        onRow: () => Interlocked.Increment(ref rowCount));
+                    rowCount = 0;
+                    WaitForm.ProgressText = null;
                     WaitForm.WaitText = "Exporting to file...";
-                    output.WriteCsv(stream, () => Interlocked.Increment(ref rowsCopied), cancel);
+                    updateTask.SetTarget(Path.GetFileName(filePath));
+                    output.WriteCsv(stream, () => Interlocked.Increment(ref rowCount), cancel);
                 } else {
                     using var statement = _notebook.Prepare($"SELECT * FROM {item.Name.DoubleQuote()}");
                     void OnHeader(List<string> columnNames) {
@@ -632,7 +637,7 @@ public partial class MainForm : ZForm {
                     }
                     void OnRow(object[] row) {
                         stream.WriteLine(string.Join(",", row.Select(CsvUtil.EscapeCsv)));
-                        Interlocked.Increment(ref rowsCopied);
+                        Interlocked.Increment(ref rowCount);
                     }
                     statement.ExecuteStream(Array.Empty<object>(), OnHeader, OnRow, cancel);
                 }

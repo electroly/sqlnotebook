@@ -4,6 +4,7 @@ using SqlNotebookScript.Utils;
 using System;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace SqlNotebook;
@@ -202,21 +203,26 @@ public partial class ConsoleControl : UserControl {
     }
 
     private void Execute() {
-        var code = _inputText.SqlText.Trim();
+        var sql = _inputText.SqlText.Trim();
 
-        if (string.IsNullOrWhiteSpace(code)) {
+        if (string.IsNullOrWhiteSpace(sql)) {
             return;
         }
 
-        using var output = WaitForm.Go(TopLevelControl, "Delete", "Executing...", out var success, () =>
-            SqlUtil.WithTransaction(_manager.Notebook, () => _manager.ExecuteScript(code, maxRows: MAX_GRID_ROWS)));
+        using var output = WaitForm.GoWithCancel(TopLevelControl, "Console", "Executing...", out var success, cancel => {
+            return SqlUtil.WithCancellation(_manager.Notebook, () => {
+                long count = 0;
+                using RowProgressUpdateTask progressUpdate = new(() => Interlocked.Read(ref count));
+                return _manager.ExecuteScript(sql, onRow: () => Interlocked.Increment(ref count));
+            }, cancel);
+        });
         if (!success) {
             return;
         }
 
         _manager.Rescan();
         _inputText.SqlText = "";
-        Log(code, output);
+        Log(sql, output);
         TakeFocus();
     }
 

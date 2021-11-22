@@ -31,7 +31,7 @@ public partial class TableDocumentControl : UserControl, IDocumentControl, IDocu
         using var simpleDataTable = WaitForm.GoWithCancel(TopLevelControl, "Table", "Reading table...\r\n" + _tableName, out var success, cancel => {
             cancel.Register(() => _manager.Notebook.BeginUserCancel());
             try {
-                return _manager.Notebook.Query($"SELECT * FROM {_tableName.DoubleQuote()} LIMIT 1000", 1000);
+                return _manager.Notebook.Query($"SELECT * FROM {_tableName.DoubleQuote()} LIMIT 1000");
             } finally {
                 _manager.Notebook.EndUserCancel();
             }

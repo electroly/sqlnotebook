@@ -17,6 +17,7 @@ namespace SqlNotebookScript.Utils {
             BlockingCollection<TBuffer> unusedBuffers = new();
             unusedBuffers.Add(newBufferFunc(), cancel);
             unusedBuffers.Add(newBufferFunc(), cancel);
+            unusedBuffers.Add(newBufferFunc(), cancel);
 
             BlockingCollection<(int Count, TBuffer Buffer)> consumerQueue = new();
             

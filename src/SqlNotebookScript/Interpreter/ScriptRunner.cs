@@ -94,7 +94,7 @@ public sealed class ScriptRunner {
         }
 
         try {
-            var dt = _notebook.Query(stmt.Sql, env.Vars, env.MaxRows);
+            var dt = _notebook.Query(stmt.Sql, env.Vars, env.OnRow);
             if (dt.Columns.Any()) {
                 env.Output.DataTables.Add(dt);
             }
@@ -252,7 +252,7 @@ public sealed class ScriptRunner {
         var parser = new ScriptParser(_notebook);
         var runner = new ScriptRunner(_notebook, _scripts);
         var script = parser.Parse(GetScriptCode(stmt.ScriptName));
-        var subEnv = new ScriptEnv();
+        var subEnv = new ScriptEnv { OnRow = env.OnRow };
         foreach (var arg in stmt.Arguments) {
             if (arg.Value != null) {
                 subEnv.Vars[arg.Name.ToLower()] = EvaluateExpr(arg.Value, env);
@@ -328,7 +328,7 @@ public sealed class ScriptRunner {
     }
 
     public object EvaluateExpr(Ast.Expr expr, ScriptEnv env) {
-        using var dt = _notebook.Query($"SELECT ({expr.Sql})", env.Vars, -1);
+        using var dt = _notebook.Query($"SELECT ({expr.Sql})", env.Vars);
         if (dt.Columns.Count == 1 && dt.Rows.Count == 1) {
             return dt.Rows[0][0];
         } else {

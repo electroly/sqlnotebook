@@ -63,7 +63,7 @@ public static class SqlUtil {
     }
 
     public static void VerifyColumnsExist(IEnumerable<string> colNames, string tableName, Notebook notebook) {
-        using var tableInfo = notebook.Query($"PRAGMA TABLE_INFO ({tableName.DoubleQuote()})", -1);
+        using var tableInfo = notebook.Query($"PRAGMA TABLE_INFO ({tableName.DoubleQuote()})");
         var nameColIndex = tableInfo.GetIndex("name");
         var actualColNames = tableInfo.Rows.Select(x => x[nameColIndex].ToString().ToLowerInvariant()).ToHashSet();
         foreach (var name in colNames) {
@@ -294,6 +294,12 @@ public static class SqlUtil {
         }
     }
 
+    public static T WithCancellableTransaction<T>(Notebook notebook, Func<T> func, CancellationToken cancel) {
+        T value = default;
+        WithCancellableTransaction(notebook, action: () => value = func(), cancel: cancel);
+        return value;
+    }
+
     public static void WithCancellableTransaction(Notebook notebook, Action action, CancellationToken cancel) {
         if (notebook.IsTransactionActive()) {
             throw new InvalidOperationException("There is already a transaction in progress.");
@@ -308,6 +314,12 @@ public static class SqlUtil {
             notebook.Execute("ROLLBACK");
             throw;
         }
+    }
+
+    public static T WithCancellation<T>(Notebook notebook, Func<T> func, CancellationToken cancel) {
+        T value = default;
+        WithCancellation(notebook, action: () => value = func(), cancel: cancel);
+        return value;
     }
 
     public static void WithCancellation(Notebook notebook, Action action, CancellationToken cancel) {

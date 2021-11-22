@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
+using SqlNotebookScript.DataTables;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
 
@@ -19,7 +20,7 @@ public partial class QueryEmbeddedControl : UserControl {
     private ScriptOutput _output;
 
     // This includes tables for printed messages and scalar results. The indices match the tabs.
-    private readonly List<(long Count, DataTable DataTable)> _dataTables = new();
+    private readonly List<(DataTable DataTable, SimpleDataTable Sdt)> _dataTables = new();
     private TabControl _tabs;
 
     public SqlTextControl TextControl { get; private set; }
@@ -30,6 +31,7 @@ public partial class QueryEmbeddedControl : UserControl {
     public ScriptOutput Output {
         get => _output;
         set {
+            _output?.Dispose();
             _output = value;
             SetOutput();
         }
@@ -93,6 +95,8 @@ public partial class QueryEmbeddedControl : UserControl {
         ui.Init(_showResultsButton, Resources.show_detail, Resources.show_detail32);
         _showResultsButton.Visible = false;
         _ui = ui;
+
+        Disposed += delegate { _output?.Dispose(); };
     }
 
     private void TextControl_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) {
@@ -144,12 +148,12 @@ public partial class QueryEmbeddedControl : UserControl {
         _split.Panel2.Controls.Add(_tabs);
         Debug.Assert(dataTables.Count == grids.Count);
         for (var i = 0; i < dataTables.Count; i++) {
-            var (fullCount, dt) = dataTables[i];
+            var (dt, sdt) = dataTables[i];
             _dataTables.Add(dataTables[i]);
             TabPage page = new(
-                dt.Rows.Count == fullCount
-                ? $"Result ({fullCount:#,##0} row{(fullCount == 1 ? "" : "s")})"
-                : $"Result ({fullCount:#,##0} row{(fullCount == 1 ? "" : "s")}, {dt.Rows.Count:#,##0} shown)"
+                dt.Rows.Count == sdt.FullCount
+                ? $"Result ({sdt.FullCount:#,##0} row{(sdt.FullCount == 1 ? "" : "s")})"
+                : $"Result ({sdt.FullCount:#,##0} row{(sdt.FullCount == 1 ? "" : "s")}; {dt.Rows.Count:#,##0} shown)"
                 );
             _tabs.TabPages.Add(page);
             _ui.Init(page);
@@ -177,12 +181,11 @@ public partial class QueryEmbeddedControl : UserControl {
             _manager.CommitOpenEditors();
             var sql = SqlText;
             var output = WaitForm.GoWithCancel(TopLevelControl, "Script", "Running your script...", out var success, cancel => {
-                cancel.Register(() => _manager.Notebook.BeginUserCancel());
-                try {
-                    return _manager.ExecuteScript(sql, maxRows: MAX_GRID_ROWS);
-                } finally {
-                    _manager.Notebook.EndUserCancel();
-                }
+                return SqlUtil.WithCancellation(_manager.Notebook, () => {
+                    long count = 0;
+                    using RowProgressUpdateTask progressUpdate = new(() => Interlocked.Read(ref count));
+                    return _manager.ExecuteScript(sql, onRow: () => Interlocked.Increment(ref count));
+                }, cancel);
             });
             if (!success) {
                 return;
@@ -195,28 +198,21 @@ public partial class QueryEmbeddedControl : UserControl {
         }
     }
 
-    private List<(long Count, DataTable DataTable)> ConvertOutputToDataTables() {
-        List<(long Count, DataTable DataTable)> resultSets = new();
+    private List<(DataTable DataTable, SimpleDataTable Sdt)> ConvertOutputToDataTables() {
+        List<(DataTable DataTable, SimpleDataTable Sdt)> resultSets = new();
         if (Output.ScalarResult != null) {
-            DataTable dt = new("Scalar");
-            dt.Columns.Add("value", Output.ScalarResult.GetType());
-            var row = dt.NewRow();
-            row.ItemArray = new object[] { Output.ScalarResult };
-            dt.Rows.Add(row);
-            resultSets.Add((1, dt));
+            MemorySimpleDataTable sdt = new(new[] { "value" }, new object[][] { new object[] { Output.ScalarResult } }, 1);
+            var dt = sdt.ToDataTable();
+            resultSets.Add((dt, sdt));
         }
         if (Output.TextOutput.Any()) {
-            DataTable dt = new("Output");
-            dt.Columns.Add("message", typeof(string));
-            foreach (var line in Output.TextOutput) {
-                var row = dt.NewRow();
-                row.ItemArray = new object[] { line };
-                dt.Rows.Add(row);
-            }
-            resultSets.Add((dt.Rows.Count, dt));
+            MemorySimpleDataTable sdt = new(new[] { "message" },
+                Output.TextOutput.Select(x => new object[] { x }).ToList(), Output.TextOutput.Count);
+            var dt = sdt.ToDataTable();
+            resultSets.Add((dt, sdt));
         }
         foreach (var sdt in Output.DataTables) {
-            resultSets.Add((sdt.FullCount, sdt.ToDataTable()));
+            resultSets.Add((sdt.ToDataTable(MAX_GRID_ROWS), sdt));
         }
         return resultSets;
     }
@@ -228,7 +224,7 @@ public partial class QueryEmbeddedControl : UserControl {
             return;
         }
 
-        var (fullCount, dt) = _dataTables[_tabs.SelectedIndex];
+        var (dt, sdt) = _dataTables[_tabs.SelectedIndex];
 
         using SendToTableForm f = new(
             "results",
@@ -242,7 +238,7 @@ public partial class QueryEmbeddedControl : UserControl {
         }
         var name = f.SelectedName;
 
-        var rerun = fullCount != dt.Rows.Count;
+        var rerun = sdt.FullCount != sdt.Rows.Count;
         if (rerun) {
             var choice = Ui.ShowTaskDialog(this, "Your query will be executed. Proceed?", "Send to Table",
                 new[] { Ui.OK, Ui.CANCEL });
@@ -259,24 +255,27 @@ public partial class QueryEmbeddedControl : UserControl {
 
         var sql = SqlText;
         var tabIndex = _tabs.SelectedIndex;
-        WaitForm.GoWithCancel(TopLevelControl, "Send", rerun ? "Executing your script..." : "Sending results to table...", out var success, cancel => {
+        WaitForm.GoWithCancel(TopLevelControl, "Send", rerun ? "Running script..." : "Sending results to table...", out var success, cancel => {
             long rowsCopied = 0;
-            using RowsCopiedProgressUpdateTask progressUpdate = new(name, () => Interlocked.Read(ref rowsCopied));
+            using RowProgressUpdateTask progressUpdate = new(name, () => Interlocked.Read(ref rowsCopied));
             _manager.Notebook.Invoke(() => {
                 SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
                     _manager.ExecuteScriptNoOutput(createSql);
                     using var insertStmt = _manager.Notebook.Prepare(insertSql);
                     if (!rerun) {
-                        foreach (DataRow row in dt.Rows) {
+                        foreach (var row in sdt.Rows) {
                             cancel.ThrowIfCancellationRequested();
-                            insertStmt.ExecuteNoOutput(row.ItemArray, cancel);
+                            insertStmt.ExecuteNoOutput(row, cancel);
                             Interlocked.Increment(ref rowsCopied);
                         }
                         return;
                     }
 
-                    using var output = _manager.ExecuteScript(sql);
+                    progressUpdate.SetTarget(null);
+                    using var output = _manager.ExecuteScript(sql, onRow: () => Interlocked.Increment(ref rowsCopied));
 
+                    rowsCopied = 0;
+                    progressUpdate.SetTarget(name);
                     WaitForm.WaitText = "Sending results to table...";
                     var scalarResultTabIndex =
                         output.ScalarResult != null ? 0

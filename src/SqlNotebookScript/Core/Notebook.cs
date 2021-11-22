@@ -266,7 +266,7 @@ public sealed class Notebook : IDisposable {
 
     private void ReadUserDataFromDatabase() {
         Execute("CREATE TABLE IF NOT EXISTS _sqlnotebook_userdata (json);");
-        using var table = Query("SELECT json FROM _sqlnotebook_userdata", -1);
+        using var table = Query("SELECT json FROM _sqlnotebook_userdata");
         if (table.Rows.Count == 0) {
             UserData = new();
             return;
@@ -323,29 +323,29 @@ public sealed class Notebook : IDisposable {
     }
 
     public void Execute(string sql, IReadOnlyDictionary<string, object> args) {
-        using var sdt = QueryCore(sql, ToLowercaseKeys(args), null, false, _sqlite, GetCancelling, -1);
+        using var sdt = QueryCore(sql, ToLowercaseKeys(args), null, false, _sqlite, GetCancelling, null);
     }
 
     public void Execute(string sql, IReadOnlyList<object> args) {
-        using var sdt = QueryCore(sql, null, args, false, _sqlite, GetCancelling, -1);
+        using var sdt = QueryCore(sql, null, args, false, _sqlite, GetCancelling, null);
     }
 
-    public SimpleDataTable Query(string sql, int maxRows) {
-        return Query(sql, Array.Empty<object>(), maxRows);
+    public SimpleDataTable Query(string sql) {
+        return Query(sql, Array.Empty<object>());
     }
 
-    public SimpleDataTable Query(string sql, IReadOnlyDictionary<string, object> args, int maxRows) {
-        return QueryCore(sql, ToLowercaseKeys(args), null, true, _sqlite, GetCancelling, maxRows);
+    public SimpleDataTable Query(string sql, IReadOnlyDictionary<string, object> args, Action onRow = null) {
+        return QueryCore(sql, ToLowercaseKeys(args), null, true, _sqlite, GetCancelling, onRow);
     }
 
-    public SimpleDataTable Query(string sql, IReadOnlyList<object> args, int maxRows) {
-        return QueryCore(sql, null, args, true, _sqlite, GetCancelling, maxRows);
+    public SimpleDataTable Query(string sql, IReadOnlyList<object> args) {
+        return QueryCore(sql, null, args, true, _sqlite, GetCancelling, null);
     }
 
     public SimpleDataTable SpecialReadOnlyQuery(string sql, IReadOnlyDictionary<string, object> args) {
         SimpleDataTable result = null;
         var success = TryInvoke(() => {
-            result = Query(sql, args, -1);
+            result = Query(sql, args);
         });
         if (success) {
             return result;
@@ -359,7 +359,7 @@ public sealed class Notebook : IDisposable {
                 SQLITE_OPEN_READONLY, IntPtr.Zero));
         var tempSqlite = Marshal.ReadIntPtr(sqlitePtrNative.Ptr); // sqlite3*
         try {
-            return QueryCore(sql, args, null, true, tempSqlite, null, -1);
+            return QueryCore(sql, args, null, true, tempSqlite, null, null);
         } finally {
             SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_close(tempSqlite));
         }
@@ -369,12 +369,12 @@ public sealed class Notebook : IDisposable {
         QueryValue(sql, Array.Empty<object>());
 
     public object QueryValue(string sql, IReadOnlyDictionary<string, object> args) {
-        using var sdt = Query(sql, args, -1);
+        using var sdt = Query(sql, args);
         return GetSingleValue(sdt);
     }
 
     public object QueryValue(string sql, IReadOnlyList<object> args) {
-        using var sdt = Query(sql, args, -1);
+        using var sdt = Query(sql, args);
         return GetSingleValue(sdt);
     }
 
@@ -392,7 +392,7 @@ public sealed class Notebook : IDisposable {
         bool returnResult,
         IntPtr db, // sqlite3*
         Func<bool> cancelling,
-        int maxRows
+        Action onRow
         ) {
         if (cancelling != null && cancelling()) {
             throw new OperationCanceledException();
@@ -403,7 +403,7 @@ public sealed class Notebook : IDisposable {
             namedArgs != null ? statement.GetArgs(namedArgs) :
             orderedArgs is object[] a ? a :
             orderedArgs.ToArray();
-        return statement.Execute(argArray, returnResult, maxRows, CancellationToken.None);
+        return statement.Execute(argArray, returnResult, onRow, CancellationToken.None);
     }
 
     public string GetFilePath() {

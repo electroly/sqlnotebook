@@ -24,7 +24,7 @@ public sealed class DatabaseSchema {
         var nonTables = new List<string>();
 
         notebook.Invoke(() => {
-            using var tablesDt = notebook.Query("SELECT name, type FROM sqlite_master", -1);
+            using var tablesDt = notebook.Query("SELECT name, type FROM sqlite_master");
             for (int i = 0; i < tablesDt.Rows.Count; i++) {
                 var tableName = tablesDt.Get(i, "name").ToString();
                 var tableType = tablesDt.Get(i, "type").ToString();
@@ -43,7 +43,7 @@ public sealed class DatabaseSchema {
         // precondition: must be inside notebook.Invoke()
         var columnSchemas = new List<ColumnSchema>();
 
-        using var dt = notebook.Query($"PRAGMA table_info ({tableName.DoubleQuote()})", -1);
+        using var dt = notebook.Query($"PRAGMA table_info ({tableName.DoubleQuote()})");
         for (int i = 0; i < dt.Rows.Count; i++) {
             var name = dt.Get(i, "name").ToString();
             var type = dt.Get(i, "type").ToString();

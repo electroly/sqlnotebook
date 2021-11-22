@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SqlNotebookScript.Interpreter;
 
@@ -16,5 +17,5 @@ public sealed class ScriptEnv {
     public bool DidBreak { get; set; }
     public bool DidContinue { get; set; }
 
-    public int MaxRows { get; set; } = -1;
+    public Action OnRow;
 }

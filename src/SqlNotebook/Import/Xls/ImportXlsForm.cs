@@ -307,11 +307,9 @@ public partial class ImportXlsForm : ZForm {
         }
 
         var output = WaitForm.Go(this, "Import Preview", "Generating preview...", out var success, () =>
-            _manager.ExecuteScriptEx(
+            _manager.ExecuteScript(
                 code: tempSql,
-                args: new Dictionary<string, object>(),
-                transactionType: NotebookManager.TransactionType.RollbackTransaction,
-                vars: out _));
+                transactionType: NotebookManager.TransactionType.RollbackTransaction));
         if (!success) {
             return;
         }

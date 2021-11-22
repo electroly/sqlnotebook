@@ -126,7 +126,7 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
         var insertSql = $"INSERT INTO {targetTable.DoubleQuote()} VALUES ({string.Join(", ", Enumerable.Range(0, reader.FieldCount).Select(x => "?"))})";
         using var insertStmt = notebook.Prepare(insertSql);
         long rowsCopied = 0;
-        using RowsCopiedProgressUpdateTask statusUpdate = new(targetTable, () => Interlocked.Read(ref rowsCopied));
+        using RowProgressUpdateTask statusUpdate = new(targetTable, () => Interlocked.Read(ref rowsCopied));
 
         object[][] NewBuffer() {
             const int CAPACITY = 100; // empirically determined
