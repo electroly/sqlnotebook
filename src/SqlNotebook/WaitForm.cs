@@ -11,8 +11,9 @@ namespace SqlNotebook;
 
 public partial class WaitForm : ZForm {
     private readonly Stopwatch _stopwatch;
-    private readonly Pen _pen;
-    private readonly float _penWidth;
+    private readonly Pen _spinnerPen;
+    private readonly SolidBrush _spinnerBrush;
+    private readonly float _spinnerPenWidth;
     private readonly System.Windows.Forms.Timer _timer;
         
     // Set this at startup.
@@ -162,7 +163,7 @@ public partial class WaitForm : ZForm {
         ui.Init(_table);
         ui.Init(_infoTxt);
         _infoTxt.Margin = Padding.Empty;
-        ui.MarginLeft(_infoTxt);
+        ui.MarginLeft(_infoTxt, 1);
         ui.MarginTop(_infoTxt);
         ui.MarginBottom(_infoTxt);
         ui.Init(_progressLabel);
@@ -171,8 +172,7 @@ public partial class WaitForm : ZForm {
         ui.MarginBottom(_progressLabel);
         ui.Init(_spinner);
         ui.MarginLeft(_spinner);
-        ui.MarginTop(_spinner);
-        ui.MarginRight(_spinner, 3);
+        ui.MarginTop(_spinner, 0.95);
         if (allowCancel) {
             ui.Init(_buttonFlow);
             ui.Init(_cancelButton);
@@ -182,14 +182,15 @@ public partial class WaitForm : ZForm {
         } else {
             _buttonFlow.Visible = false;
         }
-        _spinner.Size = new(ui.XWidth(4), ui.XWidth(4));
-        _spinner.EnableDoubleBuffering();
-
-        _penWidth = this.Scaled(2);
         _infoTxt.ForeColor = Color.FromArgb(0, 51, 171);
-        _pen = new(_infoTxt.ForeColor, _penWidth);
+        _spinner.Size = new(ui.XWidth(3), ui.XWidth(3));
+        _spinner.EnableDoubleBuffering();
+        _spinnerPenWidth = this.Scaled(1.5);
+        _spinnerPen = new(Color.FromArgb(0, 51, 171), _spinnerPenWidth);
+        _spinnerBrush = new(Color.FromArgb(0, 51, 171));
+
         Disposed += delegate {
-            _pen.Dispose();
+            _spinnerPen.Dispose();
         };
 
         WaitTask = Task.Run(() => {
@@ -263,22 +264,37 @@ public partial class WaitForm : ZForm {
     }
 
     private void Spinner_Paint(object sender, PaintEventArgs e) {
-        var fraction = _stopwatch.Elapsed.TotalSeconds;
-        fraction -= Math.Floor(fraction);
-        var degrees = fraction * 360;
-
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+        var size = _spinner.ClientSize;
+        var radius = 0.9 * (size.Width - 2 * _spinnerPenWidth) / 2;
 
+        // Background
         e.Graphics.FillRectangle(Brushes.White, e.ClipRectangle);
 
-        var size = _spinner.ClientSize;
-        RectangleF rect = new(_penWidth, _penWidth, size.Width - 2 * _penWidth, size.Height - 2 * _penWidth);
-        e.Graphics.DrawArc(_pen, rect, (float)degrees, 100);
+        // Sweep through 360 degrees once per second
+        var fraction = _stopwatch.Elapsed.TotalSeconds;
+        fraction -= Math.Floor(fraction);
+        var tailDegrees = fraction * 360;
 
-        degrees += 180;
-        degrees %= 360;
+        for (var i = 0; i < 2; i++) {
+            var headDegrees = tailDegrees - 70;
 
-        e.Graphics.DrawArc(_pen, rect, (float)degrees, 100);
+            RectangleF rect = new(
+                (float)(1.5 * _spinnerPenWidth), (float)(1.5 * _spinnerPenWidth),
+                size.Width - 3 * _spinnerPenWidth, size.Height - 3 * _spinnerPenWidth);
+            e.Graphics.DrawArc(_spinnerPen, rect, (float)tailDegrees, 100);
+
+            var x = radius * Math.Cos(Math.PI * headDegrees / 180) + (double)_spinner.ClientSize.Width / 2;
+            var y = radius * Math.Sin(Math.PI * headDegrees / 180) + (double)_spinner.ClientSize.Height / 2;
+            e.Graphics.FillEllipse(_spinnerBrush,
+                (float)(x - 1.5 * _spinnerPenWidth),
+                (float)(y - 1.5 * _spinnerPenWidth),
+                3 * _spinnerPenWidth,
+                3 * _spinnerPenWidth);
+
+            tailDegrees += 180;
+            tailDegrees %= 360;
+        }
     }
 
     private void SpinnerTimer_Tick(object sender, EventArgs e) {

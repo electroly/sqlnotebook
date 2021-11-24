@@ -40,7 +40,7 @@
             this._infoTxt.AutoEllipsis = true;
             this._infoTxt.AutoSize = true;
             this._infoTxt.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this._infoTxt.Location = new System.Drawing.Point(3, 0);
+            this._infoTxt.Location = new System.Drawing.Point(34, 0);
             this._infoTxt.Name = "_infoTxt";
             this._infoTxt.Size = new System.Drawing.Size(291, 32);
             this._infoTxt.TabIndex = 0;
@@ -49,10 +49,10 @@
             // _table
             // 
             this._table.ColumnCount = 2;
-            this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this._table.Controls.Add(this._infoTxt, 0, 0);
-            this._table.Controls.Add(this._spinner, 1, 0);
+            this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._table.Controls.Add(this._infoTxt, 1, 0);
+            this._table.Controls.Add(this._spinner, 0, 0);
             this._table.Controls.Add(this._progressLabel, 0, 1);
             this._table.Controls.Add(this._buttonFlow, 0, 3);
             this._table.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -68,16 +68,16 @@
             // 
             // _spinner
             // 
-            this._spinner.Location = new System.Drawing.Point(528, 3);
+            this._spinner.Location = new System.Drawing.Point(3, 3);
             this._spinner.Name = "_spinner";
-            this._table.SetRowSpan(this._spinner, 3);
-            this._spinner.Size = new System.Drawing.Size(50, 50);
+            this._spinner.Size = new System.Drawing.Size(25, 25);
             this._spinner.TabIndex = 5;
             this._spinner.Paint += new System.Windows.Forms.PaintEventHandler(this.Spinner_Paint);
             // 
             // _progressLabel
             // 
             this._progressLabel.AutoSize = true;
+            this._table.SetColumnSpan(this._progressLabel, 2);
             this._progressLabel.Location = new System.Drawing.Point(3, 32);
             this._progressLabel.Name = "_progressLabel";
             this._progressLabel.Size = new System.Drawing.Size(81, 25);
