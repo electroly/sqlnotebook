@@ -29,9 +29,13 @@
         <li>1 = Delete existing file data</li>
       </ul>
     </li>
-    <li><code>FILE_ENCODING</code>: integer (0-65535, default: 0)<br>
-    Indicates the text encoding to use when writing the text file. Specify 0 to use UTF-8. Any nonzero integer is
-    treated as a Windows code page number.</li>
+    <li>
+      <code>FILE_ENCODING</code>: integer (0-65535, default: 0)<br>
+      Indicates the text encoding to use when writing the text file. Specify 0 to use UTF-8. Any nonzero integer is
+      treated as a Windows code page number. See <a moz-do-not-send="true" href=
+      "character-encodings-in-csv-and-text-files.html">Character Encodings in CSV and Text Files</a> for a list of
+      these code page numbers.<br>
+    </li>
   </ul>
   <h2>Example</h2>
   <pre><i>-- Writes the contents of mytable into a file called "MyFile.txt".</i><i><br></i><i>-- Because no options are specified, the lines are appended and</i><i><br></i><i>-- the UTF-8 encoding is used.</i><br>EXPORT TXT 'C:\MyFile.txt'<br>FROM (SELECT * FROM mytable);<br><br><i>-- Overwrites "MyFile.txt" if it already exists.</i><br>EXPORT TXT 'C:\MyFile.txt'<br>FROM (SELECT * FROM mytable)<br>OPTIONS (TRUNCATE_EXISTING_FILE: 1);<br></pre>

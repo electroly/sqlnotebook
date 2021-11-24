@@ -49,9 +49,13 @@
         <li>1 = Use <code>CREATE TEMPORARY TABLE</code></li>
       </ul>
     </li>
-    <li><tt>FILE_ENCODING</tt> (integer 0-65535, default: 0)<br>
-    Indicates the text encoding to use when reading the text file. Specify 0 to detect the encoding automatically. Any
-    nonzero integer is treated as a Windows code page number.</li>
+    <li>
+      <tt>FILE_ENCODING</tt> (integer 0-65535, default: 0)<br>
+      Indicates the text encoding to use when reading the text file. Specify 0 to detect the encoding automatically.
+      Any nonzero integer is treated as a Windows code page number. See <a moz-do-not-send="true" href=
+      "character-encodings-in-csv-and-text-files.html">Character Encodings in CSV and Text Files</a> for a list of
+      these code page numbers.
+    </li>
   </ul>
   <h2>Example</h2>
   <pre>IMPORT TXT 'C:\file.txt' INTO table1;<br><br><i>-- Read the first line only.</i><br>IMPORT TXT 'C:\file.txt' INTO table2<br>OPTIONS (TAKE_LINES: 1);<br><br><i>-- Read the fourth and fifth lines.</i><br>IMPORT TXT 'C:\utf8.txt' INTO table3<br>OPTIONS (SKIP_LINES: 3, TAKE_LINES: 2);<br><br><i>-- Read a file in Shift-JIS encoding.</i><br>IMPORT TXT 'C:\shiftjis.txt' INTO table4<br>OPTIONS (FILE_ENCODING: 932);<br></pre>

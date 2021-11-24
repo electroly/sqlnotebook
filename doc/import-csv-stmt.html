@@ -78,9 +78,13 @@
         <li>1 = Use <code>CREATE TEMPORARY TABLE</code></li>
       </ul>
     </li>
-    <li><tt>FILE_ENCODING</tt>: integer (0-65535, default: 0)<br>
-    Indicates the text encoding to use when reading the CSV file. Specify 0 to detect the encoding automatically. Any
-    nonzero integer is treated as a Windows code page number.</li>
+    <li>
+      <tt>FILE_ENCODING</tt>: integer (0-65535, default: 0)<br>
+      Indicates the text encoding to use when reading the CSV file. Specify 0 to detect the encoding automatically. Any
+      nonzero integer is treated as a Windows code page number. See <a moz-do-not-send="true" href=
+      "character-encodings-in-csv-and-text-files.html">Character Encodings in CSV and Text Files</a> for a list of
+      these code page numbers.<br>
+    </li>
     <li>
       <tt>IF_CONVERSION_FAILS</tt>: integer (1-3, default: 1)<br>
       If data conversion fails (for instance, if a non-numeric value appears in the file in a column defined in the

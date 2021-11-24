@@ -32,9 +32,13 @@
     <li><i>skip-lines</i>: integer (optional, non-negative, default: 0)<br>
     Indicates how many initial lines should be skipped in the input file. This is used if the column header (or the
     data if there is no column header) does not appear on the first line of the file.</li>
-    <li><i>file-encoding</i>: integer (optional, 0-65535, default: 0)<br>
-    Indicates the text encoding to use when reading the file. Specify 0 to detect the encoding automatically. Any
-    nonzero integer is treated as a Windows code page number.</li>
+    <li>
+      <i>file-encoding</i>: integer (optional, 0-65535, default: 0)<br>
+      Indicates the text encoding to use when reading the file. Specify 0 to detect the encoding automatically. Any
+      nonzero integer is treated as a Windows code page number. See <a moz-do-not-send="true" href=
+      "character-encodings-in-csv-and-text-files.html">Character Encodings in CSV and Text Files</a> for a list of
+      these code page numbers.<br>
+    </li>
   </ul>
   <h2>Return Value</h2>A table with&nbsp;columns defined by the input file.<br>
   <h2>Example</h2>

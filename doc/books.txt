@@ -1,5 +1,5 @@
 Group#SQL Notebook Help#Structured Programming#^(BREAK|CONTINUE|DECLARE|EXECUTE|IF|PRINT|RETURN|SET|THROW|TRY/CATCH|WHILE|FOR) Statement$|^ERROR_.*Function$
-Group#SQL Notebook Help#Import and Export Statements#^(IMPORT|EXPORT).*Statement$
+Group#SQL Notebook Help#Import and Export Statements#^(IMPORT|EXPORT).*Statement$|Encodings
 Group#SQL Notebook Help#File I/O Functions#^(READ_|LIST_FILES|LIST_XLS|DOWNLOAD).*Function$
 Group#SQL Notebook Help#Array Access Functions#^ARRAY.*Function$
 Group#SQL Notebook Help#Date and Time Functions#^(DATE|DAY|EOMONTH|GETDATE|GETUTCDATE|ISDATE|MONTH|SWITCHOFFSET|YEAR|TO_DATE|NOW).*Function$

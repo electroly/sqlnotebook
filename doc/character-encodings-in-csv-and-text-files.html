@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>Character Encodings in CSV and Text Files</title>
+</head>
+<body>
+  <h1>Character Encodings in CSV and Text Files<br></h1>
+  <p>Text and CSV files are typically encoded using the <a moz-do-not-send="true" href=
+  "https://en.wikipedia.org/wiki/Unicode">Unicode</a> <a moz-do-not-send="true" href=
+  "https://en.wikipedia.org/wiki/Character_encoding">character encoding</a>. No special attention to encoding is
+  necessary when dealing with Unicode-encoded files. However, other character encodings are found in the world. For
+  example, <a moz-do-not-send="true" href="https://en.wikipedia.org/wiki/Shift_JIS">Shift-JIS</a> is an encoding for
+  Japanese text.<br></p>
+  <p>SQL Notebook can import text and CSV files using other encodings by converting them to Unicode, but the character
+  encoding must be specified on import. The user interface for importing CSV files has a drop-down box for choosing
+  from the supported encodings.<br></p>
+  <p>For the following script features, a numeric identifier corresponding to the encoding must be provided for
+  non-Unicode encodings.<br></p>
+  <ul class="tight">
+    <li><a moz-do-not-send="true" href="export-txt-stmt.html"><tt>EXPORT TXT</tt> Statement</a><br></li>
+    <li><a moz-do-not-send="true" href="import-csv-stmt.html"><tt>IMPORT CSV</tt> Statement</a></li>
+    <li><a moz-do-not-send="true" href="import-txt-stmt.html"><tt>IMPORT TXT</tt> Statement</a></li>
+    <li><a moz-do-not-send="true" href="read-csv-func.html"><tt>READ_CSV</tt> Function</a></li>
+    <li><a moz-do-not-send="true" href="read-file-func.html"><tt>READ_FILE</tt> Function</a></li>
+    <li><a moz-do-not-send="true" href="read-file-text-func.html"><tt>READ_FILE_TEXT</tt> Function</a><br></li>
+  </ul>
+  <p>These numbers are <a moz-do-not-send="true" href=
+  "https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers">Windows code page identifiers</a>. The
+  encodings supported by SQL Notebook are listed below with their code page numbers.<br></p>
+  <pre>   37   IBM EBCDIC (US-Canada)<br>  437   OEM United States<br>  500   IBM EBCDIC (International)<br>  708   Arabic (ASMO 708)<br>  720   Arabic (DOS)<br>  737   Greek (DOS)<br>  775   Baltic (DOS)<br>  850   Western European (DOS)<br>  852   Central European (DOS)<br>  855   OEM Cyrillic<br>  857   Turkish (DOS)<br>  858   OEM Multilingual Latin I<br>  860   Portuguese (DOS)<br>  861   Icelandic (DOS)<br>  862   Hebrew (DOS)<br>  863   French Canadian (DOS)<br>  864   Arabic (864)<br>  865   Nordic (DOS)<br>  866   Cyrillic (DOS)<br>  869   Greek, Modern (DOS)<br>  870   IBM EBCDIC (Multilingual Latin-2)<br>  874   Thai (Windows)<br>  875   IBM EBCDIC (Greek Modern)<br>  932   Japanese (Shift-JIS)<br>  936   Chinese Simplified (GB2312)<br>  949   Korean<br>  950   Chinese Traditional (Big5)<br> 1026   IBM EBCDIC (Turkish Latin-5)<br> 1047   IBM Latin-1 (IBM01047)<br> 1140   IBM EBCDIC (US-Canada-Euro)<br> 1141   IBM EBCDIC (Germany-Euro)<br> 1142   IBM EBCDIC (Denmark-Norway-Euro)<br> 1143   IBM EBCDIC (Finland-Sweden-Euro)<br> 1144   IBM EBCDIC (Italy-Euro)<br> 1145   IBM EBCDIC (Spain-Euro)<br> 1146   IBM EBCDIC (UK-Euro)<br> 1147   IBM EBCDIC (France-Euro)<br> 1148   IBM EBCDIC (International-Euro)<br> 1149   IBM EBCDIC (Icelandic-Euro)<br> 1200   Unicode (UTF-16)<br> 1201   Unicode (UTF-16 Big-Endian)<br> 1250   Central European (Windows)<br> 1251   Cyrillic (Windows)<br> 1252   Western European (Windows)<br> 1253   Greek (Windows)<br> 1254   Turkish (Windows)<br> 1255   Hebrew (Windows)<br> 1256   Arabic (Windows)<br> 1257   Baltic (Windows)<br> 1258   Vietnamese (Windows)<br> 1361   Korean (Johab)<br>10000   Western European (Mac)<br>10001   Japanese (Mac)<br>10002   Chinese Traditional (Mac)<br>10003   Korean (Mac)<br>10004   Arabic (Mac)<br>10005   Hebrew (Mac)<br>10006   Greek (Mac)<br>10007   Cyrillic (Mac)<br>10008   Chinese Simplified (Mac)<br>10010   Romanian (Mac)<br>10017   Ukrainian (Mac)<br>10021   Thai (Mac)<br>10029   Central European (Mac)<br>10079   Icelandic (Mac)<br>10081   Turkish (Mac)<br>10082   Croatian (Mac)<br>12000   Unicode (UTF-32)<br>12001   Unicode (UTF-32 Big-Endian)<br>20000   Chinese Traditional (CNS)<br>20001   TCA Taiwan<br>20002   Chinese Traditional (Eten)<br>20003   IBM5550 Taiwan<br>20004   TeleText Taiwan<br>20005   Wang Taiwan<br>20105   Western European (IA5)<br>20106   German (IA5)<br>20107   Swedish (IA5)<br>20108   Norwegian (IA5)<br>20127   US-ASCII<br>20261   T.61<br>20269   ISO-6937<br>20273   IBM EBCDIC (Germany)<br>20277   IBM EBCDIC (Denmark-Norway)<br>20278   IBM EBCDIC (Finland-Sweden)<br>20280   IBM EBCDIC (Italy)<br>20284   IBM EBCDIC (Spain)<br>20285   IBM EBCDIC (UK)<br>20290   IBM EBCDIC (Japanese katakana)<br>20297   IBM EBCDIC (France)<br>20420   IBM EBCDIC (Arabic)<br>20423   IBM EBCDIC (Greek)<br>20424   IBM EBCDIC (Hebrew)<br>20833   IBM EBCDIC (Korean Extended)<br>20838   IBM EBCDIC (Thai)<br>20866   Cyrillic (KOI8-R)<br>20871   IBM EBCDIC (Icelandic)<br>20880   IBM EBCDIC (Cyrillic Russian)<br>20905   IBM EBCDIC (Turkish)<br>20924   IBM Latin-1 (IBM00924)<br>20932   Japanese (JIS 0208-1990 and 0212-1990)<br>20936   Chinese Simplified (GB2312-80)<br>20949   Korean Wansung<br>21025   IBM EBCDIC (Cyrillic Serbian-Bulgarian)<br>21866   Cyrillic (KOI8-U)<br>28591   Western European (ISO)<br>28592   Central European (ISO)<br>28593   Latin 3 (ISO)<br>28594   Baltic (ISO)<br>28595   Cyrillic (ISO)<br>28596   Arabic (ISO)<br>28597   Greek (ISO)<br>28598   Hebrew (ISO-Visual)<br>28599   Turkish (ISO)<br>28603   Estonian (ISO)<br>28605   Latin 9 (ISO)<br>29001   Europa<br>38598   Hebrew (ISO-Logical)<br>50220   Japanese (JIS)<br>50221   Japanese (JIS-Allow 1 byte Kana)<br>50222   Japanese (JIS-Allow 1 byte Kana - SO/SI)<br>50225   Korean (ISO)<br>50227   Chinese Simplified (ISO-2022)<br>51932   Japanese (EUC)<br>51936   Chinese Simplified (EUC)<br>51949   Korean (EUC)<br>52936   Chinese Simplified (HZ)<br>54936   Chinese Simplified (GB18030)<br>57002   ISCII Devanagari<br>57003   ISCII Bengali<br>57004   ISCII Tamil<br>57005   ISCII Telugu<br>57006   ISCII Assamese<br>57007   ISCII Oriya<br>57008   ISCII Kannada<br>57009   ISCII Malayalam<br>57010   ISCII Gujarati<br>57011   ISCII Punjabi<br>65000   Unicode (UTF-7)<br>65001   Unicode (UTF-8)<br></pre>
+</body>
+</html>
