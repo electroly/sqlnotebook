@@ -145,7 +145,7 @@ function GenerateTempDocHtml() {
                 indexHtml += "<h2>SQLite Documentation</h2>\r\n<ul class=\"doc-list\">\r\n";
                 var sqliteFilePaths = Directory.GetFiles(Path.Combine(webPath, "site", "sqlite"), "*.html", SearchOption.AllDirectories);
                 var sqliteFiles = new List<Tuple<string, string>>();
-                foreach (var sqliteFilePath in sqliteFilePaths) {
+                foreach (var sqliteFilePath in sqliteFilePaths.Where(x => !x.Contains("syntax/") && !x.Contains("syntax\\"))) {
                     var html = File.ReadAllText(sqliteFilePath);
                     var title = Regex.Match(html, "<title>([^<]+)</title>").Groups[1].Value;
                     sqliteFiles.Add(Tuple.Create(title, sqliteFilePath.Substring(Path.Combine(webPath, "site").Length + 1)));
