@@ -98,7 +98,7 @@ namespace SqlNotebook {
             this._inputPanel.Location = new System.Drawing.Point(0, 0);
             this._inputPanel.Margin = new System.Windows.Forms.Padding(0);
             this._inputPanel.Name = "_inputPanel";
-            this._inputPanel.Size = new System.Drawing.Size(1168, 99);
+            this._inputPanel.Size = new System.Drawing.Size(1154, 99);
             this._inputPanel.TabIndex = 1;
             // 
             // _executeButton
@@ -108,12 +108,12 @@ namespace SqlNotebook {
             this._executeButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this._executeButton.FlatAppearance.BorderSize = 0;
             this._executeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._executeButton.Location = new System.Drawing.Point(1168, 0);
+            this._executeButton.Location = new System.Drawing.Point(1154, 0);
             this._executeButton.Margin = new System.Windows.Forms.Padding(0);
             this._executeButton.Name = "_executeButton";
-            this._executeButton.Size = new System.Drawing.Size(101, 99);
+            this._executeButton.Size = new System.Drawing.Size(115, 99);
             this._executeButton.TabIndex = 0;
-            this._executeButton.Text = "Ctrl+Enter";
+            this._executeButton.Text = "Execute (F5)";
             this._executeButton.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this._executeButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this._executeButton.UseVisualStyleBackColor = true;

@@ -62,7 +62,7 @@ public sealed class TextBlockControl : BlockControl {
         Cursor = Cursors.Default;
 
         var (acceptButton, table, panel) = CreateStandardEditModeLayout();
-        _textBox = new(readOnly: false, syntaxColoring: false, wrap: true, lineNumbers: true) {
+        _textBox = new(readOnly: false, syntaxColoring: false, wrap: true) {
             Dock = DockStyle.Fill,
             Margin = Padding.Empty,
             BorderStyle = BorderStyle.FixedSingle,

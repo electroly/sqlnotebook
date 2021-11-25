@@ -30,7 +30,8 @@ public partial class ConsoleControl : UserControl {
         _inputText = new(false) {
             Dock = DockStyle.Fill
         };
-        _inputText.TextBox.VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto;
+        _inputText.SetVerticalScrollbarVisibility(SqlTextControl.ScrollbarVisibility.Auto);
+        _inputText.F5KeyPress += InputText_F5KeyPress;
         _inputPanel.Controls.Add(_inputText);
 
         _outputFlow = new() {
@@ -43,9 +44,9 @@ public partial class ConsoleControl : UserControl {
         Ui ui = new(this, false);
         ui.Init(_table);
         ui.Init(_executeButton, Resources.ControlPlayBlue, Resources.control_play_blue32);
+        _executeButton.Margin = Padding.Empty;
         _table.RowStyles[1].Height = ui.XHeight(4);
         _inputBorderPanel.Margin = new(0, ui.XHeight(0.2), 0, 0);
-        _inputText.TextBox.KeyDown += InputText_KeyDown;
 
         _outputSqlMargin = new(ui.XWidth(1), ui.XHeight(0.5), ui.XWidth(1), ui.XHeight(0.75));
         _outputTableMargin = new(ui.XWidth(8), 0, ui.XWidth(1), ui.XHeight(0.75));
@@ -194,8 +195,8 @@ public partial class ConsoleControl : UserControl {
     }
 
     public void TakeFocus() {
-        _inputText.TextBox.Focus();
-        _inputText.TextBox.SelectAll();
+        _inputText.SqlFocus();
+        _inputText.SqlSelectAll();
     }
 
     private void ExecuteButton_Click(object sender, EventArgs e) {
@@ -230,11 +231,7 @@ public partial class ConsoleControl : UserControl {
         _outputFlow.Controls.Clear();
     }
 
-    private void InputText_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) {
-        if (e.Key == System.Windows.Input.Key.Enter &&
-            (e.KeyboardDevice.Modifiers & System.Windows.Input.ModifierKeys.Control) != 0) {
-            Execute();
-            e.Handled = true;
-        }
+    private void InputText_F5KeyPress(object sender, EventArgs e) {
+        Execute();
     }
 }

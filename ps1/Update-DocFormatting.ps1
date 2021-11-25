@@ -43,3 +43,4 @@ foreach ($filePath in $htmlFilePaths) {
 }
 
 Format "$rootDir/web/index.html"
+Format "$rootDir/src/SqlNotebook/ThirdPartyLicenses.html"

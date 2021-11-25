@@ -78,7 +78,7 @@ public partial class QueryEmbeddedControl : UserControl {
             SqlTextChanged?.Invoke(sender, e);
             Dirty?.Invoke(this, EventArgs.Empty);
         };
-        TextControl.TextBox.KeyDown += TextControl_KeyDown;
+        TextControl.F5KeyPress += TextControl_F5KeyPress;
         _sqlPanel.Controls.Add(TextControl);
 
         Ui ui = new(this, false);
@@ -99,11 +99,8 @@ public partial class QueryEmbeddedControl : UserControl {
         Disposed += delegate { _output?.Dispose(); };
     }
 
-    private void TextControl_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) {
-        if (e.Key == System.Windows.Input.Key.F5 && !e.IsRepeat) {
-            Execute();
-            e.Handled = true;
-        }
+    private void TextControl_F5KeyPress(object sender, EventArgs e) {
+        Execute();
     }
 
     private void ExecuteButton_Click(object sender, EventArgs e) {

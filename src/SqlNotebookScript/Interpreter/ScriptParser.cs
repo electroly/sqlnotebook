@@ -46,7 +46,7 @@ public sealed class ScriptParser {
     }
 
     public Ast.Script Parse(string input) {
-        var tokens = new TokenQueue(_notebook.Tokenize(input), _notebook);
+        var tokens = new TokenQueue(Notebook.Tokenize(input), _notebook);
         return ParseScript(tokens);
     }
 

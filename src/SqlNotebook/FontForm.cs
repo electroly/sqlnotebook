@@ -55,8 +55,8 @@ public partial class FontForm : Form {
         }
 
         _boldCheck.Checked = initialFont.Bold;
-        _previewText.TextBox.VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Hidden;
-        _previewText.TextBox.HorizontalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Hidden;
+        _previewText.SetVerticalScrollbarVisibility(SqlTextControl.ScrollbarVisibility.Hide);
+        _previewText.SetHorizontalScrollbarVisibility(SqlTextControl.ScrollbarVisibility.Hide);
 
         UpdatePreview();
     }

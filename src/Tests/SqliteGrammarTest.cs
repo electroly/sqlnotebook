@@ -60,7 +60,7 @@ public sealed class SqliteGrammarTest {
                 }
 
                 // then try with our parser to see if we match SQLite
-                var tokens = notebook.Tokenize(stmt.Cmd);
+                var tokens = Notebook.Tokenize(stmt.Cmd);
                 var q = new TokenQueue(tokens, notebook);
                 var result = SqliteParser.ReadStmt(q, out var ast);
                 var success = result.InvalidMessage == null && result.IsValid &&

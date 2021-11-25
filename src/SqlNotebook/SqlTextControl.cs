@@ -1,96 +1,294 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.Integration;
-using System.Xml;
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Highlighting.Xshd;
-using SqlNotebook.Properties;
+using ScintillaNET;
+using SqlNotebookScript;
+using SqlNotebookScript.Core;
 
 namespace SqlNotebook;
 
 public partial class SqlTextControl : UserControl {
-    private readonly TextEditor _text;
-    private readonly bool _syntaxColoring;
+    private static readonly UTF8Encoding _utf8Encoding = new(false);
 
-    public TextEditor TextBox => _text;
+    private static readonly IReadOnlySet<TokenType> _operatorTokens = new HashSet<TokenType>(new[] {
+        TokenType.Add, TokenType.Asterisk, TokenType.Bitand, TokenType.Bitnot, TokenType.Bitor,
+        TokenType.Comma, TokenType.Dot, TokenType.Eq, TokenType.Ge, TokenType.Gt, TokenType.Le, TokenType.Lp,
+        TokenType.Lshift, TokenType.Lt, TokenType.Ne, TokenType.Plus, TokenType.Rp, TokenType.Rshift,
+        TokenType.Semi, TokenType.Star, TokenType.Uminus, TokenType.Uplus
+    });
+
+    private static readonly IReadOnlySet<string> _sqlnbKeywords = new HashSet<string>(new[] {
+        "declare", "parameter", "while", "break", "continue", "print", "execute", "exec", "return", "throw",
+        "try", "catch", "import", "csv", "options", "text", "integer", "real", "date", "datetime", "datetimeoffset",
+        "table", "txt"
+    });
+
+    private static readonly Regex _whitespaceRegex = new(@"^\s*", RegexOptions.Compiled);
+    private readonly Scintilla _scintilla;
+    private readonly Margin _lineNumberMargin;
+    private readonly bool _syntaxColoring;
+    private float _digitWidth;
+
+    public event EventHandler F5KeyPress;
+
+    public enum ScrollbarVisibility {
+        Auto,
+        Hide,
+        Show,
+    }
 
     public string SqlText {
         get {
-            return _text.Text;
+            return _scintilla.Text;
         }
         set {
-            _text.Text = value;
+            // scintilla won't let us update the text programmatically if it is set to read-only
+            var oldReadOnly = _scintilla.ReadOnly;
+            _scintilla.ReadOnly = false;
+            _scintilla.Text = value;
+            _scintilla.ReadOnly = oldReadOnly;
         }
     }
 
     public void SetFont(Font font) {
-        _text.FontFamily = new(font.FontFamily.Name);
-        // I have no idea how to actually convert this, it's just clear that the WPF font size doesn't match our
-        // GDI font size. 96/72 does visually seem to be the right ratio, but why?
-        _text.FontSize = font.Size * (96f / 72f);
-        _text.FontWeight = System.Windows.FontWeight.FromOpenTypeWeight(font.Bold ? 700 : 400);
+        using var g = CreateGraphics();
+        _digitWidth = g.MeasureString("9", font, PointF.Empty, StringFormat.GenericTypographic).Width;
+
+        foreach (var style in _scintilla.Styles) {
+            style.Font = font.FontFamily.Name;
+            style.Size = (int)font.SizeInPoints;
+        }
     }
 
     public event EventHandler SqlTextChanged;
 
-    public SqlTextControl(bool readOnly, bool syntaxColoring = true, bool wrap = true, bool lineNumbers = true) {
+    public void SqlFocus() {
+        _scintilla.Focus();
+    }
+
+    public void SqlSelectAll() {
+        _scintilla.SelectAll();
+    }
+
+    public SqlTextControl(bool readOnly, bool syntaxColoring = true, bool wrap = true) {
         InitializeComponent();
         _syntaxColoring = syntaxColoring;
 
-        _text = new() {
-            IsReadOnly = readOnly,
-            HorizontalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
-            VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
-            WordWrap = wrap,
-            ShowLineNumbers = lineNumbers,
-            LineNumbersForeground = System.Windows.Media.Brushes.LightGray,
-        };
-        ElementHost host = new() {
+        _scintilla = new() {
             Dock = DockStyle.Fill,
-            Child = _text,
+            ReadOnly = readOnly,
+            BorderStyle = BorderStyle.None,
+            WrapMode = wrap ? WrapMode.Word : WrapMode.None,
+            Lexer = Lexer.Container,
+            FontQuality = FontQuality.LcdOptimized,
+            IndentWidth = 4,
+            UseTabs = false,
+            BufferedDraw = true,
+            TabWidth = 4,
+            ScrollWidthTracking = true,
+            ScrollWidth = 1,
+        };
+        var lineNumberMarginWidth = 50;
+        _lineNumberMargin = new Margin(_scintilla, 0) {
+            Type = MarginType.Number,
+            Width = lineNumberMarginWidth,
+        };
+        _ = new Margin(_scintilla, 1) {
+            Type = MarginType.BackColor,
+            Width = this.Scaled(12),
+        };
+        void SetLineNumberMarginWidth() {
+            var numDigits = (int)Math.Log10(_scintilla.Lines.Count) + 1;
+            var width = (int)((numDigits + 2) * _digitWidth);
+            if (width != lineNumberMarginWidth) {
+                lineNumberMarginWidth = width;
+                _lineNumberMargin.Width = width;
+            }
+        }
+        _scintilla.InsertCheck += Scintilla_InsertCheck;
+        _scintilla.StyleNeeded += Scintilla_StyleNeeded;
+        _scintilla.TextChanged += (sender, e) => {
+            SqlTextChanged?.Invoke(this, EventArgs.Empty);
+            SetLineNumberMarginWidth();
+        };
+        _scintilla.KeyDown += (sender, e) => {
+            if (e.KeyCode == Keys.F5 && e.Modifiers == Keys.None) {
+                F5KeyPress?.Invoke(this, EventArgs.Empty);
+                e.Handled = true;
+            }
         };
 
-        _text.TextChanged += (sender, e) => SqlTextChanged?.Invoke(this, EventArgs.Empty);
-
-        Controls.Add(host);
+        Controls.Add(_scintilla);
 
         UserOptions.OnUpdateAndNow(this, () => {
             SetFont(UserOptions.Instance.GetCodeFont());
             SetupSyntaxColoring();
+            SetLineNumberMarginWidth();
+        });
+    }
+
+    // Auto-indent
+    private void Scintilla_InsertCheck(object sender, InsertCheckEventArgs e) {
+        switch (e.Text[^1]) {
+            case '\r':
+            case '\n':
+                // Get the current line of text
+                int lineIndex = _scintilla.LineFromPosition(_scintilla.CurrentPosition);
+                var lineStartPos = _scintilla.Lines[lineIndex].Position;
+                var lineText = _scintilla.GetTextRange(lineStartPos, e.Position - lineStartPos);
+
+                // Grab the whitespace from the beginning of the line and add it to the text about to be inserted, after
+                // the newline.
+                e.Text += _whitespaceRegex.Match(lineText).Value;
+                break;
+        }
+    }
+
+    public void SetVerticalScrollbarVisibility(ScrollbarVisibility visibility) {
+        //TODO: treat Auto as Hide for now
+        _scintilla.VScrollBar = visibility == ScrollbarVisibility.Show;
+    }
+
+    public void SetHorizontalScrollbarVisibility(ScrollbarVisibility visibility) {
+        //TODO: treat Auto as Hide for now
+        _scintilla.HScrollBar = visibility == ScrollbarVisibility.Show;
+    }
+
+    private void Scintilla_StyleNeeded(object sender, StyleNeededEventArgs e) {
+        if (!_syntaxColoring) {
+            return;
+        }
+
+        var text = _scintilla.Text;
+        Task.Run(() => {
+            var tokens = Notebook.Tokenize(text);
+            ulong i = 0;
+            var utf8 = _utf8Encoding.GetBytes(text);
+            List<Tuple<int, int>> list = new(); // length, type; for successive calls to SetStyling()
+
+            foreach (var token in tokens) {
+                // treat characters between i and token.Utf8Start as a comment
+                var numCommentBytes = token.Utf8Start - i;
+                var strComment = Encoding.UTF8.GetString(utf8, (int)i, (int)numCommentBytes);
+                list.Add(Tuple.Create(strComment.Length, Style.Sql.Comment));
+                i += numCommentBytes;
+
+                var strSpace = Encoding.UTF8.GetString(utf8, (int)i, (int)token.Utf8Length);
+                int type = 0;
+                if (_operatorTokens.Contains(token.Type)) {
+                    type = Style.Sql.Operator;
+                } else {
+                    switch (token.Type) {
+                        case TokenType.Space:
+                        case TokenType.Span:
+                        case TokenType.Illegal:
+                        case TokenType.Column:
+                        case TokenType.Table:
+                            type = Style.Sql.Default;
+                            break;
+
+                        case TokenType.String:
+                            type = Style.Sql.String;
+                            break;
+
+                        case TokenType.Id:
+                            if (_sqlnbKeywords.Contains(token.Text.ToLower())) {
+                                type = Style.Sql.Word;
+                            } else {
+                                type = Style.Sql.Identifier;
+                            }
+                            break;
+
+                        case TokenType.Variable:
+                            type = Style.Sql.User1;
+                            break;
+
+                        case TokenType.Integer:
+                        case TokenType.Float:
+                            type = Style.Sql.Number;
+                            break;
+
+                        default:
+                            type = Style.Sql.Word;
+                            break;
+                    }
+                }
+
+                list.Add(Tuple.Create(strSpace.Length, type));
+                i += token.Utf8Length;
+            }
+
+            // everything from the last token to the end of the string is a comment
+            var numEndCommentBytes = utf8.Length - (int)i;
+            if (numEndCommentBytes > 0) {
+                var strEndComment = Encoding.UTF8.GetString(utf8, (int)i, numEndCommentBytes);
+                list.Add(Tuple.Create(strEndComment.Length, Style.Sql.Comment));
+            }
+
+            BeginInvoke(new MethodInvoker(() => {
+                if (_scintilla.Text != text) {
+                    // the text changed while we were working, so discard these results because
+                    // another tokenization will soon deliver more up-to-date results.
+                    return;
+                }
+
+                _scintilla.StartStyling(0);
+                foreach (var item in list) {
+                    _scintilla.SetStyling(item.Item1, item.Item2);
+                }
+            }));
         });
     }
 
     private void SetupSyntaxColoring() {
         var opt = UserOptions.Instance;
-        if (_syntaxColoring) {
-            var xml =
-                Encoding.UTF8.GetString(Resources.SQL_Mode_xshd)
-                .Replace("[COMMENT_COLOR]", opt.GetHexColor(UserOptionsColor.CODE_COMMENT))
-                .Replace("[STRING_COLOR]", opt.GetHexColor(UserOptionsColor.CODE_STRING))
-                .Replace("[KEYWORD_COLOR]", opt.GetHexColor(UserOptionsColor.CODE_KEYWORD))
-                ;
-            IHighlightingDefinition def;
-            using (MemoryStream stream = new(Encoding.UTF8.GetBytes(xml))) {
-                using XmlTextReader reader = new(stream);
-                def = HighlightingLoader.Load(reader, HighlightingManager.Instance);
-            }
-
-            _text.SyntaxHighlighting = def;
-        }
-
         var colors = opt.GetColors();
-        var bg = colors[UserOptionsColor.CODE_BACKGROUND];
-        _text.Background = new System.Windows.Media.SolidColorBrush(
-            System.Windows.Media.Color.FromRgb(bg.R, bg.G, bg.B));
-        var fg = colors[UserOptionsColor.CODE_PLAIN];
-        _text.Foreground = new System.Windows.Media.SolidColorBrush(
-            System.Windows.Media.Color.FromRgb(fg.R, fg.G, fg.B));
-        var line = colors[UserOptionsColor.CODE_LINENUMS];
-        _text.LineNumbersForeground = new System.Windows.Media.SolidColorBrush(
-            System.Windows.Media.Color.FromRgb(line.R, line.G, line.B));
+        
+        // Set foreground colors
+        // In the future we may want to support: Number, Operator, User1 (variables)
+        if (_syntaxColoring) {
+            _scintilla.Styles[Style.Sql.String].ForeColor = colors[UserOptionsColor.CODE_STRING];
+            _scintilla.Styles[Style.Sql.Comment].ForeColor = colors[UserOptionsColor.CODE_COMMENT];
+            _scintilla.Styles[Style.Sql.Word].ForeColor = colors[UserOptionsColor.CODE_KEYWORD];
+        }
+        
+        // Set background colors
+        _scintilla.SetWhitespaceBackColor(true, colors[UserOptionsColor.CODE_BACKGROUND]);
+        foreach (var style in _scintilla.Styles) {
+            style.BackColor = colors[UserOptionsColor.CODE_BACKGROUND];
+        }
+        _scintilla.Styles[Style.LineNumber].ForeColor = colors[UserOptionsColor.CODE_LINENUMS];
+
+        //var opt = UserOptions.Instance;
+        //if (_syntaxColoring) {
+        //    var xml =
+        //        Encoding.UTF8.GetString(Resources.SQL_Mode_xshd)
+        //        .Replace("[COMMENT_COLOR]", opt.GetHexColor(UserOptionsColor.CODE_COMMENT))
+        //        .Replace("[STRING_COLOR]", opt.GetHexColor(UserOptionsColor.CODE_STRING))
+        //        .Replace("[KEYWORD_COLOR]", opt.GetHexColor(UserOptionsColor.CODE_KEYWORD))
+        //        ;
+        //    IHighlightingDefinition def;
+        //    using (MemoryStream stream = new(Encoding.UTF8.GetBytes(xml))) {
+        //        using XmlTextReader reader = new(stream);
+        //        def = HighlightingLoader.Load(reader, HighlightingManager.Instance);
+        //    }
+
+        //    _scintilla.SyntaxHighlighting = def;
+        //}
+
+        //var colors = opt.GetColors();
+        //var bg = colors[UserOptionsColor.CODE_BACKGROUND];
+        //_scintilla.Background = new System.Windows.Media.SolidColorBrush(
+        //    System.Windows.Media.Color.FromRgb(bg.R, bg.G, bg.B));
+        //var fg = colors[UserOptionsColor.CODE_PLAIN];
+        //_scintilla.Foreground = new System.Windows.Media.SolidColorBrush(
+        //    System.Windows.Media.Color.FromRgb(fg.R, fg.G, fg.B));
+        //var line = colors[UserOptionsColor.CODE_LINENUMS];
+        //_scintilla.LineNumbersForeground = new System.Windows.Media.SolidColorBrush(
+        //    System.Windows.Media.Color.FromRgb(line.R, line.G, line.B));
     }
 }

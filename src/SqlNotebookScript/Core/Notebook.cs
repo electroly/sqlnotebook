@@ -416,7 +416,7 @@ public sealed class Notebook : IDisposable {
         return OriginalFilePath;
     }
 
-    public IReadOnlyList<Token> Tokenize(string input) {
+    public static IReadOnlyList<Token> Tokenize(string input) {
         using NativeBuffer scratch = new(IntPtr.Size);
         List<Token> list = new();
         using NativeString inputNative = new(input);

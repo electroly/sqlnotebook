@@ -110,7 +110,7 @@ public sealed class PageControl : UserControl, IDocumentControl {
                 InsertBlock(bottomDivider, index++);
 
                 queryBlock.StartEditing();
-                queryBlock.QueryControl.TextControl.TextBox.Focus();
+                queryBlock.QueryControl.TextControl.SqlFocus();
 
                 return;
             }

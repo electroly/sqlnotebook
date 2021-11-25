@@ -58,7 +58,7 @@ public sealed class ReadCsvMacro : CustomMacro {
             input.RunAfter.Add(dropTableStmt);
 
             // replace the READ_CSV(...) call with the table name
-            var originalTokens = Notebook.Tokenize(input.Sql).Select(x => x.Text).ToList();
+            var originalTokens = Core.Notebook.Tokenize(input.Sql).Select(x => x.Text).ToList();
             var tokenReplaceIndex = tableFunctionCallNode.StartToken - input.FirstTokenIndex;
             for (var i = 0; i < tableFunctionCallNode.NumTokens; i++) {
                 originalTokens.RemoveAt(tokenReplaceIndex);
