@@ -32,6 +32,7 @@ public partial class OptionsForm : ZForm {
         ui.MarginTop(_rowFlow2);
         ui.Init(_editorColorsFlow);
         ui.MarginRight(_editorColorsFlow);
+        ui.Init(_editorColorsLabel);
         ui.Init(_editorPlainColorButton, 35);
         ui.PadLeft(_editorPlainColorButton, 6);
         ui.Init(_editorKeywordColorButton, 35);
@@ -51,6 +52,7 @@ public partial class OptionsForm : ZForm {
         ui.PadLeft(_gridFontButton, 1);
 
         ui.Init(_gridColorsFlow);
+        ui.Init(_gridColorsLabel);
         ui.Init(_gridPlainColorButton, 35);
         ui.PadLeft(_gridPlainColorButton, 6);
         ui.Init(_gridHeaderColorButton, 35);

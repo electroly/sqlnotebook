@@ -47,14 +47,14 @@ namespace SqlNotebook {
             this._editorKeywordColorButton = new System.Windows.Forms.Button();
             this._editorCommentColorButton = new System.Windows.Forms.Button();
             this._editorStringColorButton = new System.Windows.Forms.Button();
+            this._editorLineNumbersColorButton = new System.Windows.Forms.Button();
             this._editorBackgroundColorButton = new System.Windows.Forms.Button();
             this._gridColorsFlow = new System.Windows.Forms.FlowLayoutPanel();
-            this._codeColorsFlow = new System.Windows.Forms.Label();
+            this._gridColorsLabel = new System.Windows.Forms.Label();
             this._gridPlainColorButton = new System.Windows.Forms.Button();
             this._gridHeaderColorButton = new System.Windows.Forms.Button();
-            this._gridBackgroundColorButton = new System.Windows.Forms.Button();
             this._gridLineColorButton = new System.Windows.Forms.Button();
-            this._editorLineNumbersColorButton = new System.Windows.Forms.Button();
+            this._gridBackgroundColorButton = new System.Windows.Forms.Button();
             this._table.SuspendLayout();
             this._buttonFlow.SuspendLayout();
             this._resetFlow.SuspendLayout();
@@ -340,6 +340,18 @@ namespace SqlNotebook {
             this._editorStringColorButton.Click += new System.EventHandler(this.EditorStringColorButton_Click);
             this._editorStringColorButton.Paint += new System.Windows.Forms.PaintEventHandler(this.EditorStringColorButton_Paint);
             // 
+            // _editorLineNumbersColorButton
+            // 
+            this._editorLineNumbersColorButton.Location = new System.Drawing.Point(3, 188);
+            this._editorLineNumbersColorButton.Name = "_editorLineNumbersColorButton";
+            this._editorLineNumbersColorButton.Size = new System.Drawing.Size(112, 34);
+            this._editorLineNumbersColorButton.TabIndex = 6;
+            this._editorLineNumbersColorButton.Text = "Line numbers";
+            this._editorLineNumbersColorButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._editorLineNumbersColorButton.UseVisualStyleBackColor = true;
+            this._editorLineNumbersColorButton.Click += new System.EventHandler(this.EditorLineNumbersColorButton_Click);
+            this._editorLineNumbersColorButton.Paint += new System.Windows.Forms.PaintEventHandler(this.EditorLineNumbersColorButton_Paint);
+            // 
             // _editorBackgroundColorButton
             // 
             this._editorBackgroundColorButton.Location = new System.Drawing.Point(3, 228);
@@ -356,7 +368,7 @@ namespace SqlNotebook {
             // 
             this._gridColorsFlow.AutoSize = true;
             this._gridColorsFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this._gridColorsFlow.Controls.Add(this._codeColorsFlow);
+            this._gridColorsFlow.Controls.Add(this._gridColorsLabel);
             this._gridColorsFlow.Controls.Add(this._gridPlainColorButton);
             this._gridColorsFlow.Controls.Add(this._gridHeaderColorButton);
             this._gridColorsFlow.Controls.Add(this._gridLineColorButton);
@@ -368,14 +380,14 @@ namespace SqlNotebook {
             this._gridColorsFlow.TabIndex = 1;
             this._gridColorsFlow.WrapContents = false;
             // 
-            // _codeColorsFlow
+            // _gridColorsLabel
             // 
-            this._codeColorsFlow.AutoSize = true;
-            this._codeColorsFlow.Location = new System.Drawing.Point(3, 0);
-            this._codeColorsFlow.Name = "_codeColorsFlow";
-            this._codeColorsFlow.Size = new System.Drawing.Size(102, 25);
-            this._codeColorsFlow.TabIndex = 0;
-            this._codeColorsFlow.Text = "Grid colors:";
+            this._gridColorsLabel.AutoSize = true;
+            this._gridColorsLabel.Location = new System.Drawing.Point(3, 0);
+            this._gridColorsLabel.Name = "_gridColorsLabel";
+            this._gridColorsLabel.Size = new System.Drawing.Size(102, 25);
+            this._gridColorsLabel.TabIndex = 0;
+            this._gridColorsLabel.Text = "Grid colors:";
             // 
             // _gridPlainColorButton
             // 
@@ -401,18 +413,6 @@ namespace SqlNotebook {
             this._gridHeaderColorButton.Click += new System.EventHandler(this.GridHeaderColorButton_Click);
             this._gridHeaderColorButton.Paint += new System.Windows.Forms.PaintEventHandler(this.GridHeaderColorButton_Paint);
             // 
-            // _gridBackgroundColorButton
-            // 
-            this._gridBackgroundColorButton.Location = new System.Drawing.Point(3, 148);
-            this._gridBackgroundColorButton.Name = "_gridBackgroundColorButton";
-            this._gridBackgroundColorButton.Size = new System.Drawing.Size(112, 34);
-            this._gridBackgroundColorButton.TabIndex = 3;
-            this._gridBackgroundColorButton.Text = "Background";
-            this._gridBackgroundColorButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._gridBackgroundColorButton.UseVisualStyleBackColor = true;
-            this._gridBackgroundColorButton.Click += new System.EventHandler(this.GridBackgroundColorButton_Click);
-            this._gridBackgroundColorButton.Paint += new System.Windows.Forms.PaintEventHandler(this.GridBackgroundColorButton_Paint);
-            // 
             // _gridLineColorButton
             // 
             this._gridLineColorButton.Location = new System.Drawing.Point(3, 108);
@@ -425,17 +425,17 @@ namespace SqlNotebook {
             this._gridLineColorButton.Click += new System.EventHandler(this.GridLineColorButton_Click);
             this._gridLineColorButton.Paint += new System.Windows.Forms.PaintEventHandler(this.GridLineColorButton_Paint);
             // 
-            // _editorLineNumbersColorButton
+            // _gridBackgroundColorButton
             // 
-            this._editorLineNumbersColorButton.Location = new System.Drawing.Point(3, 188);
-            this._editorLineNumbersColorButton.Name = "_editorLineNumbersColorButton";
-            this._editorLineNumbersColorButton.Size = new System.Drawing.Size(112, 34);
-            this._editorLineNumbersColorButton.TabIndex = 6;
-            this._editorLineNumbersColorButton.Text = "Line numbers";
-            this._editorLineNumbersColorButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._editorLineNumbersColorButton.UseVisualStyleBackColor = true;
-            this._editorLineNumbersColorButton.Click += new System.EventHandler(this.EditorLineNumbersColorButton_Click);
-            this._editorLineNumbersColorButton.Paint += new System.Windows.Forms.PaintEventHandler(this.EditorLineNumbersColorButton_Paint);
+            this._gridBackgroundColorButton.Location = new System.Drawing.Point(3, 148);
+            this._gridBackgroundColorButton.Name = "_gridBackgroundColorButton";
+            this._gridBackgroundColorButton.Size = new System.Drawing.Size(112, 34);
+            this._gridBackgroundColorButton.TabIndex = 3;
+            this._gridBackgroundColorButton.Text = "Background";
+            this._gridBackgroundColorButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._gridBackgroundColorButton.UseVisualStyleBackColor = true;
+            this._gridBackgroundColorButton.Click += new System.EventHandler(this.GridBackgroundColorButton_Click);
+            this._gridBackgroundColorButton.Paint += new System.Windows.Forms.PaintEventHandler(this.GridBackgroundColorButton_Paint);
             // 
             // OptionsForm
             // 
@@ -501,7 +501,7 @@ namespace SqlNotebook {
         private System.Windows.Forms.Button _editorCommentColorButton;
         private System.Windows.Forms.Button _editorStringColorButton;
         private System.Windows.Forms.FlowLayoutPanel _gridColorsFlow;
-        private System.Windows.Forms.Label _codeColorsFlow;
+        private System.Windows.Forms.Label _gridColorsLabel;
         private System.Windows.Forms.Button _gridPlainColorButton;
         private System.Windows.Forms.Button _gridHeaderColorButton;
         private System.Windows.Forms.Button _gridBackgroundColorButton;
