@@ -220,8 +220,7 @@ function Update-DocWebsite {
         [System.IO.File]::WriteAllText($filePath, $svg)
     }
 
-    WriteFile .\site\index.html (FormatHtmlPage "" .\index.html "Open source tool for tabular data exploration and manipulation.")
-    WriteFile .\site\license.html (FormatHtmlPage "License" ..\src\SqlNotebook\ThirdPartyLicenses.html "SQL Notebook is freely available under the MIT license.")
+    WriteFile .\site\index.html (FormatHtmlPage "" .\index.html "Open source tool for casual data exploration in SQL.")
 
     # sqlite docs
     Remove-Item -Force -Recurse ".\site\sqlite" -ErrorAction SilentlyContinue
