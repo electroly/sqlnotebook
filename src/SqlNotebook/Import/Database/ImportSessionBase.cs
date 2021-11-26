@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Text;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
-using SqlNotebookScript.Core;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebook.Import.Database;
@@ -17,7 +13,6 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
     where TConnectionStringBuilder : DbConnectionStringBuilder, new() {
 
     public abstract string ProductName { get; }
-    public abstract string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName);
     public IReadOnlyList<string> TableNames { get; protected set; } = Array.Empty<string>();
     protected abstract IDbConnection CreateConnection(TConnectionStringBuilder builder);
     protected abstract void ReadTableNames(IDbConnection connection);
@@ -27,6 +22,7 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
     protected abstract void SetBasicOptions(TConnectionStringBuilder builder, DatabaseConnectionForm.BasicOptions opt);
     protected abstract string GetDefaultConnectionString();
     protected abstract void SetDefaultConnectionString(string str);
+    protected abstract string SqliteModuleName { get; }
 
     protected TConnectionStringBuilder _builder = new();
 
@@ -71,86 +67,28 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
         return success;
     }
 
-    public void ImportTableByCopyingData(string quotedSourceTable, string targetTable, Notebook notebook,
-        CancellationToken cancel) {
-        IDbConnection srcConnection = null;
-        IDbCommand srcCommand = null;
-        IDataReader reader = null;
-        
-        try {
-            srcConnection = CreateConnection(_builder);
-            srcConnection.Open();
-
-            srcCommand = srcConnection.CreateCommand();
-            srcCommand.CommandText = $"SELECT * FROM {quotedSourceTable}";
-            reader = srcCommand.ExecuteReader();
-
-            ImportTableByCopyingDataCore(targetTable, notebook, reader, cancel);
-        } finally {
-            // dispose on another thread; it can take time
-            _ = Task.Run(() => {
-                reader?.Dispose();
-                srcCommand?.Dispose();
-                srcConnection?.Dispose();
-            }, CancellationToken.None);
-        }
-    }
-
-    private static void ImportTableByCopyingDataCore(string targetTable, Notebook notebook, IDataReader reader,
-        CancellationToken cancel
-        ) {
-        List<string> srcColumnNames = new();
-        List<Type> srcColumnTypes = new();
-        for (var i = 0; i < reader.FieldCount; i++) {
-            srcColumnNames.Add(reader.GetName(i));
-            srcColumnTypes.Add(reader.GetFieldType(i));
-        }
-
-        // Create table
-        List<string> dstCreateColumns = new();
-        for (int i = 0; i < srcColumnNames.Count; i++) {
-            var t = srcColumnTypes[i];
-            string sqlType;
-            if (t == typeof(short) || t == typeof(int) || t == typeof(long) || t == typeof(byte) || t == typeof(bool)) {
-                sqlType = "integer";
-            } else if (t == typeof(float) || t == typeof(double) || t == typeof(decimal)) {
-                sqlType = "real";
-            } else {
-                sqlType = "text";
+    public string GenerateSql(IEnumerable<SelectedTable> selectedTables, bool link) {
+        StringBuilder sb = new();
+        sb.Append("DECLARE @cs = ");
+        sb.Append(_builder.ConnectionString.SingleQuote());
+        sb.Append(";\r\n");
+        foreach (var (srcTable, dstTable) in selectedTables) {
+            sb.Append("DROP TABLE IF EXISTS ");
+            sb.Append(dstTable.DoubleQuote());
+            sb.Append(";\r\n");
+            sb.Append("IMPORT DATABASE ");
+            sb.Append(SqliteModuleName.SingleQuote());
+            sb.Append(" CONNECTION @cs TABLE ");
+            sb.Append(srcTable.DoubleQuote());
+            if (srcTable != dstTable) {
+                sb.Append(" INTO ");
+                sb.Append(dstTable.DoubleQuote());
             }
-            dstCreateColumns.Add("\"" + srcColumnNames[i].Replace("\"", "\"\"") + "\" " + sqlType);
-        }
-        notebook.Execute($"CREATE TABLE {targetTable.DoubleQuote()} (" + string.Join(", ", dstCreateColumns) + ")");
-
-        // Copy data
-        var insertSql = $"INSERT INTO {targetTable.DoubleQuote()} VALUES ({string.Join(", ", Enumerable.Range(0, reader.FieldCount).Select(x => "?"))})";
-        using var insertStmt = notebook.Prepare(insertSql);
-        long rowsCopied = 0;
-
-        object[][] NewBuffer() {
-            const int CAPACITY = 100; // empirically determined
-            var buffer = new object[CAPACITY][];
-            for (var i = 0; i < CAPACITY; i++) {
-                buffer[i] = new object[reader.FieldCount];
+            if (link) {
+                sb.Append(" OPTIONS (LINK: 1)");
             }
-            return buffer;
+            sb.Append(";\r\n");
         }
-
-        void Produce(object[][] buffer, out int batchCount) {
-            batchCount = 0;
-            while (batchCount < buffer.Length && reader.Read()) {
-                reader.GetValues(buffer[batchCount]);
-                batchCount++;
-            }
-        }
-
-        void Consume(object[][] buffer, int batchCount, long totalSoFar) {
-            for (var i = 0; i < batchCount; i++) {
-                insertStmt.ExecuteStream(buffer[i], null, null, cancel);
-                Interlocked.Increment(ref rowsCopied);
-            }
-        }
-
-        OverlappedProducerConsumer.Go(NewBuffer, Produce, Consume, cancel);
+        return sb.ToString();
     }
 }

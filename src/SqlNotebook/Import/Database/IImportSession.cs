@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
 using System.Windows.Forms;
-using SqlNotebookScript.Core;
 
 namespace SqlNotebook.Import.Database;
 
+public record struct SelectedTable(string SourceName, string TargetName);
+
 public interface IImportSession {
     bool FromConnectForm(IWin32Window owner);
-    string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName);
     IReadOnlyList<string> TableNames { get; }
-    void ImportTableByCopyingData(string quotedSourceTable, string targetTable, Notebook notebook,
-        CancellationToken cancel);
+    string GenerateSql(IEnumerable<SelectedTable> selectedTables, bool link);
 }

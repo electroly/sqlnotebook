@@ -38,11 +38,14 @@
             this._buttonFlow = new System.Windows.Forms.FlowLayoutPanel();
             this._importTablesLabel = new System.Windows.Forms.Label();
             this._methodLabel = new System.Windows.Forms.Label();
+            this._buttonFlow2 = new System.Windows.Forms.FlowLayoutPanel();
+            this._viewSqlButton = new System.Windows.Forms.Button();
             this._methodFlow.SuspendLayout();
             this._importTable.SuspendLayout();
             this._opsFlow.SuspendLayout();
             this._table.SuspendLayout();
             this._buttonFlow.SuspendLayout();
+            this._buttonFlow2.SuspendLayout();
             this.SuspendLayout();
             // 
             // _methodFlow
@@ -50,6 +53,7 @@
             this._methodFlow.AutoSize = true;
             this._methodFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this._methodFlow.BackColor = System.Drawing.Color.White;
+            this._table.SetColumnSpan(this._methodFlow, 2);
             this._methodFlow.Controls.Add(this._methodCopyRad);
             this._methodFlow.Controls.Add(this._methodLinkRad);
             this._methodFlow.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -86,6 +90,7 @@
             // 
             this._importTable.BackColor = System.Drawing.Color.White;
             this._importTable.ColumnCount = 2;
+            this._table.SetColumnSpan(this._importTable, 2);
             this._importTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._importTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this._importTable.Controls.Add(this._listBox, 0, 0);
@@ -186,13 +191,15 @@
             // 
             // _table
             // 
-            this._table.ColumnCount = 1;
+            this._table.ColumnCount = 2;
             this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this._table.Controls.Add(this._methodFlow, 0, 3);
             this._table.Controls.Add(this._importTable, 0, 1);
-            this._table.Controls.Add(this._buttonFlow, 0, 4);
+            this._table.Controls.Add(this._buttonFlow, 1, 4);
             this._table.Controls.Add(this._importTablesLabel, 0, 0);
             this._table.Controls.Add(this._methodLabel, 0, 2);
+            this._table.Controls.Add(this._buttonFlow2, 0, 4);
             this._table.Dock = System.Windows.Forms.DockStyle.Fill;
             this._table.Location = new System.Drawing.Point(0, 0);
             this._table.Name = "_table";
@@ -216,10 +223,12 @@
             this._buttonFlow.Name = "_buttonFlow";
             this._buttonFlow.Size = new System.Drawing.Size(188, 41);
             this._buttonFlow.TabIndex = 6;
+            this._buttonFlow.WrapContents = false;
             // 
             // _importTablesLabel
             // 
             this._importTablesLabel.AutoSize = true;
+            this._table.SetColumnSpan(this._importTablesLabel, 2);
             this._importTablesLabel.Location = new System.Drawing.Point(3, 0);
             this._importTablesLabel.Name = "_importTablesLabel";
             this._importTablesLabel.Size = new System.Drawing.Size(120, 25);
@@ -229,11 +238,31 @@
             // _methodLabel
             // 
             this._methodLabel.AutoSize = true;
+            this._table.SetColumnSpan(this._methodLabel, 2);
             this._methodLabel.Location = new System.Drawing.Point(3, 752);
             this._methodLabel.Name = "_methodLabel";
             this._methodLabel.Size = new System.Drawing.Size(75, 25);
             this._methodLabel.TabIndex = 14;
             this._methodLabel.Text = "Method";
+            // 
+            // _buttonFlow2
+            // 
+            this._buttonFlow2.AutoSize = true;
+            this._buttonFlow2.Controls.Add(this._viewSqlButton);
+            this._buttonFlow2.Location = new System.Drawing.Point(3, 856);
+            this._buttonFlow2.Name = "_buttonFlow2";
+            this._buttonFlow2.Size = new System.Drawing.Size(118, 40);
+            this._buttonFlow2.TabIndex = 15;
+            // 
+            // _viewSqlButton
+            // 
+            this._viewSqlButton.Location = new System.Drawing.Point(3, 3);
+            this._viewSqlButton.Name = "_viewSqlButton";
+            this._viewSqlButton.Size = new System.Drawing.Size(112, 34);
+            this._viewSqlButton.TabIndex = 0;
+            this._viewSqlButton.Text = "View SQL";
+            this._viewSqlButton.UseVisualStyleBackColor = true;
+            this._viewSqlButton.Click += new System.EventHandler(this.ViewSqlButton_Click);
             // 
             // DatabaseImportTablesForm
             // 
@@ -263,6 +292,7 @@
             this._table.PerformLayout();
             this._buttonFlow.ResumeLayout(false);
             this._buttonFlow.PerformLayout();
+            this._buttonFlow2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -283,5 +313,7 @@
         private System.Windows.Forms.FlowLayoutPanel _methodFlow;
         private System.Windows.Forms.Label _importTablesLabel;
         private System.Windows.Forms.Label _methodLabel;
+        private System.Windows.Forms.FlowLayoutPanel _buttonFlow2;
+        private System.Windows.Forms.Button _viewSqlButton;
     }
 }

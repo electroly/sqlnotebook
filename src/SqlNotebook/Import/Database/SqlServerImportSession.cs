@@ -2,26 +2,12 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 using SqlNotebook.Properties;
-using SqlNotebookScript.Utils;
 
 namespace SqlNotebook.Import.Database;
 
 public sealed class SqlServerImportSession : ImportSessionBase<SqlConnectionStringBuilder> {
     public override string ProductName { get; } = "Microsoft SQL Server";
-
-    public override string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
-        string schema;
-        string table;
-        if (sourceTableName.Contains(".")) {
-            var parts = sourceTableName.Split(new[] { '.' }, 2);
-            schema = parts[0];
-            table = parts[1];
-        } else {
-            schema = "";
-            table = sourceTableName;
-        }
-        return $"CREATE VIRTUAL TABLE {notebookTableName.DoubleQuote()} USING mssql ('{_builder.ConnectionString.Replace("'", "''")}', '{table.Replace("'", "''")}', '{schema.Replace("'", "''")}')";
-    }
+    protected override string SqliteModuleName => "mssql";
 
     protected override IDbConnection CreateConnection(SqlConnectionStringBuilder builder) {
         return new SqlConnection(builder.ConnectionString);

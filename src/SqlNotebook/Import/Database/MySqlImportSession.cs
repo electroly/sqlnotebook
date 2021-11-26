@@ -2,16 +2,12 @@
 using System.Data;
 using MySql.Data.MySqlClient;
 using SqlNotebook.Properties;
-using SqlNotebookScript.Utils;
 
 namespace SqlNotebook.Import.Database;
 
 public sealed class MySqlImportSession : ImportSessionBase<MySqlConnectionStringBuilder> {
     public override string ProductName { get; } = "MySQL";
-
-    public override string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
-        return $"CREATE VIRTUAL TABLE {notebookTableName.DoubleQuote()} USING mysql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
-    }
+    protected override string SqliteModuleName => "mysql";
 
     protected override IDbConnection CreateConnection(MySqlConnectionStringBuilder builder) {
         return new MySqlConnection(builder.ConnectionString);

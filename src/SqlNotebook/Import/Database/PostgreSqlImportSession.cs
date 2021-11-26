@@ -2,19 +2,15 @@
 using System.Data;
 using Npgsql;
 using SqlNotebook.Properties;
-using SqlNotebookScript.Utils;
 
 namespace SqlNotebook.Import.Database;
 
-public sealed class PostgreSqlImportSession : ImportSessionBase<Npgsql.NpgsqlConnectionStringBuilder> {
+public sealed class PostgreSqlImportSession : ImportSessionBase<NpgsqlConnectionStringBuilder> {
     public override string ProductName { get; } = "PostgreSQL";
+    protected override string SqliteModuleName => "pgsql";
 
-    public override string GetCreateVirtualTableStatement(string sourceTableName, string notebookTableName) {
-        return $"CREATE VIRTUAL TABLE {notebookTableName.DoubleQuote()} USING pgsql ('{_builder.ConnectionString.Replace("'", "''")}', '{sourceTableName.Replace("'", "''")}')";
-    }
-
-    protected override IDbConnection CreateConnection(Npgsql.NpgsqlConnectionStringBuilder builder) {
-        return new Npgsql.NpgsqlConnection(builder.ConnectionString);
+    protected override IDbConnection CreateConnection(NpgsqlConnectionStringBuilder builder) {
+        return new NpgsqlConnection(builder.ConnectionString);
     }
 
     protected override void ReadTableNames(IDbConnection connection) {
@@ -29,8 +25,8 @@ public sealed class PostgreSqlImportSession : ImportSessionBase<Npgsql.NpgsqlCon
         TableNames = tableNames;
     }
 
-    protected override Npgsql.NpgsqlConnectionStringBuilder CreateBuilder(string connStr) {
-        return new Npgsql.NpgsqlConnectionStringBuilder(connStr);
+    protected override NpgsqlConnectionStringBuilder CreateBuilder(string connStr) {
+        return new NpgsqlConnectionStringBuilder(connStr);
     }
 
     protected override string GetDisplayName() {
