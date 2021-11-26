@@ -1,4 +1,5 @@
 ﻿using SqlNotebook.Properties;
+using SqlNotebookScript;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
 using System;
@@ -212,7 +213,8 @@ public partial class ConsoleControl : UserControl {
 
         using var output = WaitForm.GoWithCancel(TopLevelControl, "Console", "Executing...", out var success, cancel => {
             return SqlUtil.WithCancellation(_manager.Notebook, () => {
-                return _manager.ExecuteScript(sql);
+                using var status = WaitStatus.StartRows("Script output");
+                return _manager.ExecuteScript(sql, onRow: status.IncrementRows);
             }, cancel);
         });
         _manager.SetDirty();

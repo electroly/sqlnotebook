@@ -180,7 +180,8 @@ public partial class QueryEmbeddedControl : UserControl {
             var sql = SqlText;
             var output = WaitForm.GoWithCancel(TopLevelControl, "Script", "Running your script...", out var success, cancel => {
                 return SqlUtil.WithCancellation(_manager.Notebook, () => {
-                    return _manager.ExecuteScript(sql);
+                    using var status = WaitStatus.StartRows("Script output");
+                    return _manager.ExecuteScript(sql, onRow: status.IncrementRows);
                 }, cancel);
             });
             _manager.SetDirty();
@@ -252,52 +253,51 @@ public partial class QueryEmbeddedControl : UserControl {
         var sql = SqlText;
         var tabIndex = _tabs.SelectedIndex;
         WaitForm.GoWithCancel(TopLevelControl, "Send", rerun ? "Running script..." : "Sending results to table...", out var success, cancel => {
-            using var status = ExecutionStatus.Start(name);
-            long rowsCopied = 0;
-            using RowProgressUpdateTask progressUpdate = new(status, () => Interlocked.Read(ref rowsCopied));
             _manager.Notebook.Invoke(() => {
                 SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
                     _manager.ExecuteScriptNoOutput(createSql);
                     using var insertStmt = _manager.Notebook.Prepare(insertSql);
                     if (!rerun) {
+                        using var status = WaitStatus.StartRows(name);
                         foreach (var row in sdt.Rows) {
                             cancel.ThrowIfCancellationRequested();
                             insertStmt.ExecuteNoOutput(row, cancel);
-                            Interlocked.Increment(ref rowsCopied);
+                            status.IncrementRows();
                         }
                         return;
                     }
 
-                    status.SetTarget(null);
-                    using var output = _manager.ExecuteScript(sql, onRow: () => Interlocked.Increment(ref rowsCopied));
+                    ScriptOutput output;
+                    using (var status = WaitStatus.StartRows("Script output")) {
+                        output = _manager.ExecuteScript(sql, onRow: status.IncrementRows);
+                    }
 
-                    rowsCopied = 0;
-                    status.SetTarget(name);
-                    WaitForm.WaitText = "Sending results to table...";
-                    var scalarResultTabIndex =
-                        output.ScalarResult != null ? 0
-                        : -1;
-                    var textTabIndex =
-                        output.ScalarResult == null && output.TextOutput.Any() ? 0 :
-                        output.ScalarResult != null && output.TextOutput.Any() ? 1 :
-                        -1;
-                    var tablesTabOffset =
-                        (output.ScalarResult != null ? 1 : 0) +
-                        (output.TextOutput.Any() ? 1 : 0);
+                    using (var status = WaitStatus.StartRows(name)) {
+                        var scalarResultTabIndex =
+                            output.ScalarResult != null ? 0
+                            : -1;
+                        var textTabIndex =
+                            output.ScalarResult == null && output.TextOutput.Any() ? 0 :
+                            output.ScalarResult != null && output.TextOutput.Any() ? 1 :
+                            -1;
+                        var tablesTabOffset =
+                            (output.ScalarResult != null ? 1 : 0) +
+                            (output.TextOutput.Any() ? 1 : 0);
 
-                    if (tabIndex == scalarResultTabIndex) {
-                        insertStmt.ExecuteNoOutput(new object[] { output.ScalarResult }, cancel);
-                    } else if (tabIndex == textTabIndex) {
-                        foreach (var line in output.TextOutput) {
-                            cancel.ThrowIfCancellationRequested();
-                            insertStmt.ExecuteNoOutput(new object[] { line }, cancel);
-                        }
-                    } else {
-                        var table = output.DataTables[tabIndex - tablesTabOffset];
-                        foreach (var row in table.Rows) {
-                            cancel.ThrowIfCancellationRequested();
-                            insertStmt.ExecuteNoOutput(row, cancel);
-                            Interlocked.Increment(ref rowsCopied);
+                        if (tabIndex == scalarResultTabIndex) {
+                            insertStmt.ExecuteNoOutput(new object[] { output.ScalarResult }, cancel);
+                        } else if (tabIndex == textTabIndex) {
+                            foreach (var line in output.TextOutput) {
+                                cancel.ThrowIfCancellationRequested();
+                                insertStmt.ExecuteNoOutput(new object[] { line }, cancel);
+                            }
+                        } else {
+                            var table = output.DataTables[tabIndex - tablesTabOffset];
+                            foreach (var row in table.Rows) {
+                                cancel.ThrowIfCancellationRequested();
+                                insertStmt.ExecuteNoOutput(row, cancel);
+                                status.IncrementRows();
+                            }
                         }
                     }
                 }, cancel);

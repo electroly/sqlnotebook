@@ -144,7 +144,7 @@ public sealed class ImportDatabaseStmtRunner {
             _dstTableName.Length > 50
             ? _dstTableName[..50] + "..."
             : _dstTableName;
-        using var status = ExecutionStatus.Start(truncatedDstTableName);
+        using var status = WaitStatus.StartRows(truncatedDstTableName);
         if (_link) {
             ImportLink();
         } else {
@@ -165,7 +165,7 @@ public sealed class ImportDatabaseStmtRunner {
         }
     }
 
-    private void ImportCopy(ExecutionStatus.InFlight status) {
+    private void ImportCopy(WaitStatus.InFlightRows status) {
         IDbConnection srcConnection = null;
         IDbCommand srcCommand = null;
         IDataReader reader = null;
@@ -203,7 +203,7 @@ public sealed class ImportDatabaseStmtRunner {
         }
     }
 
-    private void ImportCopyCore(IDataReader reader, ExecutionStatus.InFlight status) {
+    private void ImportCopyCore(IDataReader reader, WaitStatus.InFlightRows status) {
         List<string> srcColumnNames = new();
         List<Type> srcColumnTypes = new();
         for (var i = 0; i < reader.FieldCount; i++) {
@@ -236,8 +236,6 @@ public sealed class ImportDatabaseStmtRunner {
         // Copy data
         var insertSql = $"INSERT INTO {_dstTableName.DoubleQuote()} VALUES ({string.Join(", ", Enumerable.Range(0, reader.FieldCount).Select(x => "?"))})";
         using var insertStmt = _notebook.Prepare(insertSql);
-        long rowsCopied = 0;
-        using RowProgressUpdateTask statusUpdate = new(status, () => Interlocked.Read(ref rowsCopied));
 
         object[][] NewBuffer() {
             const int CAPACITY = 100; // empirically determined
@@ -259,7 +257,7 @@ public sealed class ImportDatabaseStmtRunner {
         void Consume(object[][] buffer, int batchCount, long totalSoFar) {
             for (var i = 0; i < batchCount; i++) {
                 insertStmt.ExecuteStream(buffer[i], null, null, _cancel);
-                Interlocked.Increment(ref rowsCopied);
+                status.IncrementRows();
             }
         }
 

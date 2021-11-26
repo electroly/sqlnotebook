@@ -78,11 +78,11 @@ public static class XlsUtil {
     }
 
     public static List<object[]> ReadSheet(ISheet sheet, int firstRowIndex = 0, int? lastRowIndex = null,
-    int firstColumnIndex = 0, int? lastColumnIndex = null) {
+    int firstColumnIndex = 0, int? lastColumnIndex = null, int maxRows = int.MaxValue) {
         var lastRow = Math.Min(sheet.LastRowNum, lastRowIndex ?? int.MaxValue);
         var rowValues = new List<object>();
         var list = new List<object[]>();
-        for (int i = firstRowIndex; i <= lastRow; i++) {
+        for (int i = firstRowIndex; i <= lastRow && list.Count < maxRows; i++) {
             var row = sheet.GetRow(i);
             rowValues.Clear();
             if (row != null) {

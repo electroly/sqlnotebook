@@ -14,7 +14,7 @@ public sealed class XlsWorksheetInfo {
 
     public static XlsWorksheetInfo Load(IWorkbook workbook, int worksheetIndex) {
         var sheet = workbook.GetSheetAt(worksheetIndex);
-        var data = XlsUtil.ReadSheet(sheet);
+        var data = XlsUtil.ReadSheet(sheet, maxRows: 1000);
 
         DataTable dataTable = new();
         var numColumns = data.Max(x => x.Length);

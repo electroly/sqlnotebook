@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using SqlNotebook.Import.Csv;
 using SqlNotebook.Import.Xls;
+using SqlNotebookScript.Utils;
 
 namespace SqlNotebook.Import;
 
@@ -41,12 +42,11 @@ public static class FileImporter {
         DatabaseSchema schema
         ) {
         string importSql;
-        using (var f = new ImportCsvForm(filePath, schema, manager)) {
-            if (f.ShowDialog(owner) != DialogResult.OK) {
-                return;
-            }
-            importSql = f.GeneratedImportSql;
+        using ImportCsvForm f = new(filePath, schema, manager);
+        if (f.ShowDialog(owner) != DialogResult.OK) {
+            return;
         }
+        importSql = f.GeneratedImportSql;
 
         RunImportScript(importSql, owner, filePath, manager);
     }
@@ -75,8 +75,10 @@ public static class FileImporter {
 
     private static bool RunImportScript(string importSql, IWin32Window owner, string filePath,
     NotebookManager manager) {
-        WaitForm.Go(owner, "Import", $"Importing \"{Path.GetFileName(filePath)}\"...", out var success, () => {
-            manager.ExecuteScriptNoOutput(importSql, transactionType: NotebookManager.TransactionType.Transaction);
+        WaitForm.GoWithCancel(owner, "Import", $"Importing {Path.GetExtension(filePath).ToUpperInvariant().TrimStart('.')} file...", out var success, cancel => {
+            SqlUtil.WithCancellableTransaction(manager.Notebook, () => {
+                manager.ExecuteScriptNoOutput(importSql, transactionType: NotebookManager.TransactionType.Transaction);
+            }, cancel);
         });
 
         manager.Rescan();

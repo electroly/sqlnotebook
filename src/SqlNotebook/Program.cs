@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Windows.Forms;
+using SqlNotebookScript;
 using SqlNotebookScript.Core;
 using SqlNotebookScript.Utils;
 
@@ -34,10 +35,13 @@ public static class Program
                     return;
                 }
                 notebook = WaitForm.GoWithCancel(
-                    null, "SQL Notebook", $"Opening \"{Truncate(Path.GetFileName(filePath))}\"...", out var success,
-                    cancel => Notebook.Open(filePath,
-                        c => WaitForm.ProgressText = $"{c}% complete",
-                        cancel));
+                    null, "SQL Notebook", $"Opening notebook...", out var success,
+                    cancel => {
+                        using var status = WaitStatus.Start(Path.GetFileName(filePath));
+                        return Notebook.Open(filePath,
+                            c => status.SetProgress($"{c}% complete"),
+                            cancel);
+                    });
                 if (!success) {
                     return;
                 }

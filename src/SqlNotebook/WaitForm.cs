@@ -20,10 +20,6 @@ public partial class WaitForm : ZForm {
     // Set this at startup.
     public static Form MainAppForm { private get; set; }
 
-    // Set this at any time to change the active WaitForm's text.
-    public static string WaitText { get; set; }
-    public static string ProgressText { get; set; }
-
     public event EventHandler CancelRequested;
     public Task WaitTask { get; }
     public Exception ResultException { get; private set; }
@@ -220,14 +216,9 @@ public partial class WaitForm : ZForm {
             Enabled = true
         };
 
-        WaitText = text;
-        ProgressText = null;
         _timer.Tick += delegate {
             if (!DidCancel) {
-                if (WaitText != _infoTxt.Text) {
-                    _infoTxt.Text = WaitText;
-                }
-                var progressText = ExecutionStatus.Status ?? ProgressText;
+                var progressText = WaitStatus.Status;
                 if (progressText != null && progressText != _progressLabel.Text) {
                     if (!_progressLabel.Visible) {
                         _progressLabel.Visible = true;

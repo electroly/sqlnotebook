@@ -420,6 +420,8 @@ public sealed class QueryBlockControl : BlockControl {
     }
 
     public ScriptOutput ExecuteOnWorkerThread() {
-        return _manager.ExecuteScript(SqlText);
+        return SqlUtil.WithTransaction(_manager.Notebook, () => {
+            return _manager.ExecuteScript(SqlText);
+        });
     }
 }

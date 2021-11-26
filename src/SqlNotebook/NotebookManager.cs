@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -90,8 +91,9 @@ public sealed class NotebookManager {
     public void Save(CancellationToken cancel) {
         NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
         Notebook.Invoke(() => {
+            using var status = WaitStatus.Start(Path.GetFileName(Notebook.OriginalFilePath));
             Notebook.Save(
-                c => WaitForm.ProgressText = $"{c}% complete",
+                c => status.SetProgress($"{c}% complete"),
                 cancel);
         });
     }
@@ -99,8 +101,9 @@ public sealed class NotebookManager {
     public void SaveAs(string filePath, CancellationToken cancel) {
         NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
         Notebook.Invoke(() => {
+            using var status = WaitStatus.Start(Path.GetFileName(filePath));
             Notebook.SaveAs(filePath,
-                c => WaitForm.ProgressText = $"{c}% complete",
+                c => status.SetProgress($"{c}% complete"),
                 cancel);
         });
     }

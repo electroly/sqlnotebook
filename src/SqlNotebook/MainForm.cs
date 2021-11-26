@@ -14,6 +14,7 @@ using SqlNotebook.Pages;
 using SqlNotebook.Properties;
 using SqlNotebookScript;
 using SqlNotebookScript.Core;
+using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -494,7 +495,7 @@ public partial class MainForm : ZForm {
                 return false;
             }
 
-            WaitForm.GoWithCancel(this, "Save", "Saving your notebook...", out var success, cancel => {
+            WaitForm.GoWithCancel(this, "Save", "Saving notebook...", out var success, cancel => {
                 _manager.SaveAs(f.FileName, cancel);
             });
             if (!success) {
@@ -502,7 +503,7 @@ public partial class MainForm : ZForm {
             }
             _isNew = false;
         } else {
-            WaitForm.GoWithCancel(this, "Save", "Saving your notebook...", out _, cancel => {
+            WaitForm.GoWithCancel(this, "Save", "Saving notebook...", out _, cancel => {
                 _manager.Save(cancel);
             });
         }
@@ -614,31 +615,28 @@ public partial class MainForm : ZForm {
             filePath = GetTemporaryExportFilePath();
         }
 
-        WaitForm.GoWithCancel(this, "Export", item.Type == NotebookItemType.Script ? "Running script..." : "Exporting to file...", out var success, cancel => {
+        WaitForm.GoWithCancel(this, "Export", "Exporting to file...", out var success, cancel => {
             SqlUtil.WithCancellation(_notebook, () => {
-                long rowCount = 0;
-                using var status = ExecutionStatus.Start(Path.GetFileName(filePath));
-                using RowProgressUpdateTask updateTask = new(status,
-                    () => Interlocked.Read(ref rowCount));
-
                 using var stream = File.CreateText(filePath);
                 if (item.Type == NotebookItemType.Script) {
-                    status.SetTarget(item.Name);
-                    using var output = _manager.ExecuteScript($"EXECUTE {item.Name.DoubleQuote()}",
-                        onRow: () => Interlocked.Increment(ref rowCount));
-                    rowCount = 0;
-                    WaitForm.ProgressText = null;
-                    WaitForm.WaitText = "Exporting to file...";
-                    status.SetTarget(Path.GetFileName(filePath));
-                    output.WriteCsv(stream, () => Interlocked.Increment(ref rowCount), cancel);
+                    ScriptOutput output;
+                    using (var status = WaitStatus.StartRows(item.Name)) {
+                        output = _manager.ExecuteScript($"EXECUTE {item.Name.DoubleQuote()}",
+                            onRow: status.IncrementRows);
+                    }
+                    using (output) {
+                        using var status = WaitStatus.StartRows(Path.GetFileName(filePath));
+                        output.WriteCsv(stream, status.IncrementRows, cancel);
+                    }
                 } else {
+                    using var status = WaitStatus.StartRows(item.Name);
                     using var statement = _notebook.Prepare($"SELECT * FROM {item.Name.DoubleQuote()}");
                     void OnHeader(List<string> columnNames) {
                         stream.WriteLine(string.Join(",", columnNames.Select(CsvUtil.EscapeCsv)));
                     }
                     void OnRow(object[] row) {
                         stream.WriteLine(string.Join(",", row.Select(CsvUtil.EscapeCsv)));
-                        Interlocked.Increment(ref rowCount);
+                        status.IncrementRows();
                     }
                     statement.ExecuteStream(Array.Empty<object>(), OnHeader, OnRow, cancel);
                 }

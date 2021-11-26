@@ -267,6 +267,7 @@ public static class SqlUtil {
             sourceColumnIndices[i] = srcColIndex;
         }
 
+        using var status = WaitStatus.StartRows(dstTableName);
         var insertSql = GetInsertSql(dstTableName, mappings);
         var insertArgs = new List<object>();
         foreach (var row in rows) {
@@ -291,6 +292,7 @@ public static class SqlUtil {
             }
             if (!skipRow) {
                 notebook.Execute(insertSql, insertArgs);
+                status.IncrementRows();
             }
         }
     }
@@ -359,10 +361,10 @@ public static class SqlUtil {
     }
 
     public static T WithTransaction<T>(Notebook notebook, Func<T> func) =>
-        WithTransactionCore<T>(notebook, func, rollback: false);
+        WithTransactionCore(notebook, func, rollback: false);
 
     public static T WithRollbackTransaction<T>(Notebook notebook, Func<T> func) =>
-        WithTransactionCore<T>(notebook, func, rollback: true);
+        WithTransactionCore(notebook, func, rollback: true);
 
     private static T WithTransactionCore<T>(Notebook notebook, Func<T> func, bool rollback) {
         var value = default(T);
