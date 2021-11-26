@@ -1,12 +1,11 @@
-﻿using SqlNotebook.Properties;
+﻿using System;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+using SqlNotebook.Properties;
 using SqlNotebookScript;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
-using System;
-using System.Drawing;
-using System.Linq;
-using System.Threading;
-using System.Windows.Forms;
 
 namespace SqlNotebook;
 

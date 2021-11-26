@@ -91,6 +91,8 @@ public partial class SqlTextControl : UserControl {
             TabWidth = 4,
             ScrollWidthTracking = true,
             ScrollWidth = 1,
+            VScrollBar = true,
+            HScrollBar = true,
         };
         var lineNumberMarginWidth = 50;
         _lineNumberMargin = new Margin(_scintilla, 0) {
@@ -149,13 +151,13 @@ public partial class SqlTextControl : UserControl {
     }
 
     public void SetVerticalScrollbarVisibility(ScrollbarVisibility visibility) {
-        //TODO: treat Auto as Hide for now
-        _scintilla.VScrollBar = visibility == ScrollbarVisibility.Show;
+        // Scintilla doesn't have an "always show" mode, so treat Show as Auto.
+        _scintilla.VScrollBar = visibility != ScrollbarVisibility.Hide;
     }
 
     public void SetHorizontalScrollbarVisibility(ScrollbarVisibility visibility) {
-        //TODO: treat Auto as Hide for now
-        _scintilla.HScrollBar = visibility == ScrollbarVisibility.Show;
+        // Scintilla doesn't have an "always show" mode, so treat Show as Auto.
+        _scintilla.HScrollBar = visibility != ScrollbarVisibility.Hide;
     }
 
     private void Scintilla_StyleNeeded(object sender, StyleNeededEventArgs e) {
