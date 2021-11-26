@@ -306,10 +306,11 @@ public partial class ImportXlsForm : ZForm {
             return;
         }
 
-        var output = WaitForm.Go(this, "Import Preview", "Generating preview...", out var success, () =>
-            _manager.ExecuteScript(
-                code: tempSql,
-                transactionType: NotebookManager.TransactionType.RollbackTransaction));
+        var output = WaitForm.GoWithCancel(this, "Import Preview", "Generating preview...", out var success, cancel => {
+            return SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
+                return _manager.ExecuteScript(code: tempSql);
+            }, rollback: true, cancel: cancel);
+        });
         if (!success) {
             return;
         }
@@ -466,8 +467,10 @@ public partial class ImportXlsForm : ZForm {
             return;
         }
 
-        WaitForm.Go(this, "Import", $"Importing XLS file...", out var success, () => {
-            _manager.ExecuteScriptNoOutput(sql, transactionType: NotebookManager.TransactionType.Transaction);
+        WaitForm.GoWithCancel(this, "Import", $"Importing XLS file...", out var success, cancel => {
+            SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
+                _manager.ExecuteScriptNoOutput(sql);
+            }, cancel);
         });
         if (!success) {
             return;

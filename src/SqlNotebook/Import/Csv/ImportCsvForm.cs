@@ -283,16 +283,14 @@ public partial class ImportCsvForm : ZForm {
 
         string script = null;
         SimpleDataTable table = null;
-        WaitForm.Go(this, "Import", "Generating preview...", out var success, () => {
-            var tableName = Guid.NewGuid().ToString();
+        WaitForm.GoWithCancel(this, "Import", "Generating preview...", out var success, cancel => {
+            var tableName = "preview_" + Guid.NewGuid().ToString();
             script = GetImportSql();
-            try {
+            SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
                 var sql = GetImportSql(100, tableName);
                 _manager.ExecuteScriptNoOutput(sql);
                 table = _manager.ExecuteScript($"SELECT * FROM {tableName.DoubleQuote()}").DataTables[0];
-            } finally {
-                _manager.ExecuteScriptNoOutput($"DROP TABLE IF EXISTS {tableName.DoubleQuote()}");
-            }
+            }, rollback: true, cancel: cancel);
         });
         if (!success) {
             return;

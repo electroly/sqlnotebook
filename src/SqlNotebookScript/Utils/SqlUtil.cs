@@ -299,11 +299,20 @@ public static class SqlUtil {
 
     public static T WithCancellableTransaction<T>(Notebook notebook, Func<T> func, CancellationToken cancel) {
         T value = default;
-        WithCancellableTransaction(notebook, action: () => value = func(), cancel: cancel);
+        WithCancellableTransaction(notebook, action: () => value = func(), rollback: false, cancel: cancel);
         return value;
     }
 
-    public static void WithCancellableTransaction(Notebook notebook, Action action, CancellationToken cancel) {
+    public static void WithCancellableTransaction(Notebook notebook, Action action, CancellationToken cancel) =>
+        WithCancellableTransaction(notebook, action, false, cancel);
+
+    public static T WithCancellableTransaction<T>(Notebook notebook, Func<T> func, bool rollback, CancellationToken cancel) {
+        T value = default;
+        WithCancellableTransaction(notebook, action: () => value = func(), rollback, cancel);
+        return value;
+    }
+
+    public static void WithCancellableTransaction(Notebook notebook, Action action, bool rollback, CancellationToken cancel) {
         if (notebook.IsTransactionActive()) {
             throw new InvalidOperationException("There is already a transaction in progress.");
         }
@@ -311,7 +320,7 @@ public static class SqlUtil {
         cancel.Register(() => notebook.BeginUserCancel());
         try {
             action();
-            notebook.Execute("COMMIT");
+            notebook.Execute(rollback ? "ROLLBACK" : "COMMIT");
         } catch {
             notebook.EndUserCancel();
             notebook.Execute("ROLLBACK");
