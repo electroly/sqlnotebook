@@ -33,7 +33,8 @@ public sealed class ScriptRunner {
             [typeof(Ast.ImportCsvStmt)] = (s, e) => ExecuteImportCsvStmt((Ast.ImportCsvStmt)s, e),
             [typeof(Ast.ImportTxtStmt)] = (s, e) => ExecuteImportTxtStmt((Ast.ImportTxtStmt)s, e),
             [typeof(Ast.ExportTxtStmt)] = (s, e) => ExecuteExportTxtStmt((Ast.ExportTxtStmt)s, e),
-            [typeof(Ast.ImportXlsStmt)] = (s, e) => ExecuteImportXlsStmt((Ast.ImportXlsStmt)s, e)
+            [typeof(Ast.ImportXlsStmt)] = (s, e) => ExecuteImportXlsStmt((Ast.ImportXlsStmt)s, e),
+            [typeof(Ast.ImportDatabaseStmt)] = (s, e) => ExecuteImportDatabaseStmt((Ast.ImportDatabaseStmt)s, e),
         };
     }
 
@@ -314,6 +315,11 @@ public sealed class ScriptRunner {
 
     private void ExecuteExportTxtStmt(Ast.ExportTxtStmt stmt, ScriptEnv env) {
         ExportTxtStmtRunner.Run(_notebook, env, this, stmt);
+    }
+
+    private void ExecuteImportDatabaseStmt(Ast.ImportDatabaseStmt stmt, ScriptEnv env) {
+        Notebook.WithCancellationToken(cancel =>
+            ImportDatabaseStmtRunner.Run(_notebook, env, this, stmt, cancel));
     }
 
     public T EvaluateExpr<T>(Ast.Expr expr, ScriptEnv env) {

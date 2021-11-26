@@ -467,6 +467,12 @@ public sealed class Notebook : IDisposable {
         return tokenType == TK_SPACE ? 0 : tokenType;
     }
 
+    public static void ThrowIfCancelRequested() {
+        if (CancelInProgress) {
+            throw new OperationCanceledException();
+        }
+    }
+
     public void BeginUserCancel() {
         CancelInProgress = true;
         sqlite3_interrupt(_sqlite);
@@ -474,6 +480,28 @@ public sealed class Notebook : IDisposable {
 
     public void EndUserCancel() {
         CancelInProgress = false;
+    }
+
+    // Perform a synchronous action while monitoring our cancellation status and passing it via CTS if it happens.
+    public static void WithCancellationToken(Action<CancellationToken> action) {
+        using CancellationTokenSource cts = new();
+        Thread monitorThread = new(new ThreadStart(() => {
+            while (!cts.IsCancellationRequested) {
+                if (CancelInProgress) {
+                    cts.Cancel();
+                    break;
+                }
+                cts.Token.WaitHandle.WaitOne(16);
+            }
+        }));
+        monitorThread.Start();
+
+        try {
+            action(cts.Token);
+        } finally {
+            cts.Cancel();
+            monitorThread.Join();
+        }
     }
 
     public IReadOnlyDictionary<string, string> GetScripts() {

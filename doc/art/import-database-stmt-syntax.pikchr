@@ -1,0 +1,64 @@
+linerad = 10px
+linewid *= 0.5
+
+ENT: circle radius 10%
+arrow 2*arrowht
+IMP: oval "IMPORT" fit
+arrow 2*arrowht
+oval "DATABASE" fit
+arrow 2*arrowht
+box "vendor" fit
+arrow 2*arrowht
+oval "CONNECTION" fit
+arrow 2*arrowht
+CON: box "connection-string" fit
+arrow right 2*arrowht then down 1.25*IMP.ht then left even with .5<IMP.w,CON.e>
+arrow left even with ENT then down 2*IMP.ht then right 2*arrowht
+A1: arrow right 2*arrowht then up 0.75*IMP.ht then right 2*arrowht
+oval "TABLE" fit
+arrow 2*arrowht
+box "src-table-name" fit
+A2: arrow right 2*arrowht then down 0.75*IMP.ht then right 2*arrowht
+
+arrow from A1.start right 2*arrowht then down 0.75*IMP.ht then right 2*arrowht
+oval "QUERY" fit
+arrow 2*arrowht
+box "sql" fit
+arrow right even with A2.end - (2*arrowht,0) then up 0.75*IMP.ht then to A2.end
+right
+arrow 4*arrowht
+INTO: oval "INTO" fit
+arrow 2*arrowht
+DST: box "dst-table-name" fit
+A3: arrow 3*arrowht
+
+arrow from A2.end right 2*arrowht then up 1*IMP.ht then right even with 0.5<INTO.w,DST.e>
+arrow right even with A3.end - (2*arrowht,0) then down even with A3.end then to A3.end
+arrow right 2*arrowht then down 5*arrowht then left even with .5<IMP.w,DST.e>
+A4: arrow left even with ENT then down 2.5*arrowht
+
+arrow down 0.75*arrowht then right 2*arrowht
+OPT: oval "OPTIONS" fit
+arrow 2*arrowht
+oval "(" fit
+arrow 4*arrowht
+OPTKEY: box "key" fit
+arrow 2*arrowht
+oval ":" fit
+arrow 2*arrowht
+OPTVAL: box "value" fit
+arrow 3*arrowht
+OPTEND: oval ")" fit
+arrow right 2*arrowht then down 2.25*IMP.ht then left even with .5<OPT.w,OPTEND.e>
+arrow left even with ENT then down 1*IMP.ht
+SEMI: oval ";" fit
+arrow 2*arrowht
+EXIT: circle same
+
+arrow from OPTVAL.e right 1*arrowht then down 0.75*IMP.ht
+arrow down 0.5*IMP.ht then left even with .5<OPTKEY.w,OPTVAL.e>
+oval "," fit
+arrow left even with OPTKEY.w - (2*arrowht,0) then up even with OPTKEY.w then to OPTKEY.w
+
+arrow from A4.end down 4.5*arrowht
+arrow to SEMI.n

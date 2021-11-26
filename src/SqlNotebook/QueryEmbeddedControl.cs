@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
+using SqlNotebookScript;
 using SqlNotebookScript.DataTables;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
@@ -179,17 +180,15 @@ public partial class QueryEmbeddedControl : UserControl {
             var sql = SqlText;
             var output = WaitForm.GoWithCancel(TopLevelControl, "Script", "Running your script...", out var success, cancel => {
                 return SqlUtil.WithCancellation(_manager.Notebook, () => {
-                    long count = 0;
-                    using RowProgressUpdateTask progressUpdate = new(() => Interlocked.Read(ref count));
-                    return _manager.ExecuteScript(sql, onRow: () => Interlocked.Increment(ref count));
+                    return _manager.ExecuteScript(sql);
                 }, cancel);
             });
+            _manager.SetDirty();
+            _manager.Rescan();
             if (!success) {
                 return;
             };
             Output = output;
-            _manager.SetDirty();
-            _manager.Rescan();
         } catch (Exception ex) {
             Ui.ShowError(TopLevelControl, "Script Error", ex);
         }
@@ -253,8 +252,9 @@ public partial class QueryEmbeddedControl : UserControl {
         var sql = SqlText;
         var tabIndex = _tabs.SelectedIndex;
         WaitForm.GoWithCancel(TopLevelControl, "Send", rerun ? "Running script..." : "Sending results to table...", out var success, cancel => {
+            using var status = ExecutionStatus.Start(name);
             long rowsCopied = 0;
-            using RowProgressUpdateTask progressUpdate = new(name, () => Interlocked.Read(ref rowsCopied));
+            using RowProgressUpdateTask progressUpdate = new(status, () => Interlocked.Read(ref rowsCopied));
             _manager.Notebook.Invoke(() => {
                 SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
                     _manager.ExecuteScriptNoOutput(createSql);
@@ -268,11 +268,11 @@ public partial class QueryEmbeddedControl : UserControl {
                         return;
                     }
 
-                    progressUpdate.SetTarget(null);
+                    status.SetTarget(null);
                     using var output = _manager.ExecuteScript(sql, onRow: () => Interlocked.Increment(ref rowsCopied));
 
                     rowsCopied = 0;
-                    progressUpdate.SetTarget(name);
+                    status.SetTarget(name);
                     WaitForm.WaitText = "Sending results to table...";
                     var scalarResultTabIndex =
                         output.ScalarResult != null ? 0

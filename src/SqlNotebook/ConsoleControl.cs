@@ -212,16 +212,15 @@ public partial class ConsoleControl : UserControl {
 
         using var output = WaitForm.GoWithCancel(TopLevelControl, "Console", "Executing...", out var success, cancel => {
             return SqlUtil.WithCancellation(_manager.Notebook, () => {
-                long count = 0;
-                using RowProgressUpdateTask progressUpdate = new(() => Interlocked.Read(ref count));
-                return _manager.ExecuteScript(sql, onRow: () => Interlocked.Increment(ref count));
+                return _manager.ExecuteScript(sql);
             }, cancel);
         });
+        _manager.SetDirty();
+        _manager.Rescan();
         if (!success) {
             return;
         }
 
-        _manager.Rescan();
         _inputText.SqlText = "";
         Log(sql, output);
         TakeFocus();

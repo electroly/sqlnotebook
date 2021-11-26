@@ -255,21 +255,20 @@ public sealed class ScriptParser {
         return stmt;
     }
 
-    private Ast.Stmt ParseImportStmt(TokenQueue q) {
-        switch (q.Peek(1)) {
-            case "csv": return Check(q, ParseImportCsvStmt(q));
-            case "txt": case "text": return Check(q, ParseImportTxtStmt(q));
-            case "xls": case "xlsx": return Check(q, ParseImportXlsStmt(q));
-            default: throw new SyntaxException($"Unknown import type: \"{q.Peek(1)}\"");
-        }
-    }
+    private Ast.Stmt ParseImportStmt(TokenQueue q) =>
+        q.Peek(1) switch {
+            "csv" => Check(q, ParseImportCsvStmt(q)),
+            "txt" or "text" => Check(q, ParseImportTxtStmt(q)),
+            "xls" or "xlsx" => Check(q, ParseImportXlsStmt(q)),
+            "database" => Check(q, ParseImportDatabaseStmt(q)),
+            _ => throw new SyntaxException($"Unknown import type: \"{q.Peek(1)}\""),
+        };
 
-    private Ast.Stmt ParseExportStmt(TokenQueue q) {
-        switch (q.Peek(1)) {
-            case "txt": case "text": return Check(q, ParseExportTxtStmt(q));
-            default: throw new SyntaxException($"Unknown export type: \"{q.Peek(1)}\"");
-        }
-    }
+    private Ast.Stmt ParseExportStmt(TokenQueue q) =>
+        q.Peek(1) switch {
+            "txt" or "text" => Check(q, ParseExportTxtStmt(q)),
+            _ => throw new SyntaxException($"Unknown export type: \"{q.Peek(1)}\""),
+        };
 
     private Ast.ImportCsvStmt ParseImportCsvStmt(TokenQueue q) { // or null
         var stmt = new Ast.ImportCsvStmt { SourceToken = q.SourceToken };
@@ -300,6 +299,30 @@ public sealed class ScriptParser {
         }
         q.Take("into");
         stmt.ImportTable = Check(q, ParseImportTable(q));
+        if (q.TakeMaybe("options")) {
+            stmt.OptionsList = Check(q, ParseOptionsList(q));
+        }
+        ConsumeSemicolon(q);
+        return stmt;
+    }
+
+    private Ast.ImportDatabaseStmt ParseImportDatabaseStmt(TokenQueue q) {
+        Ast.ImportDatabaseStmt stmt = new() { SourceToken = q.SourceToken };
+        q.Take("import");
+        q.Take("database");
+        stmt.VendorExpr = ParseExpr(q);
+        q.Take("connection");
+        stmt.ConnectionStringExpr = ParseExpr(q);
+        if (q.TakeMaybe("table")) {
+            stmt.SrcTableNameExprOrNull = ParseIdentifierOrExpr(q);
+        } else if (q.TakeMaybe("query")) {
+            stmt.SqlExprOrNull = ParseExpr(q);
+        } else {
+            q.Take("table", "query"); // This will throw.
+        }
+        if (q.TakeMaybe("into")) {
+            stmt.DstTableNameExprOrNull = ParseIdentifierOrExpr(q);
+        }
         if (q.TakeMaybe("options")) {
             stmt.OptionsList = Check(q, ParseOptionsList(q));
         }

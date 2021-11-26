@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Taskbar;
+using SqlNotebookScript;
 
 namespace SqlNotebook;
 
@@ -226,13 +227,14 @@ public partial class WaitForm : ZForm {
                 if (WaitText != _infoTxt.Text) {
                     _infoTxt.Text = WaitText;
                 }
-                if (ProgressText != null && ProgressText != _progressLabel.Text) {
+                var progressText = ExecutionStatus.Status ?? ProgressText;
+                if (progressText != null && progressText != _progressLabel.Text) {
                     if (!_progressLabel.Visible) {
                         _progressLabel.Visible = true;
                     }
-                    _progressLabel.Text = ProgressText;
+                    _progressLabel.Text = progressText;
                 }
-                if (ProgressText == null && _progressLabel.Visible) {
+                if (progressText == null && _progressLabel.Visible) {
                     _progressLabel.Visible = false;
                 }
             }

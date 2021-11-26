@@ -350,6 +350,7 @@ public static class SqlUtil {
                 notebook.Execute(rollback ? "ROLLBACK" : "COMMIT");
             }
         } catch {
+            notebook.EndUserCancel();
             if (didBeginTransaction) {
                 notebook.Execute("ROLLBACK");
             }

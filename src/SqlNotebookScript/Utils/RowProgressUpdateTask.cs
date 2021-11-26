@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Threading;
 
-namespace SqlNotebook;
+namespace SqlNotebookScript.Utils;
 
 public sealed class RowProgressUpdateTask : IDisposable {
     private readonly CancellationTokenSource _cts = new();
     private readonly Thread _thread;
-    private string _targetTruncated;
     private bool disposedValue;
 
-    public RowProgressUpdateTask(Func<long> countFunc) : this(null, countFunc) {}
-
-    public RowProgressUpdateTask(string target, Func<long> countFunc) {
-        SetTarget(target);
+    public RowProgressUpdateTask(ExecutionStatus.InFlight status, Func<long> countFunc) {
         _thread = new(new ThreadStart(() => {
             try {
                 var interval = TimeSpan.FromMilliseconds(100);
@@ -20,10 +16,7 @@ public sealed class RowProgressUpdateTask : IDisposable {
                 while (!_cts.IsCancellationRequested) {
                     var n = countFunc();
                     if (n != previous) {
-                        WaitForm.ProgressText =
-                            n == 0 ? null :
-                            _targetTruncated == null ? $"{n:#,##0} rows"
-                            : $"{_targetTruncated}\r\n{n:#,##0} rows";
+                        status.SetStatus($"{n:#,##0} rows");
                         previous = n;
                     }
                     _cts.Token.WaitHandle.WaitOne(interval);
@@ -31,13 +24,6 @@ public sealed class RowProgressUpdateTask : IDisposable {
             } catch { }
         }));
         _thread.Start();
-    }
-
-    public void SetTarget(string target) {
-        _targetTruncated =
-            target == null ? null :
-            target.Length > 50 ? $"{target[..50]}..."
-            : target;
     }
 
     private void Dispose(bool disposing) {
@@ -51,7 +37,6 @@ public sealed class RowProgressUpdateTask : IDisposable {
             _cts.Cancel();
             _thread.Join();
             _cts.Dispose();
-            WaitForm.ProgressText = null;
 
             disposedValue = true;
         }

@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>IMPORT DATABASE Statement</title>
+</head>
+<body>
+  <h1><tt>IMPORT</tt> <tt>DATABASE</tt> Statement</h1>
+  <p>Imports a table, view, or query from a Microsoft SQL Server, PostgreSQL, or MySQL database. The data can be copied
+  into the notebook for fast offline access, or a live link to the remote database can be created.<br></p>
+  <h2>Syntax</h2><img src="art/import-database-stmt-syntax.svg" alt="" class="railroad" moz-do-not-send="true" width=
+  "715" height="372">
+  <h2>Parameters</h2>
+  <ul>
+    <li><i>vendor</i>: text<br>
+    One of the following strings: <tt>'mssql'</tt>, <tt>'pgsql'</tt>, <tt>'mysql'</tt>.<br></li>
+    <li><i>connection-string</i>: text<br>
+    The <a moz-do-not-send="true" href=
+    "https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/connection-string-syntax">ADO.NET connection
+    string</a> specifying the hostname, credentials, database name, and other connection details. Use the graphical
+    import wizard via the Import menu to produce a connection string, and then copy it into your code.<br></li>
+    <li><i>src-table-name</i>: text or identifier (optional)<br>
+    If provided, then this is the name of a remote table to be imported.<br></li>
+    <li><i>sql</i>: text (optional)<br>
+    If provided, then this is an SQL query that returns the rows to be imported. This query is in the remote server's
+    SQL syntax. For instance, this query must be written in <a moz-do-not-send="true" href=
+    "https://docs.microsoft.com/en-us/sql/t-sql/language-reference">Transact-SQL</a> when importing from Microsoft SQL
+    Server.<br></li>
+    <li><i>dst-table-name</i>: text or identifier (optional)<br>
+    If provided, then the table is imported as the specified name, rather than its original name from the remote
+    database.<br></li>
+  </ul>
+  <h2>Options</h2>
+  <ul>
+    <li>
+      <tt>LINK</tt>: integer (0-1, default: 0)<br>
+      This option specifies whether the remote data should be copied into the notebook.
+      <ul class="tight">
+        <li>0 = Copy the data into the notebook. This is a one-time snapshot of the data and offers the fastest
+        querying performance.<br></li>
+        <li>1 = Create a live link to the remote database. This is slower, but avoids copying the data into the
+        notebook and provides access to live data.<br></li>
+      </ul>
+    </li>
+    <li>
+      <tt>TRUNCATE_EXISTING_TABLE</tt>: integer (0-1, default: 0)<br>
+      If the target table name exists, this option indicates whether the existing data rows should be deleted.
+      <ul class="tight">
+        <li>0 = Keep existing rows and append new rows</li>
+        <li>1 = Delete existing rows</li>
+      </ul>
+    </li>
+    <li>
+      <tt>TEMPORARY_TABLE</tt>: integer (0-1, default: 0)<br>
+      If the target table name does not exist, and therefore a new table will be created, this option indicates whether
+      the new table will be a temporary table.
+      <ul class="tight">
+        <li>0 = Use <code>CREATE TABLE</code></li>
+        <li>1 = Use <code>CREATE TEMPORARY TABLE</code></li>
+      </ul>
+    </li>
+  </ul>
+  <h2>Examples<br></h2>
+  <pre><i>-- It's convenient to use a variable to hold the connection string.</i><i><br></i><i>-- The || operator is string concatenation in SQLite.</i><br>DECLARE @connectionString =<br>    'Data Source=localhost\SQLEXPRESS;' ||<br>    'Initial Catalog=Northwind;' ||<br>    'Integrated Security=True';<br><br><i>-- Import the remote table 'foo_bar' into a new table of the same</i><i><br></i><i>-- name in the notebook. A one-time copy of the data is performed.</i><br>IMPORT DATABASE 'mssql'<br>CONNECTION @connectionString<br>TABLE foo_bar;<br><br><i>-- Import a very large remote table by creating a live link. The</i><i><br></i><i>-- data is not copied into the notebook. Instead the remote table is</i><i><br></i><i>-- queried on demand.</i><br>IMPORT DATABASE 'mssql'<br>CONNECTION @connectionString<br>TABLE large_table<br>OPTIONS (LINK: 1);<br></pre>
+</body>
+</html>

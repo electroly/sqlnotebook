@@ -617,18 +617,19 @@ public partial class MainForm : ZForm {
         WaitForm.GoWithCancel(this, "Export", item.Type == NotebookItemType.Script ? "Running script..." : "Exporting to file...", out var success, cancel => {
             SqlUtil.WithCancellation(_notebook, () => {
                 long rowCount = 0;
-                using RowProgressUpdateTask updateTask = new(Path.GetFileName(filePath),
+                using var status = ExecutionStatus.Start(Path.GetFileName(filePath));
+                using RowProgressUpdateTask updateTask = new(status,
                     () => Interlocked.Read(ref rowCount));
 
                 using var stream = File.CreateText(filePath);
                 if (item.Type == NotebookItemType.Script) {
-                    updateTask.SetTarget(item.Name);
+                    status.SetTarget(item.Name);
                     using var output = _manager.ExecuteScript($"EXECUTE {item.Name.DoubleQuote()}",
                         onRow: () => Interlocked.Increment(ref rowCount));
                     rowCount = 0;
                     WaitForm.ProgressText = null;
                     WaitForm.WaitText = "Exporting to file...";
-                    updateTask.SetTarget(Path.GetFileName(filePath));
+                    status.SetTarget(Path.GetFileName(filePath));
                     output.WriteCsv(stream, () => Interlocked.Increment(ref rowCount), cancel);
                 } else {
                     using var statement = _notebook.Prepare($"SELECT * FROM {item.Name.DoubleQuote()}");

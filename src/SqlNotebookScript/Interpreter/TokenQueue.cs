@@ -56,7 +56,7 @@ public sealed class TokenQueue {
 
     public Token Take(params string[] expectedTexts) {
         var text = Peek();
-        if (expectedTexts.Any(x => x.ToLower() == text)) {
+        if (expectedTexts.Any(x => x.Equals(text, StringComparison.OrdinalIgnoreCase))) {
             return Take();
         } else {
             throw new SyntaxException(expectedTexts, _tokens.Skip(_peekIndex).ToList());
@@ -65,7 +65,7 @@ public sealed class TokenQueue {
 
     public bool TakeMaybe(params string[] expectedTexts) {
         var text = Peek();
-        if (expectedTexts.Any(x => x.ToLower() == text)) {
+        if (expectedTexts.Any(x => x.Equals(text, StringComparison.OrdinalIgnoreCase))) {
             Take();
             return true;
         } else {
