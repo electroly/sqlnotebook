@@ -386,6 +386,7 @@ public partial class MainForm : ZForm {
         } catch (Exception ex) {
             Ui.ShowError(this, "Import Error", ex);
         }
+        Focus();
     }
 
     private void ImportPostgresMnu_Click(object sender, EventArgs e) {
@@ -394,6 +395,7 @@ public partial class MainForm : ZForm {
         } catch (Exception ex) {
             ErrorBox("Import Error", ex.GetExceptionMessage());
         }
+        Focus();
     }
 
     private void ImportMssqlMnu_Click(object sender, EventArgs e) {
@@ -402,6 +404,7 @@ public partial class MainForm : ZForm {
         } catch (Exception ex) {
             ErrorBox("Import Error", ex.GetExceptionMessage());
         }
+        Focus();
     }
 
     private void ImportMysqlMnu_Click(object sender, EventArgs e) {
@@ -410,6 +413,7 @@ public partial class MainForm : ZForm {
         } catch (Exception ex) {
             ErrorBox("Import Error", ex.GetExceptionMessage());
         }
+        Focus();
     }
 
     private void ErrorBox(string title, string message, string details = null) {

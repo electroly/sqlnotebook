@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using Microsoft.Data.SqlClient;
 using SqlNotebook.Properties;
 
@@ -9,8 +10,8 @@ public sealed class SqlServerImportSession : ImportSessionBase<SqlConnectionStri
     public override string ProductName { get; } = "Microsoft SQL Server";
     protected override string SqliteModuleName => "mssql";
 
-    protected override IDbConnection CreateConnection(SqlConnectionStringBuilder builder) {
-        return new SqlConnection(builder.ConnectionString);
+    public override DbConnection CreateConnection() {
+        return new SqlConnection(_builder.ConnectionString);
     }
 
     protected override void ReadTableNames(IDbConnection connection) {

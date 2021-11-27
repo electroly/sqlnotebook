@@ -14,7 +14,7 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
 
     public abstract string ProductName { get; }
     public IReadOnlyList<string> TableNames { get; protected set; } = Array.Empty<string>();
-    protected abstract IDbConnection CreateConnection(TConnectionStringBuilder builder);
+    public abstract DbConnection CreateConnection();
     protected abstract void ReadTableNames(IDbConnection connection);
     protected abstract TConnectionStringBuilder CreateBuilder(string connStr);
     protected abstract string GetDisplayName();
@@ -60,29 +60,41 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
         WaitForm.GoWithCancelByWalkingAway(
             owner, "Database Connection", $"Accessing {ProductName}...", out var success,
             () => {
-            using var connection = CreateConnection(_builder);
+            using var connection = CreateConnection();
             connection.Open();
             ReadTableNames(connection);
         });
         return success;
     }
 
-    public string GenerateSql(IEnumerable<SelectedTable> selectedTables, bool link) {
+    public string GenerateSql(IEnumerable<SourceTable> selectedTables, bool link) {
         StringBuilder sb = new();
         sb.Append("DECLARE @cs = ");
         sb.Append(_builder.ConnectionString.SingleQuote());
         sb.Append(";\r\n");
-        foreach (var (srcTable, dstTable) in selectedTables) {
+        foreach (var sourceTable in selectedTables) {
+            if (sourceTable.SourceIsSql && link) {
+                throw new ExceptionEx("Live links to custom queries are not supported.",
+                    "Choose the \"Copy source data into notebook\" method instead.");
+            }
             sb.Append("DROP TABLE IF EXISTS ");
-            sb.Append(dstTable.DoubleQuote());
+            sb.Append(sourceTable.TargetTableName.DoubleQuote());
             sb.Append(";\r\n");
             sb.Append("IMPORT DATABASE ");
             sb.Append(SqliteModuleName.SingleQuote());
-            sb.Append(" CONNECTION @cs TABLE ");
-            sb.Append(srcTable.DoubleQuote());
-            if (srcTable != dstTable) {
+            sb.Append(" CONNECTION @cs ");
+            if (sourceTable.SourceIsTable) {
+                sb.Append("TABLE ");
+                sb.Append(sourceTable.SourceTableName.DoubleQuote());
+            } else if (sourceTable.SourceIsSql) {
+                sb.Append("QUERY ");
+                sb.Append(sourceTable.SourceSql.SingleQuote());
+            } else {
+                throw new Exception("Unexpected source table; neither table nor SQL?");
+            }
+            if (sourceTable.SourceIsSql || sourceTable.SourceTableName != sourceTable.TargetTableName) {
                 sb.Append(" INTO ");
-                sb.Append(dstTable.DoubleQuote());
+                sb.Append(sourceTable.TargetTableName.DoubleQuote());
             }
             if (link) {
                 sb.Append(" OPTIONS (LINK: 1)");

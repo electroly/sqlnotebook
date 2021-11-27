@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using MySql.Data.MySqlClient;
 using SqlNotebook.Properties;
 
@@ -9,8 +10,8 @@ public sealed class MySqlImportSession : ImportSessionBase<MySqlConnectionString
     public override string ProductName { get; } = "MySQL";
     protected override string SqliteModuleName => "mysql";
 
-    protected override IDbConnection CreateConnection(MySqlConnectionStringBuilder builder) {
-        return new MySqlConnection(builder.ConnectionString);
+    public override DbConnection CreateConnection() {
+        return new MySqlConnection(_builder.ConnectionString);
     }
 
     protected override void ReadTableNames(IDbConnection connection) {

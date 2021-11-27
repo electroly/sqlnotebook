@@ -1466,9 +1466,7 @@
     <Compile Update="Import\Csv\ImportCsvForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Import\Database\DatabaseImportTablesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="Import\Database\DatabaseImportTablesForm.cs" />
     <Compile Update="Import\Database\DatabaseImportRenameTableForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using Npgsql;
 using SqlNotebook.Properties;
 
@@ -9,8 +10,8 @@ public sealed class PostgreSqlImportSession : ImportSessionBase<NpgsqlConnection
     public override string ProductName { get; } = "PostgreSQL";
     protected override string SqliteModuleName => "pgsql";
 
-    protected override IDbConnection CreateConnection(NpgsqlConnectionStringBuilder builder) {
-        return new NpgsqlConnection(builder.ConnectionString);
+    public override DbConnection CreateConnection() {
+        return new NpgsqlConnection(_builder.ConnectionString);
     }
 
     protected override void ReadTableNames(IDbConnection connection) {
