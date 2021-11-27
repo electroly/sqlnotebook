@@ -496,6 +496,7 @@ public partial class MainForm : ZForm {
                 ValidateNames = true
             };
             if (f.ShowDialog(this) != DialogResult.OK) {
+                Focus();
                 return false;
             }
 
@@ -503,6 +504,7 @@ public partial class MainForm : ZForm {
                 _manager.SaveAs(f.FileName, cancel);
             });
             if (!success) {
+                Focus();
                 return false;
             }
             _isNew = false;
@@ -519,6 +521,7 @@ public partial class MainForm : ZForm {
 
         _manager.Rescan();
         SetTitle();
+        Focus();
         return true;
     }
 
@@ -620,7 +623,7 @@ public partial class MainForm : ZForm {
         }
 
         WaitForm.GoWithCancel(this, "Export", "Exporting to file...", out var success, cancel => {
-            SqlUtil.WithCancellation(_notebook, () => {
+            SqlUtil.WithCancellableTransaction(_notebook, () => {
                 using var stream = File.CreateText(filePath);
                 if (item.Type == NotebookItemType.Script) {
                     ScriptOutput output;

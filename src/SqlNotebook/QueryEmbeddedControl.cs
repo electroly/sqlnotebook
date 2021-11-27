@@ -4,7 +4,6 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
 using SqlNotebookScript;
@@ -89,7 +88,10 @@ public partial class QueryEmbeddedControl : UserControl {
         ui.Init(_sendMenu);
         ui.MarginRight(_sendMenu);
         ui.Init(_optionsMenu);
+        ui.MarginRight(_optionsMenu);
         _optionsMenu.Visible = isPageContext;
+        ui.Init(_transactionMenu);
+        ui.MarginRight(_transactionMenu);
         ui.Init(_sendTableMenu, Resources.table, Resources.table32);
         ui.Init(_hideResultsButton, Resources.hide_detail, Resources.hide_detail32);
         _hideResultsButton.Visible = false;
@@ -178,11 +180,19 @@ public partial class QueryEmbeddedControl : UserControl {
         try {
             _manager.CommitOpenEditors();
             var sql = SqlText;
+            var none = _transactionNoneMenu.Checked;
+            var rollback = _transactionRollbackMenu.Checked;
             var output = WaitForm.GoWithCancel(TopLevelControl, "Script", "Executing script...", out var success, cancel => {
-                return SqlUtil.WithCancellation(_manager.Notebook, () => {
-                    using var status = WaitStatus.StartRows("Script output");
-                    return _manager.ExecuteScript(sql, onRow: status.IncrementRows);
-                }, cancel);
+                using var status = WaitStatus.StartRows("Script output");
+                if (none) {
+                    return SqlUtil.WithCancellation(_manager.Notebook, () => {
+                        return _manager.ExecuteScript(sql, onRow: status.IncrementRows);
+                    }, cancel);
+                } else {
+                    return SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
+                        return _manager.ExecuteScript(sql, onRow: status.IncrementRows);
+                    }, rollback, cancel);
+                }
             });
             _manager.SetDirty();
             _manager.Rescan();
@@ -338,5 +348,26 @@ public partial class QueryEmbeddedControl : UserControl {
 
     private void AppearanceMenu_Click(object sender, EventArgs e) {
         Dirty?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void TransactionCommitMenu_Click(object sender, EventArgs e) {
+        _transactionCommitMenu.Checked = true;
+        _transactionRollbackMenu.Checked = false;
+        _transactionNoneMenu.Checked = false;
+        _transactionMenu.Text = "Transaction: Commit";
+    }
+
+    private void TransactionRollbackMenu_Click(object sender, EventArgs e) {
+        _transactionCommitMenu.Checked = false;
+        _transactionRollbackMenu.Checked = true;
+        _transactionNoneMenu.Checked = false;
+        _transactionMenu.Text = "Transaction: Rollback";
+    }
+
+    private void TransactionNoneMenu_Click(object sender, EventArgs e) {
+        _transactionCommitMenu.Checked = false;
+        _transactionRollbackMenu.Checked = false;
+        _transactionNoneMenu.Checked = true;
+        _transactionMenu.Text = "Transaction: None";
     }
 }

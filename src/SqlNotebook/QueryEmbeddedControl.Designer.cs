@@ -42,6 +42,10 @@ namespace SqlNotebook {
             this._limitRowsOnPageMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._showResultsButton = new System.Windows.Forms.ToolStripButton();
             this._hideResultsButton = new System.Windows.Forms.ToolStripButton();
+            this._transactionMenu = new System.Windows.Forms.ToolStripDropDownButton();
+            this._transactionCommitMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this._transactionRollbackMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this._transactionNoneMenu = new System.Windows.Forms.ToolStripMenuItem();
             toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,35 +60,35 @@ namespace SqlNotebook {
             // toolStripMenuItem2
             // 
             toolStripMenuItem2.Name = "toolStripMenuItem2";
-            toolStripMenuItem2.Size = new System.Drawing.Size(270, 34);
+            toolStripMenuItem2.Size = new System.Drawing.Size(144, 34);
             toolStripMenuItem2.Text = "5";
             toolStripMenuItem2.Click += new System.EventHandler(this.LimitsRowsMenu_Click);
             // 
             // toolStripMenuItem3
             // 
             toolStripMenuItem3.Name = "toolStripMenuItem3";
-            toolStripMenuItem3.Size = new System.Drawing.Size(270, 34);
+            toolStripMenuItem3.Size = new System.Drawing.Size(144, 34);
             toolStripMenuItem3.Text = "10";
             toolStripMenuItem3.Click += new System.EventHandler(this.LimitsRowsMenu_Click);
             // 
             // toolStripMenuItem4
             // 
             toolStripMenuItem4.Name = "toolStripMenuItem4";
-            toolStripMenuItem4.Size = new System.Drawing.Size(270, 34);
+            toolStripMenuItem4.Size = new System.Drawing.Size(144, 34);
             toolStripMenuItem4.Text = "20";
             toolStripMenuItem4.Click += new System.EventHandler(this.LimitsRowsMenu_Click);
             // 
             // toolStripMenuItem5
             // 
             toolStripMenuItem5.Name = "toolStripMenuItem5";
-            toolStripMenuItem5.Size = new System.Drawing.Size(270, 34);
+            toolStripMenuItem5.Size = new System.Drawing.Size(144, 34);
             toolStripMenuItem5.Text = "50";
             toolStripMenuItem5.Click += new System.EventHandler(this.LimitsRowsMenu_Click);
             // 
             // toolStripMenuItem6
             // 
             toolStripMenuItem6.Name = "toolStripMenuItem6";
-            toolStripMenuItem6.Size = new System.Drawing.Size(270, 34);
+            toolStripMenuItem6.Size = new System.Drawing.Size(144, 34);
             toolStripMenuItem6.Text = "100";
             toolStripMenuItem6.Click += new System.EventHandler(this.LimitsRowsMenu_Click);
             // 
@@ -101,7 +105,7 @@ namespace SqlNotebook {
             this._split.Panel1.Controls.Add(this._sqlPanel);
             this._split.Panel1.Controls.Add(this._toolStrip);
             this._split.Panel2Collapsed = true;
-            this._split.Size = new System.Drawing.Size(756, 640);
+            this._split.Size = new System.Drawing.Size(1059, 713);
             this._split.SplitterDistance = 252;
             this._split.TabIndex = 0;
             // 
@@ -111,7 +115,7 @@ namespace SqlNotebook {
             this._sqlPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._sqlPanel.Location = new System.Drawing.Point(0, 40);
             this._sqlPanel.Name = "_sqlPanel";
-            this._sqlPanel.Size = new System.Drawing.Size(756, 600);
+            this._sqlPanel.Size = new System.Drawing.Size(1059, 673);
             this._sqlPanel.TabIndex = 2;
             // 
             // _toolStrip
@@ -124,12 +128,13 @@ namespace SqlNotebook {
             this._sendMenu,
             this._optionsMenu,
             this._showResultsButton,
-            this._hideResultsButton});
+            this._hideResultsButton,
+            this._transactionMenu});
             this._toolStrip.Location = new System.Drawing.Point(0, 0);
             this._toolStrip.Name = "_toolStrip";
             this._toolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this._toolStrip.ShowItemToolTips = false;
-            this._toolStrip.Size = new System.Drawing.Size(756, 40);
+            this._toolStrip.Size = new System.Drawing.Size(1059, 40);
             this._toolStrip.Stretch = true;
             this._toolStrip.TabIndex = 1;
             // 
@@ -224,13 +229,49 @@ namespace SqlNotebook {
             this._hideResultsButton.Visible = false;
             this._hideResultsButton.Click += new System.EventHandler(this.HideResultsButton_Click);
             // 
+            // _transactionMenu
+            // 
+            this._transactionMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this._transactionMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._transactionCommitMenu,
+            this._transactionRollbackMenu,
+            this._transactionNoneMenu});
+            this._transactionMenu.Image = ((System.Drawing.Image)(resources.GetObject("_transactionMenu.Image")));
+            this._transactionMenu.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._transactionMenu.Name = "_transactionMenu";
+            this._transactionMenu.Size = new System.Drawing.Size(191, 35);
+            this._transactionMenu.Text = "Transaction: Commit";
+            // 
+            // _transactionCommitMenu
+            // 
+            this._transactionCommitMenu.Checked = true;
+            this._transactionCommitMenu.CheckState = System.Windows.Forms.CheckState.Checked;
+            this._transactionCommitMenu.Name = "_transactionCommitMenu";
+            this._transactionCommitMenu.Size = new System.Drawing.Size(332, 34);
+            this._transactionCommitMenu.Text = "Implicit BEGIN ... COMMIT";
+            this._transactionCommitMenu.Click += new System.EventHandler(this.TransactionCommitMenu_Click);
+            // 
+            // _transactionRollbackMenu
+            // 
+            this._transactionRollbackMenu.Name = "_transactionRollbackMenu";
+            this._transactionRollbackMenu.Size = new System.Drawing.Size(332, 34);
+            this._transactionRollbackMenu.Text = "Implicit BEGIN ... ROLLBACK";
+            this._transactionRollbackMenu.Click += new System.EventHandler(this.TransactionRollbackMenu_Click);
+            // 
+            // _transactionNoneMenu
+            // 
+            this._transactionNoneMenu.Name = "_transactionNoneMenu";
+            this._transactionNoneMenu.Size = new System.Drawing.Size(332, 34);
+            this._transactionNoneMenu.Text = "None (auto-commit)";
+            this._transactionNoneMenu.Click += new System.EventHandler(this.TransactionNoneMenu_Click);
+            // 
             // QueryEmbeddedControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this._split);
             this.Name = "QueryEmbeddedControl";
-            this.Size = new System.Drawing.Size(756, 640);
+            this.Size = new System.Drawing.Size(1059, 713);
             this._split.Panel1.ResumeLayout(false);
             this._split.Panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this._split)).EndInit();
@@ -255,5 +296,9 @@ namespace SqlNotebook {
         private System.Windows.Forms.ToolStripButton _hideResultsButton;
         private System.Windows.Forms.ToolStripButton _showResultsButton;
         private System.Windows.Forms.ToolStripMenuItem _limitRowsOnPageMenu;
+        private System.Windows.Forms.ToolStripDropDownButton _transactionMenu;
+        private System.Windows.Forms.ToolStripMenuItem _transactionCommitMenu;
+        private System.Windows.Forms.ToolStripMenuItem _transactionRollbackMenu;
+        private System.Windows.Forms.ToolStripMenuItem _transactionNoneMenu;
     }
 }
