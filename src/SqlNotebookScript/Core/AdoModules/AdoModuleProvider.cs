@@ -23,6 +23,7 @@ public sealed class PostgreSqlAdoModuleProvider : AdoModuleProvider {
     protected override string SelectRandomSampleSql => "SELECT * FROM {0} ORDER BY RANDOM() LIMIT 5000;";
     protected override string SelectRandomSampleSqlFallback => null;
     protected override string ModuleName => "pgsql";
+    protected override char EscapeChar => '"';
 }
 
 public sealed class SqlServerAdoModuleProvider : AdoModuleProvider {
@@ -31,6 +32,7 @@ public sealed class SqlServerAdoModuleProvider : AdoModuleProvider {
     protected override string SelectRandomSampleSql => "SELECT * FROM {0} TABLESAMPLE (5000 ROWS);";
     protected override string SelectRandomSampleSqlFallback => "SELECT TOP 5000 * FROM {0}";
     protected override string ModuleName => "mssql";
+    protected override char EscapeChar => '"';
 }
 
 public sealed class MySqlAdoModuleProvider : AdoModuleProvider {
@@ -39,6 +41,7 @@ public sealed class MySqlAdoModuleProvider : AdoModuleProvider {
     protected override string SelectRandomSampleSql => "SELECT * FROM {0} ORDER BY RAND() LIMIT 5000;";
     protected override string SelectRandomSampleSqlFallback => null;
     protected override string ModuleName => "mysql";
+    protected override char EscapeChar => '`';
 }
 
 public abstract class AdoModuleProvider : IDisposable {
@@ -137,7 +140,8 @@ public abstract class AdoModuleProvider : IDisposable {
                 _createInfo = new() {
                     ConnectionCreator = CreateConnection,
                     SelectRandomSampleSql = SelectRandomSampleSql,
-                    SelectRandomSampleSqlFallback = SelectRandomSampleSqlFallback
+                    SelectRandomSampleSqlFallback = SelectRandomSampleSqlFallback,
+                    EscapeChar = EscapeChar,
                 };
                 _adoCreateInfos.Add(createInfoKey, _createInfo);
 
@@ -159,6 +163,7 @@ public abstract class AdoModuleProvider : IDisposable {
     protected abstract string SelectRandomSampleSql { get; }
     protected abstract string SelectRandomSampleSqlFallback { get; }
     protected abstract string ModuleName { get; }
+    protected abstract char EscapeChar { get; }
 
     protected static void AdoPopulateModule(
         IntPtr modulePtr // sqlite3_module*
@@ -253,8 +258,8 @@ public abstract class AdoModuleProvider : IDisposable {
             var adoSchemaName = argc == 6 ? TrimSingleQuote(GetArgvString(argv, 5)) : "";
             var adoQuotedCombinedName =
                 adoSchemaName.Length > 0
-                ? $"{DoubleQuote(adoSchemaName)}.{DoubleQuote(adoTableName)}"
-                : DoubleQuote(adoTableName);
+                ? $"{Quote(adoSchemaName, adoCreateInfo.EscapeChar)}.{Quote(adoTableName, adoCreateInfo.EscapeChar)}"
+                : Quote(adoTableName, adoCreateInfo.EscapeChar);
             var connection = adoCreateInfo.ConnectionCreator.Invoke(connectionString);
             connection.Open();
 
@@ -348,6 +353,7 @@ public abstract class AdoModuleProvider : IDisposable {
                 ConnectionCreator = adoCreateInfo.ConnectionCreator,
                 InitialRowCount = sampleSize,
                 EstimatedRowsPercentByColumn = estimatedRowsPercentByColumn,
+                EscapeChar = adoCreateInfo.EscapeChar,
             });
 
             // Set the virtual table schema (CREATE TABLE statement).
@@ -422,8 +428,8 @@ public abstract class AdoModuleProvider : IDisposable {
         var tableName = vtabMeta.AdoTableName;
         var adoQuotedCombinedName =
             schemaName.Length > 0
-            ? $"{DoubleQuote(schemaName)}.{DoubleQuote(tableName)}"
-            : DoubleQuote(tableName);
+            ? $"{Quote(schemaName, vtabMeta.EscapeChar)}.{Quote(tableName, vtabMeta.EscapeChar)}"
+            : Quote(tableName, vtabMeta.EscapeChar);
         sb.Append(adoQuotedCombinedName);
 
         // WHERE clause
@@ -758,5 +764,5 @@ public abstract class AdoModuleProvider : IDisposable {
         }
     }
 
-    private static string DoubleQuote(string s) => "\"" + s.Replace("\"", "\"\"") + "\"";
+    private static string Quote(string s, char ch) => ch + s.Replace($"{ch}", $"{ch}{ch}") + ch;
 }

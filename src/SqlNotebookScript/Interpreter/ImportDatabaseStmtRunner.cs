@@ -165,6 +165,14 @@ public sealed class ImportDatabaseStmtRunner {
         }
     }
 
+    private string RemoteQuote(string name) {
+        if (_vendor == "mysql") {
+            return $"`{name.Replace("`", "``")}`";
+        } else {
+            return name.DoubleQuote();
+        }
+    }
+
     private void ImportCopy(WaitStatus.InFlightRows status) {
         IDbConnection srcConnection = null;
         IDbCommand srcCommand = null;
@@ -186,8 +194,8 @@ public sealed class ImportDatabaseStmtRunner {
             } else {
                 var quotedSourceTable =
                     _vendor == "mssql" && !string.IsNullOrEmpty(_srcSchemaName)
-                    ? $"{_srcSchemaName.DoubleQuote()}.{_srcTableName.DoubleQuote()}"
-                    : _srcTableName.DoubleQuote();
+                    ? $"{RemoteQuote(_srcSchemaName)}.{RemoteQuote(_srcTableName)}"
+                    : RemoteQuote(_srcTableName);
                 srcCommand.CommandText = $"SELECT * FROM {quotedSourceTable}";
             }
             reader = srcCommand.ExecuteReader();

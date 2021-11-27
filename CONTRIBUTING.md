@@ -1,6 +1,6 @@
 # Contributors Guide
 
-Use a Windows machine with at least 8GB RAM.
+Use a Windows machine with at least 8GB RAM and 100GB disk.
 In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
 
 - Install [Visual Studio Community 2022](https://visualstudio.microsoft.com/vs/).
@@ -17,6 +17,11 @@ In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
     ```
 - Install [SeaMonkey](https://www.seamonkey-project.org/releases/). Open it, Edit > Preferences > Appearance. Set "When SeaMonkey starts up, open..." to Composer.
 - Install [WiX Toolset](https://wixtoolset.org/releases/).
+- Install [SQL Server 2019 Express](https://www.microsoft.com/en-us/Download/details.aspx?id=101064).
+- Install [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms).
+- Install [PostgreSQL](https://www.postgresql.org/download/windows/).
+- Install [MySQL](https://dev.mysql.com/downloads/mysql/).
+- In `services.msc`, set SQL Server, PostgresQL, and MySQL servivces to manual startup.
 
 ## How to build from source
 

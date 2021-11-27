@@ -11,6 +11,7 @@ public record class AdoTableMetadata {
     public List<string> ColumnNames { get; init; }
     public Func<string, IDbConnection> ConnectionCreator { get; init; }
     public long InitialRowCount { get; init; }
+    public char EscapeChar { get; init; }
 
     /// <summary>
     /// Column name => estimated rows as a fraction (0-1) of the total row count

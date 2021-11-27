@@ -13,4 +13,7 @@ public record class AdoCreateInfo {
 
     // For SQL Server we need to fall back to a non-TABLESAMPLE for views
     public string SelectRandomSampleSqlFallback { get; init; }
+
+    // " or `
+    public char EscapeChar;
 }

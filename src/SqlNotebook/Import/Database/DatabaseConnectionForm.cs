@@ -2,6 +2,7 @@
 using System.Data.Common;
 using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace SqlNotebook.Import.Database;
 
@@ -54,8 +55,11 @@ public partial class DatabaseConnectionForm : ZForm {
         ui.Init(_okBtn);
         ui.Init(_cancelBtn);
 
-        if (!(builder is SqlConnectionStringBuilder)) {
+        if (builder is not SqlConnectionStringBuilder) {
             _windowsAuthChk.Visible = false;
+        }
+        if (builder is MySqlConnectionStringBuilder) {
+            _databaseLabel.Text = "&Schema name:";
         }
         _propertyGrid.SelectedObject = builder;
         Text = title;
