@@ -38,17 +38,11 @@ public static class FileImporter {
         }
     }
 
-    private static void ImportCsv(IWin32Window owner, string filePath, NotebookManager manager,
-        DatabaseSchema schema
+    private static void ImportCsv(
+        IWin32Window owner, string filePath, NotebookManager manager, DatabaseSchema schema
         ) {
-        string importSql;
         using ImportCsvForm f = new(filePath, schema, manager);
-        if (f.ShowDialog(owner) != DialogResult.OK) {
-            return;
-        }
-        importSql = f.GeneratedImportSql;
-
-        RunImportScript(importSql, owner, filePath, manager);
+        f.ShowDialog(owner);
     }
 
     private static void ImportXls(
@@ -71,18 +65,5 @@ public static class FileImporter {
             return null;
         }
         return schema;
-    }
-
-    private static bool RunImportScript(string importSql, IWin32Window owner, string filePath,
-    NotebookManager manager) {
-        WaitForm.GoWithCancel(owner, "Import", $"Importing {Path.GetExtension(filePath).ToUpperInvariant().TrimStart('.')} file...", out var success, cancel => {
-            SqlUtil.WithCancellableTransaction(manager.Notebook, () => {
-                manager.ExecuteScriptNoOutput(importSql, transactionType: NotebookManager.TransactionType.Transaction);
-            }, cancel);
-        });
-
-        manager.Rescan();
-        manager.SetDirty();
-        return success;
     }
 }

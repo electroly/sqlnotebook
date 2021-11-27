@@ -30,8 +30,6 @@ public partial class ImportCsvForm : ZForm {
     private readonly Slot<string> _inputPreviewError = new Slot<string>();
     private Guid _inputPreviewLoadId;
 
-    public string GeneratedImportSql { get; private set; } // the ultimate result of this form
-
     public ImportCsvForm(string filePath, DatabaseSchema schema, NotebookManager manager) {
         InitializeComponent();
         _filePath = filePath;
@@ -267,8 +265,18 @@ public partial class ImportCsvForm : ZForm {
     private void OkBtn_Click(object sender, EventArgs e) {
         var errorMessage = GetErrorMessage();
         if (errorMessage == null) {
-            DialogResult = DialogResult.OK;
-            GeneratedImportSql = GetImportSql();
+            var sql = GetImportSql();
+            WaitForm.GoWithCancel(this, "Import", "Importing CSV file...", out var success, cancel => {
+                SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
+                    _manager.ExecuteScriptNoOutput(sql);
+                }, cancel);
+            });
+            _manager.Rescan();
+            _manager.SetDirty();
+            if (!success) {
+                return;
+            }
+            Close();
         } else {
             Ui.ShowError(this, "Import Error", errorMessage);
         }
