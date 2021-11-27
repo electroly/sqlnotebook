@@ -178,7 +178,7 @@ public partial class QueryEmbeddedControl : UserControl {
         try {
             _manager.CommitOpenEditors();
             var sql = SqlText;
-            var output = WaitForm.GoWithCancel(TopLevelControl, "Script", "Running your script...", out var success, cancel => {
+            var output = WaitForm.GoWithCancel(TopLevelControl, "Script", "Executing script...", out var success, cancel => {
                 return SqlUtil.WithCancellation(_manager.Notebook, () => {
                     using var status = WaitStatus.StartRows("Script output");
                     return _manager.ExecuteScript(sql, onRow: status.IncrementRows);
@@ -217,7 +217,7 @@ public partial class QueryEmbeddedControl : UserControl {
     private void SendTableMenu_Click(object sender, EventArgs e) {
         if (_dataTables == null || !_dataTables.Any()) {
             Ui.ShowError(TopLevelControl, "Send to Table",
-                "There are no data table results to send.", "Make sure to execute your query first.");
+                "There are no data table results to send.", "Make sure to execute the query by pressing F5 first.");
             return;
         }
 
@@ -237,7 +237,7 @@ public partial class QueryEmbeddedControl : UserControl {
 
         var rerun = sdt.FullCount != sdt.Rows.Count;
         if (rerun) {
-            var choice = Ui.ShowTaskDialog(this, "Your query will be executed. Proceed?", "Send to Table",
+            var choice = Ui.ShowTaskDialog(this, "The query will be executed. Proceed?", "Send to Table",
                 new[] { Ui.OK, Ui.CANCEL });
             if (choice != Ui.OK) {
                 return;
@@ -252,7 +252,7 @@ public partial class QueryEmbeddedControl : UserControl {
 
         var sql = SqlText;
         var tabIndex = _tabs.SelectedIndex;
-        WaitForm.GoWithCancel(TopLevelControl, "Send", rerun ? "Running script..." : "Sending results to table...", out var success, cancel => {
+        WaitForm.GoWithCancel(TopLevelControl, "Send", "Sending results to table...", out var success, cancel => {
             _manager.Notebook.Invoke(() => {
                 SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
                     _manager.ExecuteScriptNoOutput(createSql);
