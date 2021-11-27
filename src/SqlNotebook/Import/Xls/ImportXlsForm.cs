@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using NPOI.SS.Util;
 using SqlNotebook.Properties;
 using SqlNotebookScript.Utils;
 
@@ -179,8 +178,8 @@ public partial class ImportXlsForm : ZForm {
         } else {
             // Subset of columns selected.
             _specificColumnsCheck.Checked = true;
-            _columnStartText.Text = $"{CellReference.ConvertNumToColString(minColumnIndex)}";
-            _columnEndText.Text = $"{CellReference.ConvertNumToColString(maxColumnIndex)}";
+            _columnStartText.Text = $"{XlsUtil.ConvertNumToColString(minColumnIndex)}";
+            _columnEndText.Text = $"{XlsUtil.ConvertNumToColString(maxColumnIndex)}";
         }
 
         StartUpdateTimer();
@@ -219,7 +218,7 @@ public partial class ImportXlsForm : ZForm {
             rowNumber++;
         }
         _rowRangeLabel.Text = $"(1-{_grid.Rows.Count})";
-        _columnRangeLabel.Text = $"(A-{CellReference.ConvertNumToColString(_grid.Columns.Count - 1)})";
+        _columnRangeLabel.Text = $"(A-{XlsUtil.ConvertNumToColString(_grid.Columns.Count - 1)})";
     }
 
     private void LoadColumns() {
@@ -241,8 +240,8 @@ public partial class ImportXlsForm : ZForm {
             try {
                 if (IsValidColumnString(_columnStartText.Text) && IsValidColumnString(_columnEndText.Text)) {
                     var (min, max) = (
-                        CellReference.ConvertColStringToIndex(_columnStartText.Text),
-                        CellReference.ConvertColStringToIndex(_columnEndText.Text));
+                        XlsUtil.ConvertColStringToIndex(_columnStartText.Text),
+                        XlsUtil.ConvertColStringToIndex(_columnEndText.Text));
                     minColumnIndex = min;
                     maxColumnIndex = max;
                 }
@@ -253,7 +252,7 @@ public partial class ImportXlsForm : ZForm {
 
         List<string> columnNames = new();
         for (var columnIndex = minColumnIndex; columnIndex <= maxColumnIndex; columnIndex++) {
-            var columnName = CellReference.ConvertNumToColString(columnIndex);
+            var columnName = XlsUtil.ConvertNumToColString(columnIndex);
             if (_columnNamesCheck.Checked) {
                 try {
                     columnName = sheetInfo.DataTable.Rows[minRowIndex][columnIndex].ToString();
@@ -360,10 +359,10 @@ public partial class ImportXlsForm : ZForm {
             sb.AppendLine($"    LAST_ROW: {maxRowIndex.Value + 1},");
         }
         if (minColumnIndex.HasValue) {
-            sb.AppendLine($"    FIRST_COLUMN: {CellReference.ConvertNumToColString(minColumnIndex.Value).SingleQuote()},");
+            sb.AppendLine($"    FIRST_COLUMN: {XlsUtil.ConvertNumToColString(minColumnIndex.Value).SingleQuote()},");
         }
         if (maxColumnIndex.HasValue) {
-            sb.AppendLine($"    LAST_COLUMN: {CellReference.ConvertNumToColString(maxColumnIndex.Value).SingleQuote()},");
+            sb.AppendLine($"    LAST_COLUMN: {XlsUtil.ConvertNumToColString(maxColumnIndex.Value).SingleQuote()},");
         }
         sb.AppendLine($"    HEADER_ROW: {(columnHeaders == ColumnHeadersOption.Present ? 1 : 0)}, -- {columnHeaders.GetDescription()}");
         sb.AppendLine($"    TRUNCATE_EXISTING_TABLE: {(ifTableExists == ImportTableExistsOption.DeleteExistingRows ? 1 : 0)}, -- {ifTableExists.GetDescription()}");
@@ -414,22 +413,22 @@ public partial class ImportXlsForm : ZForm {
 
             if (!IsValidColumnString(_columnStartText.Text)) {
                 throw new Exception($"\"{_columnStartText.Text}\" is not a valid starting column. " +
-                    $"Please enter a column from A to {CellReference.ConvertNumToColString(numColumns - 1)}.");
+                    $"Please enter a column from A to {XlsUtil.ConvertNumToColString(numColumns - 1)}.");
             }
-            var minColumnIndex = CellReference.ConvertColStringToIndex(_columnStartText.Text);
+            var minColumnIndex = XlsUtil.ConvertColStringToIndex(_columnStartText.Text);
             if (minColumnIndex < 0 || minColumnIndex >= numColumns) {
                 throw new Exception($"The starting column \"{_columnStartText.Text}\" is out of range. " +
-                    $"Please enter a column from A to {CellReference.ConvertNumToColString(numColumns - 1)}.");
+                    $"Please enter a column from A to {XlsUtil.ConvertNumToColString(numColumns - 1)}.");
             }
 
             if (!IsValidColumnString(_columnEndText.Text)) {
                 throw new Exception($"\"{_columnEndText.Text}\" is not a valid ending column. Please enter " +
-                    $"a column from A to {CellReference.ConvertNumToColString(numColumns - 1)}.");
+                    $"a column from A to {XlsUtil.ConvertNumToColString(numColumns - 1)}.");
             }
-            var maxColumnIndex = CellReference.ConvertColStringToIndex(_columnEndText.Text);
+            var maxColumnIndex = XlsUtil.ConvertColStringToIndex(_columnEndText.Text);
             if (maxColumnIndex < 0 || maxColumnIndex >= numColumns) {
                 throw new Exception($"The ending column \"{_columnEndText.Text}\" is out of range. " +
-                    $"Please enter a column from A to {CellReference.ConvertNumToColString(numColumns - 1)}.");
+                    $"Please enter a column from A to {XlsUtil.ConvertNumToColString(numColumns - 1)}.");
             }
 
             if (minColumnIndex > maxColumnIndex) {

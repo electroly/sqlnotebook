@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using NPOI.SS.UserModel;
 using SqlNotebookScript.Core;
 using SqlNotebookScript.Utils;
 
@@ -111,8 +110,8 @@ public sealed class ImportXlsStmtRunner {
 
     private void Import() {
         XlsUtil.WithWorkbook(_filePath, workbook => {
-            var sheet = workbook.GetSheetAt(GetSheetIndex(workbook));
-            var rows = XlsUtil.ReadSheet(sheet, _firstRowIndex, _lastRowIndex, _firstColumnIndex, _lastColumnIndex);
+            workbook.SeekToWorksheet(GetSheetIndex(workbook));
+            var rows = workbook.ReadSheet(_firstRowIndex, _lastRowIndex, _firstColumnIndex, _lastColumnIndex);
 
             SqlUtil.Import(
                 srcColNames: XlsUtil.ReadColumnNames(rows, _headerRow), 
@@ -127,7 +126,7 @@ public sealed class ImportXlsStmtRunner {
         });
     }
 
-    private int GetSheetIndex(IWorkbook workbook) {
+    private int GetSheetIndex(XlsUtil.IWorkbook workbook) {
         var whichSheet = _whichSheet ?? 1; // 1-based number or name string
         if (whichSheet is int || whichSheet is long) {
             var whichSheetNum = Convert.ToInt32(whichSheet);
@@ -135,9 +134,9 @@ public sealed class ImportXlsStmtRunner {
                 throw new Exception($"The worksheet number must be at least 1.");
             }
             return whichSheetNum - 1;
-        } else if (whichSheet is string) {
-            var name = (string)whichSheet;
-            var index = workbook.GetSheetIndex(name);
+        } else if (whichSheet is string name) {
+            var names = workbook.ReadWorksheetNames();
+            var index = names.IndexOf(name);
             if (index == -1) {
                 throw new Exception($"The worksheet \"{name}\" was not found.");
             } else {

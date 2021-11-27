@@ -16,7 +16,8 @@ public sealed class XlsInput {
 
         List<XlsWorksheetInfo> worksheets = new();
         XlsUtil.WithWorkbook(xlsFilePath, workbook => {
-            var numSheets = workbook.NumberOfSheets;
+            var sheets = workbook.ReadWorksheetNames();
+            var numSheets = sheets.Count;
 
             if (numSheets == 0) {
                 throw new Exception("This workbook does not contain any sheets.");

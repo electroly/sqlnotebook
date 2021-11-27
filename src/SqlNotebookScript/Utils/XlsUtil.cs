@@ -1,99 +1,146 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
-using NPOI.SS.Util;
-using NPOI.XSSF.UserModel;
+using ExcelDataReader;
 
 namespace SqlNotebookScript.Utils;
 
 public static class XlsUtil {
-    public static T WithWorkbook<T>(string filePath, Func<IWorkbook, T> func) {
-        using (var stream = File.OpenRead(filePath)) {
-            var workbook =
-                Path.GetExtension(filePath).ToLower() == ".xls"
-                ? (IWorkbook)new HSSFWorkbook(stream) : new XSSFWorkbook(stream);
-            return func(workbook);
+    public interface IWorkbook {
+        List<string> ReadWorksheetNames();
+        void SeekToWorksheet(int index);
+        List<object[]> ReadSheet(
+            int firstRowIndex = 0,
+            int? lastRowIndex = null,
+            int firstColumnIndex = 0,
+            int? lastColumnIndex = null,
+            int maxRows = int.MaxValue);
+        string GetSheetName(int index);
+    }
+
+    private sealed class Workbook : IWorkbook, IDisposable {
+        private readonly Stream _stream;
+        private readonly IExcelDataReader _reader;
+        private bool _disposedValue;
+
+        public Workbook(string filePath) {
+            try {
+                _stream = File.OpenRead(filePath);
+                ExcelReaderConfiguration config = new();
+                _reader = ExcelReaderFactory.CreateReader(_stream, config);
+            } catch {
+                _stream?.Dispose();
+                _reader?.Dispose();
+                throw;
+            }
+        }
+
+        private void Dispose(bool disposing) {
+            if (!_disposedValue) {
+                if (disposing) {
+                    // dispose managed state (managed objects)
+                    _reader.Dispose();
+                    _stream.Dispose();
+                }
+
+                // free unmanaged resources (unmanaged objects) and override finalizer
+                // set large fields to null
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        public List<string> ReadWorksheetNames() {
+            List<string> list = new();
+            _reader.Reset();
+            do {
+                list.Add(_reader.Name);
+            } while (_reader.NextResult());
+            return list;
+        }
+
+        public string GetSheetName(int index) {
+            SeekToWorksheet(index);
+            return _reader.Name;
+        }
+
+        public void SeekToWorksheet(int index) {
+            _reader.Reset();
+            for (var i = 0; i < index; i++) {
+                if (!_reader.NextResult()) {
+                    throw new Exception($"Worksheet {index + 1} does not exist in this workbook.");
+                }
+            }
+        }
+
+        public List<object[]> ReadSheet(
+            int firstRowIndex = 0,
+            int? lastRowIndex = null,
+            int firstColumnIndex = 0,
+            int? lastColumnIndex = null,
+            int maxRows = int.MaxValue
+            ) {
+            List<object[]> list = new();
+
+            for (var i = 0; i < firstRowIndex; i++) {
+                if (!_reader.Read()) {
+                    return new();
+                }
+            }
+
+            for (var i = firstRowIndex;
+                (!lastRowIndex.HasValue || i <= lastRowIndex.Value) && list.Count < maxRows;
+                i++
+                ) {
+                if (!_reader.Read()) {
+                    break;
+                }
+
+                var row = new object[_reader.FieldCount];
+                for (var j = firstColumnIndex;
+                    j <= (lastColumnIndex ?? (_reader.FieldCount - 1));
+                    j++
+                    ) {
+                    if (j < _reader.FieldCount) {
+                        row[j] = _reader.GetValue(j);
+                    }
+                }
+                
+                list.Add(row);
+            }
+
+            return list;
         }
     }
 
+    //private static T WithWorkbook<T>(string filePath, Func<IWorkbook, T> func) {
+    //    using Workbook workbook = new(filePath);
+    //    return func(workbook);
+    //}
+
     public static void WithWorkbook(string filePath, Action<IWorkbook> action) {
-        WithWorkbook(filePath, workbook => {
-            action(workbook);
-            return true;
-        });
+        using Workbook workbook = new(filePath);
+        action(workbook);
     }
 
     public static IReadOnlyList<string> ReadWorksheetNames(string filePath) {
-        if (!File.Exists(filePath)) {
-            throw new FileNotFoundException();
-        }
-
-        return WithWorkbook(filePath, workbook => {
-            var list = new List<string>();
-            for (int i = 0; i < workbook.NumberOfSheets; i++) {
-                var name = workbook.GetSheetName(i);
-                list.Add(name);
-            }
-            return list;
-        });
+        using Workbook workbook = new(filePath);
+        return workbook.ReadWorksheetNames();
     }
 
     public static List<object[]> ReadWorksheet(string filePath, int worksheetIndex, int? lastRowIndex = null) {
-        if (!File.Exists(filePath)) {
-            throw new FileNotFoundException();
-        }
         if (worksheetIndex < 0) {
             throw new Exception("The worksheet index must not be negative.");
         }
 
-        return WithWorkbook(filePath, workbook => {
-            if (worksheetIndex >= workbook.NumberOfSheets) {
-                throw new Exception(
-                    $"The worksheet index is out of range. The workbook has {workbook.NumberOfSheets} worksheets.");
-            }
-
-            var sheet = workbook.GetSheetAt(worksheetIndex);
-            return ReadSheet(sheet, lastRowIndex: lastRowIndex);
-        });
-    }
-
-    public static object ReadCell(ICell cell) {
-        if (cell != null) {
-            if (cell.CellType == CellType.Numeric && DateUtil.IsCellDateFormatted(cell)) {
-                return DateTimeUtil.FormatDateTime(cell.DateCellValue);
-            } else {
-                switch (cell.CellType == CellType.Formula ? cell.CachedFormulaResultType : cell.CellType) {
-                    case CellType.Boolean: return cell.BooleanCellValue ? 1 : 0;
-                    case CellType.Numeric: return cell.NumericCellValue;
-                    case CellType.Blank: case CellType.Error: case CellType.Unknown: return null;
-                    default: return cell.StringCellValue;
-                }
-            }
-        } else {
-            return null;
-        }
-    }
-
-    public static List<object[]> ReadSheet(ISheet sheet, int firstRowIndex = 0, int? lastRowIndex = null,
-    int firstColumnIndex = 0, int? lastColumnIndex = null, int maxRows = int.MaxValue) {
-        var lastRow = Math.Min(sheet.LastRowNum, lastRowIndex ?? int.MaxValue);
-        var rowValues = new List<object>();
-        var list = new List<object[]>();
-        for (int i = firstRowIndex; i <= lastRow && list.Count < maxRows; i++) {
-            var row = sheet.GetRow(i);
-            rowValues.Clear();
-            if (row != null) {
-                var lastCol = Math.Min(row.LastCellNum - 1, lastColumnIndex ?? int.MaxValue);
-                for (int j = firstColumnIndex; j <= lastCol; j++) {
-                    rowValues.Add(ReadCell(row.GetCell(j)));
-                }
-            }
-            list.Add(rowValues.ToArray());
-        }
-        return list;
+        using Workbook workbook = new(filePath);
+        workbook.SeekToWorksheet(worksheetIndex);
+        return workbook.ReadSheet(lastRowIndex: lastRowIndex);
     }
 
     public static int? ColumnRefToIndex(object val) { // returns 0-based column index
@@ -104,7 +151,7 @@ public static class XlsUtil {
             if (int.TryParse(str, out var num)) {
                 return num >= 1 ? (int?)(num - 1) : null;
             } else {
-                return CellReference.ConvertColStringToIndex(str.ToUpper());
+                return ConvertColStringToIndex(str.ToUpperInvariant());
             }
         } else if (val is int || val is long) {
             var num = Convert.ToInt32(val);
@@ -114,37 +161,56 @@ public static class XlsUtil {
         }
     }
 
-    public static string GetColumnRefString(object val) {
-        var index = ColumnRefToIndex(val);
-        if (index.HasValue) {
-            return CellReference.ConvertNumToColString(index.Value);
-        } else {
-            return null;
+    public static int ConvertColStringToIndex(string s) {
+        int index = 0;
+        foreach (var ch in s) {
+            if (ch < 'A' || ch > 'Z') {
+                throw new Exception($"\"{s}\" is not a valid Excel column name.");
+            }
+            index *= 26;
+            index += ch - 'A';
         }
+        return index;
     }
 
-    public static string[] ReadColumnNames(string filePath, int worksheetIndex, int? firstRowNumber,
-        string firstColumnLetter, string lastColumnLetter, bool headerRow
-        ) {
-        var firstRowIndex = firstRowNumber.HasValue ? firstRowNumber.Value - 1 : 0;
-        var firstColumnIndex = firstColumnLetter == null ? 0 : ColumnRefToIndex(firstColumnLetter) ?? 0;
-        var lastColumnIndex = lastColumnLetter == null ? null : ColumnRefToIndex(lastColumnLetter);
-        return WithWorkbook(filePath, workbook => {
-            var sheet = workbook.GetSheetAt(worksheetIndex);
-            var row =
-                ReadSheet(sheet, firstRowIndex, firstRowIndex, firstColumnIndex, lastColumnIndex)
-                .SingleOrDefault();
-            if (row == null) {
-                return new string[0];
-            } else {
-                var strings = new string[row.Length];
-                for (var i = 0; i < row.Length; i++) {
-                    strings[i] = row[i]?.ToString() ?? "";
-                }
-                return strings;
-            }
-        });
+    public static string ConvertNumToColString(int n) {
+        if (n == 0) {
+            return "A";
+        }
+        var s = "";
+        while (n > 0) {
+            var ch = (char)('A' + (n % 26));
+            s = ch + s;
+            n /= 26;
+        }
+        return s;
     }
+
+    //public static string[] ReadColumnNames(string filePath, int worksheetIndex, int? firstRowNumber,
+    //    string firstColumnLetter, string lastColumnLetter, bool headerRow
+    //    ) {
+    //    var firstRowIndex = firstRowNumber.HasValue ? firstRowNumber.Value - 1 : 0;
+    //    var firstColumnIndex = firstColumnLetter == null ? 0 : ColumnRefToIndex(firstColumnLetter) ?? 0;
+    //    var lastColumnIndex = lastColumnLetter == null ? null : ColumnRefToIndex(lastColumnLetter);
+    //    using Workbook workbook = new(filePath);
+    //    workbook.SeekToWorksheet(worksheetIndex);
+    //    var row =
+    //        workbook.ReadSheet(firstRowIndex, firstRowIndex, firstColumnIndex, lastColumnIndex)
+    //        .SingleOrDefault();
+    //    if (row == null) {
+    //        return Array.Empty<string>();
+    //    } else {
+    //        var strings = new string[row.Length];
+    //        for (var i = 0; i < row.Length; i++) {
+    //            if (headerRow) {
+    //                strings[i] = row[i]?.ToString() ?? "";
+    //            } else {
+    //                strings[i] = $"column{i + 1}";
+    //            }
+    //        }
+    //        return strings;
+    //    }
+    //}
 
     public static string[] ReadColumnNames(IReadOnlyList<object[]> rows, bool headerRow) {
         string[] columnNames;

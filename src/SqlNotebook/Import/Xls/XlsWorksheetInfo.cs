@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
-using NPOI.SS.UserModel;
-using NPOI.SS.Util;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebook.Import.Xls;
@@ -12,15 +10,21 @@ public sealed class XlsWorksheetInfo {
     public string Name;
     public DataTable DataTable;
 
-    public static XlsWorksheetInfo Load(IWorkbook workbook, int worksheetIndex) {
-        var sheet = workbook.GetSheetAt(worksheetIndex);
-        var data = XlsUtil.ReadSheet(sheet, maxRows: 1000);
+    public static XlsWorksheetInfo Load(XlsUtil.IWorkbook workbook, int worksheetIndex) {
+        workbook.SeekToWorksheet(worksheetIndex);
+        var data = workbook.ReadSheet(maxRows: 1000);
 
         DataTable dataTable = new();
-        var numColumns = data.Max(x => x.Length);
-        for (var columnIndex = 0; columnIndex < numColumns; columnIndex++) {
-            var columnLetter = CellReference.ConvertNumToColString(columnIndex);
-            dataTable.Columns.Add(columnLetter);
+        int numColumns;
+        if (data.Count > 0) {
+            numColumns = data.Max(x => x.Length);
+            for (var columnIndex = 0; columnIndex < numColumns; columnIndex++) {
+                var columnLetter = XlsUtil.ConvertNumToColString(columnIndex);
+                dataTable.Columns.Add(columnLetter);
+            }
+        } else {
+            numColumns = 1;
+            dataTable.Columns.Add("A");
         }
 
         foreach (var row in data) {
