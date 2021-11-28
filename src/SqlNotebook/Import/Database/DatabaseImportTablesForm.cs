@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using SqlNotebook.Properties;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebook.Import.Database;
@@ -27,18 +27,20 @@ public partial class DatabaseImportTablesForm : ZForm {
 
         EnableDisableButtons();
 
-        Ui ui = new(this, 100, 50);
+        Ui ui = new(this, 85, 35);
         ui.InitHeader(_importTablesLabel);
-        ui.Init(_importTable);
-        ui.Init(_queryFlow);
-        ui.Pad(_queryFlow);
-        ui.Init(_addQueryButton);
-        ui.Init(_opsFlow);
-        ui.Pad(_opsFlow);
-        ui.Init(_editTableBtn);
-        ui.MarginRight(_editTableBtn);
-        ui.Init(_selectAllBtn);
-        ui.Init(_selectNoneBtn);
+        ui.Init(_toolStrip);
+        var addTableIcon16 = Ui.SuperimposePlusSymbol(Resources.table);
+        var addTableIcon32 = Ui.SuperimposePlusSymbol(Resources.table32);
+        ui.Init(_addQueryButton, addTableIcon16, addTableIcon32);
+        ui.MarginRight(_addQueryButton);
+        ui.Init(_editTableButton, Resources.table_edit, Resources.table_edit32);
+        ui.MarginRight(_editTableButton);
+        ui.Init(_selectAllButton, Resources.check_box, Resources.check_box32);
+        ui.Init(_selectNoneButton, Resources.check_box_uncheck, Resources.check_box_uncheck32);
+        ui.Init(_listPanel);
+        ui.PadLeft(_listPanel, 1);
+        ui.Init(_listBox);
         ui.InitHeader(_methodLabel);
         ui.MarginTop(_methodLabel);
         ui.Init(_methodFlow);
@@ -72,7 +74,7 @@ public partial class DatabaseImportTablesForm : ZForm {
 
     private void EnableDisableButtons() {
         bool hasSelection = _listBox.SelectedIndex >= 0;
-        _editTableBtn.Enabled = hasSelection;
+        _editTableButton.Enabled = hasSelection;
     }
 
     private void EditTableBtn_Click(object sender, EventArgs e) {
@@ -95,6 +97,7 @@ public partial class DatabaseImportTablesForm : ZForm {
         } else {
             Debug.Fail("No source table type.");
         }
+        Focus();
     }
 
     private void OkBtn_Click(object sender, EventArgs e) {
@@ -142,6 +145,7 @@ public partial class DatabaseImportTablesForm : ZForm {
         } catch (Exception ex) {
             Ui.ShowError(this, "Error", ex);
         }
+        Focus();
     }
 
     private void AddQueryButton_Click(object sender, EventArgs e) {
@@ -174,7 +178,9 @@ public partial class DatabaseImportTablesForm : ZForm {
 
         // Ask the user for a query.
         DatabaseImportCustomQueryForm f = new(_session, targetName, "SELECT * FROM ");
-        if (f.ShowDialog(this) != DialogResult.OK) {
+        var result = f.ShowDialog(this);
+        Focus();
+        if (result != DialogResult.OK) {
             return;
         }
 

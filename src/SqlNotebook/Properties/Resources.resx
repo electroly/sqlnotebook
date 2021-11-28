@@ -376,4 +376,22 @@
   <data name="show_detail32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\ext\fatcow\show_detail32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="check_box" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\check_box.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="check_box32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\check_box32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="check_box_uncheck" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\check_box_uncheck.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="check_box_uncheck32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\check_box_uncheck32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="table_edit" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\table_edit.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="table_edit32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\ext\fatcow\table_edit32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

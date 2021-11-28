@@ -187,6 +187,9 @@ public sealed class Ui {
         button.AutoSize = true;
     }
 
+    public void Init(ToolStripSeparator separator) {
+    }
+
     public void Init(ToolStripButton button, Image lodpi, Image hidpi) {
         button.Image = GetScaledIcon(button, lodpi, hidpi, _scale);
         button.ImageScaling = ToolStripItemImageScaling.None;
@@ -278,8 +281,12 @@ public sealed class Ui {
     }
 
     public void Init(ListBox list, double width, double height) {
-        list.IntegralHeight = false;
+        Init(list);
         list.Size = new(XWidth(width), XHeight(height));
+    }
+
+    public void Init(ListBox list) {
+        list.IntegralHeight = false;
     }
 
     public void Init(ToolStripLabel label) {

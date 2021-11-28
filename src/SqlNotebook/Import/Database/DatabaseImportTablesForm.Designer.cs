@@ -26,12 +26,7 @@
             this._methodFlow = new System.Windows.Forms.FlowLayoutPanel();
             this._methodCopyRad = new System.Windows.Forms.RadioButton();
             this._methodLinkRad = new System.Windows.Forms.RadioButton();
-            this._importTable = new System.Windows.Forms.TableLayoutPanel();
             this._listBox = new System.Windows.Forms.CheckedListBox();
-            this._opsFlow = new System.Windows.Forms.FlowLayoutPanel();
-            this._editTableBtn = new System.Windows.Forms.Button();
-            this._selectAllBtn = new System.Windows.Forms.Button();
-            this._selectNoneBtn = new System.Windows.Forms.Button();
             this._okBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
             this._table = new System.Windows.Forms.TableLayoutPanel();
@@ -40,15 +35,18 @@
             this._methodLabel = new System.Windows.Forms.Label();
             this._buttonFlow2 = new System.Windows.Forms.FlowLayoutPanel();
             this._viewSqlButton = new System.Windows.Forms.Button();
-            this._queryFlow = new System.Windows.Forms.FlowLayoutPanel();
-            this._addQueryButton = new System.Windows.Forms.Button();
+            this._toolStrip = new System.Windows.Forms.ToolStrip();
+            this._addQueryButton = new System.Windows.Forms.ToolStripButton();
+            this._editTableButton = new System.Windows.Forms.ToolStripButton();
+            this._selectAllButton = new System.Windows.Forms.ToolStripButton();
+            this._selectNoneButton = new System.Windows.Forms.ToolStripButton();
+            this._listPanel = new System.Windows.Forms.Panel();
             this._methodFlow.SuspendLayout();
-            this._importTable.SuspendLayout();
-            this._opsFlow.SuspendLayout();
             this._table.SuspendLayout();
             this._buttonFlow.SuspendLayout();
             this._buttonFlow2.SuspendLayout();
-            this._queryFlow.SuspendLayout();
+            this._toolStrip.SuspendLayout();
+            this._listPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // _methodFlow
@@ -89,86 +87,17 @@
             this._methodLinkRad.Text = "&Live database connection";
             this._methodLinkRad.UseVisualStyleBackColor = true;
             // 
-            // _importTable
-            // 
-            this._importTable.BackColor = System.Drawing.Color.White;
-            this._importTable.ColumnCount = 2;
-            this._table.SetColumnSpan(this._importTable, 2);
-            this._importTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._importTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this._importTable.Controls.Add(this._listBox, 0, 0);
-            this._importTable.Controls.Add(this._opsFlow, 1, 1);
-            this._importTable.Controls.Add(this._queryFlow, 0, 1);
-            this._importTable.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._importTable.Location = new System.Drawing.Point(3, 28);
-            this._importTable.Name = "_importTable";
-            this._importTable.RowCount = 2;
-            this._importTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._importTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._importTable.Size = new System.Drawing.Size(782, 721);
-            this._importTable.TabIndex = 13;
-            // 
             // _listBox
             // 
             this._listBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this._importTable.SetColumnSpan(this._listBox, 2);
             this._listBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this._listBox.IntegralHeight = false;
-            this._listBox.Location = new System.Drawing.Point(3, 3);
+            this._listBox.Location = new System.Drawing.Point(0, 0);
+            this._listBox.Margin = new System.Windows.Forms.Padding(0);
             this._listBox.Name = "_listBox";
-            this._listBox.Size = new System.Drawing.Size(776, 668);
+            this._listBox.Size = new System.Drawing.Size(788, 693);
             this._listBox.TabIndex = 6;
             this._listBox.SelectedIndexChanged += new System.EventHandler(this.ListBox_SelectedIndexChanged);
-            // 
-            // _opsFlow
-            // 
-            this._opsFlow.AutoSize = true;
-            this._opsFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this._opsFlow.Controls.Add(this._editTableBtn);
-            this._opsFlow.Controls.Add(this._selectAllBtn);
-            this._opsFlow.Controls.Add(this._selectNoneBtn);
-            this._opsFlow.Dock = System.Windows.Forms.DockStyle.Right;
-            this._opsFlow.Location = new System.Drawing.Point(422, 677);
-            this._opsFlow.Name = "_opsFlow";
-            this._opsFlow.Size = new System.Drawing.Size(357, 41);
-            this._opsFlow.TabIndex = 7;
-            this._opsFlow.WrapContents = false;
-            // 
-            // _renameTableBtn
-            // 
-            this._editTableBtn.AutoSize = true;
-            this._editTableBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._editTableBtn.Location = new System.Drawing.Point(3, 3);
-            this._editTableBtn.Name = "_renameTableBtn";
-            this._editTableBtn.Size = new System.Drawing.Size(113, 35);
-            this._editTableBtn.TabIndex = 7;
-            this._editTableBtn.Text = "&Edit...";
-            this._editTableBtn.UseVisualStyleBackColor = true;
-            this._editTableBtn.Click += new System.EventHandler(this.EditTableBtn_Click);
-            // 
-            // _selectAllBtn
-            // 
-            this._selectAllBtn.AutoSize = true;
-            this._selectAllBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._selectAllBtn.Location = new System.Drawing.Point(122, 3);
-            this._selectAllBtn.Name = "_selectAllBtn";
-            this._selectAllBtn.Size = new System.Drawing.Size(113, 35);
-            this._selectAllBtn.TabIndex = 11;
-            this._selectAllBtn.Text = "Select &all";
-            this._selectAllBtn.UseVisualStyleBackColor = true;
-            this._selectAllBtn.Click += new System.EventHandler(this.SelectAllBtn_Click);
-            // 
-            // _selectNoneBtn
-            // 
-            this._selectNoneBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this._selectNoneBtn.AutoSize = true;
-            this._selectNoneBtn.Location = new System.Drawing.Point(241, 3);
-            this._selectNoneBtn.Name = "_selectNoneBtn";
-            this._selectNoneBtn.Size = new System.Drawing.Size(113, 35);
-            this._selectNoneBtn.TabIndex = 12;
-            this._selectNoneBtn.Text = "Select &none";
-            this._selectNoneBtn.UseVisualStyleBackColor = true;
-            this._selectNoneBtn.Click += new System.EventHandler(this.SelectNoneBtn_Click);
             // 
             // _okBtn
             // 
@@ -199,21 +128,24 @@
             this._table.ColumnCount = 2;
             this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this._table.Controls.Add(this._methodFlow, 0, 3);
-            this._table.Controls.Add(this._importTable, 0, 1);
-            this._table.Controls.Add(this._buttonFlow, 1, 4);
+            this._table.Controls.Add(this._methodFlow, 0, 4);
+            this._table.Controls.Add(this._buttonFlow, 1, 5);
             this._table.Controls.Add(this._importTablesLabel, 0, 0);
-            this._table.Controls.Add(this._methodLabel, 0, 2);
-            this._table.Controls.Add(this._buttonFlow2, 0, 4);
+            this._table.Controls.Add(this._methodLabel, 0, 3);
+            this._table.Controls.Add(this._buttonFlow2, 0, 5);
+            this._table.Controls.Add(this._toolStrip, 0, 1);
+            this._table.Controls.Add(this._listPanel, 0, 2);
             this._table.Dock = System.Windows.Forms.DockStyle.Fill;
             this._table.Location = new System.Drawing.Point(0, 0);
             this._table.Name = "_table";
-            this._table.RowCount = 5;
+            this._table.RowCount = 6;
+            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this._table.Size = new System.Drawing.Size(788, 900);
             this._table.TabIndex = 6;
             // 
@@ -269,25 +201,67 @@
             this._viewSqlButton.UseVisualStyleBackColor = true;
             this._viewSqlButton.Click += new System.EventHandler(this.ViewSqlButton_Click);
             // 
-            // _queryFlow
+            // _toolStrip
             // 
-            this._queryFlow.AutoSize = true;
-            this._queryFlow.Controls.Add(this._addQueryButton);
-            this._queryFlow.Location = new System.Drawing.Point(3, 677);
-            this._queryFlow.Name = "_queryFlow";
-            this._queryFlow.Size = new System.Drawing.Size(124, 41);
-            this._queryFlow.TabIndex = 8;
+            this._table.SetColumnSpan(this._toolStrip, 2);
+            this._toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this._toolStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this._toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._addQueryButton,
+            this._editTableButton,
+            this._selectAllButton,
+            this._selectNoneButton});
+            this._toolStrip.Location = new System.Drawing.Point(0, 25);
+            this._toolStrip.Name = "_toolStrip";
+            this._toolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            this._toolStrip.Size = new System.Drawing.Size(788, 34);
+            this._toolStrip.Stretch = true;
+            this._toolStrip.TabIndex = 16;
+            this._toolStrip.Text = "toolStrip1";
             // 
             // _addQueryButton
             // 
-            this._addQueryButton.AutoSize = true;
-            this._addQueryButton.Location = new System.Drawing.Point(3, 3);
+            this._addQueryButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._addQueryButton.Name = "_addQueryButton";
-            this._addQueryButton.Size = new System.Drawing.Size(118, 35);
-            this._addQueryButton.TabIndex = 0;
+            this._addQueryButton.Size = new System.Drawing.Size(112, 29);
             this._addQueryButton.Text = "Add &query...";
-            this._addQueryButton.UseVisualStyleBackColor = true;
             this._addQueryButton.Click += new System.EventHandler(this.AddQueryButton_Click);
+            // 
+            // _editTableButton
+            // 
+            this._editTableButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._editTableButton.Name = "_editTableButton";
+            this._editTableButton.Size = new System.Drawing.Size(58, 29);
+            this._editTableButton.Text = "&Edit...";
+            this._editTableButton.Click += new System.EventHandler(this.EditTableBtn_Click);
+            // 
+            // _selectAllButton
+            // 
+            this._selectAllButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._selectAllButton.Name = "_selectAllButton";
+            this._selectAllButton.Size = new System.Drawing.Size(84, 29);
+            this._selectAllButton.Text = "Select &all";
+            this._selectAllButton.Click += new System.EventHandler(this.SelectAllBtn_Click);
+            // 
+            // _selectNoneButton
+            // 
+            this._selectNoneButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._selectNoneButton.Name = "_selectNoneButton";
+            this._selectNoneButton.Size = new System.Drawing.Size(107, 29);
+            this._selectNoneButton.Text = "Select &none";
+            this._selectNoneButton.Click += new System.EventHandler(this.SelectNoneBtn_Click);
+            // 
+            // _listPanel
+            // 
+            this._listPanel.BackColor = System.Drawing.SystemColors.Window;
+            this._table.SetColumnSpan(this._listPanel, 2);
+            this._listPanel.Controls.Add(this._listBox);
+            this._listPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._listPanel.Location = new System.Drawing.Point(0, 59);
+            this._listPanel.Margin = new System.Windows.Forms.Padding(0);
+            this._listPanel.Name = "_listPanel";
+            this._listPanel.Size = new System.Drawing.Size(788, 693);
+            this._listPanel.TabIndex = 17;
             // 
             // DatabaseImportTablesForm
             // 
@@ -309,17 +283,14 @@
             this.Text = "Import";
             this._methodFlow.ResumeLayout(false);
             this._methodFlow.PerformLayout();
-            this._importTable.ResumeLayout(false);
-            this._importTable.PerformLayout();
-            this._opsFlow.ResumeLayout(false);
-            this._opsFlow.PerformLayout();
             this._table.ResumeLayout(false);
             this._table.PerformLayout();
             this._buttonFlow.ResumeLayout(false);
             this._buttonFlow.PerformLayout();
             this._buttonFlow2.ResumeLayout(false);
-            this._queryFlow.ResumeLayout(false);
-            this._queryFlow.PerformLayout();
+            this._toolStrip.ResumeLayout(false);
+            this._toolStrip.PerformLayout();
+            this._listPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -328,21 +299,20 @@
         private System.Windows.Forms.Button _okBtn;
         private System.Windows.Forms.Button _cancelBtn;
         private System.Windows.Forms.CheckedListBox _listBox;
-        private System.Windows.Forms.Button _editTableBtn;
         private System.Windows.Forms.RadioButton _methodLinkRad;
         private System.Windows.Forms.RadioButton _methodCopyRad;
-        private System.Windows.Forms.Button _selectNoneBtn;
-        private System.Windows.Forms.Button _selectAllBtn;
         private System.Windows.Forms.TableLayoutPanel _table;
         private System.Windows.Forms.FlowLayoutPanel _buttonFlow;
-        private System.Windows.Forms.TableLayoutPanel _importTable;
-        private System.Windows.Forms.FlowLayoutPanel _opsFlow;
         private System.Windows.Forms.FlowLayoutPanel _methodFlow;
         private System.Windows.Forms.Label _importTablesLabel;
-        private System.Windows.Forms.Label _methodLabel;
         private System.Windows.Forms.FlowLayoutPanel _buttonFlow2;
         private System.Windows.Forms.Button _viewSqlButton;
-        private System.Windows.Forms.FlowLayoutPanel _queryFlow;
-        private System.Windows.Forms.Button _addQueryButton;
+        private System.Windows.Forms.ToolStrip _toolStrip;
+        private System.Windows.Forms.ToolStripButton _addQueryButton;
+        private System.Windows.Forms.ToolStripButton _editTableButton;
+        private System.Windows.Forms.ToolStripButton _selectAllButton;
+        private System.Windows.Forms.ToolStripButton _selectNoneButton;
+        private System.Windows.Forms.Label _methodLabel;
+        private System.Windows.Forms.Panel _listPanel;
     }
 }
