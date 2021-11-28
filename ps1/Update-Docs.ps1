@@ -145,9 +145,41 @@ function GenerateTempDocHtml() {
                 indexHtml += "<h2>SQLite Documentation</h2>\r\n<ul class=\"doc-list\">\r\n";
                 var sqliteFilePaths = Directory.GetFiles(Path.Combine(webPath, "site", "sqlite"), "*.html", SearchOption.AllDirectories);
                 var sqliteFiles = new List<Tuple<string, string>>();
-                foreach (var sqliteFilePath in sqliteFilePaths.Where(x => !x.Contains("syntax/") && !x.Contains("syntax\\"))) {
+                foreach (var sqliteFilePath in sqliteFilePaths) {
+                    if (sqliteFilePath.Contains("syntax/") || sqliteFilePath.Contains("syntax\\")) {
+                        continue;
+                    }
+                    if (sqliteFilePath.Contains("c3ref/") || sqliteFilePath.Contains("c3ref\\")) {
+                        continue;
+                    }
+                    if (sqliteFilePath.Contains("releaselog/") || sqliteFilePath.Contains("releaselog\\")) {
+                        continue;
+                    }
+                    if (sqliteFilePath.Contains("session/") || sqliteFilePath.Contains("session\\")) {
+                        continue;
+                    }
+                    if (sqliteFilePath.Contains("fileformat2")) {
+                        continue;
+                    }
                     var html = File.ReadAllText(sqliteFilePath);
-                    var title = Regex.Match(html, "<title>([^<]+)</title>").Groups[1].Value;
+                    var title = Regex.Match(html, "<title>([^<]+)</title>").Groups[1].Value.Trim();
+                    if (title == "") {
+                        continue;
+                    }
+                    var phrases = new[] {
+                        "C++", "Tcl", "No Title", "Version 2", "version 2", "Version 3.", "assert()", "8+3", "Application-Defined",
+                        "Undo/Redo", "Compile-time", "Custom Builds", "Site Map", ".exe", "Backlink",
+                    };
+                    var skip = false;
+                    foreach (var phrase in phrases) {
+                        if (title.Contains(phrase)) {
+                            skip = true;
+                            break;
+                        }
+                    }
+                    if (skip) {
+                        continue;
+                    }
                     sqliteFiles.Add(Tuple.Create(title, sqliteFilePath.Substring(Path.Combine(webPath, "site").Length + 1)));
                 }
                 foreach (var x in sqliteFiles.OrderBy(x => x.Item1)) {
@@ -225,14 +257,14 @@ function Update-DocWebsite {
     # sqlite docs
     Remove-Item -Force -Recurse ".\site\sqlite" -ErrorAction SilentlyContinue
     Copy-Item -Recurse $sqliteDir ".\site\sqlite"
-    $sqliteFilePaths = Dir -Recurse ".\site\sqlite" | % { $_.FullName }
-    foreach ($sqliteFilePath in $sqliteFilePaths) {
-        if ($sqliteFilePath.EndsWith(".html")) {
-            $html = [System.IO.File]::ReadAllText($sqliteFilePath)
-            $html = $html.Replace('</style>', 'img.logo, div.tagline, table.menubar { display: none; }</style>')
-            [System.IO.File]::WriteAllText($sqliteFilePath, $html)
-        }
-    }
+
+    # These are database files and scripts that we don't use.
+    Remove-Item -Force -Recurse ".\site\sqlite\search" -ErrorAction SilentlyContinue
+    Remove-Item -Force -Recurse ".\site\sqlite\search.d" -ErrorAction SilentlyContinue
+    Remove-Item -Force -Recurse ".\site\sqlite\toc.db" -ErrorAction SilentlyContinue
+
+    # Seems to be a temporary file the SQLite folks accidentally included?
+    Remove-Item -Force -Recurse ".\site\sqlite\sqlite.css~" -ErrorAction SilentlyContinue
 
     # doc index page
     GenerateTempDocHtml
