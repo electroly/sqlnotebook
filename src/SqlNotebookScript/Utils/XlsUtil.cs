@@ -93,6 +93,15 @@ public static class XlsUtil {
                 }
             }
 
+            lastColumnIndex = Math.Min(
+                lastColumnIndex ?? int.MaxValue,
+                _reader.FieldCount - 1);
+
+            var columnCount = lastColumnIndex.Value - firstColumnIndex + 1;
+            if (columnCount < 0) {
+                columnCount = 0;
+            }
+
             for (var i = firstRowIndex;
                 (!lastRowIndex.HasValue || i <= lastRowIndex.Value) && list.Count < maxRows;
                 i++
@@ -101,13 +110,13 @@ public static class XlsUtil {
                     break;
                 }
 
-                var row = new object[_reader.FieldCount];
+                var row = new object[columnCount];
                 for (var j = firstColumnIndex;
                     j <= (lastColumnIndex ?? (_reader.FieldCount - 1));
                     j++
                     ) {
                     if (j < _reader.FieldCount) {
-                        row[j] = _reader.GetValue(j);
+                        row[j - firstColumnIndex] = _reader.GetValue(j);
                     }
                 }
                 
@@ -117,11 +126,6 @@ public static class XlsUtil {
             return list;
         }
     }
-
-    //private static T WithWorkbook<T>(string filePath, Func<IWorkbook, T> func) {
-    //    using Workbook workbook = new(filePath);
-    //    return func(workbook);
-    //}
 
     public static void WithWorkbook(string filePath, Action<IWorkbook> action) {
         using Workbook workbook = new(filePath);
@@ -186,41 +190,15 @@ public static class XlsUtil {
         return s;
     }
 
-    //public static string[] ReadColumnNames(string filePath, int worksheetIndex, int? firstRowNumber,
-    //    string firstColumnLetter, string lastColumnLetter, bool headerRow
-    //    ) {
-    //    var firstRowIndex = firstRowNumber.HasValue ? firstRowNumber.Value - 1 : 0;
-    //    var firstColumnIndex = firstColumnLetter == null ? 0 : ColumnRefToIndex(firstColumnLetter) ?? 0;
-    //    var lastColumnIndex = lastColumnLetter == null ? null : ColumnRefToIndex(lastColumnLetter);
-    //    using Workbook workbook = new(filePath);
-    //    workbook.SeekToWorksheet(worksheetIndex);
-    //    var row =
-    //        workbook.ReadSheet(firstRowIndex, firstRowIndex, firstColumnIndex, lastColumnIndex)
-    //        .SingleOrDefault();
-    //    if (row == null) {
-    //        return Array.Empty<string>();
-    //    } else {
-    //        var strings = new string[row.Length];
-    //        for (var i = 0; i < row.Length; i++) {
-    //            if (headerRow) {
-    //                strings[i] = row[i]?.ToString() ?? "";
-    //            } else {
-    //                strings[i] = $"column{i + 1}";
-    //            }
-    //        }
-    //        return strings;
-    //    }
-    //}
-
     public static string[] ReadColumnNames(IReadOnlyList<object[]> rows, bool headerRow) {
         string[] columnNames;
         if (rows.Count == 0) {
             columnNames = new[] { "column1" };
         } else if (headerRow) {
             var originalHeader = rows[0];
+            HashSet<string> seenColumnNames = new();
             columnNames = new string[originalHeader.Length];
-            var seenColumnNames = new HashSet<string>();
-            for (int i = 0; i < originalHeader.Length; i++) {
+            for (var i = 0; i < originalHeader.Length; i++) {
                 var originalName = originalHeader[i];
                 var isNull = originalName is DBNull || originalName == null;
                 var prefix = isNull ? $"column{i + 1}" : originalName.ToString();
