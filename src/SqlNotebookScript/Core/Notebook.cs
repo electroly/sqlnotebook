@@ -248,7 +248,7 @@ public sealed class Notebook : IDisposable {
 
         void Consume(byte[] buffer, int batchCount, long totalSoFar) {
             outputStream.Write(buffer, 0, batchCount);
-            onPercentComplete((int)(totalSoFar * 100 / totalBytes));
+            onPercentComplete?.Invoke((int)(totalSoFar * 100 / totalBytes));
         }
 
         OverlappedProducerConsumer.Go(() => new byte[8 * 1_048_576], Produce, Consume, cancel);
