@@ -169,6 +169,9 @@ public sealed class Notebook : IDisposable {
         CustomFunctionsProvider.InstallCustomFunctions(_sqlite);
 
         ReadUserDataFromDatabase();
+
+        Execute("DROP TABLE IF EXISTS _sqlnotebook_userdata");
+        Execute("DROP TABLE IF EXISTS _sqlnotebook_version");
     }
 
     private delegate object GenericFunctionExecuteDelegate(IReadOnlyList<object> args);
