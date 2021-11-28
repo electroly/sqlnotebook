@@ -31,13 +31,6 @@ public partial class DatabaseImportRenameTableForm : ZForm {
             Ui.ShowError(this, "Error", "Please enter a new name.");
             return;
         }
-        foreach (var ch in _newNameTxt.Text) {
-            if (!char.IsLetterOrDigit(ch) && ch != '_') {
-                Ui.ShowError(this, "Error",
-                    "The new name must contain only letters, numbers, and underscores.");
-                return;
-            }
-        }
         NewName = _newNameTxt.Text;
         DialogResult = DialogResult.OK;
         Close();
