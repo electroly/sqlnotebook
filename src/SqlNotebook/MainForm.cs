@@ -5,7 +5,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SqlNotebook.Import;
@@ -689,6 +688,7 @@ public partial class MainForm : ZForm {
         }
         using HelpSearchResultsForm resultsForm = new(keywords, results);
         resultsForm.ShowDialog(this);
+        Focus();
     }
 
     private void ViewDocMnu_Click(object sender, EventArgs e) {
@@ -955,18 +955,11 @@ public partial class MainForm : ZForm {
     private void WindowOptionsMenu_Click(object sender, EventArgs e) {
         using OptionsForm f = new();
         f.ShowDialog(this);
+        Focus();
     }
 
     private void HelpLicenseInformationMenu_Click(object sender, EventArgs e) {
         var filePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "ThirdPartyLicenses.html");
         Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
-    }
-
-    private void NewButton_Click(object sender, EventArgs e) {
-
-    }
-
-    private void OpenButton_Click(object sender, EventArgs e) {
-
     }
 }
