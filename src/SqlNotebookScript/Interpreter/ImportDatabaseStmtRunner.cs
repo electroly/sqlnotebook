@@ -140,19 +140,15 @@ public sealed class ImportDatabaseStmtRunner {
         _notebook.Query($"PRAGMA TABLE_INFO({name.DoubleQuote()});").FullCount > 0;
 
     private void Import() {
-        var truncatedDstTableName =
-            _dstTableName.Length > 50
-            ? _dstTableName[..50] + "..."
-            : _dstTableName;
-        using var status = WaitStatus.StartRows(truncatedDstTableName);
         if (_link) {
             ImportLink();
         } else {
-            ImportCopy(status);
+            ImportCopy();
         }
     }
 
     private void ImportLink() {
+        using var status = WaitStatus.StartStatic(GetTruncatedDstTableName());
         if (_vendor == "mssql") {
             _notebook.Execute(
                 $"CREATE VIRTUAL TABLE {_dstTableName.DoubleQuote()} USING mssql " +
@@ -173,11 +169,17 @@ public sealed class ImportDatabaseStmtRunner {
         }
     }
 
-    private void ImportCopy(WaitStatus.InFlightRows status) {
+    private string GetTruncatedDstTableName() =>
+        _dstTableName.Length > 50
+        ? _dstTableName[..50] + "..."
+        : _dstTableName;
+
+    private void ImportCopy() {
         IDbConnection srcConnection = null;
         IDbCommand srcCommand = null;
         IDataReader reader = null;
 
+        using var status = WaitStatus.StartRows(GetTruncatedDstTableName());
         try {
             srcConnection =
                 _vendor switch {

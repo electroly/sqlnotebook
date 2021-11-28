@@ -48,16 +48,6 @@
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this._exportMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._exportCsvMnu = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripMenuItem();
             this._windowMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._contentsMnu = new System.Windows.Forms.ToolStripMenuItem();
             this._consoleMnu = new System.Windows.Forms.ToolStripMenuItem();
@@ -252,17 +242,7 @@
             // _exportMnu
             // 
             this._exportMnu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._exportCsvMnu,
-            this.toolStripMenuItem6,
-            this.toolStripMenuItem7,
-            this.toolStripMenuItem8,
-            this.toolStripSeparator2,
-            this.toolStripMenuItem9,
-            this.toolStripMenuItem10,
-            this.toolStripMenuItem11,
-            this.toolStripSeparator9,
-            this.toolStripMenuItem12,
-            this.toolStripMenuItem13});
+            this._exportCsvMnu});
             this._exportMnu.Name = "_exportMnu";
             this._exportMnu.Size = new System.Drawing.Size(79, 29);
             this._exportMnu.Text = "E&xport";
@@ -270,77 +250,9 @@
             // _exportCsvMnu
             // 
             this._exportCsvMnu.Name = "_exportCsvMnu";
-            this._exportCsvMnu.Size = new System.Drawing.Size(316, 34);
+            this._exportCsvMnu.Size = new System.Drawing.Size(270, 34);
             this._exportCsvMnu.Text = "To &CSV file (.csv)...";
             this._exportCsvMnu.Click += new System.EventHandler(this.ExportMnu_Click);
-            // 
-            // toolStripMenuItem6
-            // 
-            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(316, 34);
-            this.toolStripMenuItem6.Text = "To E&xcel file (.xlsx)...";
-            this.toolStripMenuItem6.Visible = false;
-            // 
-            // toolStripMenuItem7
-            // 
-            this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-            this.toolStripMenuItem7.Size = new System.Drawing.Size(316, 34);
-            this.toolStripMenuItem7.Text = "To &R file (.rdata)...";
-            this.toolStripMenuItem7.Visible = false;
-            // 
-            // toolStripMenuItem8
-            // 
-            this.toolStripMenuItem8.Name = "toolStripMenuItem8";
-            this.toolStripMenuItem8.Size = new System.Drawing.Size(316, 34);
-            this.toolStripMenuItem8.Text = "To &SQL script (.sql)...";
-            this.toolStripMenuItem8.Visible = false;
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(313, 6);
-            this.toolStripSeparator2.Visible = false;
-            // 
-            // toolStripMenuItem9
-            // 
-            this.toolStripMenuItem9.Name = "toolStripMenuItem9";
-            this.toolStripMenuItem9.Size = new System.Drawing.Size(316, 34);
-            this.toolStripMenuItem9.Text = "To &Microsoft SQL Server...";
-            this.toolStripMenuItem9.Visible = false;
-            // 
-            // toolStripMenuItem10
-            // 
-            this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(316, 34);
-            this.toolStripMenuItem10.Text = "To &PostgreSQL...";
-            this.toolStripMenuItem10.Visible = false;
-            // 
-            // toolStripMenuItem11
-            // 
-            this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-            this.toolStripMenuItem11.Size = new System.Drawing.Size(316, 34);
-            this.toolStripMenuItem11.Text = "To M&ySQL...";
-            this.toolStripMenuItem11.Visible = false;
-            // 
-            // toolStripSeparator9
-            // 
-            this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(313, 6);
-            this.toolStripSeparator9.Visible = false;
-            // 
-            // toolStripMenuItem12
-            // 
-            this.toolStripMenuItem12.Name = "toolStripMenuItem12";
-            this.toolStripMenuItem12.Size = new System.Drawing.Size(316, 34);
-            this.toolStripMenuItem12.Text = "Recent files";
-            this.toolStripMenuItem12.Visible = false;
-            // 
-            // toolStripMenuItem13
-            // 
-            this.toolStripMenuItem13.Name = "toolStripMenuItem13";
-            this.toolStripMenuItem13.Size = new System.Drawing.Size(316, 34);
-            this.toolStripMenuItem13.Text = "Recent servers";
-            this.toolStripMenuItem13.Visible = false;
             // 
             // _windowMnu
             // 
@@ -514,16 +426,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
         private System.Windows.Forms.ToolStripMenuItem _exportCsvMnu;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem7;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem8;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem9;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem10;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem11;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem12;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem13;
         private System.Windows.Forms.ToolStripMenuItem _viewDocMnu;
         private System.Windows.Forms.ToolStripMenuItem _helpReportIssueMenu;
         private System.Windows.Forms.ToolStripMenuItem _helpAboutMenu;

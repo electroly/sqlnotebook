@@ -13,9 +13,18 @@ public static class WaitStatus {
 
     public static string Status => _stack.Count == 0 ? null : _stack[^1].Status;
 
-    public static InFlightStatic Start(string target) {
+    public static InFlight StartStatic(string target) {
         lock (_stack) {
-            InFlightStatic f = new(target);
+            InFlightCustom f = new(null);
+            f.SetProgress(target);
+            _stack.Add(f);
+            return f;
+        }
+    }
+
+    public static InFlightCustom StartCustom(string target) {
+        lock (_stack) {
+            InFlightCustom f = new(target);
             _stack.Add(f);
             return f;
         }
@@ -92,8 +101,8 @@ public static class WaitStatus {
         }
     }
 
-    public sealed class InFlightStatic : InFlight {
-        public InFlightStatic(string target) : base(target) { }
+    public sealed class InFlightCustom : InFlight {
+        public InFlightCustom(string target) : base(target) { }
     }
 
     public class InFlightRows : InFlight {

@@ -37,7 +37,7 @@ public static class Program
                 notebook = WaitForm.GoWithCancel(
                     null, "SQL Notebook", $"Opening notebook...", out var success,
                     cancel => {
-                        using var status = WaitStatus.Start(Path.GetFileName(filePath));
+                        using var status = WaitStatus.StartCustom(Path.GetFileName(filePath));
                         return Notebook.Open(filePath,
                             c => status.SetProgress($"{c}% complete"),
                             cancel);

@@ -91,7 +91,7 @@ public sealed class NotebookManager {
     public void Save(CancellationToken cancel) {
         NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
         Notebook.Invoke(() => {
-            using var status = WaitStatus.Start(Path.GetFileName(Notebook.OriginalFilePath));
+            using var status = WaitStatus.StartCustom(Path.GetFileName(Notebook.OriginalFilePath));
             Notebook.Save(
                 c => status.SetProgress($"{c}% complete"),
                 cancel);
@@ -101,7 +101,7 @@ public sealed class NotebookManager {
     public void SaveAs(string filePath, CancellationToken cancel) {
         NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
         Notebook.Invoke(() => {
-            using var status = WaitStatus.Start(Path.GetFileName(filePath));
+            using var status = WaitStatus.StartCustom(Path.GetFileName(filePath));
             Notebook.SaveAs(filePath,
                 c => status.SetProgress($"{c}% complete"),
                 cancel);
