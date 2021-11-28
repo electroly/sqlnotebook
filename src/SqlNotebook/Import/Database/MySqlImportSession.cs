@@ -15,12 +15,12 @@ public sealed class MySqlImportSession : ImportSessionBase<MySqlConnectionString
     }
 
     protected override void ReadTableNames(IDbConnection connection) {
-        var tableNames = new List<string>();
+        List<(string Schema, string Table)> tableNames = new();
         using (var cmd = connection.CreateCommand()) {
             cmd.CommandText = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = database() ORDER BY TABLE_NAME;";
             using var reader = cmd.ExecuteReader();
             while (reader.Read()) {
-                tableNames.Add(reader.GetString(0));
+                tableNames.Add((null, reader.GetString(0)));
             }
         }
         TableNames = tableNames;

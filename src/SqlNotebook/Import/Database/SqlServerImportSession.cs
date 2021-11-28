@@ -15,15 +15,14 @@ public sealed class SqlServerImportSession : ImportSessionBase<SqlConnectionStri
     }
 
     protected override void ReadTableNames(IDbConnection connection) {
-        var tableNames = new List<string>();
+        List<(string Schema, string Table)> tableNames = new();
         using (var cmd = connection.CreateCommand()) {
             cmd.CommandText = "SELECT table_name, table_schema FROM INFORMATION_SCHEMA.TABLES ORDER BY table_name";
             using var reader = cmd.ExecuteReader();
             while (reader.Read()) {
                 var tableName = reader.GetString(0);
                 var tableSchema = reader.GetString(1);
-                var combinedName = tableSchema == "dbo" ? tableName : $"{tableSchema}.{tableName}";
-                tableNames.Add(combinedName);
+                tableNames.Add((tableSchema, tableName));
             }
         }
         TableNames = tableNames;

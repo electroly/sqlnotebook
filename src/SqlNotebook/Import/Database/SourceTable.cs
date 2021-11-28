@@ -6,6 +6,7 @@ public sealed class SourceTable {
     private static readonly Regex _whitespaceRegex = new(@"\s+", RegexOptions.Compiled);
 
     public bool SourceIsTable { get; set; }
+    public string SourceSchemaName { get; set; }
     public string SourceTableName { get; set; }
     public bool SourceIsSql { get; set; }
     public string SourceSql { get; set; }
@@ -13,11 +14,15 @@ public sealed class SourceTable {
 
     private SourceTable() { }
 
-    public static SourceTable FromTable(string table) =>
+    public static SourceTable FromTable(string schema, string table) =>
         new() {
             SourceIsTable = true,
+            SourceSchemaName = schema,
             SourceTableName = table,
-            TargetTableName = table,
+            TargetTableName =
+                schema != null && schema != "dbo"
+                ? $"{schema}.{table}"
+                : table,
         };
 
     public static SourceTable FromSql(string sql, string targetTableName) =>
@@ -30,6 +35,9 @@ public sealed class SourceTable {
     private string SourceDisplayText {
         get {
             if (SourceIsTable) {
+                if (SourceSchemaName != null && SourceSchemaName != "dbo") {
+                    return $"{SourceSchemaName}.{SourceTableName}";
+                }
                 return SourceTableName;
             }
             var text = _whitespaceRegex.Replace(SourceSql, " ");
@@ -41,7 +49,7 @@ public sealed class SourceTable {
     }
 
     public string DisplayText =>
-        SourceIsTable && SourceTableName == TargetTableName
+        SourceIsTable && SourceDisplayText == TargetTableName
         ? SourceDisplayText
         : $"{SourceDisplayText} → {TargetTableName}";
 }

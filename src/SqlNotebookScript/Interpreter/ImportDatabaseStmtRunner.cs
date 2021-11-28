@@ -61,15 +61,15 @@ public sealed class ImportDatabaseStmtRunner {
                 throw new Exception($"IMPORT DATABASE: The vendor \"{_vendor}\" is not recognized.");
         }
 
+        // src-schema-name
+        if (stmt.SrcSchemaNameExprOrNull != null) {
+            _srcSchemaName = _runner.EvaluateIdentifierOrExpr(stmt.SrcSchemaNameExprOrNull, _env);
+        }
+
         // src-table-name, sql
         if (stmt.SrcTableNameExprOrNull != null) {
             _srcTableName = _runner.EvaluateIdentifierOrExpr(stmt.SrcTableNameExprOrNull, _env);
             _sql = null;
-            if (_vendor == "mssql" && _srcTableName.Contains('.')) {
-                var parts = _srcTableName.Split(new[] { '.' }, 2);
-                _srcSchemaName = parts[0];
-                _srcTableName = parts[1];
-            }
         } else if (stmt.SqlExprOrNull != null) {
             var sqlObj = _runner.EvaluateExpr(stmt.SqlExprOrNull, _env);
             if (sqlObj is not string) {

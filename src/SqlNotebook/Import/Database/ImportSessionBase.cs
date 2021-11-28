@@ -13,7 +13,7 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
     where TConnectionStringBuilder : DbConnectionStringBuilder, new() {
 
     public abstract string ProductName { get; }
-    public IReadOnlyList<string> TableNames { get; protected set; } = Array.Empty<string>();
+    public IReadOnlyList<(string Schema, string Table)> TableNames { get; protected set; } = Array.Empty<(string Schema, string Table)>();
     public abstract DbConnection CreateConnection();
     protected abstract void ReadTableNames(IDbConnection connection);
     protected abstract TConnectionStringBuilder CreateBuilder(string connStr);
@@ -71,7 +71,7 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
         StringBuilder sb = new();
         sb.Append("DECLARE @cs = ");
         sb.Append(_builder.ConnectionString.SingleQuote());
-        sb.Append(";\r\n");
+        sb.Append(";\r\n\r\n");
         foreach (var sourceTable in selectedTables) {
             if (sourceTable.SourceIsSql && link) {
                 throw new ExceptionEx("Live links to custom queries are not supported.",
@@ -84,8 +84,13 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
             sb.Append(SqliteModuleName.SingleQuote());
             sb.Append(" CONNECTION @cs ");
             if (sourceTable.SourceIsTable) {
+                if (sourceTable.SourceSchemaName != null) {
+                    sb.Append("SCHEMA ");
+                    sb.Append(sourceTable.SourceSchemaName.SingleQuote());
+                    sb.Append(' ');
+                }
                 sb.Append("TABLE ");
-                sb.Append(sourceTable.SourceTableName.DoubleQuote());
+                sb.Append(sourceTable.SourceTableName.SingleQuote());
             } else if (sourceTable.SourceIsSql) {
                 sb.Append("QUERY ");
                 sb.Append(sourceTable.SourceSql.SingleQuote());
@@ -99,7 +104,7 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
             if (link) {
                 sb.Append(" OPTIONS (LINK: 1)");
             }
-            sb.Append(";\r\n");
+            sb.Append(";\r\n\r\n");
         }
         return sb.ToString();
     }

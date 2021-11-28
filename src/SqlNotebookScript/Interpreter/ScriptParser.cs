@@ -1,40 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using SqlNotebookScript.Core;
 
 namespace SqlNotebookScript.Interpreter;
-
-public sealed class SyntaxException : Exception {
-    public SyntaxException(IEnumerable<string> expecteds, TokenQueue q)
-        : base($"Syntax error at \"{q.GetSnippet()}\".  Expected: {string.Join(", ", expecteds)}") { }
-    public SyntaxException(IEnumerable<string> expecteds, List<Token> tokens)
-        : base($"Syntax error at \"{string.Join(" ", tokens.Select(x => x.Text).Take(5)).Trim()}\".  Expected: {string.Join(", ", expecteds)}") { }
-    public SyntaxException(TokenQueue q) : base($"Syntax error at \"{q.GetSnippet()}\"") { }
-    public SyntaxException(List<Token> tokens) : base($"Syntax error at \"{string.Join(" ", tokens.Select(x => x.Text).Take(5)).Trim()}\"") { }
-    public SyntaxException(string message) : base(message) { }
-}
-
-public static class ScriptParserExtensions {
-    public static string GetUnescapedText(this Token token) {
-        var x = token.Text;
-        if (x == "") {
-            return x;
-        } else if (x.First() == '"' && x.Last() == '"') {
-            return x.Substring(1, x.Length - 2).Replace("\"\"", "\"");
-        } else if (x.First() == '\'' && x.Last() == '\'') {
-            return x.Substring(1, x.Length - 2).Replace("''", "'");
-        } else if (x.First() == '`' && x.Last() == '`') {
-            return x.Substring(1, x.Length - 2).Replace("``", "`");
-        } else if (x.First() == '[' && x.Last() == ']') {
-            return x.Substring(1, x.Length - 2).Replace("]]", "]");
-        } else {
-            return x;
-        }
-    }
-}
 
 public sealed class ScriptParser {
     private readonly Notebook _notebook;
@@ -313,12 +280,16 @@ public sealed class ScriptParser {
         stmt.VendorExpr = ParseExpr(q);
         q.Take("connection");
         stmt.ConnectionStringExpr = ParseExpr(q);
-        if (q.TakeMaybe("table")) {
+        if (q.TakeMaybe("schema")) {
+            stmt.SrcSchemaNameExprOrNull = ParseIdentifierOrExpr(q);
+            q.Take("table");
+            stmt.SrcTableNameExprOrNull = ParseIdentifierOrExpr(q);
+        } else if (q.TakeMaybe("table")) {
             stmt.SrcTableNameExprOrNull = ParseIdentifierOrExpr(q);
         } else if (q.TakeMaybe("query")) {
             stmt.SqlExprOrNull = ParseExpr(q);
         } else {
-            q.Take("table", "query"); // This will throw.
+            q.Take("schema", "table", "query"); // This will throw.
         }
         if (q.TakeMaybe("into")) {
             stmt.DstTableNameExprOrNull = ParseIdentifierOrExpr(q);

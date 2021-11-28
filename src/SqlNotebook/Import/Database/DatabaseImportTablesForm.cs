@@ -17,7 +17,7 @@ public partial class DatabaseImportTablesForm : ZForm {
         InitializeComponent();
         _manager = manager;
         _session = session;
-        _tables = session.TableNames.Select(SourceTable.FromTable).ToList();
+        _tables = session.TableNames.Select(x => SourceTable.FromTable(x.Schema, x.Table)).ToList();
         foreach (var table in _tables) {
             int index = _listBox.Items.Add(table.DisplayText);
 
@@ -81,8 +81,7 @@ public partial class DatabaseImportTablesForm : ZForm {
         int i = _listBox.SelectedIndex;
         var sourceTable = _tables[i];
         if (sourceTable.SourceIsTable) {
-            var oldName = sourceTable.SourceTableName ?? "(query)";
-            using DatabaseImportRenameTableForm f = new(oldName, sourceTable.TargetTableName);
+            using DatabaseImportRenameTableForm f = new(sourceTable.SourceTableName, sourceTable.TargetTableName);
             if (f.ShowDialog(this) == DialogResult.OK) {
                 sourceTable.TargetTableName = f.NewName;
                 _listBox.Items[i] = sourceTable.DisplayText;
