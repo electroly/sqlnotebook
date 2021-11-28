@@ -1,0 +1,63 @@
+linerad = 10px
+linewid *= 0.5
+
+ENT: circle radius 10%
+arrow 2*arrowht
+EXP: oval "EXPORT" fit
+arrow 2*arrowht
+oval "CSV" fit
+arrow 2*arrowht
+FIL: box "filename" fit
+arrow right 2*arrowht then down 1.25*EXP.ht then left even with .5<EXP.w,FIL.e>
+arrow left even with ENT then down 1.25*EXP.ht then right 2*arrowht
+FRM: oval "FROM" fit
+A1: arrow 2*arrowht
+
+arrow from A1.end right 4*arrowht
+oval "TABLE" fit
+arrow 2*arrowht
+TNM: box "table-name" fit
+
+arrow from A1.end right 2*arrowht then down 1.5*EXP.ht then right 2*arrowht
+oval "SCRIPT" fit
+arrow 2*arrowht
+SNM: box "script-name" fit
+
+arrow from A1.end right 2*arrowht then down 3*EXP.ht then right 2*arrowht
+oval "(" fit
+arrow 2*arrowht
+box "select-statement" fit
+arrow 2*arrowht
+oval ")" fit
+A2: arrow right 2*arrowht then up 3*EXP.ht then right 2*arrowht
+
+arrow from TNM.e to A2.end
+arrow from SNM.e right even with A2.end - (2*arrowht,0) then up 1.5*EXP.ht then to A2.end
+
+arrow from A2.end right 2*arrowht then down 4.25*EXP.ht then left even with .5<ENT,A2.end>
+A3: arrow left even with ENT then down 0.75*EXP.ht
+arrow down 0.5*EXP.ht then right 2*arrowht
+OPT: oval "OPTIONS" fit
+arrow 2*arrowht
+oval "(" fit
+arrow 4*arrowht
+OPTKEY: box "key" fit
+arrow 2*arrowht
+oval ":" fit
+arrow 2*arrowht
+OPTVAL: box "value" fit
+arrow 3*arrowht
+OPTEND: oval ")" fit
+arrow right 2*arrowht then down 2.25*EXP.ht then left even with .5<OPT.w,OPTEND.e>
+arrow left even with ENT then down 1*EXP.ht
+SEMI: oval ";" fit
+arrow 2*arrowht
+EXIT: circle same
+
+arrow from OPTVAL.e right 1*arrowht then down 0.75*EXP.ht
+arrow down 0.5*EXP.ht then left even with .5<OPTKEY.w,OPTVAL.e>
+oval "," fit
+arrow left even with OPTKEY.w - (2*arrowht,0) then up even with OPTKEY.w then to OPTKEY.w
+
+arrow from A3.end down 5*arrowht
+arrow to SEMI.n

@@ -35,6 +35,7 @@ public sealed class ScriptRunner {
             [typeof(Ast.ExportTxtStmt)] = (s, e) => ExecuteExportTxtStmt((Ast.ExportTxtStmt)s, e),
             [typeof(Ast.ImportXlsStmt)] = (s, e) => ExecuteImportXlsStmt((Ast.ImportXlsStmt)s, e),
             [typeof(Ast.ImportDatabaseStmt)] = (s, e) => ExecuteImportDatabaseStmt((Ast.ImportDatabaseStmt)s, e),
+            [typeof(Ast.ExportCsvStmt)] = (s, e) => ExecuteExportCsvStmt((Ast.ExportCsvStmt)s, e),
         };
     }
 
@@ -249,19 +250,24 @@ public sealed class ScriptRunner {
         env.Output.TextOutput.Add(value.ToString());
     }
 
-    private void ExecuteExecuteStmt(Ast.ExecuteStmt stmt, ScriptEnv env) {
+    public ScriptOutput ExecuteSubScript(string scriptName, List<Ast.ArgumentPair> arguments, ScriptEnv env) {
         var parser = new ScriptParser(_notebook);
         var runner = new ScriptRunner(_notebook, _scripts);
-        var script = parser.Parse(GetScriptCode(stmt.ScriptName));
+        var script = parser.Parse(GetScriptCode(scriptName));
         var subEnv = new ScriptEnv { OnRow = env.OnRow };
-        foreach (var arg in stmt.Arguments) {
+        foreach (var arg in arguments) {
             if (arg.Value != null) {
                 subEnv.Vars[arg.Name.ToLower()] = EvaluateExpr(arg.Value, env);
             }
         }
         runner.Execute(script, subEnv);
-        env.Output.Append(subEnv.Output);
-        var returnCode = subEnv.Output.ScalarResult;
+        return subEnv.Output;
+    }
+
+    private void ExecuteExecuteStmt(Ast.ExecuteStmt stmt, ScriptEnv env) {
+        var subOutput = ExecuteSubScript(stmt.ScriptName, stmt.Arguments, env);
+        env.Output.Append(subOutput);
+        var returnCode = subOutput.ScalarResult;
         if (stmt.ReturnVariableName != null) {
             var name = stmt.ReturnVariableName.ToLower();
             env.Vars[name] = returnCode ?? DBNull.Value;
@@ -320,6 +326,11 @@ public sealed class ScriptRunner {
     private void ExecuteImportDatabaseStmt(Ast.ImportDatabaseStmt stmt, ScriptEnv env) {
         Notebook.WithCancellationToken(cancel =>
             ImportDatabaseStmtRunner.Run(_notebook, env, this, stmt, cancel));
+    }
+
+    private void ExecuteExportCsvStmt(Ast.ExportCsvStmt stmt, ScriptEnv env) {
+        Notebook.WithCancellationToken(cancel =>
+            ExportCsvStmtRunner.Run(_notebook, env, this, stmt, cancel));
     }
 
     public T EvaluateExpr<T>(Ast.Expr expr, ScriptEnv env) {

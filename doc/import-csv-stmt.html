@@ -18,18 +18,18 @@
     The name of the notebook table to import the CSV file into. If the table does not exist, it will be created. If it
     does exist, by default new rows will be appended, but the <code>TRUNCATE_EXISTING_TABLE</code> option can be used
     to overwrite the existing table data.</li>
-    <li><i>separator</i>: text<br>
+    <li><i>separator</i>: text (optional)<br>
     The separator between values in a row. By default this is a comma for CSV files, but semicolons and tabs are
     popular. The string "Tab" is interpreted as a tab character.<br></li>
     <li><i>column-name</i>: text or identifier<br>
     The name of a column in the source file to import. If this column name is not found in the source file, then the
     import operation fails with an error. If no column list is provided, then all columns are imported.</li>
-    <li><i>target-column-name</i>: text or identifier<br>
+    <li><i>target-column-name</i>: text or identifier (optional)<br>
     If provided, this maps the source column to a different name in the destination table. If not provided, then the
     target column name is the same as the source column name. If multiple columns are mapped to the same target column
     name in this way, then the import operation fails with an error.</li>
     <li>
-      <i>data-type</i>: keyword<br>
+      <i>data-type</i>: keyword (optional)<br>
       If provided, the column data will be parsed into the specified data type. <i>data-type</i> may be one of the
       following values:
       <ul class="enum">

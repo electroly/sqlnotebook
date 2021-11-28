@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>EXPORT CSV Statement</title>
+</head>
+<body>
+  <h1><tt>EXPORT</tt> <tt>CSV</tt> Statement</h1>Exports a script, table, or view to a CSV (comma-separated values)
+  file. This statement is the scripting equivalent of the visual export wizard accessed via the Export menu.<br>
+  <h2>Syntax</h2><img src="art/export-csv-stmt-syntax.svg" alt="" class="railroad" moz-do-not-send="true" width="503"
+  height="420"><br>
+  <h2>Parameters</h2>
+  <ul>
+    <li><i>filename</i>: text<br>
+    The absolute path to the text file to write. The file does not need to exist. If it does exist, by default new
+    lines will be appended to it. Use the <code>TRUNCATE_EXISTING_FILE</code> option to overwrite the existing
+    file.</li>
+    <li><i>table-name</i>: text or identifier (optional)<br>
+    If provided, this is the name of a table or view in the notebook to export.</li>
+    <li><i>script-name</i>: text or identifier (optional)<br>
+    If provided, this is the name of a script in the notebook to export. The script will be executed and then its
+    results will be written to the file. If the script produces multiple data tables, then only the first is
+    exported.<br></li>
+    <li><i>select-statement</i>: statement (optional)<br>
+    If provided, this is a <code>SELECT</code> statement that provides the rows to write to the file.</li>
+  </ul>
+  <h2>Options</h2>
+  <ul>
+    <li><tt>HEADER_ROW</tt>: integer (0-1, default: 1)<br>
+    Indicates whether the first row of the file should be a column header row.</li>
+    <li><tt>SEPARATOR</tt>: text (default: <tt>','</tt>)<br>
+    Allows separators other than commas. The separator must be a single character (specifically, a single UTF-16 code
+    unit). To specify a tab separator, use <tt>CHAR(9)</tt> which uses the ASCII code 9 to produce the tab
+    character.<br></li>
+    <li>
+      <code>TRUNCATE_EXISTING_FILE</code>: integer (0-1, default: 0)<br>
+      If the output file exists, this option indicates whether the existing file contents should be deleted.
+      <ul class="enum">
+        <li>0 = Keep existing file data and append new lines</li>
+        <li>1 = Delete existing file data</li>
+      </ul>
+    </li>
+    <li><code>FILE_ENCODING</code>: integer (0-65535, default: 0)<br>
+    Indicates the text encoding to use when writing the text file. Specify 0 to use UTF-8. Any nonzero integer is
+    treated as a Windows code page number. See <a moz-do-not-send="true" href=
+    "file:///C:/Projects/sqlnotebook/doc/character-encodings-in-csv-and-text-files.html">Character Encodings in CSV and
+    Text Files</a> for a list of these code page numbers.</li>
+  </ul>
+  <h2>Example</h2>
+  <pre><i>-- In most cases, this is all that is required.</i><br>EXPORT CSV 'C:\file.csv' FROM TABLE my_table;<br><br><i>-- Use the SEPARATOR option to write tab-separated files.</i><br>EXPORT CSV 'C:\file.tsv' FROM TABLE my_table OPTIONS (SEPARATOR: CHAR(9));<br></pre>
+</body>
+</html>

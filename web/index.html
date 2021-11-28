@@ -80,22 +80,22 @@ FROM INTEGER_RANGE(1, 100);</pre>
   <p>SQL Notebook is a "batteries included" solution to everyday data analysis needs. A wide variety of functionality
   is immediately available out of the box. SQL Notebook provides additional commands and functions for data exploration
   beyond those provided by SQLite.<br></p>
-  <pre style="overflow-x: auto; overflow-y: hidden;"><i>-- Access the filesystem</i>
-SELECT filename FROM LIST_FILES('C:\') WHERE extension IN ('.csv', '.xls');
-
-<i>-- Parse CSV and other types of files on-the-fly</i>
+  <pre style="overflow-x: auto; overflow-y: hidden;"><i>-- Parse CSV and other types of files on-the-fly</i>
 SELECT * FROM READ_CSV('C:\MyData.csv');
 
 <i>-- Import data files into new or existing tables</i>
 IMPORT XLS 'C:\Workbook.xls' WORKSHEET 'Sheet2' INTO my_table;
 
 <i>-- Manipulate dates and times with familiar built-in functions</i>
-SELECT *, DATEADD('day', -1, date_col) AS previous_day FROM my_table;</pre>
+SELECT *, DATEADD('day', -1, date_col) AS previous_day FROM my_table;<br><br><i>-- Access the filesystem</i>
+SELECT filename FROM LIST_FILES('C:\') WHERE extension IN ('.csv', '.xls');
+</pre>
   <p>Learn more in the <a href="doc.html">documentation</a>:</p>
   <ul class="tight">
     <li>Full-featured import and export statements: <a href="import-csv-stmt.html"><code>IMPORT CSV</code></a> •
-    <a href="import-xls-stmt.html"><code>IMPORT XLS</code></a> • <a href="export-txt-stmt.html"><code>EXPORT
-    TXT</code></a></li>
+    <a href="import-xls-stmt.html"><code>IMPORT XLS</code></a> • <a moz-do-not-send="true" href=
+    "import-database-stmt.html"><tt>IMPORT DATABASE</tt></a> • <a href="export-csv-stmt.html" moz-do-not-send=
+    "true"><code>EXPORT CSV</code></a> • <a href="export-txt-stmt.html"><code>EXPORT TXT</code></a></li>
     <li>Quick functions for reading files: <a href="list-files-func.html"><code>LIST_FILES</code></a> • <a href=
     "read-csv-func.html"><code>READ_CSV</code></a> • <a href="read-file-func.html"><code>READ_FILE</code></a> •
     <a href="download-func.html"><code>DOWNLOAD</code></a></li>

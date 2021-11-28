@@ -234,6 +234,7 @@ public sealed class ScriptParser {
     private Ast.Stmt ParseExportStmt(TokenQueue q) =>
         q.Peek(1) switch {
             "txt" or "text" => Check(q, ParseExportTxtStmt(q)),
+            "csv" => Check(q, ParseExportCsvStmt(q)),
             _ => throw new SyntaxException($"Unknown export type: \"{q.Peek(1)}\""),
         };
 
@@ -382,6 +383,28 @@ public sealed class ScriptParser {
             q.Take(",");
             stmt.TextColumnName = Check(q, ParseIdentifierOrExpr(q));
             q.Take(")");
+        }
+        if (q.TakeMaybe("options")) {
+            stmt.OptionsList = Check(q, ParseOptionsList(q));
+        }
+        ConsumeSemicolon(q);
+        return stmt;
+    }
+
+    private Ast.ExportCsvStmt ParseExportCsvStmt(TokenQueue q) {
+        Ast.ExportCsvStmt stmt = new() { SourceToken = q.SourceToken };
+        q.Take("export");
+        q.Take("csv");
+        stmt.FilenameExpr = ParseExpr(q);
+        q.Take("from");
+        if (q.TakeMaybe("table")) {
+            stmt.TableNameOrNull = ParseIdentifierOrExpr(q);
+        } else if (q.TakeMaybe("script")) {
+            stmt.ScriptNameOrNull = ParseIdentifierOrExpr(q);
+        } else if (q.TakeMaybe("(")) {
+            stmt.SelectStmtOrNull = ParseSqlStmt(q, "select-stmt");
+        } else {
+            q.Take("table", "script", "("); // throw
         }
         if (q.TakeMaybe("options")) {
             stmt.OptionsList = Check(q, ParseOptionsList(q));

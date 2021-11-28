@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using SqlNotebookScript.DataTables;
 using SqlNotebookScript.Utils;
 
@@ -19,14 +16,6 @@ public sealed class ScriptOutput : IDisposable {
         x.DataTables.Clear();
         TextOutput.AddRange(x.TextOutput);
         x.TextOutput.Clear();
-    }
-
-    public void WriteCsv(StreamWriter s, Action onRow, CancellationToken cancel) {
-        foreach (var dt in DataTables) {
-            cancel.ThrowIfCancellationRequested();
-            s.WriteLine(string.Join(",", dt.Columns.Select(CsvUtil.EscapeCsv)));
-            CsvUtil.WriteCsv(dt.Rows, s, onRow);
-        }
     }
 
     public void Serialize(BinaryWriter writer) {

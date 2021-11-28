@@ -1,48 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Threading;
 
 namespace SqlNotebookScript.Utils;
 
 public static class CsvUtil {
-    public static void WriteCsv(IEnumerable<object[]> rows, StreamWriter writer, Action onRow = null) {
+    public static void WriteCsv(
+        IEnumerable<object[]> rows, StreamWriter writer, Action onRow = null, char separator = ',',
+        CancellationToken cancel = default
+        ) {
         foreach (var row in rows) {
-            var first = true;
-            foreach (var value in row) {
-                if (first) {
-                    first = false;
-                } else {
-                    writer.Write(",");
-                }
-                writer.Write(EscapeCsv(value));
-            }
-            writer.WriteLine("");
+            cancel.ThrowIfCancellationRequested();
+            WriteCsvLine(writer, separator, row);
             onRow?.Invoke();
         }
     }
 
-    public static string EscapeCsv(object val) {
+    public static void WriteCsvLine(StreamWriter writer, char separator, object[] row) {
+        var first = true;
+        foreach (var value in row) {
+            if (first) {
+                first = false;
+            } else {
+                writer.Write(separator);
+            }
+            writer.Write(QuoteCsv(value, separator));
+        }
+        writer.WriteLine("");
+    }
+
+    public static string QuoteCsv(object val, char separator) {
         var str = val?.ToString() ?? "";
-        if (StringRequiresEscape(str)) {
+        if (StringRequiresEscape(str, separator)) {
             return $"\"{str.Replace("\"", "\"\"")}\"";
         } else {
             return str;
         }
     }
 
-    public static bool StringRequiresEscape(string str) {
-        if (str == "") {
+    private static bool StringRequiresEscape(string str, char separator) {
+        var len = str.Length;
+        if (len == 0) {
             return false;
         }
+        if (char.IsWhiteSpace(str[0])) {
+            return true;
+        }
+        if (char.IsWhiteSpace(str[^1])) {
+            return true;
+        }
+        if (str[0] == '0') {
+            return true;
+        }
 
-        return
-            char.IsWhiteSpace(str[0]) ||
-            char.IsWhiteSpace(str[str.Length - 1]) ||
-            (str.Length > 1 && str[0] == '0') ||
-            str.Any(CharRequiresEscape);
+        for (var i = 0; i < len; i++) {
+            var ch = str[i];
+            if (ch == '"' || ch == '\'' || ch == separator || ch == '\r' || ch == '\n' || ch == '\t') {
+                return true;
+            }
+        }
+
+        return false;
     }
-
-    public static bool CharRequiresEscape(char ch) =>
-        ch == '"' || ch == '\'' || ch == ',' || ch == '\r' || ch == '\n' || ch == '\t';
 }

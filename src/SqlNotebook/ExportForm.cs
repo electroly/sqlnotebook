@@ -1,16 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
+using SqlNotebookScript.Utils;
 
 namespace SqlNotebook;
 
 public partial class ExportForm : ZForm {
-    public NotebookItem NotebookItem { get; private set; }
+    private readonly NotebookManager _manager;
 
-    public ExportForm(IEnumerable<string> scripts, IEnumerable<string> tables, IEnumerable<string> views) {
+    public ExportForm(NotebookManager manager) {
         InitializeComponent();
+        _manager = manager;
+
         using var g = CreateGraphics();
+
+        var scripts = _manager.Items.Where(x => x.Type == NotebookItemType.Script).Select(x => x.Name);
+        var tables = _manager.Items.Where(x => x.Type == NotebookItemType.Table).Select(x => x.Name);
+        var views = _manager.Items.Where(x => x.Type == NotebookItemType.View).Select(x => x.Name);
 
         Ui ui = new(this, 75, 25);
         ui.Init(_table);
@@ -19,9 +28,8 @@ public partial class ExportForm : ZForm {
         ui.MarginTop(_list);
         ui.Init(_buttonFlow);
         ui.MarginTop(_buttonFlow);
-        ui.Init(_openBtn);
-        ui.Init(_saveBtn);
-        ui.Init(_cancelBtn);
+        ui.Init(_exportButton);
+        ui.Init(_cancelButton);
 
         ImageList imageList = new() {
             ColorDepth = ColorDepth.Depth32Bit,
@@ -50,29 +58,60 @@ public partial class ExportForm : ZForm {
         _list.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
     }
 
-    private void OpenBtn_Click(object sender, EventArgs e) {
-        if (_list.SelectedIndices.Count == 1) {
-            SetNotebookItem();
-            DialogResult = DialogResult.Yes;
-            Close();
+    private void SaveBtn_Click(object sender, EventArgs e) {
+        if (_list.SelectedIndices.Count != 1) {
+            return;
         }
-    }
-
-    private void SetNotebookItem() {
         var lvi = _list.SelectedItems[0];
         var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
-        NotebookItem = new NotebookItem(type, lvi.Text);
-    }
+        NotebookItem item = new(type, lvi.Text);
 
-    private void SaveBtn_Click(object sender, EventArgs e) {
-        if (_list.SelectedIndices.Count == 1) {
-            SetNotebookItem();
-            DialogResult = DialogResult.No;
-            Close();
+        using SaveFileDialog saveFileDialog = new() {
+            AddExtension = true,
+            AutoUpgradeEnabled = true,
+            CheckPathExists = true,
+            DefaultExt = ".csv",
+            Filter = "CSV files|*.csv",
+            OverwritePrompt = true,
+            SupportMultiDottedExtensions = true,
+            Title = "Save CSV As",
+            ValidateNames = true
+        };
+        if (saveFileDialog.ShowDialog(this) != DialogResult.OK) {
+            return;
         }
+        var filePath = saveFileDialog.FileName;
+
+        var typeKeyword =
+            type switch {
+                NotebookItemType.Script => "SCRIPT",
+                NotebookItemType.Table => "TABLE",
+                NotebookItemType.View => "TABLE",
+                _ => throw new InvalidOperationException("Unrecognzied notebook item type.")
+            };
+        var sql =
+            $"EXPORT CSV {filePath.SingleQuote()} " +
+            $"FROM {typeKeyword} {item.Name.DoubleQuote()} " +
+            $"OPTIONS (TRUNCATE_EXISTING_FILE: 1);";
+
+        WaitForm.GoWithCancel(this, "Export", "Exporting to file...", out var success, cancel => {
+            SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
+                _manager.ExecuteScriptNoOutput(sql);
+            }, cancel);
+        });
+        _manager.Rescan();
+        _manager.SetDirty();
+        if (!success) {
+            return;
+        }
+
+        Process.Start(new ProcessStartInfo {
+            FileName = "explorer.exe",
+            Arguments = $"/e, /select, \"{filePath}\""
+        });
     }
 
     private void List_SelectedIndexChanged(object sender, EventArgs e) {
-        _openBtn.Enabled = _saveBtn.Enabled = _list.SelectedIndices.Count == 1;
+        _exportButton.Enabled = _list.SelectedIndices.Count == 1;
     }
 }
