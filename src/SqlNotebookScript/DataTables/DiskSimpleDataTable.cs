@@ -7,10 +7,11 @@ using SqlNotebookScript.Utils;
 namespace SqlNotebookScript.DataTables;
 
 public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable {
-    private readonly TempFile _headerTempFile = new();
-    private readonly TempFile _dataTempFile = new();
-    private readonly Stream _headerStream;
-    private readonly Stream _dataStream;
+    private bool _disposed;
+    private TempFile _headerTempFile = new();
+    private TempFile _dataTempFile = new();
+    private Stream _headerStream;
+    private Stream _dataStream;
     private int _dataCount = 0;
 
     // These are disposed and nulled when the table finishes loading.
@@ -59,17 +60,30 @@ public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable {
 
     public override void Dispose() {
         _headerWriter?.Dispose();
+        _headerWriter = null;
         _headerReader?.Dispose();
+        _headerReader = null;
         _headerStream?.Dispose();
+        _headerStream = null;
         _headerTempFile?.Dispose();
+        _headerTempFile = null;
 
         _dataWriter?.Dispose();
+        _dataWriter = null;
         _dataReader?.Dispose();
+        _dataReader = null;
         _dataStream?.Dispose();
+        _dataStream = null;
         _dataTempFile?.Dispose();
+        _dataTempFile = null;
+
+        _disposed = true;
     }
 
     public void GetRow(long index, object[] row) {
+        if (_disposed) {
+            throw new ObjectDisposedException(nameof(DiskSimpleDataTable));
+        }
         if (!_loadingFinished) {
             throw new InvalidOperationException("Loading has not finished.");
         }
