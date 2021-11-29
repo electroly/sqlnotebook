@@ -53,7 +53,8 @@ public static class SqliteGrammar {
         //      (
         //          ( RENAME TO new-table-name ) |
         //          ( RENAME [COLUMN] column-name TO new-column-name ) |
-        //          ( ADD [COLUMN] <column-def> )
+        //          ( ADD [COLUMN] <column-def> ) |
+        //          ( DROP [COLUMN] column-name )
         //      )
         TopProd(p = "alter-table-stmt", 1,
             Tok(TokenType.Alter), Tok(TokenType.Table),
@@ -79,6 +80,11 @@ public static class SqliteGrammar {
                     Tok(TokenType.Add),
                     Opt(Tok(TokenType.Columnkw)),
                     SubProd("column-def")
+                ),
+                Prod($"{p}.drop", 1,
+                    Tok(TokenType.Drop),
+                    Opt(Tok(TokenType.Columnkw)),
+                    Id("column name")
                 )
             )
         );
