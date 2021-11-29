@@ -1111,7 +1111,11 @@ public static class SqliteGrammar {
         TopProd(p = "ordering-term", 1,
             SubProd("expr"),
             Opt(1, Tok(TokenType.Collate), Id("collation name")),
-            Opt(Or(Tok(TokenType.Asc), Tok(TokenType.Desc)))
+            Opt(Or(Tok(TokenType.Asc), Tok(TokenType.Desc))),
+            Opt(
+                Tok(TokenType.Nulls),
+                Or(Tok(TokenType.First), Tok(TokenType.Last))
+            )
         );
 
         // compound-operator ::= UNION

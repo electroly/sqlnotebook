@@ -69,6 +69,8 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_LIST_FILES_sql() => TestScript(@"LIST_FILES.sql");
     [TestMethod] public void Test_NEWID_sql() => TestScript(@"NEWID.sql");
     [TestMethod] public void Test_NOW_sql() => TestScript(@"NOW.sql");
+    [TestMethod] public void Test_ORDER_BY_NULLS_FIRST_sql() => TestScript(@"ORDER BY NULLS FIRST.sql");
+    [TestMethod] public void Test_ORDER_BY_NULLS_LAST_sql() => TestScript(@"ORDER BY NULLS LAST.sql");
     [TestMethod] public void Test_READ_CSV_sql() => TestScript(@"READ_CSV.sql");
     [TestMethod] public void Test_READ_FILE_sql() => TestScript(@"READ_FILE.sql");
     [TestMethod] public void Test_READ_FILE_TEXT_sql() => TestScript(@"READ_FILE_TEXT.sql");
