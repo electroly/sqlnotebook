@@ -1178,6 +1178,13 @@ public static class SqliteGrammar {
                 Tok(TokenType.Eq),
                 SubProd("expr")
             ),
+            Opt(1,
+                Tok(TokenType.From),
+                Or(
+                    Lst($"{p}.from-table-or-subquery", TokenType.Comma, 1, SubProd("table-or-subquery")),
+                    SubProd("join-clause")
+                )
+            ),
             Opt(1, Tok(TokenType.Where), SubProd("expr")),
             Opt(2,
                 Opt(

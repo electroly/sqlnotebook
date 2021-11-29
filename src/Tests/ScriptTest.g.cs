@@ -115,6 +115,7 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_integer_range_func_sql() => TestScript(@"doc\integer-range-func.sql");
     [TestMethod] public void Test_doc_is_date_func_sql() => TestScript(@"doc\is-date-func.sql");
     [TestMethod] public void Test_doc_is_numeric_func_sql() => TestScript(@"doc\is-numeric-func.sql");
+    [TestMethod] public void Test_doc_lang_update___UPDATE_FROM_sql() => TestScript(@"doc\lang_update - UPDATE FROM.sql");
     [TestMethod] public void Test_doc_list_xls_worksheets_func_sql() => TestScript(@"doc\list-xls-worksheets-func.sql");
     [TestMethod] public void Test_doc_math_funcs_sql() => TestScript(@"doc\math-funcs.sql");
     [TestMethod] public void Test_doc_month_func_sql() => TestScript(@"doc\month-func.sql");
