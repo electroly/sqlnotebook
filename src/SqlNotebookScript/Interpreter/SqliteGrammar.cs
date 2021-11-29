@@ -512,6 +512,7 @@ public static class SqliteGrammar {
         );
 
         // delete-stmt ::= [ <with-clause> ] DELETE FROM <qualified-table-name> [ WHERE <expr> ]
+        //      [<returning-clause>]
         //      [ 
         //          [ ORDER BY <ordering-term> [ "," <ordering-term> ]* ]
         //          LIMIT <expr> [ ( OFFSET | "," ) <expr> ]
@@ -521,6 +522,7 @@ public static class SqliteGrammar {
             Tok(TokenType.Delete), Tok(TokenType.From),
             SubProd("qualified-table-name"),
             Opt(1, Tok(TokenType.Where), SubProd("expr")),
+            Opt(SubProd("returning-clause")),
             Opt(2,
                 Opt(1,
                     Tok(TokenType.Order),
@@ -864,6 +866,7 @@ public static class SqliteGrammar {
         //          <select-stmt> [<upsert-clause>] |
         //          DEFAULT VALUES
         //      )
+        //      [<returning-clause>]
         TopProd(p = "insert-stmt", 1,
             Opt(SubProd("with-clause")),
             Or(
@@ -898,7 +901,8 @@ public static class SqliteGrammar {
                 ),
                 Prod($"{p}.select", 1, SubProd("select-stmt"), Opt(SubProd("upsert-clause"))),
                 Prod($"{p}.default-values", 1, Tok(TokenType.Default), Tok(TokenType.Values))
-            )
+            ),
+            Opt(SubProd("returning-clause"))
         );
 
         // pragma-stmt ::= PRAGMA [ database-name "." ] pragma-name
@@ -1163,6 +1167,7 @@ public static class SqliteGrammar {
         // update-stmt ::= [ <with-clause> ] UPDATE
         //      [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] <qualified-table-name>
         //      SET column-name = <expr> [ , (column-name | <column-name-list>) = <expr> ]* [ WHERE <expr> ]
+        //      [<returning-clause>]
         //      [
         //          [ ORDER BY <ordering-term> [ , <ordering-term> ]* ]
         //          LIMIT <expr> [ ( OFFSET | , ) <expr> ]
@@ -1193,6 +1198,7 @@ public static class SqliteGrammar {
                 )
             ),
             Opt(1, Tok(TokenType.Where), SubProd("expr")),
+            Opt(SubProd("returning-clause")),
             Opt(2,
                 Opt(
                     Tok(TokenType.Order), Tok(TokenType.By),
@@ -1363,6 +1369,23 @@ public static class SqliteGrammar {
                             SubProd("expr")
                         )
                     )
+                )
+            )
+        );
+
+        // returning-clause - https://sqlite.org/syntax/returning-clause.html
+        TopProd(p = "returning-clause", 1,
+            Tok(TokenType.Returning),
+            Lst($"{p}.item", TokenType.Comma, 1,
+                Or(
+                    Prod($"{p}.item.expr", 1,
+                        SubProd("expr"),
+                        Opt(
+                            Opt(Tok(TokenType.As)),
+                            Id("column alias")
+                        )
+                    ),
+                    Prod($"{p}.item.star", 1, Tok(TokenType.Star))
                 )
             )
         );

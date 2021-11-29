@@ -12,6 +12,7 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_CREATE_TABLE_duplicate_options_sql() => TestScript(@"CREATE TABLE duplicate options.sql");
     [TestMethod] public void Test_CREATE_TABLE_STRICT_sql() => TestScript(@"CREATE TABLE STRICT.sql");
     [TestMethod] public void Test_CREATE_TABLE_WITHOUT_ROWID_sql() => TestScript(@"CREATE TABLE WITHOUT ROWID.sql");
+    [TestMethod] public void Test_DELETE_RETURNING_sql() => TestScript(@"DELETE RETURNING.sql");
     [TestMethod] public void Test_EXECUTE_implicitly_using_default_value_sql() => TestScript(@"EXECUTE implicitly using default value.sql");
     [TestMethod] public void Test_EXECUTE_one_explicit__one_default_argument_sql() => TestScript(@"EXECUTE one explicit, one default argument.sql");
     [TestMethod] public void Test_EXECUTE_simple_sql() => TestScript(@"EXECUTE simple.sql");
@@ -68,6 +69,7 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_IMPORT_XLS_TRUNCATE_EXISTING_TABLE_sql() => TestScript(@"IMPORT XLS TRUNCATE_EXISTING_TABLE.sql");
     [TestMethod] public void Test_IMPORT_XLS_sql() => TestScript(@"IMPORT XLS.sql");
     [TestMethod] public void Test_IN_table_valued_function_sql() => TestScript(@"IN table-valued function.sql");
+    [TestMethod] public void Test_INSERT_RETURNING_sql() => TestScript(@"INSERT RETURNING.sql");
     [TestMethod] public void Test_LIST_FILES_sql() => TestScript(@"LIST_FILES.sql");
     [TestMethod] public void Test_NEWID_sql() => TestScript(@"NEWID.sql");
     [TestMethod] public void Test_NOW_sql() => TestScript(@"NOW.sql");
@@ -83,6 +85,7 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_THROW_rethrow_sql() => TestScript(@"THROW rethrow.sql");
     [TestMethod] public void Test_THROW_sql() => TestScript(@"THROW.sql");
     [TestMethod] public void Test_TO_DATETIMEOFFSET_sql() => TestScript(@"TO_DATETIMEOFFSET.sql");
+    [TestMethod] public void Test_UPDATE_RETURNING_sql() => TestScript(@"UPDATE RETURNING.sql");
     [TestMethod] public void Test_USER_NAME_sql() => TestScript(@"USER_NAME.sql");
     [TestMethod] public void Test_doc_array_append_func_sql() => TestScript(@"doc\array-append-func.sql");
     [TestMethod] public void Test_doc_array_concat_func_sql() => TestScript(@"doc\array-concat-func.sql");
@@ -117,6 +120,7 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_integer_range_func_sql() => TestScript(@"doc\integer-range-func.sql");
     [TestMethod] public void Test_doc_is_date_func_sql() => TestScript(@"doc\is-date-func.sql");
     [TestMethod] public void Test_doc_is_numeric_func_sql() => TestScript(@"doc\is-numeric-func.sql");
+    [TestMethod] public void Test_doc_lang_returning___Typical_Use_sql() => TestScript(@"doc\lang_returning - Typical Use.sql");
     [TestMethod] public void Test_doc_lang_update___UPDATE_FROM_sql() => TestScript(@"doc\lang_update - UPDATE FROM.sql");
     [TestMethod] public void Test_doc_lang_upsert___Examples_1_sql() => TestScript(@"doc\lang_upsert - Examples 1.sql");
     [TestMethod] public void Test_doc_lang_upsert___Examples_2_sql() => TestScript(@"doc\lang_upsert - Examples 2.sql");
