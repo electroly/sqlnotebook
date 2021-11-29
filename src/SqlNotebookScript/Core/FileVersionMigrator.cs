@@ -78,7 +78,7 @@ public static class FileVersionMigrator {
 
     // Convert a file from version 1 (zip file, up through 0.6.0) to version 2 (sqlite db, starting 1.0.0)
     private static void MigrateFileVersion1to2(string filePath) {
-        using TempFile dbFile = new();
+        using TempFile dbFile = new(".v1");
         NotebookUserData userData = null;
 
         // read the two entries from the zip file

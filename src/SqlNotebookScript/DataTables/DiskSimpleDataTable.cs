@@ -8,8 +8,8 @@ namespace SqlNotebookScript.DataTables;
 
 public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable {
     private bool _disposed;
-    private TempFile _headerTempFile = new();
-    private TempFile _dataTempFile = new();
+    private TempFile _headerTempFile = new(".header");
+    private TempFile _dataTempFile = new(".data");
     private Stream _headerStream;
     private Stream _dataStream;
     private int _dataCount = 0;

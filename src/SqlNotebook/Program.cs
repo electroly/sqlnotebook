@@ -56,7 +56,7 @@ public static class Program
         } catch (Exception ex) {
             Ui.ShowError(null, "SQL Notebook", ex);
         } finally {
-            NotebookTempFiles.DeleteFilesFromThisSession();
+            NotebookTempFiles.Shutdown();
             Notebook.ShutdownSqlite();
         }
     }

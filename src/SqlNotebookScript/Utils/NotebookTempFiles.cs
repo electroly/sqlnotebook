@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -11,6 +10,11 @@ public static class NotebookTempFiles {
         var parent = Path.Combine(Path.GetTempPath(), "SqlNotebookTemp");
         DeleteFilesFromPreviousSessions(parent);
         var path = Path.Combine(parent, $"{p.Id}");
+        if (Directory.Exists(path)) {
+            try {
+                Directory.Delete(path, true);
+            } catch { }
+        }
         Directory.CreateDirectory(path);
         return path;
     });
@@ -24,7 +28,7 @@ public static class NotebookTempFiles {
         return filePath;
     }
 
-    public static void DeleteFilesFromThisSession() {
+    public static void Shutdown() {
         var dir = _dir.Value;
         try {
             Directory.Delete(dir, true);
@@ -38,9 +42,6 @@ public static class NotebookTempFiles {
             return;
         }
 
-        // Track process IDs we've seen before so we don't call GetProcessById more than once per process.
-        HashSet<int> pids = new();
-
         try {
             foreach (var file in Directory.GetFiles(path)) {
                 try {
@@ -51,15 +52,9 @@ public static class NotebookTempFiles {
             foreach (var dir in Directory.GetDirectories(path)) {
                 // If the dir matches the PID of a running process, then skip it for now.
                 if (int.TryParse(Path.GetFileName(dir), out var pid)) {
-                    if (pids.Contains(pid)) {
-                        // We know this PID exists. Don't delete the file.
-                        continue;
-                    }
-
                     try {
                         using (Process.GetProcessById(pid)) {
-                            // If we made it this far, then a process with this PID actually exists. Don't delete the file.
-                            pids.Add(pid);
+                            // If we made it this far, then a process with this PID actually exists. Don't delete.
                             continue;
                         }
                     } catch { }

@@ -9,7 +9,7 @@ public sealed class TempFile : IDisposable {
 
     public string FilePath { get; }
 
-    public TempFile(string extension = ".dat") {
+    public TempFile(string extension) {
         FilePath = NotebookTempFiles.GetTempFilePath(extension);
     }
 
