@@ -584,6 +584,7 @@ public partial class MainForm : ZForm {
 
         using ExportForm exportForm = new(_manager);
         exportForm.ShowDialog(this);
+        Focus();
     }
 
     private void ReportIssueMnu_Click(object sender, EventArgs e) {
