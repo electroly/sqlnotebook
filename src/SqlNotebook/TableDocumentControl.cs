@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
+using SqlNotebookScript;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebook;
@@ -28,7 +29,8 @@ public partial class TableDocumentControl : UserControl, IDocumentControl, IDocu
     }
 
     public void OnOpen() {
-        using var simpleDataTable = WaitForm.GoWithCancel(TopLevelControl, "Table", "Reading table...\r\n" + _tableName, out var success, cancel => {
+        using var simpleDataTable = WaitForm.GoWithCancel(TopLevelControl, "Table", "Reading table...", out var success, cancel => {
+            using var status = WaitStatus.StartStatic(_tableName);
             cancel.Register(() => _manager.Notebook.BeginUserCancel());
             try {
                 return _manager.Notebook.Query($"SELECT * FROM {_tableName.DoubleQuote()} LIMIT 1000");
