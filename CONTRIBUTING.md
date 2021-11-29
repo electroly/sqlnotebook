@@ -3,6 +3,7 @@
 Use a Windows machine with at least 8GB RAM and 100GB disk.
 In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
 
+- Install [7-Zip](https://www.7-zip.org/).
 - Install [Visual Studio Community 2022](https://visualstudio.microsoft.com/vs/).
     - Include ".NET desktop development" workload.
     - Include "Desktop development with C++" workload.
@@ -48,9 +49,10 @@ In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
 ## How to update SQLite
 
 - Download the amalgamation and documentation zips from the SQLite website.
-- Update `ps1/Update-Deps.ps1` with the URLs. Use `Get-FileHash` to produce the SHA-256 hashes.
+- Update `ps1/Update-Deps.ps1` with the URLs. Right-click the two zips in Explorer and use CRC SHA > SHA-256 to produce the SHA-256 hashes.
 - Run `ps1/Update-Deps.ps1`.
 - Build the app and fix any errors.
+- Read the release notes. The grammar may have changed, which needs to be reflected in `SqliteGrammar.cs`.
 
 ## How to release a new version
 

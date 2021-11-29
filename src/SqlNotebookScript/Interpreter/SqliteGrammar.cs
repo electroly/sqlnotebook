@@ -148,10 +148,26 @@ public static class SqliteGrammar {
             Opt(Or(Tok(TokenType.Asc), Tok(TokenType.Desc)))
         );
 
+        // table-options-item ::= WITHOUT ROWID | STRICT
+        // table-options ::= <table-options-item> [ "," <table-options-item> ]*
+        TopProd(p = "table-options-item", 1,
+            Or(
+                Prod($"{p}.without-rowid", 1,
+                    Tok(TokenType.Without),
+                    Tok("rowid")),
+                Prod($"{p}.strict", 1,
+                    Tok("strict"))
+            )
+        );
+        TopProd(p = "table-options", 1,
+            Lst($"{p}.item", TokenType.Comma, 1, SubProd("table-options-item"))
+        );
+
         // create-table-stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ]
         //      [database-name "."] table-name
         //      (
-        //          "(" <column-def> [ "," <column-def> ]* [ "," <table-constraint> ]* ")" [WITHOUT ROWID] 
+        //          "(" <column-def> [ "," <column-def> ]* [ "," <table-constraint> ]* ")"
+        //          (WITHOUT ROWID)*
         //        | AS <select-stmt> 
         //      )
         TopProd(p = "create-table-stmt", 3,
@@ -168,7 +184,7 @@ public static class SqliteGrammar {
                     // this definition allows column definitions to appear after table constraints, which is illegal.
                     // it would be nice to improve here.
                     Tok(TokenType.Rp),
-                    Opt(1, Tok(TokenType.Without), Tok("rowid"))
+                    Opt(1, SubProd("table-options"))
                 ),
                 Prod($"{p}.as", 1,
                     Tok(TokenType.As),

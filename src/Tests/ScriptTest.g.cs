@@ -4,6 +4,9 @@ namespace Tests;
 
 // Update this with ps1/Update-Tests.ps1. Do not edit manually.
 public sealed partial class ScriptTest {
+    [TestMethod] public void Test_CREATE_TABLE_duplicate_options_sql() => TestScript(@"CREATE TABLE duplicate options.sql");
+    [TestMethod] public void Test_CREATE_TABLE_STRICT_sql() => TestScript(@"CREATE TABLE STRICT.sql");
+    [TestMethod] public void Test_CREATE_TABLE_WITHOUT_ROWID_sql() => TestScript(@"CREATE TABLE WITHOUT ROWID.sql");
     [TestMethod] public void Test_EXECUTE_implicitly_using_default_value_sql() => TestScript(@"EXECUTE implicitly using default value.sql");
     [TestMethod] public void Test_EXECUTE_one_explicit__one_default_argument_sql() => TestScript(@"EXECUTE one explicit, one default argument.sql");
     [TestMethod] public void Test_EXECUTE_simple_sql() => TestScript(@"EXECUTE simple.sql");

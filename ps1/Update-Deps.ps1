@@ -1,8 +1,8 @@
 # Downloads non-NuGet deps
-$sqliteCodeUrl = 'https://sqlite.org/2021/sqlite-amalgamation-3360000.zip'
-$sqliteCodeHash = '999826FE4C871F18919FDB8ED7EC9DD8217180854DD1FE21EEA96AED36186729'
-$sqliteDocUrl = 'https://sqlite.org/2021/sqlite-doc-3360000.zip'
-$sqliteDocHash = '79F03BF2B4AFD845B66E7D07C7FA08C46A30C2484A4A5F8508DB653C9DA5D32D'
+$sqliteCodeUrl = 'https://sqlite.org/2021/sqlite-amalgamation-3370000.zip'
+$sqliteCodeHash = 'A443AAF5CF345613492EFA679EF1C9CC31BA109DCDF37EE377F61AB500D042FE'
+$sqliteDocUrl = 'https://sqlite.org/2021/sqlite-doc-3370000.zip'
+$sqliteDocHash = '8AF0C6A3E0850ECD5003D3318F28F0F15D3386D4E67C09EAE6358A7B159A47D8'
 $wapiUrl = 'https://github.com/contre/Windows-API-Code-Pack-1.1/archive/a8377ef8bb6fa95ff8800dd4c79089537087d539.zip'
 $wapiHash = '38E59E6AE3BF0FD0CCB05C026F7332D3B56AF81D8C69A62882D04CABAD5EF4AE'
 
@@ -22,7 +22,7 @@ if (-not (Test-Path $downloadsDir)) {
 
 function Update-WindowsApiCodePack {
     $wapiDir = Join-Path $extDir "Windows-API-Code-Pack"
-    Remove-Item -Force -Recurse $wapiDir -ErrorAction SilentlyContinue
+    if (Test-Path $wapiDir) { Remove-Item -Force -Recurse $wapiDir }
     mkdir $wapiDir
 
     $wapiFilename = [System.IO.Path]::GetFileName($wapiUrl)
