@@ -145,12 +145,13 @@ public sealed class Notebook : IDisposable {
         FileVersionMigrator.MigrateIfNeeded(_workingCopyFilePath);
             
         using NativeString filePathNative = new(_workingCopyFilePath);
-
         using NativeBuffer sqliteNative = new(IntPtr.Size);
-
         SqliteUtil.ThrowIfError(IntPtr.Zero,
             sqlite3_open(filePathNative.Ptr, sqliteNative.Ptr));
         _sqlite = Marshal.ReadIntPtr(sqliteNative.Ptr); // sqlite3*
+
+        SqliteUtil.ThrowIfError(IntPtr.Zero,
+            sqlite3_series_init(_sqlite, IntPtr.Zero, IntPtr.Zero));
 
         foreach (var x in _adoModuleProviders) {
             x.Dispose();

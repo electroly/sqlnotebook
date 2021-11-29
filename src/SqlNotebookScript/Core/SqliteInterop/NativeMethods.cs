@@ -3,8 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace SqlNotebookScript.Core.SqliteInterop;
 
-#pragma warning disable CA1401 // P/Invokes should not be visible
-public static class NativeMethods {
+internal static class NativeMethods {
     private const string SQLITE_DLL = "sqlite3.dll";
 
     public const int SQLITE_OK = 0;
@@ -225,5 +224,7 @@ public static class NativeMethods {
 
     [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_get_autocommit", SetLastError = false)]
     public static extern int sqlite3_get_autocommit(IntPtr db);
-}   
-#pragma warning restore CA1401 // P/Invokes should not be visible
+
+    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_series_init", SetLastError = false)]
+    public static extern int sqlite3_series_init(IntPtr db, IntPtr pzErrMsg, IntPtr pApi);
+}

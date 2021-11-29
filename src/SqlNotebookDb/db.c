@@ -52,8 +52,10 @@
 // Compiler Linkage and Calling Convention Control
 #define SQLITE_API __declspec(dllexport)
 
-#include "../../ext/sqlite/sqlite3.c"
+#include "sqlite3.c"
 
 SQLITE_API int SxGetToken(const unsigned char* z, int* tokenType) {
     return sqlite3GetToken(z, tokenType);
 }
+
+#include "../../ext/sqlite/sqlite-src/ext/misc/series.c"

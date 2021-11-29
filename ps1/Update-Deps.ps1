@@ -3,6 +3,8 @@ $sqliteCodeUrl = 'https://sqlite.org/2021/sqlite-amalgamation-3370000.zip'
 $sqliteCodeHash = 'A443AAF5CF345613492EFA679EF1C9CC31BA109DCDF37EE377F61AB500D042FE'
 $sqliteDocUrl = 'https://sqlite.org/2021/sqlite-doc-3370000.zip'
 $sqliteDocHash = '8AF0C6A3E0850ECD5003D3318F28F0F15D3386D4E67C09EAE6358A7B159A47D8'
+$sqliteSrcUrl = 'https://sqlite.org/2021/sqlite-src-3370000.zip'
+$sqliteSrcHash = '70977FB3942187D4627413AFDE9A9492FA02B954850812B53974B6A31ECE8FAF'
 $wapiUrl = 'https://github.com/contre/Windows-API-Code-Pack-1.1/archive/a8377ef8bb6fa95ff8800dd4c79089537087d539.zip'
 $wapiHash = '38E59E6AE3BF0FD0CCB05C026F7332D3B56AF81D8C69A62882D04CABAD5EF4AE'
 
@@ -71,6 +73,7 @@ function Update-Sqlite {
     Expand-Archive -LiteralPath $sqliteCodeFilePath -DestinationPath $sqliteDir
     Move-Item -Force "$sqliteDir\$sqliteCodeDirName\sqlite3.c" "$sqliteDir\sqlite3.c"
     Move-Item -Force "$sqliteDir\$sqliteCodeDirName\sqlite3.h" "$sqliteDir\sqlite3.h"
+    Move-Item -Force "$sqliteDir\$sqliteCodeDirName\sqlite3ext.h" "$sqliteDir\sqlite3ext.h"
     Remove-Item -Force -Recurse "$sqliteDir\$sqliteCodeDirName"
 
     # doc
@@ -87,6 +90,21 @@ function Update-Sqlite {
     Expand-Archive -LiteralPath $sqliteDocFilePath -DestinationPath $sqliteDir
     Remove-Item -Force -Recurse "$sqliteDir\sqlite-doc" -ErrorAction SilentlyContinue
     Rename-Item -LiteralPath "$sqliteDir\$sqliteDocDirName" "sqlite-doc"
+
+    # src
+    $sqliteSrcFilename = [System.IO.Path]::GetFileName($sqliteSrcUrl)
+    $sqliteSrcDirName = [System.IO.Path]::GetFileNameWithoutExtension($sqliteSrcUrl)
+    $sqliteSrcFilePath = Join-Path $downloadsDir $sqliteSrcFilename
+    if (-not (Test-Path $sqliteSrcFilePath)) {
+        Write-Host "Downloading: $sqliteSrcUrl"
+        Invoke-WebRequest -UseBasicParsing -Uri $sqliteSrcUrl -OutFile $sqliteSrcFilePath
+    }
+    VerifyHash $sqliteSrcFilePath $sqliteSrcHash
+    Remove-Item -Force -Recurse "$sqliteDir\$sqliteSrcDirName" -ErrorAction SilentlyContinue
+    Write-Host "Expanding: $sqliteSrcFilePath"
+    Expand-Archive -LiteralPath $sqliteSrcFilePath -DestinationPath $sqliteDir
+    Remove-Item -Force -Recurse "$sqliteDir\sqlite-src" -ErrorAction SilentlyContinue
+    Rename-Item -LiteralPath "$sqliteDir\$sqliteSrcDirName" "sqlite-src"
 
     # update enum TokenType.cs
     $notebookCsFilePath = "$rootDir\src\SqlNotebookScript\TokenType.cs"

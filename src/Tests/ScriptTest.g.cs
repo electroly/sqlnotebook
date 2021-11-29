@@ -62,6 +62,7 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_IMPORT_XLS_TEMPORARY_TABLE_sql() => TestScript(@"IMPORT XLS TEMPORARY_TABLE.sql");
     [TestMethod] public void Test_IMPORT_XLS_TRUNCATE_EXISTING_TABLE_sql() => TestScript(@"IMPORT XLS TRUNCATE_EXISTING_TABLE.sql");
     [TestMethod] public void Test_IMPORT_XLS_sql() => TestScript(@"IMPORT XLS.sql");
+    [TestMethod] public void Test_IN_table_valued_function_sql() => TestScript(@"IN table-valued function.sql");
     [TestMethod] public void Test_LIST_FILES_sql() => TestScript(@"LIST_FILES.sql");
     [TestMethod] public void Test_NEWID_sql() => TestScript(@"NEWID.sql");
     [TestMethod] public void Test_NOW_sql() => TestScript(@"NOW.sql");

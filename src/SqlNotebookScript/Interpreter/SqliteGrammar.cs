@@ -604,11 +604,12 @@ public static class SqliteGrammar {
             )
         );
 
-        // eq-expr-in ::= [NOT] IN
-        //                  (
-        //                      "(" [ <select-stmt> | <expr> [ "," <expr> ]* ] ")" | 
-        //                      [database-name "."] table-name 
-        //                  )
+        // eq-expr-in ::=
+        //     [NOT] IN
+        //     (
+        //         "(" [ <select-stmt> | <expr> [ "," <expr> ]* ] ")" | 
+        //         [schema-name "."] table-or-function-name ["(" [<expr> ["," <expr>]*] ")"]
+        //     )
         TopProd(p = "eq-expr-in", 2,
             Opt(Tok(TokenType.Not)),
             Tok(TokenType.In),
@@ -622,8 +623,13 @@ public static class SqliteGrammar {
                     Tok(TokenType.Rp)
                 ),
                 Prod($"{p}.table", 2,
-                    Opt(Id("database name"), Tok(TokenType.Dot)),
-                    Id("table name")
+                    Opt(Id("schema-name"), Tok(TokenType.Dot)),
+                    Id("table or function name"),
+                    Opt(
+                        Tok(TokenType.Lp),
+                        Lst($"{p}.table-function-arg", TokenType.Comma, 0, SubProd("expr")),
+                        Tok(TokenType.Rp)
+                    )
                 )
             )
         );
