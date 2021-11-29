@@ -697,7 +697,7 @@ public static class SqliteGrammar {
         //      <bind-parameter> |
         //      [ [ database-name "." ] table-name "." ] column-name |
         //      function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* | "*" ] ")" |
-        //      "(" <expr> ")" |
+        //      "(" <expr> ["," <expr>]* ")" |
         //      CAST "(" <expr> AS <type-name> ")" |
         //      [ [NOT] EXISTS ] ( <select-stmt> ) |
         //      CASE [ <expr> ] ( WHEN <expr> THEN <expr> )+ [ ELSE <expr> ] END |
@@ -739,10 +739,10 @@ public static class SqliteGrammar {
                 Prod($"{p}.variable-name", 1, Id("variable name", allowVar: true)),
                 // <literal-value>
                 Prod($"{p}.literal-value", 1, SubProd("literal-value")),
-                // expr ::= "(" <expr> ")"
+                // expr ::= "(" <expr> ["," <expr>]* ")"
                 Prod($"{p}.parentheses", 1,
                     Tok(TokenType.Lp),
-                    SubProd("expr"),
+                    Lst($"{p}.row-value-item", TokenType.Comma, 1, SubProd("expr")),
                     Tok(TokenType.Rp)
                 ),
                 // expr ::= CAST "(" <expr> AS <type-name> ")"
@@ -1100,9 +1100,16 @@ public static class SqliteGrammar {
             )
         );
 
+        // column-name-list ::= "(" column-name ["," column-name ]* ")"
+        TopProd(p = "column-name-list", 1,
+            Tok(TokenType.Lp),
+            Lst($"{p}.column-name", TokenType.Comma, 1, Id("column name")),
+            Tok(TokenType.Rp)
+        );
+
         // update-stmt ::= [ <with-clause> ] UPDATE
         //      [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] <qualified-table-name>
-        //      SET column-name = <expr> [ , column-name = <expr> ]* [ WHERE <expr> ]
+        //      SET column-name = <expr> [ , (column-name | <column-name-list>) = <expr> ]* [ WHERE <expr> ]
         //      [
         //          [ ORDER BY <ordering-term> [ , <ordering-term> ]* ]
         //          LIMIT <expr> [ ( OFFSET | , ) <expr> ]
@@ -1117,7 +1124,14 @@ public static class SqliteGrammar {
             ),
             SubProd("qualified-table-name"),
             Tok(TokenType.Set),
-            Lst($"{p}.assignment", TokenType.Comma, 1, Id("column name"), Tok(TokenType.Eq), SubProd("expr")),
+            Lst($"{p}.assignment", TokenType.Comma, 1,
+                Or(
+                    Id("column name"),
+                    SubProd("column-name-list")
+                ),
+                Tok(TokenType.Eq),
+                SubProd("expr")
+            ),
             Opt(1, Tok(TokenType.Where), SubProd("expr")),
             Opt(2,
                 Opt(
