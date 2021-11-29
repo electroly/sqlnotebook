@@ -238,34 +238,17 @@ public sealed class PreparedStatement : IDisposable {
     }
 
     private void ThrowError(int ret) {
-        switch (ret) {
-            case SQLITE_READONLY:
-                throw new InvalidOperationException("Unable to write to a read-only notebook file.");
-
-            case SQLITE_BUSY:
-            case SQLITE_LOCKED:
-                throw new InvalidOperationException("The notebook file is locked by another application.");
-
-            case SQLITE_CORRUPT:
-                throw new InvalidOperationException("The notebook file is corrupted.");
-
-            case SQLITE_NOTADB:
-                throw new InvalidOperationException("This is not an SQLite database file.");
-
-            case SQLITE_INTERRUPT:
-                throw new OperationCanceledException("SQL query canceled by the user.");
-
-            case SQLITE_ERROR:
-                if (Notebook.SqliteVtabErrorMessage != null) {
-                    var message = Notebook.SqliteVtabErrorMessage;
-                    Notebook.SqliteVtabErrorMessage = null;
-                    throw new ExceptionEx("A remote database query failed.", message);
-                }
-                SqliteUtil.ThrowIfError(_sqlite, SQLITE_ERROR);
-                break;
-
-            default:
-                throw new InvalidOperationException($"Unrecognized result ({ret}) from sqlite3_step().");
+        if (ret == SQLITE_ERROR) {
+            if (Notebook.SqliteVtabErrorMessage != null) {
+                var vtabMessage = Notebook.SqliteVtabErrorMessage;
+                Notebook.SqliteVtabErrorMessage = null;
+                throw new ExceptionEx("A remote database query failed.", vtabMessage);
+            }
+            SqliteUtil.ThrowIfError(_sqlite, SQLITE_ERROR);
+        } else if (ret == SQLITE_INTERRUPT) {
+            throw new OperationCanceledException("SQL query canceled by the user.");
+        } else {
+            SqliteUtil.ThrowIfError(_sqlite, ret);
         }
     }
 
