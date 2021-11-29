@@ -860,8 +860,8 @@ public static class SqliteGrammar {
         //          INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE ) INTO
         //      [ database-name "." ] table-name [ "(" column-name [ "," column-name ]* ")" ]
         //      ( 
-        //          VALUES "(" <expr> [ "," <expr> ]* ")" [ "," "(" <expr> [ "," <expr> ]* ")" ]* | 
-        //          <select-stmt> |
+        //          VALUES "(" <expr> [ "," <expr> ]* ")" [ "," "(" <expr> [ "," <expr> ]* ")" ]* [<upsert-clause>] | 
+        //          <select-stmt> [<upsert-clause>] |
         //          DEFAULT VALUES
         //      )
         TopProd(p = "insert-stmt", 1,
@@ -893,9 +893,10 @@ public static class SqliteGrammar {
                         Tok(TokenType.Lp),
                         Lst($"{p}.value", TokenType.Comma, 1, SubProd("expr")),
                         Tok(TokenType.Rp)
-                    )
+                    ),
+                    Opt(SubProd("upsert-clause"))
                 ),
-                Prod($"{p}.select", 1, SubProd("select-stmt")),
+                Prod($"{p}.select", 1, SubProd("select-stmt"), Opt(SubProd("upsert-clause"))),
                 Prod($"{p}.default-values", 1, Tok(TokenType.Default), Tok(TokenType.Values))
             )
         );
@@ -1326,6 +1327,43 @@ public static class SqliteGrammar {
             Or(
                 SubProd("window-defn"),
                 Id("window name")
+            )
+        );
+
+        // upsert-clause - https://sqlite.org/syntax/upsert-clause.html
+        TopProd(p = "upsert-clause", 1,
+            Lst($"{p}.list-item", null, 1,
+                Tok(TokenType.On),
+                Tok(TokenType.Conflict),
+                Opt( // conflict target
+                    Tok(TokenType.Lp),
+                    Lst($"{p}.conflict-target.column", TokenType.Comma, 1, SubProd("indexed-column")),
+                    Tok(TokenType.Rp),
+                    Opt(
+                        Tok(TokenType.Where),
+                        SubProd("expr")
+                    )
+                ),
+                Tok(TokenType.Do),
+                Or(
+                    Prod($"{p}.do-nothing", 1, Tok(TokenType.Nothing)),
+                    Prod($"{p}.update", 1,
+                        Tok(TokenType.Update),
+                        Tok(TokenType.Set),
+                        Lst($"{p}.update-column", TokenType.Comma, 1,
+                            Or(
+                                Id("column name"),
+                                SubProd("column-name-list")
+                            ),
+                            Tok(TokenType.Eq),
+                            SubProd("expr")
+                        ),
+                        Opt(
+                            Tok(TokenType.Where),
+                            SubProd("expr")
+                        )
+                    )
+                )
             )
         );
 

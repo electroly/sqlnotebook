@@ -118,6 +118,10 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_is_date_func_sql() => TestScript(@"doc\is-date-func.sql");
     [TestMethod] public void Test_doc_is_numeric_func_sql() => TestScript(@"doc\is-numeric-func.sql");
     [TestMethod] public void Test_doc_lang_update___UPDATE_FROM_sql() => TestScript(@"doc\lang_update - UPDATE FROM.sql");
+    [TestMethod] public void Test_doc_lang_upsert___Examples_1_sql() => TestScript(@"doc\lang_upsert - Examples 1.sql");
+    [TestMethod] public void Test_doc_lang_upsert___Examples_2_sql() => TestScript(@"doc\lang_upsert - Examples 2.sql");
+    [TestMethod] public void Test_doc_lang_upsert___Examples_3_sql() => TestScript(@"doc\lang_upsert - Examples 3.sql");
+    [TestMethod] public void Test_doc_lang_upsert___Parsing_Ambiguity_sql() => TestScript(@"doc\lang_upsert - Parsing Ambiguity.sql");
     [TestMethod] public void Test_doc_list_xls_worksheets_func_sql() => TestScript(@"doc\list-xls-worksheets-func.sql");
     [TestMethod] public void Test_doc_math_funcs_sql() => TestScript(@"doc\math-funcs.sql");
     [TestMethod] public void Test_doc_month_func_sql() => TestScript(@"doc\month-func.sql");
