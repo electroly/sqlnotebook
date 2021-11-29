@@ -542,7 +542,7 @@ public partial class MainForm : ZForm {
 
     private bool PrepareToCloseFile() {
         var isTransactionActive = false;
-        _notebook.Invoke(() => {
+        Notebook.Invoke(() => {
             isTransactionActive = _notebook.IsTransactionActive();
         });
         if (isTransactionActive) {

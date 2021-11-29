@@ -74,6 +74,12 @@ public static class NativeMethods {
     [DllImport(SQLITE_DLL, EntryPoint = "SxGetToken", SetLastError = false)]
     public static extern int SxGetToken(IntPtr z, IntPtr tokenType);
 
+    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_initialize", SetLastError = false)]
+    public static extern int sqlite3_initialize();
+
+    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_shutdown", SetLastError = false)]
+    public static extern int sqlite3_shutdown();
+
     [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_open", SetLastError = false)]
     public static extern int sqlite3_open(IntPtr zFilename, IntPtr ppDb);
 

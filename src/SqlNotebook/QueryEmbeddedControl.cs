@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
 using SqlNotebookScript;
+using SqlNotebookScript.Core;
 using SqlNotebookScript.DataTables;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
@@ -263,7 +264,7 @@ public partial class QueryEmbeddedControl : UserControl {
         var sql = SqlText;
         var tabIndex = _tabs.SelectedIndex;
         WaitForm.GoWithCancel(TopLevelControl, "Send", "Sending results to table...", out var success, cancel => {
-            _manager.Notebook.Invoke(() => {
+            Notebook.Invoke(() => {
                 SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
                     _manager.ExecuteScriptNoOutput(createSql);
                     using var insertStmt = _manager.Notebook.Prepare(insertSql);

@@ -30,8 +30,7 @@ public sealed class Notebook : IDisposable {
 
     private bool _disposedValue;
 
-    private readonly object _lock = new();
-    private static readonly object _tokenizeLock = new();
+    private static readonly object _lock = new();
 
     // Just hang onto these. They are used as unmanaged callbacks.
     private readonly List<object> _delegates = new();
@@ -132,6 +131,14 @@ public sealed class Notebook : IDisposable {
         }
 
         return new(customTableFunctions, customScalarFunctions);
+    }
+
+    // See https://sqlite.org/c3ref/initialize.html
+    public static void InitSqlite() {
+        SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_initialize());
+    }
+    public static void ShutdownSqlite() {
+        SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_shutdown());
     }
 
     private void Init() {
@@ -288,7 +295,7 @@ public sealed class Notebook : IDisposable {
         }
     }
 
-    public void Invoke(Action action) {
+    public static void Invoke(Action action) {
         lock (_lock) {
             action();
         }
@@ -352,26 +359,9 @@ public sealed class Notebook : IDisposable {
     }
 
     public SimpleDataTable SpecialReadOnlyQuery(string sql, IReadOnlyDictionary<string, object> args) {
-        SimpleDataTable result = null;
-        var success = TryInvoke(() => {
-            result = Query(sql, args);
-        });
-        if (success) {
-            return result;
-        }
-
-        // Another operation is in progress, so open a new connection for this query.
-        using NativeString filePathNative = new(_workingCopyFilePath);
-        using NativeBuffer sqlitePtrNative = new(IntPtr.Size);
-        SqliteUtil.ThrowIfError(IntPtr.Zero,
-            sqlite3_open_v2(filePathNative.Ptr, sqlitePtrNative.Ptr,
-                SQLITE_OPEN_READONLY, IntPtr.Zero));
-        var tempSqlite = Marshal.ReadIntPtr(sqlitePtrNative.Ptr); // sqlite3*
-        try {
-            return QueryCore(sql, args, null, true, tempSqlite, null, null);
-        } finally {
-            SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_close(tempSqlite));
-        }
+        SimpleDataTable sdt = null;
+        Invoke(() => sdt = Query(sql, args));
+        return sdt;
     }
 
     public object QueryValue(string sql) =>
@@ -423,7 +413,7 @@ public sealed class Notebook : IDisposable {
         using NativeBuffer scratch = new(IntPtr.Size);
         List<Token> list = new();
         using NativeString inputNative = new(input);
-        lock (_tokenizeLock) {
+        lock (_lock) {
             var tokenType = 0;
             var oldPos = 0;
             var pos = 0;

@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
+using SqlNotebookScript.Core;
 
 namespace SqlNotebook.Pages;
 
@@ -237,7 +238,7 @@ public sealed class PageControl : UserControl, IDocumentControl {
         List<Action> uiThreadActions = new();
         var queryBlockControls = _flow.Controls.OfType<QueryBlockControl>().ToList();
         WaitForm.Go(TopLevelControl, "Page Execution", "Executing all queries...", out _, () => {
-            _manager.Notebook.Invoke(() => {
+            Notebook.Invoke(() => {
                 foreach (var queryBlockControl in queryBlockControls) {
                     var output = queryBlockControl.ExecuteOnWorkerThread();
                     uiThreadActions.Add(() => {

@@ -26,7 +26,7 @@ public static class HelpSearcher {
                 if (!hasCache) {
                     InitHelpNotebook(notebook, tempFilePath);
                 }
-                notebook.Invoke(() => {
+                Notebook.Invoke(() => {
                     results = SearchQuery(notebook, keyword);
                 });
                 if (!hasCache) {
@@ -51,7 +51,7 @@ public static class HelpSearcher {
             select (FilePath: htmlFilePath, Content: content)
             ).ToList();
 
-        notebook.Invoke(() => {
+        Notebook.Invoke(() => {
             notebook.Execute("BEGIN");
 
             notebook.Execute(

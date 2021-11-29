@@ -25,6 +25,7 @@ public static class Program
 
         try {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Notebook.InitSqlite();
 
             Notebook notebook;
             bool isNew;
@@ -56,6 +57,7 @@ public static class Program
             Ui.ShowError(null, "SQL Notebook", ex);
         } finally {
             NotebookTempFiles.DeleteFilesFromThisSession();
+            Notebook.ShutdownSqlite();
         }
     }
 

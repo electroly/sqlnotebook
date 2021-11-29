@@ -23,7 +23,7 @@ public sealed class DatabaseSchema {
         var tableSchemas = new List<TableSchema>();
         var nonTables = new List<string>();
 
-        notebook.Invoke(() => {
+        Notebook.Invoke(() => {
             using var tablesDt = notebook.Query("SELECT name, type FROM sqlite_master");
             for (int i = 0; i < tablesDt.Rows.Count; i++) {
                 var tableName = tablesDt.Get(i, "name").ToString();

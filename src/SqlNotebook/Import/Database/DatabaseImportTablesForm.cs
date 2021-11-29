@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
+using SqlNotebookScript.Core;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebook.Import.Database;
@@ -152,7 +153,7 @@ public partial class DatabaseImportTablesForm : ZForm {
         // First make a list of all the existing names that start with "query" so we can avoid them.
         var notebook = _manager.Notebook;
         List<string> existingNames = new();
-        notebook.Invoke(() => {
+        Notebook.Invoke(() => {
             using var sdt = notebook.Query("SELECT name FROM sqlite_master");
             foreach (var row in sdt.Rows) {
                 var name = (string)row[0];
