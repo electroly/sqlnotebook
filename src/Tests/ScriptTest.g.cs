@@ -4,6 +4,7 @@ namespace Tests;
 
 // Update this with ps1/Update-Tests.ps1. Do not edit manually.
 public sealed partial class ScriptTest {
+    [TestMethod] public void Test_Aggregate_function_filter_clause_sql() => TestScript(@"Aggregate function filter clause.sql");
     [TestMethod] public void Test_ALTER_TABLE_RENAME_COLUMN_1_sql() => TestScript(@"ALTER TABLE RENAME COLUMN 1.sql");
     [TestMethod] public void Test_ALTER_TABLE_RENAME_COLUMN_2_sql() => TestScript(@"ALTER TABLE RENAME COLUMN 2.sql");
     [TestMethod] public void Test_CREATE_TABLE_duplicate_options_sql() => TestScript(@"CREATE TABLE duplicate options.sql");

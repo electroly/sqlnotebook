@@ -723,6 +723,7 @@ public static class SqliteGrammar {
                 // window-function-invocation -- must be above simple/aggregate function invocation
                 Prod($"{p}.window-function-invocation", 1, SubProd("window-function-invocation")),
                 // expr ::= function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* | "*" ] ")"
+                // (this is aggregate-function-invocation in the SQLite docs now)
                 Prod($"{p}.function-call", 2,
                     Or(
                         Id("function name"),
@@ -736,7 +737,8 @@ public static class SqliteGrammar {
                             Lst($"{p}.arg", TokenType.Comma, 1, SubProd("expr"))
                         )
                     )),
-                    Tok(TokenType.Rp)
+                    Tok(TokenType.Rp),
+                    Opt(SubProd("filter-clause"))
                 ),
                 // [ [ database-name "." ] table-name "." ] column-name
                 Prod($"{p}.column-name", 1,
