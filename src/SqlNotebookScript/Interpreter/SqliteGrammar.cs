@@ -477,7 +477,9 @@ public static class SqliteGrammar {
             )
         );
 
-        // with-clause ::= WITH [ RECURSIVE ] <cte-table-name> AS "(" <select-stmt> ")"
+        // with-clause ::= WITH [ RECURSIVE ] <cte-table-name> AS
+        //      [[NOT] MATERIALIZED]
+        //      "(" <select-stmt> ")"
         //      [ "," <cte-table-name> AS "(" <select-stmt> ")" ]*
         TopProd(p = "with-clause", 1,
             Tok(TokenType.With),
@@ -485,6 +487,10 @@ public static class SqliteGrammar {
             Lst($"{p}.cte", TokenType.Comma, 1,
                 SubProd("cte-table-name"),
                 Tok(TokenType.As),
+                Opt(
+                    Opt(Tok(TokenType.Not)),
+                    Tok(TokenType.Materialized)
+                ),
                 Tok(TokenType.Lp),
                 SubProd("select-stmt"),
                 Tok(TokenType.Rp)
@@ -506,6 +512,10 @@ public static class SqliteGrammar {
         TopProd(p = "common-table-expression", 1,
             SubProd("cte-table-name"),
             Tok(TokenType.As),
+            Opt(
+                Opt(Tok(TokenType.Not)),
+                Tok(TokenType.Materialized)
+            ),
             Tok(TokenType.Lp),
             SubProd("select-stmt"),
             Tok(TokenType.Rp)

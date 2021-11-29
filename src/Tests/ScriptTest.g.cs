@@ -87,6 +87,8 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_TO_DATETIMEOFFSET_sql() => TestScript(@"TO_DATETIMEOFFSET.sql");
     [TestMethod] public void Test_UPDATE_RETURNING_sql() => TestScript(@"UPDATE RETURNING.sql");
     [TestMethod] public void Test_USER_NAME_sql() => TestScript(@"USER_NAME.sql");
+    [TestMethod] public void Test_WITH_MATERIALIZED_sql() => TestScript(@"WITH MATERIALIZED.sql");
+    [TestMethod] public void Test_WITH_NOT_MATERIALIZED_sql() => TestScript(@"WITH NOT MATERIALIZED.sql");
     [TestMethod] public void Test_doc_array_append_func_sql() => TestScript(@"doc\array-append-func.sql");
     [TestMethod] public void Test_doc_array_concat_func_sql() => TestScript(@"doc\array-concat-func.sql");
     [TestMethod] public void Test_doc_array_count_func_sql() => TestScript(@"doc\array-count-func.sql");
