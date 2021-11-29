@@ -107,6 +107,8 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_eomonth_func_sql() => TestScript(@"doc\eomonth-func.sql");
     [TestMethod] public void Test_doc_error_message_func_sql() => TestScript(@"doc\error-message-func.sql");
     [TestMethod] public void Test_doc_for_stmt_sql() => TestScript(@"doc\for-stmt.sql");
+    [TestMethod] public void Test_doc_gencol_1_sql() => TestScript(@"doc\gencol 1.sql");
+    [TestMethod] public void Test_doc_gencol_2_sql() => TestScript(@"doc\gencol 2.sql");
     [TestMethod] public void Test_doc_if_stmt_sql() => TestScript(@"doc\if-stmt.sql");
     [TestMethod] public void Test_doc_import_csv_stmt_sql() => TestScript(@"doc\import-csv-stmt.sql");
     [TestMethod] public void Test_doc_import_txt_stmt_sql() => TestScript(@"doc\import-txt-stmt.sql");

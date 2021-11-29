@@ -288,7 +288,23 @@ public static class SqliteGrammar {
                     )
                 ),
                 Prod($"{p}.collate", 1, Tok(TokenType.Collate), Id("collation name")),
-                Prod($"{p}.foreign-key", 1, SubProd("foreign-key-clause"))
+                Prod($"{p}.foreign-key", 1, SubProd("foreign-key-clause")),
+                Prod($"{p}.generated", 2,
+                    Opt(
+                        Tok(TokenType.Generated),
+                        Tok(TokenType.Always)
+                    ),
+                    Tok(TokenType.As),
+                    Tok(TokenType.Lp),
+                    SubProd("expr"),
+                    Tok(TokenType.Rp),
+                    Opt(
+                        Or(
+                            Tok("stored"),
+                            Tok(TokenType.Virtual)
+                        )
+                    )
+                )
             )
         );
 
