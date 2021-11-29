@@ -146,6 +146,8 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_rowvalue___Update_multiple_columns_of_a_table_based_on_a_query_sql_sql() => TestScript(@"doc\rowvalue - Update multiple columns of a table based on a query.sql.sql");
     [TestMethod] public void Test_doc_set_stmt_sql() => TestScript(@"doc\set-stmt.sql");
     [TestMethod] public void Test_doc_split_func_sql() => TestScript(@"doc\split-func.sql");
+    [TestMethod] public void Test_doc_stricttables___The_ANY_datatype_1_sql() => TestScript(@"doc\stricttables - The ANY datatype 1.sql");
+    [TestMethod] public void Test_doc_stricttables___The_ANY_datatype_2_sql() => TestScript(@"doc\stricttables - The ANY datatype 2.sql");
     [TestMethod] public void Test_doc_switch_offset_func_sql() => TestScript(@"doc\switch-offset-func.sql");
     [TestMethod] public void Test_doc_to_date_func_sql() => TestScript(@"doc\to-date-func.sql");
     [TestMethod] public void Test_doc_to_date_time_func_sql() => TestScript(@"doc\to-date-time-func.sql");
