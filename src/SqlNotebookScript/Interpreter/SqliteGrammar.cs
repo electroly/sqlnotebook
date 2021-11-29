@@ -50,15 +50,30 @@ public static class SqliteGrammar {
 
         // alter-table-stmt ::= 
         //      ALTER TABLE [ database-name "." ] table-name 
-        //      ( RENAME TO new-table-name ) | ( ADD [COLUMN] <column-def> )
+        //      (
+        //          ( RENAME TO new-table-name ) |
+        //          ( RENAME [COLUMN] column-name TO new-column-name ) |
+        //          ( ADD [COLUMN] <column-def> )
+        //      )
         TopProd(p = "alter-table-stmt", 1,
             Tok(TokenType.Alter), Tok(TokenType.Table),
             Opt(Id("database name"), Tok(TokenType.Dot)),
             Id("table name"),
             Or(
                 Prod($"{p}.rename", 1,
-                    Tok(TokenType.Rename), Tok(TokenType.To),
-                    Id("new table name")
+                    Tok(TokenType.Rename),
+                    Or(
+                        Prod($"{p}.rename-table", 1,
+                            Tok(TokenType.To),
+                            Id("new table name")
+                        ),
+                        Prod($"{p}.rename-column", 1,
+                            Opt(Tok(TokenType.Columnkw)),
+                            Id("column name"),
+                            Tok(TokenType.To),
+                            Id("new column name")
+                        )
+                    )
                 ),
                 Prod($"{p}.add", 1,
                     Tok(TokenType.Add),
