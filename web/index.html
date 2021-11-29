@@ -55,17 +55,7 @@
   Notebook adds additional procedural programming elements similar to those found in <a moz-do-not-send="true" href=
   "https://en.wikipedia.org/wiki/Transact-SQL">T-SQL</a> and <a moz-do-not-send="true" href=
   "https://en.wikipedia.org/wiki/PL/pgSQL">PL/pgSQL</a>, such as <tt>DECLARE</tt> and <tt>EXECUTE</tt>.<br></p>
-  <pre>SELECT
-  CASE
-    WHEN number % 3 = 0 AND number % 5 = 0
-      THEN 'FizzBuzz'
-    WHEN number % 3 = 0
-      THEN 'Fizz'
-    WHEN number % 5 = 0
-      THEN 'Buzz'
-    ELSE number
-  END
-FROM INTEGER_RANGE(1, 100);</pre>
+  <pre>SELECT<br>  CASE<br>    WHEN value % 3 = 0 AND value % 5 = 0<br>      THEN 'FizzBuzz'<br>    WHEN value % 3 = 0<br>      THEN 'Fizz'<br>    WHEN value % 5 = 0<br>      THEN 'Buzz'<br>    ELSE value<br>  END<br>FROM GENERATE_SERIES(1, 100);</pre>
   <p>Learn more in the <a href="doc.html">documentation</a>:</p>
   <ul class="tight">
     <li>Variables: <a href="declare-stmt.html"><code>DECLARE</code></a> • <a href=

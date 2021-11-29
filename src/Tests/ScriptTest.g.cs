@@ -119,7 +119,6 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_if_stmt_sql() => TestScript(@"doc\if-stmt.sql");
     [TestMethod] public void Test_doc_import_csv_stmt_sql() => TestScript(@"doc\import-csv-stmt.sql");
     [TestMethod] public void Test_doc_import_txt_stmt_sql() => TestScript(@"doc\import-txt-stmt.sql");
-    [TestMethod] public void Test_doc_integer_range_func_sql() => TestScript(@"doc\integer-range-func.sql");
     [TestMethod] public void Test_doc_is_date_func_sql() => TestScript(@"doc\is-date-func.sql");
     [TestMethod] public void Test_doc_is_numeric_func_sql() => TestScript(@"doc\is-numeric-func.sql");
     [TestMethod] public void Test_doc_lang_returning___Typical_Use_sql() => TestScript(@"doc\lang_returning - Typical Use.sql");
