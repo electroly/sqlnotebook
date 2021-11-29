@@ -403,6 +403,7 @@ public sealed class ScriptParser {
             stmt.ScriptNameOrNull = ParseIdentifierOrExpr(q);
         } else if (q.TakeMaybe("(")) {
             stmt.SelectStmtOrNull = ParseSqlStmt(q, "select-stmt");
+            q.Take(")");
         } else {
             q.Take("table", "script", "("); // throw
         }

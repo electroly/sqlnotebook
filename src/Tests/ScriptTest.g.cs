@@ -15,6 +15,17 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_EXECUTE_with_one_argument_sql() => TestScript(@"EXECUTE with one argument.sql");
     [TestMethod] public void Test_EXECUTE_with_quoted_script_name_sql() => TestScript(@"EXECUTE with quoted script name.sql");
     [TestMethod] public void Test_EXECUTE_with_return_value_sql() => TestScript(@"EXECUTE with return value.sql");
+    [TestMethod] public void Test_EXPORT_CSV_HEADER_ROW_0_sql() => TestScript(@"EXPORT CSV HEADER_ROW 0.sql");
+    [TestMethod] public void Test_EXPORT_CSV_HEADER_ROW_1_sql() => TestScript(@"EXPORT CSV HEADER_ROW 1.sql");
+    [TestMethod] public void Test_EXPORT_CSV_SCRIPT_sql() => TestScript(@"EXPORT CSV SCRIPT.sql");
+    [TestMethod] public void Test_EXPORT_CSV_SELECT_sql() => TestScript(@"EXPORT CSV SELECT.sql");
+    [TestMethod] public void Test_EXPORT_CSV_SEPARATOR_semicolon_sql() => TestScript(@"EXPORT CSV SEPARATOR semicolon.sql");
+    [TestMethod] public void Test_EXPORT_CSV_SEPARATOR_tab_sql() => TestScript(@"EXPORT CSV SEPARATOR tab.sql");
+    [TestMethod] public void Test_EXPORT_CSV_TABLE_FILE_ENCODING_sql() => TestScript(@"EXPORT CSV TABLE FILE_ENCODING.sql");
+    [TestMethod] public void Test_EXPORT_CSV_TABLE_TRUNCATE_EXISTING_FILE_0_sql() => TestScript(@"EXPORT CSV TABLE TRUNCATE_EXISTING_FILE 0.sql");
+    [TestMethod] public void Test_EXPORT_CSV_TABLE_TRUNCATE_EXISTING_FILE_1_sql() => TestScript(@"EXPORT CSV TABLE TRUNCATE_EXISTING_FILE 1.sql");
+    [TestMethod] public void Test_EXPORT_CSV_TABLE_TRUNCATE_EXISTING_FILE_default_sql() => TestScript(@"EXPORT CSV TABLE TRUNCATE_EXISTING_FILE default.sql");
+    [TestMethod] public void Test_EXPORT_CSV_TABLE_sql() => TestScript(@"EXPORT CSV TABLE.sql");
     [TestMethod] public void Test_EXPORT_TXT_append_sql() => TestScript(@"EXPORT TXT append.sql");
     [TestMethod] public void Test_EXPORT_TXT_Shift_JIS_sql() => TestScript(@"EXPORT TXT Shift-JIS.sql");
     [TestMethod] public void Test_EXPORT_TXT_truncate_sql() => TestScript(@"EXPORT TXT truncate.sql");
