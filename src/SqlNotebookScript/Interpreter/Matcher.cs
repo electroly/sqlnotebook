@@ -251,9 +251,14 @@ public sealed class IdentifierTerm : SpecTerm {
     public bool AllowVariable { get; set; }
     public override string GetExpected() { return $"<{Desc}>"; }
     public override MatchResult? MatchStep(MatchStack stack, MatchFrame frame, TokenQueue q) {
-        var type = q.Take().Type;
-        return type == TokenType.Id || (AllowVariable && type == TokenType.Variable) 
-            ? MatchResult.Matched : MatchResult.NoMatch;
+        switch (q.Take().Type) {
+            case TokenType.Id:
+            case TokenType.Ties:
+            case TokenType.Variable when AllowVariable:
+                return MatchResult.Matched;
+            default:
+                return MatchResult.NoMatch;
+        }
     }
 }
 

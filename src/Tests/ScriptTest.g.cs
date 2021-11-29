@@ -131,5 +131,18 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_to_date_time_func_sql() => TestScript(@"doc\to-date-time-func.sql");
     [TestMethod] public void Test_doc_try_catch_stmt_sql() => TestScript(@"doc\try-catch-stmt.sql");
     [TestMethod] public void Test_doc_while_stmt_sql() => TestScript(@"doc\while-stmt.sql");
+    [TestMethod] public void Test_doc_windowfunctions___Aggregate_Window_Functions_1_sql() => TestScript(@"doc\windowfunctions - Aggregate Window Functions 1.sql");
+    [TestMethod] public void Test_doc_windowfunctions___Built_in_Window_Functions_1_sql() => TestScript(@"doc\windowfunctions - Built-in Window Functions 1.sql");
+    [TestMethod] public void Test_doc_windowfunctions___Built_in_Window_Functions_2_sql() => TestScript(@"doc\windowfunctions - Built-in Window Functions 2.sql");
+    [TestMethod] public void Test_doc_windowfunctions___Built_in_Window_Functions_3_sql() => TestScript(@"doc\windowfunctions - Built-in Window Functions 3.sql");
+    [TestMethod] public void Test_doc_windowfunctions___Frame_Boundaries_1_sql() => TestScript(@"doc\windowfunctions - Frame Boundaries 1.sql");
+    [TestMethod] public void Test_doc_windowfunctions___Frame_Specifications_1_sql() => TestScript(@"doc\windowfunctions - Frame Specifications 1.sql");
+    [TestMethod] public void Test_doc_windowfunctions___Introduction_to_Window_Functions_1_sql() => TestScript(@"doc\windowfunctions - Introduction to Window Functions 1.sql");
+    [TestMethod] public void Test_doc_windowfunctions___Introduction_to_Window_Functions_2_sql() => TestScript(@"doc\windowfunctions - Introduction to Window Functions 2.sql");
+    [TestMethod] public void Test_doc_windowfunctions___The_EXCLUDE_Clause_1_sql() => TestScript(@"doc\windowfunctions - The EXCLUDE Clause 1.sql");
+    [TestMethod] public void Test_doc_windowfunctions___The_FILTER_Clause_1_sql() => TestScript(@"doc\windowfunctions - The FILTER Clause 1.sql");
+    [TestMethod] public void Test_doc_windowfunctions___The_PARTITION_BY_Clause_1_sql() => TestScript(@"doc\windowfunctions - The PARTITION BY Clause 1.sql");
+    [TestMethod] public void Test_doc_windowfunctions___The_PARTITION_BY_Clause_2_sql() => TestScript(@"doc\windowfunctions - The PARTITION BY Clause 2.sql");
+    [TestMethod] public void Test_doc_windowfunctions___Window_Chaining_1_sql() => TestScript(@"doc\windowfunctions - Window Chaining 1.sql");
     [TestMethod] public void Test_doc_year_func_sql() => TestScript(@"doc\year-func.sql");
 }

@@ -696,6 +696,7 @@ public static class SqliteGrammar {
         //      <literal-value> |
         //      <bind-parameter> |
         //      [ [ database-name "." ] table-name "." ] column-name |
+        //      window-function-invocation |
         //      function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* | "*" ] ")" |
         //      "(" <expr> ["," <expr>]* ")" |
         //      CAST "(" <expr> AS <type-name> ")" |
@@ -704,6 +705,8 @@ public static class SqliteGrammar {
         //      <raise-function>
         TopProd(p = "expr-term", 1,
             Or(
+                // window-function-invocation -- must be above simple/aggregate function invocation
+                Prod($"{p}.window-function-invocation", 1, SubProd("window-function-invocation")),
                 // expr ::= function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* | "*" ] ")"
                 Prod($"{p}.function-call", 2,
                     Or(
@@ -902,9 +905,7 @@ public static class SqliteGrammar {
         // [ FROM [ <table-or-subquery> [ , <table-or-subquery> ]* | <join-clause> ]1 ]
         // [ WHERE <expr> ]
         // [ GROUP BY <expr> [ , <expr> ]* [ HAVING <expr> ] ] | VALUES ( <expr> [ , <expr> ]* ) [ , ( <expr> [ , <expr> ]* ) ]* ]1 [ <compound-operator> [ SELECT [ DISTINCT | ALL ] <result-column> [ , <result-column> ]*
-        // [ FROM [ <table-or-subquery> [ , <table-or-subquery> ]* | <join-clause> ]1 ]
-        // [ WHERE <expr> ]
-        // [ GROUP BY <expr> [ , <expr> ]* [ HAVING <expr> ] ] | VALUES ( <expr> [ , <expr> ]* ) [ , ( <expr> [ , <expr> ]* ) ]* ]1 ]*
+        // [ WINDOW window-name AS <window-defn> [ , window-name AS <window-defn> ]* ]
         // [ ORDER BY <ordering-term> [ , <ordering-term> ]* ]
         // [ LIMIT <expr> [ [ OFFSET | , ]1 <expr> ] ]
         TopProd(p = "select-stmt", 1,
@@ -934,6 +935,14 @@ public static class SqliteGrammar {
                             Tok(TokenType.Group), Tok(TokenType.By),
                             Lst($"{p}.group-expr", TokenType.Comma, 1, SubProd("expr")),
                             Opt(1, Tok(TokenType.Having), SubProd("expr"))
+                        ),
+                        Opt(1,
+                            Tok(TokenType.Window),
+                            Lst($"{p}.window", TokenType.Comma, 1,
+                                Id("window name"),
+                                Tok(TokenType.As),
+                                SubProd("window-defn")
+                            )
                         )
                     ),
                     Prod($"{p}.values", 1,
@@ -1159,6 +1168,116 @@ public static class SqliteGrammar {
 
         // vacuum-stmt ::= VACUUM
         TopProd(p = "vacuum-stmt", 1, Tok(TokenType.Vacuum));
+
+        // filter-clause https://sqlite.org/syntax/filter-clause.html
+        TopProd(p = "filter-clause", 1,
+            Tok(TokenType.Filter),
+            Tok(TokenType.Lp),
+            Tok(TokenType.Where),
+            SubProd("expr"),
+            Tok(TokenType.Rp)
+        );
+
+        // frame-spec https://sqlite.org/syntax/frame-spec.html
+        TopProd(p = "frame-spec", 1,
+            Or(
+                Tok(TokenType.Range),
+                Tok(TokenType.Rows),
+                Tok(TokenType.Groups)
+            ),
+            Or(
+                Prod($"{p}.between", 1,
+                    Tok(TokenType.Between),
+                    Or(
+                        Prod($"{p}.between-from-unbounded-preceding", 1,
+                            Tok(TokenType.Unbounded),
+                            Tok(TokenType.Preceding)
+                        ),
+                        Prod($"{p}.between-from-expr", 1,
+                            SubProd("expr"),
+                            Or(Tok(TokenType.Preceding), Tok(TokenType.Following))
+                        ),
+                        Prod($"{p}.between-from-current-row", 1,
+                            Tok(TokenType.Current),
+                            Tok(TokenType.Row)
+                        )
+                    ),
+                    Tok(TokenType.And),
+                    Or(
+                        Prod($"{p}.between-to-unbounded-following", 1,
+                            Tok(TokenType.Unbounded),
+                            Tok(TokenType.Following)
+                        ),
+                        Prod($"{p}.between-to-expr", 1,
+                            SubProd("expr"),
+                            Or(Tok(TokenType.Preceding), Tok(TokenType.Following))
+                        ),
+                        Prod($"{p}.between-to-current-row", 1,
+                            Tok(TokenType.Current),
+                            Tok(TokenType.Row)
+                        )
+                    )
+                ),
+                Prod($"{p}.unbounded-preceding", 1,
+                    Tok(TokenType.Unbounded),
+                    Tok(TokenType.Preceding)
+                ),
+                Prod($"{p}.expr-preceding", 1,
+                    SubProd("expr"),
+                    Tok(TokenType.Preceding)
+                ),
+                Prod($"{p}.current-row", 1,
+                    Tok(TokenType.Current),
+                    Tok(TokenType.Row)
+                )
+            ),
+            Opt(
+                Tok(TokenType.Exclude),
+                Or(
+                    Prod($"{p}.exclude-no-others", 1, Tok(TokenType.No), Tok(TokenType.Others)),
+                    Prod($"{p}.exclude-current-row", 1, Tok(TokenType.Current), Tok(TokenType.Row)),
+                    Prod($"{p}.exclude-group", 1, Tok(TokenType.Group)),
+                    Prod($"{p}.exclude-ties", 1, Tok(TokenType.Ties))
+                )
+            )
+        );
+
+        // window-defn https://sqlite.org/syntax/window-defn.html
+        TopProd(p = "window-defn", 1,
+            Tok(TokenType.Lp),
+            Opt(Id("base window name")),
+            Opt(
+                Tok(TokenType.Partition),
+                Tok(TokenType.By),
+                Lst($"{p}.partition-expr", TokenType.Comma, 1, SubProd("expr"))
+            ),
+            Opt(
+                Tok(TokenType.Order),
+                Tok(TokenType.By),
+                Lst($"{p}.order-expr", TokenType.Comma, 1, SubProd("ordering-term"))
+            ),
+            Opt(SubProd("frame-spec")),
+            Tok(TokenType.Rp)
+        );
+
+        // window-function-invocation - https://sqlite.org/syntax/window-function-invocation.html
+        TopProd(p = "window-function-invocation", 6,
+            Id("window function"),
+            Tok(TokenType.Lp),
+            Opt(
+                Or(
+                    Tok(TokenType.Star),
+                    Lst($"{p}.argument", TokenType.Comma, 1, SubProd("expr"))
+                )
+            ),
+            Tok(TokenType.Rp),
+            Opt(SubProd("filter-clause")),
+            Tok(TokenType.Over),
+            Or(
+                SubProd("window-defn"),
+                Id("window name")
+            )
+        );
 
         SelfCheck();
     }
