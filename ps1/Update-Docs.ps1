@@ -180,7 +180,7 @@ function GenerateTempDocHtml() {
                     if (skip) {
                         continue;
                     }
-                    sqliteFiles.Add(Tuple.Create(title, sqliteFilePath.Substring(Path.Combine(webPath, "site").Length + 1)));
+                    sqliteFiles.Add(Tuple.Create(title, sqliteFilePath.Replace("\\", "/").Substring(Path.Combine(webPath, "site").Length + 1)));
                 }
                 foreach (var x in sqliteFiles.OrderBy(x => x.Item1)) {
                     indexHtml += string.Format("<li><a href=\"{0}\">{1}</a></li>\r\n", x.Item2, x.Item1);
@@ -280,6 +280,15 @@ function Update-DocWebsite {
     Remove-Item -Force "$rootDir\src\SqlNotebook\doc\*.txt"
     Remove-Item -Force "$rootDir\src\SqlNotebook\doc\art\*.txt"
     Remove-Item -Force "$rootDir\src\SqlNotebook\doc\favicon.ico"
+
+    # Remove SQLite docs from the actual website and only include it with the app. This is a bit of a hack that should
+    # have been planned better...
+    Remove-Item -Force -Recurse "$rootDir\web\site\sqlite"
+    foreach ($htmlFilePath in [System.IO.Directory]::GetFiles("$rootDir\web\site")) {
+        $html = [System.IO.File]::ReadAllText($htmlFilePath)
+        $html = $html.Replace('href="sqlite/', 'href="https://sqlite.org/')
+        [System.IO.File]::WriteAllText($htmlFilePath, $html)
+    }
 }
 
 function Update-Csproj {
