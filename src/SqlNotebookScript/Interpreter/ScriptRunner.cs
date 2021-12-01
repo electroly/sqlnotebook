@@ -237,14 +237,9 @@ public sealed class ScriptRunner {
     private void ExecutePrintStmt(Ast.PrintStmt stmt, ScriptEnv env) {
         var value = EvaluateExpr(stmt.Value, env);
 
-        var byteArray = value as byte[];
-        if (byteArray != null) {
-            if (ArrayUtil.IsSqlArray(byteArray)) {
-                env.Output.TextOutput.Add(
-                    "[" + string.Join(", ", ArrayUtil.GetArrayElements(byteArray)) + "]"
-                );
-                return;
-            }
+        if (value is byte[] byteArray) {
+            env.Output.TextOutput.Add(BlobUtil.ToString(byteArray));
+            return;
         }
 
         env.Output.TextOutput.Add(value.ToString());

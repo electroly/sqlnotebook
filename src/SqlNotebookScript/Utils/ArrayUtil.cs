@@ -230,36 +230,35 @@ public static class ArrayUtil {
 
         var newCount = oldCount - removeElements + insertElements.Count;
 
-        using (var memoryStream = new MemoryStream())
-        using (var writer = new BinaryWriter(memoryStream)) {
-            writer.Write(_sentinel);
-            writer.Write((int)newCount);
+        using var memoryStream = new MemoryStream();
+        using var writer = new BinaryWriter(memoryStream);
+        writer.Write(_sentinel);
+        writer.Write((int)newCount);
 
-            // copy the elements up to the edit point as-is
-            int position = DATA_OFFSET;
-            for (int i = 0; i < index; i++) {
-                var skipLength = ReadInt32(originalArrayBlob, position);
-                writer.Write(originalArrayBlob, position, sizeof(int) + skipLength);
-                position += sizeof(int) + skipLength;
-            }
-
-            // skip the removed elements
-            for (int i = index; i < index + removeElements; i++) {
-                var skipLength = ReadInt32(originalArrayBlob, position);
-                position += sizeof(int) + skipLength;
-            }
-
-            // insert the new elements
-            ConvertToSqlArray(insertElements, writer);
-
-            // copy the rest of the elements as-is
-            for (int i = index + removeElements; i < oldCount; i++) {
-                var skipLength = ReadInt32(originalArrayBlob, position);
-                writer.Write(originalArrayBlob, position, sizeof(int) + skipLength);
-                position += sizeof(int) + skipLength;
-            }
-
-            return memoryStream.ToArray();
+        // copy the elements up to the edit point as-is
+        int position = DATA_OFFSET;
+        for (int i = 0; i < index; i++) {
+            var skipLength = ReadInt32(originalArrayBlob, position);
+            writer.Write(originalArrayBlob, position, sizeof(int) + skipLength);
+            position += sizeof(int) + skipLength;
         }
+
+        // skip the removed elements
+        for (int i = index; i < index + removeElements; i++) {
+            var skipLength = ReadInt32(originalArrayBlob, position);
+            position += sizeof(int) + skipLength;
+        }
+
+        // insert the new elements
+        ConvertToSqlArray(insertElements, writer);
+
+        // copy the rest of the elements as-is
+        for (int i = index + removeElements; i < oldCount; i++) {
+            var skipLength = ReadInt32(originalArrayBlob, position);
+            writer.Write(originalArrayBlob, position, sizeof(int) + skipLength);
+            position += sizeof(int) + skipLength;
+        }
+
+        return memoryStream.ToArray();
     }
 }

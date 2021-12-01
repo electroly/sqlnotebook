@@ -58,4 +58,6 @@ SQLITE_API int SxGetToken(const unsigned char* z, int* tokenType) {
     return sqlite3GetToken(z, tokenType);
 }
 
+// Extra modules
+#include "../../ext/sqlite/sqlite-src/ext/misc/uuid.c"
 #include "../../ext/sqlite/sqlite-src/ext/misc/series.c"

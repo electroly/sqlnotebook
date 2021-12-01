@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>UUID_BLOB Function</title>
+</head>
+<body>
+  <h1><tt>UUID_BLOB</tt> Function</h1>Converts any <a moz-do-not-send="true" href=
+  "https://en.wikipedia.org/wiki/Universally_unique_identifier">universally unique identifier (UUID)</a> into a compact
+  16-byte blob representation.<br>
+  <h2>Syntax</h2><tt>UUID_BLOB(<i>input</i>)</tt><br>
+  <h2>Parameters</h2>
+  <ul>
+    <li><i>input</i>: text or blob<br>
+    If <i>input</i> is text, then it must contain exactly 32 hexadecimal digits (0-9, A-F). Optionally, it may contain
+    hyphens to separate blocks of digits and curly braces at the beginning and end. If <i>input</i> is a blob, then it
+    must be exactly 16 bytes.</li>
+  </ul>
+  <h2>Return Value</h2>
+  <p>The <i>input</i> UUID in blob format.<br></p>
+  <h2>Example</h2>
+  <pre>DECLARE @a = UUID_BLOB('A0EEBC99-9C0B-4EF8-BB6D-6BB9BD380A11');<br>SELECT TYPEOF(@a), @a;<br></pre>
+</body>
+</html>

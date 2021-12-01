@@ -87,6 +87,7 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_TO_DATETIMEOFFSET_sql() => TestScript(@"TO_DATETIMEOFFSET.sql");
     [TestMethod] public void Test_UPDATE_RETURNING_sql() => TestScript(@"UPDATE RETURNING.sql");
     [TestMethod] public void Test_USER_NAME_sql() => TestScript(@"USER_NAME.sql");
+    [TestMethod] public void Test_UUID_sql() => TestScript(@"UUID.sql");
     [TestMethod] public void Test_WITH_MATERIALIZED_sql() => TestScript(@"WITH MATERIALIZED.sql");
     [TestMethod] public void Test_WITH_NOT_MATERIALIZED_sql() => TestScript(@"WITH NOT MATERIALIZED.sql");
     [TestMethod] public void Test_doc_array_append_func_sql() => TestScript(@"doc\array-append-func.sql");
@@ -151,6 +152,8 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_to_date_func_sql() => TestScript(@"doc\to-date-func.sql");
     [TestMethod] public void Test_doc_to_date_time_func_sql() => TestScript(@"doc\to-date-time-func.sql");
     [TestMethod] public void Test_doc_try_catch_stmt_sql() => TestScript(@"doc\try-catch-stmt.sql");
+    [TestMethod] public void Test_doc_uuid_blob_func_sql() => TestScript(@"doc\uuid-blob-func.sql");
+    [TestMethod] public void Test_doc_uuid_str_func_sql() => TestScript(@"doc\uuid-str-func.sql");
     [TestMethod] public void Test_doc_while_stmt_sql() => TestScript(@"doc\while-stmt.sql");
     [TestMethod] public void Test_doc_windowfunctions___Aggregate_Window_Functions_1_sql() => TestScript(@"doc\windowfunctions - Aggregate Window Functions 1.sql");
     [TestMethod] public void Test_doc_windowfunctions___Built_in_Window_Functions_1_sql() => TestScript(@"doc\windowfunctions - Built-in Window Functions 1.sql");

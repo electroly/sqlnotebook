@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>UUID_STR Function</title>
+</head>
+<body>
+  <h1><tt>UUID_STR</tt> Function</h1>Converts any <a moz-do-not-send="true" href=
+  "https://en.wikipedia.org/wiki/Universally_unique_identifier">universally unique identifier (UUID)</a> into a
+  well-formed, canonically formatted string like "491bf00b-7166-4c78-be23-4cfc15f72e86".<br>
+  <h2>Syntax</h2><tt>UUID_STR(<i>input</i>)</tt><br>
+  <h2>Parameters</h2>
+  <ul>
+    <li><i>input</i>: text or blob<br>
+    If <i>input</i> is text, then it must contain exactly 32 hexadecimal digits (0-9, A-F). Optionally, it may contain
+    hyphens to separate blocks of digits and curly braces at the beginning and end. If <i>input</i> is a blob, then it
+    must be exactly 16 bytes.<br></li>
+  </ul>
+  <h2>Return Value</h2>The <i>input</i> reformatted into a 36-character string like
+  "491bf00b-7166-4c78-be23-4cfc15f72e86". If <i>input</i> is not a valid UUID, then <tt>NULL</tt> is returned.<br>
+  <h2>Example</h2>
+  <pre><i>-- These all print the same thing: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'</i><br>PRINT UUID_STR('A0EEBC99-9C0B-4EF8-BB6D-6BB9BD380A11');<br>PRINT UUID_STR('{a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11}');<br>PRINT UUID_STR('a0eebc999c0b4ef8bb6d6bb9bd380a11');<br>PRINT UUID_STR('a0ee-bc99-9c0b-4ef8-bb6d-6bb9-bd38-0a11');<br>PRINT UUID_STR('{a0eebc99-9c0b4ef8-bb6d6bb9-bd380a11}');<br><br><i>-- Prints 1, because 'foobar' is not a valid UUID.</i><br>PRINT UUID_STR('foobar') IS NULL;<br><br><i>-- Prints 1, because the blob returned by ARRAY() is not a UUID.</i><br>PRINT UUID_STR(ARRAY(1, 2, 3)) IS NULL;<br></pre>
+</body>
+</html>

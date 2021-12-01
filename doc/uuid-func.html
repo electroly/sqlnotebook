@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>UUID Function</title>
+</head>
+<body>
+  <h1><tt>UUID</tt> Function</h1>Generates a <a moz-do-not-send="true" href=
+  "https://en.wikipedia.org/wiki/Universally_unique_identifier">universally unique identifier (UUID)</a> in the
+  standard "version 4" format specified by <a moz-do-not-send="true" href=
+  "https://datatracker.ietf.org/doc/html/rfc4122">RFC 4122</a>. Each call to <tt>UUID()</tt> returns a new unique
+  identifier.<br>
+  <h2>Syntax</h2><tt>UUID()</tt><br>
+  <h2>Return Value</h2>A unique 36-character string like "a5fc1f61-b034-4512-8a9f-f3f30841d5d8".<br>
+  <h2>Example</h2>
+  <pre>CREATE TABLE items (id TEXT PRIMARY KEY, name TEXT);<br>INSERT INTO items VALUES (UUID(), 'Foo'), (UUID(), 'Bar');<br></pre>
+</body>
+</html>

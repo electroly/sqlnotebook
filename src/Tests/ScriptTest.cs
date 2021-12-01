@@ -89,9 +89,9 @@ public sealed partial class ScriptTest {
 
     private static string ResultObjectToString(object obj) =>
         obj switch {
-            DBNull x => "null",
+            DBNull => "null",
             double x => $"{x:0.####}",
-            byte[] x => "[" + string.Join(",", ArrayUtil.GetArrayElements(x).Select(ResultObjectToString)) + "]",
+            byte[] x => BlobUtil.ToString(x),
             _ => $"{obj}"
         };
 }

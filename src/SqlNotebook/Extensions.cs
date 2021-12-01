@@ -219,14 +219,7 @@ public static class Extensions {
             var dtRow = dt.NewRow();
             var objs = new object[row.Length];
             for (int i = 0; i < row.Length; i++) {
-                objs[i] = row[i];
-
-                var bytes = row[i] as byte[];
-                if (bytes != null) {
-                    if (ArrayUtil.IsSqlArray(bytes)) {
-                        objs[i] = "[" + string.Join(", ", ArrayUtil.GetArrayElements(bytes)) + "]";
-                    }
-                }
+                objs[i] = row[i] is byte[] bytes ? BlobUtil.ToString(bytes) : row[i];
             }
             dtRow.ItemArray = objs;
             dt.Rows.Add(dtRow);

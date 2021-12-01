@@ -227,4 +227,7 @@ internal static class NativeMethods {
 
     [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_series_init", SetLastError = false)]
     public static extern int sqlite3_series_init(IntPtr db, IntPtr pzErrMsg, IntPtr pApi);
+
+    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_uuid_init", SetLastError = false)]
+    public static extern int sqlite3_uuid_init(IntPtr db, IntPtr pzErrMsg, IntPtr pApi);
 }
