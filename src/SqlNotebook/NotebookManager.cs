@@ -193,7 +193,7 @@ public sealed class NotebookManager {
 
             case NotebookItemType.Script:
                 Notebook.UserData.Items.Add(new ScriptNotebookItemRecord {
-                    Name = name, Sql = "", Parameters = new(),
+                    Name = name, Sql = data ?? "", Parameters = new(),
                 });
                 break;
 
