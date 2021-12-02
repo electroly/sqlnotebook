@@ -7,7 +7,7 @@ using SqlNotebookScript.Utils;
 namespace SqlNotebookScript.DataTables;
 
 public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable {
-    private bool _disposed;
+    private bool _disposed = false;
     private TempFile _headerTempFile = new(".header");
     private TempFile _dataTempFile = new(".data");
     private Stream _headerStream;
@@ -25,6 +25,12 @@ public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable {
 
     public DiskSimpleDataTable(IReadOnlyList<string> columns) {
         Columns = columns;
+        var dict = new Dictionary<string, int>();
+        int i = 0;
+        foreach (var columnName in columns) {
+            dict[columnName] = i++;
+        }
+        _columnIndices = dict;
 
         _headerStream = File.Create(_headerTempFile.FilePath);
         _headerWriter = new(_headerStream, Encoding.UTF8, leaveOpen: true);

@@ -32,9 +32,11 @@ public partial class QueryEmbeddedControl : UserControl {
     public ScriptOutput Output {
         get => _output;
         set {
-            _output?.Dispose();
-            _output = value;
-            SetOutput();
+            if (!ReferenceEquals(_output, value)) {
+                _output?.Dispose();
+                _output = value;
+                SetOutput();
+            }
         }
     }
     public bool ShowSql {

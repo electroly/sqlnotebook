@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using SqlNotebookScript;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
 
@@ -28,9 +28,7 @@ public sealed class QueryBlockControl : BlockControl {
 
         UserOptions.OnUpdate(this, Invalidate);
 
-        Disposed += delegate {
-            Output?.Dispose();
-        };
+        Disposed += delegate { Output?.Dispose(); };
     }
 
     private struct MeasuredLayout {
@@ -324,11 +322,12 @@ public sealed class QueryBlockControl : BlockControl {
         EditMode = true;
         Cursor = Cursors.Default;
         var (acceptButton, table, panel) = CreateStandardEditModeLayout();
+
         QueryControl = new(_manager, isPageContext: true, initialText: SqlText) {
             Dock = DockStyle.Fill,
             BorderStyle = BorderStyle.FixedSingle,
             Margin = Padding.Empty,
-            Output = Output,
+            Output = Output?.TakeRef(),
             MaxRows = MaxDisplayRows,
             ShowSql = ShowSql,
             ShowResults = ShowResults,
@@ -356,7 +355,9 @@ public sealed class QueryBlockControl : BlockControl {
         EditMode = false;
         Cursor = Cursors.Hand;
         for (var i = Controls.Count - 1; i >= 0; i--) {
+            var control = Controls[i];
             Controls.RemoveAt(i);
+            control.Dispose();
         }
         QueryControl = null;
         Height = CalculateHeight();
@@ -366,7 +367,10 @@ public sealed class QueryBlockControl : BlockControl {
 
     private void UpdatePropertiesFromEditMode() {
         SqlText = QueryControl.SqlText;
-        Output = QueryControl.Output;
+        if (!ReferenceEquals(Output, QueryControl.Output)) {
+            Output?.Dispose();
+            Output = QueryControl.Output?.TakeRef();
+        }
         MaxDisplayRows = QueryControl.MaxRows;
         ShowSql = QueryControl.ShowSql;
         ShowResults = QueryControl.ShowResults;

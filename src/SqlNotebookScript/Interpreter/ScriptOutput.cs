@@ -1,24 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using SqlNotebookScript.DataTables;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.Interpreter;
 
-public sealed class ScriptOutput : IDisposable {
+public sealed class ScriptOutput : RefCounted {
     public List<SimpleDataTable> DataTables { get; } = new();
     public List<string> TextOutput { get; } = new();
     public object ScalarResult { get; set; }
 
     public void Append(ScriptOutput x) {
-        DataTables.AddRange(x.DataTables);
+        ThrowIfDisposed();
+
+        // move SDT references; no change to their ref counts
+        foreach (var dt in x.DataTables) {
+            DataTables.Add(dt);
+        }
         x.DataTables.Clear();
+
         TextOutput.AddRange(x.TextOutput);
         x.TextOutput.Clear();
     }
 
-    public void Serialize(BinaryWriter writer) {
+    public byte[] GetBytes() {
+        using MemoryStream stream = new();
+        using (BinaryWriter writer = new(stream)) {
+            Serialize(writer);
+        }
+        return stream.ToArray();
+    }
+
+    private void Serialize(BinaryWriter writer) {
+        ThrowIfDisposed();
+
         // DataTables
         writer.Write(DataTables.Count);
         foreach (var sdt in DataTables) {
@@ -40,7 +57,13 @@ public sealed class ScriptOutput : IDisposable {
         }
     }
 
-    public static ScriptOutput Deserialize(BinaryReader reader) {
+    public static ScriptOutput FromBytes(byte[] bytes) {
+        using MemoryStream stream = new(bytes);
+        using BinaryReader reader = new(stream);
+        return Deserialize(reader);
+    }
+
+    private static ScriptOutput Deserialize(BinaryReader reader) {
         ScriptOutput scriptOutput = new();
 
         // DataTables
@@ -66,9 +89,17 @@ public sealed class ScriptOutput : IDisposable {
         return scriptOutput;
     }
 
-    public void Dispose() {
+    public ScriptOutput TakeRef() {
+        AddRef();
+        return this;
+    }
+
+    protected override void OnDispose() {
         foreach (var sdt in DataTables) {
             sdt.Dispose();
         }
+        DataTables.Clear();
+        TextOutput.Clear();
+        ScalarResult = null;
     }
 }

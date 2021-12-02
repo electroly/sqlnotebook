@@ -99,6 +99,8 @@ public sealed class ScriptRunner {
             var dt = _notebook.Query(stmt.Sql, env.Vars, env.OnRow);
             if (dt.Columns.Any()) {
                 env.Output.DataTables.Add(dt);
+            } else {
+                dt.Dispose();
             }
         } finally {
             foreach (var afterStmt in stmt.RunAfter) {
