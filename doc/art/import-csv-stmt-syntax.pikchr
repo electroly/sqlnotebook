@@ -20,11 +20,11 @@ A1: arrow left even with ENT then down 0.75*IMP.ht
 arrow down 0.5*IMP.ht then right 2*arrowht
 oval "(" fit
 arrow 4*arrowht
-SRCCOL: box "column-name" fit
+SRCCOL: box "src-column-name" fit
 arrow right 1*arrowht then down 1*IMP.ht then right 2*arrowht
 AS: oval "AS" fit
 arrow 2*arrowht
-DSTCOL: box "target-column-name" fit
+DSTCOL: box "dst-column-name" fit
 A4: arrow right 1*arrowht then up 1*IMP.ht then right 2*arrowht
 arrow right 1*arrowht then down 1*IMP.ht then right 2*arrowht
 TYP: box "data-type" fit
@@ -48,19 +48,8 @@ arrow left even with SRCCOL.w - (2*arrowht,0) then up even with SRCCOL.w then to
 arrow from A1.end down 6*arrowht
 arrow to A3.end
 
-# row 3
-arrow from A3.end down 0.5*IMP.ht then right 2*arrowht
-SEP1: oval "SEPARATOR" fit
-arrow 2*arrowht
-SEP2: box "separator" fit
-arrow right 2*arrowht then down 1*IMP.ht then left even with .5<SEP1.w,SEP2.e>
-A2: arrow left even with ENT then down 1*IMP.ht
-
-arrow from A3.end down 3*arrowht
-arrow to A2.end
-
 # row 4
-arrow from A2.end down 0.5*IMP.ht then right 2*arrowht
+arrow from A3.end down 0.5*IMP.ht then right 2*arrowht
 OPT: oval "OPTIONS" fit
 arrow 2*arrowht
 oval "(" fit
@@ -83,5 +72,5 @@ arrow down 0.5*IMP.ht then left even with .5<OPTKEY.w,OPTVAL.e>
 oval "," fit
 arrow left even with OPTKEY.w - (2*arrowht,0) then up even with OPTKEY.w then to OPTKEY.w
 
-arrow from A2.end down 5*arrowht
+arrow from A3.end down 5*arrowht
 arrow to SEMI.n

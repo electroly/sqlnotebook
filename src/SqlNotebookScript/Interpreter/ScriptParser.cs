@@ -246,9 +246,6 @@ public sealed class ScriptParser {
         stmt.FilenameExpr = ParseExpr(q);
         q.Take("into");
         stmt.ImportTable = Check(q, ParseImportTable(q));
-        if (q.TakeMaybe("separator")) {
-            stmt.SeparatorExpr = ParseExpr(q);
-        }
         if (q.TakeMaybe("options")) {
             stmt.OptionsList = Check(q, ParseOptionsList(q));
         }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -182,9 +183,9 @@ public partial class ImportCsvForm : ZForm {
             var separator = _optionsControl.Separator.Value;
             return await Task.Run(() => {
                 var importSql =
-                    @"IMPORT CSV @filePath INTO @tableName SEPARATOR @sep
+                    @"IMPORT CSV @filePath INTO @tableName
                     OPTIONS (SKIP_LINES: @skipLines, TAKE_LINES: 0, HEADER_ROW: @headerRow, TEMPORARY_TABLE: 1, 
-                        FILE_ENCODING: @encoding);";
+                        FILE_ENCODING: @encoding, SEPARATOR: @sep);";
                 _manager.ExecuteScriptNoOutput(importSql, new Dictionary<string, object> {
                     ["@filePath"] = _filePath,
                     ["@tableName"] = tempTableName,
@@ -229,22 +230,52 @@ public partial class ImportCsvForm : ZForm {
         var tableName = temporaryTableName ?? _optionsControl.TargetTableName.Value;
         var separator = _optionsControl.Separator.Value;
 
-        return
-            (drop ? $"DROP TABLE IF EXISTS {_optionsControl.TargetTableName.Value.DoubleQuote()};\r\n\r\n" : "") +
-            $"IMPORT CSV {_filePath.SingleQuote()}\r\n" +
-            $"INTO {tableName.DoubleQuote()} (\r\n" +
-            _columnsControl.SqlColumnList + "\r\n" +
-            $")\r\n" +
-            $"SEPARATOR {separator.SingleQuote()}\r\n" +
-            $"OPTIONS (\r\n" +
-            $"    SKIP_LINES: {_optionsControl.SkipLines.Value},\r\n" +
-            (takeRows >= 0 ? $"TAKE_LINES: {takeRows}," : "") +
-            (temporaryTableName != null ? "TEMPORARY_TABLE: 1," : "") +
-            $"    HEADER_ROW: {(_optionsControl.HasColumnHeaders.Value ? 1 : 0)},\r\n" +
-            $"    TRUNCATE_EXISTING_TABLE: {(truncate ? 1 : 0)},\r\n" +
-            $"    FILE_ENCODING: {_optionsControl.FileEncoding.Value},\r\n" +
-            $"    IF_CONVERSION_FAILS: {(int)_optionsControl.IfConversionFails.Value}\r\n" +
-            $");\r\n";
+        StringBuilder sb = new();
+        if (drop) {
+            sb.AppendLine($"DROP TABLE IF EXISTS {_optionsControl.TargetTableName.Value.DoubleQuote()};");
+            sb.AppendLine();
+        }
+        sb.AppendLine($"IMPORT CSV {_filePath.SingleQuote()}");
+        sb.AppendLine($"INTO {tableName.DoubleQuote()} (");
+        sb.AppendLine(_columnsControl.SqlColumnList);
+        List<string> options = new();
+        if (_optionsControl.SkipLines.Value != 0) {
+            options.Add($"    SKIP_LINES: {_optionsControl.SkipLines.Value}");
+        }
+        if (takeRows >= 0) {
+            options.Add($"    TAKE_LINES: {takeRows}");
+        }
+        if (temporaryTableName != null) {
+            options.Add($"    TEMPORARY_TABLE: 1");
+        }
+        if (!_optionsControl.HasColumnHeaders.Value) {
+            options.Add($"    HEADER_ROW: 0");
+        }
+        if (separator != ",") {
+            options.Add($"    SEPARATOR: {separator.SingleQuote()}");
+        }
+        if (truncate) {
+            options.Add($"    TRUNCATE_EXISTING_TABLE: 1");
+        }
+        if (_optionsControl.FileEncoding.Value != 0) {
+            options.Add($"    FILE_ENCODING: {_optionsControl.FileEncoding.Value}");
+        }
+        if (_optionsControl.IfConversionFails.Value != ImportConversionFailOption.ImportAsText) {
+            options.Add($"    IF_CONVERSION_FAILS: {(int)_optionsControl.IfConversionFails.Value}");
+        }
+        if (options.Count > 0) {
+            sb.AppendLine(")");
+            sb.AppendLine("OPTIONS (");
+            foreach (var x in options.Take(options.Count - 1)) {
+                sb.Append(x);
+                sb.Append(',');
+                sb.AppendLine();
+            }
+            sb.AppendLine(options[^1]);
+        }
+        sb.AppendLine(");");
+
+        return sb.ToString();
     }
 
     private string GetErrorMessage() { // or null

@@ -21,6 +21,7 @@ public sealed class ImportCsvStmtRunner {
     private readonly bool _headerRow = true;
     private readonly bool _truncateExistingTable = false;
     private readonly bool _temporaryTable = false;
+    private readonly char _separator = ',';
     private readonly Encoding _fileEncoding = null; // or null for automatic
     private readonly IfConversionFails _ifConversionFails = IfConversionFails.ImportAsText;
 
@@ -53,6 +54,15 @@ public sealed class ImportCsvStmtRunner {
                     _headerRow = _stmt.OptionsList.GetOptionBool(option, _runner, _env, true);
                     break;
 
+                case "SEPARATOR": {
+                        var separator = _stmt.OptionsList.GetOption(option, _runner, _env, ",");
+                        if (separator.Length != 1) {
+                            throw new Exception("IMPORT CSV: The separator must be a single character.");
+                        }
+                        _separator = separator[0];
+                        break;
+                    }
+
                 case "TRUNCATE_EXISTING_TABLE":
                     _truncateExistingTable = _stmt.OptionsList.GetOptionBool(option, _runner, _env, false);
                     break;
@@ -77,18 +87,10 @@ public sealed class ImportCsvStmtRunner {
     }
 
     private void Import() {
-        string separator = ",";
-        if (_stmt.SeparatorExpr != null) {
-            separator = _runner.EvaluateExpr(_stmt.SeparatorExpr, _env).ToString();
-            if (separator.Equals("Tab", StringComparison.OrdinalIgnoreCase)) {
-                separator = "\t";
-            }
-        }
-
         var filePath = GetFilePath();
         using var stream = File.OpenRead(filePath);
         using var bufferedStream = new BufferedStream(stream);
-        using var parser = NewParser(bufferedStream, separator);
+        using var parser = NewParser(bufferedStream, _separator.ToString());
         var parserBuffer = new TextFieldParserBuffer(parser);
 
         // skip the specified number of initial file lines
@@ -187,7 +189,7 @@ public sealed class ImportCsvStmtRunner {
 
     // allow a line to be read, un-read, and then read again
     private sealed class TextFieldParserBuffer {
-        private readonly Stack<string[]> _unreadStack = new Stack<string[]>();
+        private readonly Stack<string[]> _unreadStack = new();
         private readonly TextFieldParser _parser;
 
         public TextFieldParserBuffer(TextFieldParser parser) {

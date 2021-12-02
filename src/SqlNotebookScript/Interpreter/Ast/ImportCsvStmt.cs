@@ -7,6 +7,5 @@ public sealed class ImportCsvStmt : Stmt {
     public Expr FilenameExpr { get; set; }
     public ImportTable ImportTable { get; set; }
     public OptionsList OptionsList { get; set; }
-    public Expr SeparatorExpr { get; set; }
-    protected override IEnumerable<Node> GetChildren() => new Node[] { FilenameExpr, SeparatorExpr, ImportTable, OptionsList };
+    protected override IEnumerable<Node> GetChildren() => new Node[] { FilenameExpr, ImportTable, OptionsList };
 }

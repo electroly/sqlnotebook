@@ -22,7 +22,7 @@ OPTIONS (HEADER_ROW: 0);
 SELECT * FROM table4;
 
 -- Semicolon-separated file.
-IMPORT CSV '<FILES>\semicolon.csv' INTO table5 SEPARATOR ';';
+IMPORT CSV '<FILES>\semicolon.csv' INTO table5 OPTIONS (SEPARATOR: ';');
 
 SELECT * FROM table5;
 
