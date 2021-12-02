@@ -37,6 +37,7 @@ public static class SqlUtil {
         Ast.ImportTable importTable,
         bool temporaryTable,
         bool truncateExistingTable,
+        bool stopAtFirstBlankRow,
         IfConversionFails ifConversionFails,
         Notebook notebook,
         ScriptRunner runner,
@@ -49,7 +50,7 @@ public static class SqlUtil {
         }
         CreateOrTruncateTable(mappings, dstTableName, temporaryTable, truncateExistingTable, notebook);
         VerifyColumnsExist(mappings.Select(x => x.DstColumnName), dstTableName, notebook);
-        InsertDataRows(dataRows, srcColNames, mappings, dstTableName, ifConversionFails, notebook);
+        InsertDataRows(dataRows, srcColNames, mappings, dstTableName, ifConversionFails, stopAtFirstBlankRow, notebook);
     }
 
     public static string GetInsertSql(string tableName, IReadOnlyList<ImportColumnMapping> mappings) {
@@ -249,6 +250,7 @@ public static class SqlUtil {
         IReadOnlyList<ImportColumnMapping> mappings,
         string dstTableName,
         IfConversionFails ifConversionFails,
+        bool stopAtFirstBlankRow,
         Notebook notebook
         ) {
         // Find the source column index for each source mapping.
@@ -271,6 +273,20 @@ public static class SqlUtil {
         var insertSql = GetInsertSql(dstTableName, mappings);
         var insertArgs = new List<object>();
         foreach (var row in rows) {
+            if (stopAtFirstBlankRow) {
+                var isBlank = true;
+                for (var j = 0; j < row.Length; j++) {
+                    var value = row[j];
+                    if (value != null && value is not DBNull && (value is not string s || !string.IsNullOrWhiteSpace(s))) {
+                        isBlank = false;
+                        break;
+                    }
+                }
+                if (isBlank) {
+                    break;
+                }
+            }
+
             insertArgs.Clear();
             var skipRow = false;
             for (var mappingIndex = 0; mappingIndex < mappings.Count; mappingIndex++) {

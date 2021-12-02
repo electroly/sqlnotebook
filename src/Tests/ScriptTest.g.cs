@@ -65,6 +65,9 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_IMPORT_XLS_LAST_COLUMN_last_beyond_end_of_data_sql() => TestScript(@"IMPORT XLS LAST_COLUMN last beyond end of data.sql");
     [TestMethod] public void Test_IMPORT_XLS_LAST_COLUMN_last_column_only_sql() => TestScript(@"IMPORT XLS LAST_COLUMN last column only.sql");
     [TestMethod] public void Test_IMPORT_XLS_LAST_ROW_sql() => TestScript(@"IMPORT XLS LAST_ROW.sql");
+    [TestMethod] public void Test_IMPORT_XLS_STOP_AT_FIRST_BLANK_ROW_0_sql() => TestScript(@"IMPORT XLS STOP_AT_FIRST_BLANK_ROW 0.sql");
+    [TestMethod] public void Test_IMPORT_XLS_STOP_AT_FIRST_BLANK_ROW_1_sql() => TestScript(@"IMPORT XLS STOP_AT_FIRST_BLANK_ROW 1.sql");
+    [TestMethod] public void Test_IMPORT_XLS_STOP_AT_FIRST_BLANK_ROW_default_sql() => TestScript(@"IMPORT XLS STOP_AT_FIRST_BLANK_ROW default.sql");
     [TestMethod] public void Test_IMPORT_XLS_TEMPORARY_TABLE_sql() => TestScript(@"IMPORT XLS TEMPORARY_TABLE.sql");
     [TestMethod] public void Test_IMPORT_XLS_TRUNCATE_EXISTING_TABLE_sql() => TestScript(@"IMPORT XLS TRUNCATE_EXISTING_TABLE.sql");
     [TestMethod] public void Test_IMPORT_XLS_sql() => TestScript(@"IMPORT XLS.sql");

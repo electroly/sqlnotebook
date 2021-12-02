@@ -23,6 +23,7 @@ public sealed class ImportXlsStmtRunner {
     private readonly bool _headerRow = true;
     private readonly bool _truncateExistingTable = false;
     private readonly bool _temporaryTable = false;
+    private readonly bool _stopAtFirstBlankRow = true;
     private readonly IfConversionFails _ifConversionFails = IfConversionFails.ImportAsText;
 
     // must be run from the SQLite thread
@@ -102,6 +103,10 @@ public sealed class ImportXlsStmtRunner {
                         option, _runner, _env, 1, minValue: 1, maxValue: 3);
                     break;
 
+                case "STOP_AT_FIRST_BLANK_ROW":
+                    _stopAtFirstBlankRow = _stmt.OptionsList.GetOptionBool(option, _runner, _env, true);
+                    break;
+
                 default:
                     throw new Exception($"\"{option}\" is not a recognized option name.");
             }
@@ -119,6 +124,7 @@ public sealed class ImportXlsStmtRunner {
                 importTable: _stmt.ImportTable, 
                 temporaryTable: _temporaryTable, 
                 truncateExistingTable: _truncateExistingTable, 
+                stopAtFirstBlankRow: _stopAtFirstBlankRow,
                 ifConversionFails: _ifConversionFails, 
                 notebook: _notebook, 
                 runner: _runner,

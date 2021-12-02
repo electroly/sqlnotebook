@@ -55,6 +55,7 @@ namespace SqlNotebook.Import.Xls {
             this._ifTableExistsLabel = new System.Windows.Forms.Label();
             this._ifExistsCombo = new System.Windows.Forms.ComboBox();
             this._convertFailCombo = new System.Windows.Forms.ComboBox();
+            this._stopAtFirstBlankRowCheck = new System.Windows.Forms.CheckBox();
             this._buttonFlow1 = new System.Windows.Forms.FlowLayoutPanel();
             this._lowerSplit = new System.Windows.Forms.SplitContainer();
             this._originalFileLabel = new System.Windows.Forms.Label();
@@ -177,23 +178,24 @@ namespace SqlNotebook.Import.Xls {
             this._optionsTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this._optionsTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this._optionsTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this._optionsTable.Controls.Add(this._ifConversionFailsLabel, 0, 8);
+            this._optionsTable.Controls.Add(this._ifConversionFailsLabel, 0, 9);
             this._optionsTable.Controls.Add(this._specificRowsCheck, 0, 2);
             this._optionsTable.Controls.Add(this._specificRowsFlow, 1, 2);
             this._optionsTable.Controls.Add(this._specificColumnsCheck, 0, 1);
             this._optionsTable.Controls.Add(this._specificColumnsFlow, 1, 1);
             this._optionsTable.Controls.Add(this._sourceLabel, 0, 0);
             this._optionsTable.Controls.Add(this._columnNamesCheck, 0, 4);
-            this._optionsTable.Controls.Add(this._targetLabel, 0, 5);
-            this._optionsTable.Controls.Add(this._tableNameLabel, 0, 6);
-            this._optionsTable.Controls.Add(this._tableNameCombo, 0, 7);
+            this._optionsTable.Controls.Add(this._targetLabel, 0, 6);
+            this._optionsTable.Controls.Add(this._tableNameLabel, 0, 7);
+            this._optionsTable.Controls.Add(this._tableNameCombo, 0, 8);
             this._optionsTable.Controls.Add(this._useSelectionLink, 1, 3);
-            this._optionsTable.Controls.Add(this._ifTableExistsLabel, 2, 6);
-            this._optionsTable.Controls.Add(this._ifExistsCombo, 2, 7);
-            this._optionsTable.Controls.Add(this._convertFailCombo, 0, 9);
+            this._optionsTable.Controls.Add(this._ifTableExistsLabel, 2, 7);
+            this._optionsTable.Controls.Add(this._ifExistsCombo, 2, 8);
+            this._optionsTable.Controls.Add(this._convertFailCombo, 0, 10);
+            this._optionsTable.Controls.Add(this._stopAtFirstBlankRowCheck, 0, 5);
             this._optionsTable.Location = new System.Drawing.Point(0, 0);
             this._optionsTable.Name = "_optionsTable";
-            this._optionsTable.RowCount = 10;
+            this._optionsTable.RowCount = 11;
             this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -204,14 +206,15 @@ namespace SqlNotebook.Import.Xls {
             this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._optionsTable.Size = new System.Drawing.Size(475, 324);
+            this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._optionsTable.Size = new System.Drawing.Size(475, 359);
             this._optionsTable.TabIndex = 1;
             // 
             // _ifConversionFailsLabel
             // 
             this._ifConversionFailsLabel.AutoSize = true;
             this._ifConversionFailsLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._ifConversionFailsLabel.Location = new System.Drawing.Point(3, 260);
+            this._ifConversionFailsLabel.Location = new System.Drawing.Point(3, 295);
             this._ifConversionFailsLabel.Name = "_ifConversionFailsLabel";
             this._ifConversionFailsLabel.Size = new System.Drawing.Size(213, 25);
             this._ifConversionFailsLabel.TabIndex = 35;
@@ -352,10 +355,10 @@ namespace SqlNotebook.Import.Xls {
             // 
             this._sourceLabel.AutoSize = true;
             this._optionsTable.SetColumnSpan(this._sourceLabel, 2);
-            this._sourceLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
+            this._sourceLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this._sourceLabel.Location = new System.Drawing.Point(3, 0);
             this._sourceLabel.Name = "_sourceLabel";
-            this._sourceLabel.Size = new System.Drawing.Size(65, 25);
+            this._sourceLabel.Size = new System.Drawing.Size(70, 25);
             this._sourceLabel.TabIndex = 4;
             this._sourceLabel.Text = "Source";
             // 
@@ -376,18 +379,18 @@ namespace SqlNotebook.Import.Xls {
             // _targetLabel
             // 
             this._targetLabel.AutoSize = true;
-            this._targetLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
-            this._targetLabel.Location = new System.Drawing.Point(3, 171);
+            this._targetLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this._targetLabel.Location = new System.Drawing.Point(3, 206);
             this._targetLabel.Name = "_targetLabel";
-            this._targetLabel.Size = new System.Drawing.Size(64, 25);
+            this._targetLabel.Size = new System.Drawing.Size(110, 25);
             this._targetLabel.TabIndex = 6;
-            this._targetLabel.Text = "Target";
+            this._targetLabel.Text = "Destination";
             // 
             // _tableNameLabel
             // 
             this._tableNameLabel.AutoSize = true;
             this._tableNameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._tableNameLabel.Location = new System.Drawing.Point(3, 196);
+            this._tableNameLabel.Location = new System.Drawing.Point(3, 231);
             this._tableNameLabel.Name = "_tableNameLabel";
             this._tableNameLabel.Size = new System.Drawing.Size(213, 25);
             this._tableNameLabel.TabIndex = 7;
@@ -398,7 +401,7 @@ namespace SqlNotebook.Import.Xls {
             // 
             this._optionsTable.SetColumnSpan(this._tableNameCombo, 2);
             this._tableNameCombo.FormattingEnabled = true;
-            this._tableNameCombo.Location = new System.Drawing.Point(3, 224);
+            this._tableNameCombo.Location = new System.Drawing.Point(3, 259);
             this._tableNameCombo.Name = "_tableNameCombo";
             this._tableNameCombo.Size = new System.Drawing.Size(238, 33);
             this._tableNameCombo.TabIndex = 8;
@@ -418,7 +421,7 @@ namespace SqlNotebook.Import.Xls {
             // _ifTableExistsLabel
             // 
             this._ifTableExistsLabel.AutoSize = true;
-            this._ifTableExistsLabel.Location = new System.Drawing.Point(247, 196);
+            this._ifTableExistsLabel.Location = new System.Drawing.Point(247, 231);
             this._ifTableExistsLabel.Name = "_ifTableExistsLabel";
             this._ifTableExistsLabel.Size = new System.Drawing.Size(149, 25);
             this._ifTableExistsLabel.TabIndex = 24;
@@ -430,7 +433,7 @@ namespace SqlNotebook.Import.Xls {
             this._ifExistsCombo.DisplayMember = "Item2";
             this._ifExistsCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._ifExistsCombo.FormattingEnabled = true;
-            this._ifExistsCombo.Location = new System.Drawing.Point(247, 224);
+            this._ifExistsCombo.Location = new System.Drawing.Point(247, 259);
             this._ifExistsCombo.Name = "_ifExistsCombo";
             this._ifExistsCombo.Size = new System.Drawing.Size(179, 33);
             this._ifExistsCombo.TabIndex = 34;
@@ -442,11 +445,24 @@ namespace SqlNotebook.Import.Xls {
             this._convertFailCombo.DisplayMember = "Item2";
             this._convertFailCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._convertFailCombo.FormattingEnabled = true;
-            this._convertFailCombo.Location = new System.Drawing.Point(3, 288);
+            this._convertFailCombo.Location = new System.Drawing.Point(3, 323);
             this._convertFailCombo.Name = "_convertFailCombo";
             this._convertFailCombo.Size = new System.Drawing.Size(179, 33);
             this._convertFailCombo.TabIndex = 36;
             this._convertFailCombo.ValueMember = "Item1";
+            // 
+            // _stopAtFirstBlankRowCheck
+            // 
+            this._stopAtFirstBlankRowCheck.AutoSize = true;
+            this._stopAtFirstBlankRowCheck.Checked = true;
+            this._stopAtFirstBlankRowCheck.CheckState = System.Windows.Forms.CheckState.Checked;
+            this._optionsTable.SetColumnSpan(this._stopAtFirstBlankRowCheck, 3);
+            this._stopAtFirstBlankRowCheck.Location = new System.Drawing.Point(3, 174);
+            this._stopAtFirstBlankRowCheck.Name = "_stopAtFirstBlankRowCheck";
+            this._stopAtFirstBlankRowCheck.Size = new System.Drawing.Size(213, 29);
+            this._stopAtFirstBlankRowCheck.TabIndex = 38;
+            this._stopAtFirstBlankRowCheck.Text = "Stop at first blank row";
+            this._stopAtFirstBlankRowCheck.UseVisualStyleBackColor = true;
             // 
             // _buttonFlow1
             // 
@@ -725,5 +741,6 @@ namespace SqlNotebook.Import.Xls {
         private System.Windows.Forms.ComboBox _convertFailCombo;
         private System.Windows.Forms.LinkLabel _useSelectionLink;
         private System.Windows.Forms.Timer _updateTimer;
+        private System.Windows.Forms.CheckBox _stopAtFirstBlankRowCheck;
     }
 }

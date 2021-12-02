@@ -104,6 +104,7 @@ public sealed class ImportCsvStmtRunner {
             _stmt.ImportTable,
             _temporaryTable,
             _truncateExistingTable,
+            false, // stopAtFirstBlankRow
             _ifConversionFails,
             _notebook,
             _runner,

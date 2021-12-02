@@ -80,7 +80,6 @@ public partial class ImportXlsForm : ZForm {
             ui.Init(_optionsTable);
             ui.PadBig(_optionsTable);
             ui.Init(_sourceLabel);
-            ui.MarginBottom(_sourceLabel);
             ui.Init(_specificColumnsCheck);
             ui.Init(_specificColumnsFlow);
             ui.Init(_columnStartText, 10);
@@ -96,8 +95,8 @@ public partial class ImportXlsForm : ZForm {
             ui.Init(_useSelectionLink);
             ui.MarginBottom(_useSelectionLink);
             ui.Init(_columnNamesCheck);
+            ui.Init(_stopAtFirstBlankRowCheck);
             ui.Init(_targetLabel);
-            ui.MarginBottom(_targetLabel);
             ui.MarginTop(_targetLabel);
             ui.Init(_tableNameLabel);
             ui.Init(_tableNameCombo, 40);
@@ -334,6 +333,7 @@ public partial class ImportXlsForm : ZForm {
         var ifTableExists = (ImportTableExistsOption)_ifExistsCombo.SelectedValue;
         var ifConversionFails = (ImportConversionFailOption)_convertFailCombo.SelectedValue;
         var sqlColumnList = GetValidatedSqlColumnList();
+        var stopAtFirstBlankRow = _stopAtFirstBlankRowCheck.Checked;
 
         StringBuilder sb = new();
 
@@ -364,6 +364,7 @@ public partial class ImportXlsForm : ZForm {
         if (maxColumnIndex.HasValue) {
             sb.AppendLine($"    LAST_COLUMN: {XlsUtil.ConvertNumToColString(maxColumnIndex.Value).SingleQuote()},");
         }
+        sb.AppendLine($"    STOP_AT_FIRST_BLANK_ROW: {(stopAtFirstBlankRow ? 1 : 0)},");
         sb.AppendLine($"    HEADER_ROW: {(columnHeaders == ColumnHeadersOption.Present ? 1 : 0)}, -- {columnHeaders.GetDescription()}");
         sb.AppendLine($"    TRUNCATE_EXISTING_TABLE: {(ifTableExists == ImportTableExistsOption.DeleteExistingRows ? 1 : 0)}, -- {ifTableExists.GetDescription()}");
         sb.AppendLine($"    IF_CONVERSION_FAILS: {(int)ifConversionFails} -- {ifConversionFails.GetDescription()}");

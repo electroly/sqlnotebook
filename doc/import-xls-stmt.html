@@ -65,6 +65,9 @@
     The rightmost column (inclusive) to import.&nbsp;This may be a column number (starting at 1) or a column string (A,
     B, C, ..., XFC, XFD).&nbsp;If 0 is specified, then all available columns in the worksheet (after and including
     <code>FIRST_COLUMN</code>) are imported.</li>
+    <li><tt>STOP_AT_FIRST_BLANK_ROW</tt>: integer (0-1, default: 1)<br>
+    Whether to stop processing rows when the first blank row is encountered, even if it's before the configured
+    <tt>LAST_ROW</tt> or the last row in the spreadsheet.<br></li>
     <li>
       <tt>HEADER_ROW</tt>: integer (0-1, default: 1)<br>
       Indicates whether the worksheet begins with a column header line. If the sheet contains a column header but not

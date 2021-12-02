@@ -264,8 +264,7 @@ public partial class ImportCsvForm : ZForm {
             options.Add($"    IF_CONVERSION_FAILS: {(int)_optionsControl.IfConversionFails.Value}");
         }
         if (options.Count > 0) {
-            sb.AppendLine(")");
-            sb.AppendLine("OPTIONS (");
+            sb.AppendLine(") OPTIONS (");
             foreach (var x in options.Take(options.Count - 1)) {
                 sb.Append(x);
                 sb.Append(',');
