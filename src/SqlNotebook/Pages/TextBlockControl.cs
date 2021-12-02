@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using SqlNotebookScript;
 
 namespace SqlNotebook.Pages;
 
@@ -101,16 +102,18 @@ public sealed class TextBlockControl : BlockControl {
 
     private void UpdatePropertiesFromEditMode() => BlockText = _textBox.SqlText;
 
-    public override void Serialize(BinaryWriter writer) {
+    public void LoadFromRecord(TextPageBlockRecord record) {
+        BlockText = record.Content;
+        Height = CalculateHeight();
+        Invalidate(true);
+    }
+
+    public TextPageBlockRecord SaveToRecord() {
         if (EditMode) {
             UpdatePropertiesFromEditMode();
         }
-        writer.Write(BlockText);
-    }
-
-    public override void Deserialize(BinaryReader reader) {
-        BlockText = reader.ReadString();
-        Height = CalculateHeight();
-        Invalidate(true);
+        return new() {
+            Content = BlockText,
+        };
     }
 }

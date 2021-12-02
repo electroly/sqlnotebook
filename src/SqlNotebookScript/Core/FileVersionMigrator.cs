@@ -1,8 +1,10 @@
 ﻿using SqlNotebookScript.Core.SqliteInterop;
 using SqlNotebookScript.Utils;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -76,13 +78,38 @@ public static class FileVersionMigrator {
         return false;
     }
 
+    private sealed class V1NotebookUserData {
+        public List<V1NotebookItem> Items { get; set; }
+        public List<V1ScriptParameter> ScriptParameters { get; set; }
+    }
+
+    private sealed class V1NotebookItem {
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public string Data { get; set; }
+    }
+
+    private sealed class V1ScriptParameter {
+        public string ScriptName { get; set; }
+        public List<string> ParamNames { get; set; } = new();
+    }
+
     // Convert a file from version 1 (zip file, up through 0.6.0) to version 2 (sqlite db, starting 1.0.0)
     private static void MigrateFileVersion1to2(string filePath) {
         using TempFile dbFile = new(".v1");
-        NotebookUserData userData = null;
+        V1NotebookUserData v1UserData = null;
 
         // read the two entries from the zip file
         using (var zip = ZipFile.OpenRead(filePath)) {
+            // extract the user items
+            {
+                var entry = zip.GetEntry("notebook.json");
+                using var inStream = entry.Open();
+                using StreamReader reader = new(inStream, Encoding.UTF8, false, 8192, false);
+                var json = reader.ReadToEnd();
+                v1UserData = JsonSerializer.Deserialize<V1NotebookUserData>(json, new JsonSerializerOptions());
+            }
+
             // extract the sqlite database
             {
                 var entry = zip.GetEntry("sqlite.db");
@@ -90,58 +117,34 @@ public static class FileVersionMigrator {
                 using FileStream outStream = new(dbFile.FilePath, FileMode.Create);
                 inStream.CopyTo(outStream);
             }
-
-            // extract the user items
-            {
-                var entry = zip.GetEntry("notebook.json");
-                using var inStream = entry.Open();
-                using StreamReader reader = new(inStream, Encoding.UTF8, false, 8192, false);
-                var json = reader.ReadToEnd();
-                userData = JsonSerializer.Deserialize<NotebookUserData>(json, new JsonSerializerOptions());
-            }
-        }
-
-        // remove any Console items and convert any Note items
-        for (var i = userData.Items.Count - 1; i >= 0; i--) {
-            var item = userData.Items[i];
-            var type = item.Type;
-
-            if (type == "Console") {
-                userData.Items.RemoveAt(i);
-                continue;
-            }
-
-            if (type == "Note") {
-                userData.Items.RemoveAt(i);
-                
-                // Create a new page item to replace it.
-                HtmlAgilityPack.HtmlDocument doc = new();
-                doc.LoadHtml(item.Data);
-                var text = WebUtility.HtmlDecode(doc.DocumentNode.InnerText);
-
-                using MemoryStream memoryStream = new();
-                using (GZipStream gzipStream = new(memoryStream, CompressionLevel.Fastest)) {
-                    using BinaryWriter writer = new(gzipStream);
-
-                    writer.Write(1); // Count of blocks in the page
-                    writer.Write((byte)1); // Type: Text block
-                    writer.Write(text); // Text block data
-                }
-
-                userData.Items.Add(new() {
-                    Type = "Page",
-                    Name = item.Name,
-                    Data = Convert.ToBase64String(memoryStream.ToArray())
-                });
-
-                continue;
-            }
         }
 
         // store the user data in the new table format
-        {
-            using var notebook = Notebook.Open(dbFile.FilePath);
-            notebook.UserData = userData;
+        using (var notebook = Notebook.Open(dbFile.FilePath)) {
+            var scriptParameters =
+                v1UserData.ScriptParameters.ToDictionary(x => x.ScriptName, x => x.ParamNames);
+            NotebookUserData newUserData = new() {
+                Items = new()
+            };
+            foreach (var item in v1UserData.Items) {
+                if (item.Type == "Script") {
+                    newUserData.Items.Add(new ScriptNotebookItemRecord {
+                        Name = item.Name,
+                        Sql = item.Data,
+                        Parameters = scriptParameters.TryGetValue(item.Name, out var p) ? p : new()
+                    });
+                } else if (item.Type == "Note") {
+                    newUserData.Items.Add(new PageNotebookItemRecord {
+                        Name = item.Name,
+                        Blocks = new() {
+                            new TextPageBlockRecord {
+                                Content = item.Data
+                            }
+                        }
+                    });
+                }
+            }
+            notebook.UserData = newUserData;
             notebook.Save();
         }
 

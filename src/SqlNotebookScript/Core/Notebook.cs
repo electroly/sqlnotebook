@@ -73,6 +73,7 @@ public sealed class Notebook : IDisposable {
         if (!_disposedValue) {
             if (disposing) {
                 // dispose managed state (managed objects)
+                UserData.Dispose();
             }
 
             // free unmanaged resources (unmanaged objects) and override finalizer
@@ -143,7 +144,7 @@ public sealed class Notebook : IDisposable {
 
     private void Init() {
         FileVersionMigrator.MigrateIfNeeded(_workingCopyFilePath);
-            
+
         using NativeString filePathNative = new(_workingCopyFilePath);
         using NativeBuffer sqliteNative = new(IntPtr.Size);
         SqliteUtil.ThrowIfError(IntPtr.Zero,
@@ -176,10 +177,9 @@ public sealed class Notebook : IDisposable {
 
         CustomFunctionsProvider.InstallCustomFunctions(_sqlite);
 
-        ReadUserDataFromDatabase();
-
-        Execute("DROP TABLE IF EXISTS _sqlnotebook_userdata");
-        Execute("DROP TABLE IF EXISTS _sqlnotebook_version");
+        UserData = NotebookUserData.Load(this);
+        NotebookUserData.DropTables(this);
+        Execute("DROP TABLE IF EXISTS _sqlnotebook_version;");
     }
 
     private delegate object GenericFunctionExecuteDelegate(IReadOnlyList<object> args);
@@ -230,7 +230,8 @@ public sealed class Notebook : IDisposable {
             throw new Exception("A transaction is active. Execute either \"COMMIT\" or \"ROLLBACK\" to end the transaction before saving.");
         }
 
-        WriteFileVersionAndUserDataToDatabase();
+        UserData.Save(this);
+        WriteFileVersion();
 
         SqliteUtil.ThrowIfError(_sqlite, sqlite3_close(_sqlite));
         _sqlite = IntPtr.Zero;
@@ -265,35 +266,13 @@ public sealed class Notebook : IDisposable {
         OverlappedProducerConsumer.Go(() => new byte[8 * 1_048_576], Produce, Consume, cancel);
     }
 
-    private void WriteFileVersionAndUserDataToDatabase() {
+    private void WriteFileVersion() {
         Execute("CREATE TABLE IF NOT EXISTS _sqlnotebook_version (version);");
         Execute("DELETE FROM _sqlnotebook_version;");
         Execute("INSERT INTO _sqlnotebook_version (version) VALUES (@version);",
             new Dictionary<string, object> {
                 ["@version"] = CURRENT_FILE_VERSION
             });
-
-        Execute("CREATE TABLE IF NOT EXISTS _sqlnotebook_userdata (json);");
-        Execute("DELETE FROM _sqlnotebook_userdata;");
-        Execute("INSERT INTO _sqlnotebook_userdata (json) VALUES (@json)",
-            new Dictionary<string, object> {
-                ["@json"] = JsonSerializer.Serialize(UserData, new JsonSerializerOptions())
-            });
-    }
-
-    private void ReadUserDataFromDatabase() {
-        Execute("CREATE TABLE IF NOT EXISTS _sqlnotebook_userdata (json);");
-        using var table = Query("SELECT json FROM _sqlnotebook_userdata");
-        if (table.Rows.Count == 0) {
-            UserData = new();
-            return;
-        }
-        try {
-            var json = (string)table.Rows[0][0];
-            UserData = JsonSerializer.Deserialize<NotebookUserData>(json, new JsonSerializerOptions());
-        } catch {
-            UserData = new();
-        }
     }
 
     public static void Invoke(Action action) {
@@ -501,8 +480,8 @@ public sealed class Notebook : IDisposable {
     public IReadOnlyDictionary<string, string> GetScripts() {
         Dictionary<string, string> dict = new();
         foreach (var item in UserData.Items) {
-            if (item.Type == "Script") {
-                dict.Add(item.Name.ToLowerInvariant(), item.Data ?? "");
+            if (item is ScriptNotebookItemRecord script) {
+                dict.Add(item.Name.ToLowerInvariant(), script.Sql);
             }
         }
         return dict;

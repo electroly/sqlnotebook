@@ -372,51 +372,32 @@ public sealed class QueryBlockControl : BlockControl {
         ShowResults = QueryControl.ShowResults;
     }
 
-    public override void Deserialize(BinaryReader reader) {
-        // SqlText
-        SqlText = reader.ReadString();
-
-        // Output
-        var hasOutput = reader.ReadBoolean();
-        if (hasOutput) {
-            Output = ScriptOutput.Deserialize(reader);
+    public void LoadFromRecord(QueryPageBlockRecord record) {
+        SqlText = record.Sql;
+        if (!ReferenceEquals(Output, record.Output)) {
+            Output?.Dispose();
+            Output = record.Output?.TakeRef();
         }
-
-        // ShowSql
-        ShowSql = reader.ReadBoolean();
-            
-        // ShowResults
-        ShowResults = reader.ReadBoolean();
-
-        // MaxDisplayRows
-        MaxDisplayRows = reader.ReadInt32();
-
+        ShowSql = record.Options.ShowSql;
+        ShowResults = record.Options.ShowResults;
+        MaxDisplayRows = record.Options.MaxDisplayRows;
         Height = CalculateHeight();
         Invalidate(true);
     }
 
-    public override void Serialize(BinaryWriter writer) {
+    public QueryPageBlockRecord SaveToRecord() {
         if (EditMode) {
             UpdatePropertiesFromEditMode();
         }
-
-        // SqlText
-        writer.Write(SqlText);
-
-        // Output
-        writer.Write(Output != null);
-        if (Output != null) {
-            Output.Serialize(writer);
-        }
-
-        // ShowSql
-        writer.Write(ShowSql);
-
-        // ShowResults
-        writer.Write(ShowResults);
-
-        // MaxDisplayRows
-        writer.Write(MaxDisplayRows);
+        return new() {
+            Sql = SqlText,
+            Output = Output?.TakeRef(),
+            Options = new() {
+                ShowSql = ShowSql,
+                ShowResults = ShowResults,
+                MaxDisplayRows = MaxDisplayRows,
+            },
+        };
     }
 
     public ScriptOutput ExecuteOnWorkerThread() {

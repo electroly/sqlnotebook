@@ -136,8 +136,10 @@ public sealed class ImportDatabaseStmtRunner {
         }
     }
 
-    private bool TableExists(string name) =>
-        _notebook.Query($"PRAGMA TABLE_INFO({name.DoubleQuote()});").FullCount > 0;
+    private bool TableExists(string name) {
+        using var sdt = _notebook.Query($"PRAGMA TABLE_INFO({name.DoubleQuote()});");
+        return sdt.FullCount > 0;
+    }
 
     private void Import() {
         if (_link) {

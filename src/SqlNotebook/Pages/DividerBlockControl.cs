@@ -84,7 +84,4 @@ public sealed class DividerBlockControl : BlockControl {
     public override int CalculateHeight() {
         return this.Scaled(30);
     }
-
-    public override void Serialize(BinaryWriter writer) { }
-    public override void Deserialize(BinaryReader reader) { }
 }

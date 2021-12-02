@@ -51,9 +51,6 @@ public abstract class BlockControl : UserControl {
         Dirty?.Invoke(this, EventArgs.Empty);
     }
 
-    public abstract void Serialize(BinaryWriter writer);
-    public abstract void Deserialize(BinaryReader reader);
-
     protected override void OnPaint(PaintEventArgs e) {
         e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
         var opt = UserOptions.Instance;

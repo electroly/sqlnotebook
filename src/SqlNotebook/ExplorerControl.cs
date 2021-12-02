@@ -189,9 +189,9 @@ public partial class ExplorerControl : UserControl {
                     details.Add(Tuple.Create(name, info));
                 }
             } else if (lvi.Group.Name == "Script") {
-                var paramRec = n.UserData.ScriptParameters.FirstOrDefault(x => x.ScriptName == notebookItemName);
-                if (paramRec != null) {
-                    foreach (var paramName in paramRec.ParamNames) {
+                var paramNames = n.UserData.GetScriptParameters(notebookItemName);
+                if (paramNames != null) {
+                    foreach (var paramName in paramNames) {
                         details.Add(Tuple.Create(paramName, "parameter"));
                     }
                 }

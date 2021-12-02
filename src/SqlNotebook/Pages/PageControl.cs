@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
+using SqlNotebookScript;
 using SqlNotebookScript.Core;
 
 namespace SqlNotebook.Pages;
@@ -100,8 +99,8 @@ public sealed class PageControl : UserControl, IDocumentControl {
         try {
             var index = 1; // Start at 1 because the top divider is already in place.
 
-            var serializedData = _manager.GetItemData(ItemName);
-            if (string.IsNullOrEmpty(serializedData)) {
+            var pageRecord = (PageNotebookItemRecord)_manager.GetItemData(ItemName);
+            if (pageRecord == null) {
                 // New page. By default let's add an empty query.
                 QueryBlockControl queryBlock = new(_manager);
                 InsertBlock(queryBlock, index++);
@@ -116,21 +115,25 @@ public sealed class PageControl : UserControl, IDocumentControl {
                 return;
             }
 
-            using MemoryStream memoryStream = new(Convert.FromBase64String(serializedData));
-            using GZipStream gzipStream = new(memoryStream, CompressionMode.Decompress);
-            using BinaryReader reader = new(gzipStream);
+            foreach (var block in pageRecord.Blocks) {
+                BlockControl blockControl;
+                switch (block) {
+                    case TextPageBlockRecord textBlock:
+                        TextBlockControl textBlockControl = new();
+                        textBlockControl.LoadFromRecord(textBlock);
+                        blockControl = textBlockControl;
+                        break;
 
-            var numBlocks = reader.ReadInt32();
+                    case QueryPageBlockRecord queryBlock:
+                        QueryBlockControl queryBlockControl = new(_manager);
+                        queryBlockControl.LoadFromRecord(queryBlock);
+                        blockControl = queryBlockControl;
+                        break;
 
-            for (var i = 0; i < numBlocks; i++) {
-                var blockType = reader.ReadByte();
-                BlockControl blockControl = blockType switch {
-                    1 => new TextBlockControl(),
-                    2 => new QueryBlockControl(_manager),
-                    _ => throw new Exception($"The file is corrupt.")
-                };
+                    default:
+                        throw new NotImplementedException();
+                }
 
-                blockControl.Deserialize(reader);
                 InsertBlock(blockControl, index++);
 
                 DividerBlockControl bottomDivider = new();
@@ -145,29 +148,23 @@ public sealed class PageControl : UserControl, IDocumentControl {
     }
 
     public void Save() {
-        using MemoryStream memoryStream = new();
-        using (GZipStream gzipStream = new(memoryStream, CompressionLevel.Fastest)) {
-            using BinaryWriter writer = new(gzipStream);
+        var blockControls =
+            _flow.Controls.Cast<BlockControl>()
+            .Where(x => x is TextBlockControl || x is QueryBlockControl)
+            .ToList();
 
-            var blockControls =
-                _flow.Controls.Cast<BlockControl>()
-                .Where(x => x is TextBlockControl || x is QueryBlockControl)
-                .ToList();
-
-            writer.Write(blockControls.Count);
-
-            foreach (var control in blockControls) {
-                writer.Write((byte)(
-                    control switch {
-                        TextBlockControl => 1,
-                        QueryBlockControl => 2,
-                        _ => throw new NotImplementedException()
-                    }));
-                control.Serialize(writer);
-            }
+        PageNotebookItemRecord pageRecord = new() { Name = ItemName, Blocks = new() };
+        foreach (var control in blockControls) {
+            PageBlockRecord blockRecord =
+                control switch {
+                    TextBlockControl textBlock => textBlock.SaveToRecord(),
+                    QueryBlockControl queryBlock => queryBlock.SaveToRecord(),
+                    _ => throw new NotImplementedException()
+                };
+            pageRecord.Blocks.Add(blockRecord);
         }
 
-        _manager.SetItemData(ItemName, Convert.ToBase64String(memoryStream.ToArray()));
+        _manager.SetItemData(ItemName, pageRecord);
     }
 
     protected override void OnSizeChanged(EventArgs e) {

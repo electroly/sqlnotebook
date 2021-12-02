@@ -157,10 +157,15 @@ public sealed class NotebookManager {
             }
         }
 
-        // scripts
         items.AddRange(
             from x in Notebook.UserData.Items
-            select new NotebookItem((NotebookItemType)Enum.Parse(typeof(NotebookItemType), x.Type), x.Name)
+            let type =
+                x switch {
+                    PageNotebookItemRecord => NotebookItemType.Page,
+                    ScriptNotebookItemRecord => NotebookItemType.Script,
+                    _ => throw new NotImplementedException()
+                }
+            select new NotebookItem(type, x.Name)
         );
 
         return items;
@@ -179,54 +184,61 @@ public sealed class NotebookManager {
         } else if (existingNames.Contains(name.ToLowerInvariant())) {
             throw new Exception($"There is already a notebook item named \"{name}\".");
         }
-        var itemRec = new NotebookItemRecord {
-            Name = name,
-            Data = data ?? "",
-            Type = type.ToString()
-        };
-        Notebook.UserData.Items.Add(itemRec);
+        switch (type) {
+            case NotebookItemType.Page:
+                Notebook.UserData.Items.Add(new PageNotebookItemRecord {
+                    Name = name, Blocks = new(),
+                });
+                break;
+
+            case NotebookItemType.Script:
+                Notebook.UserData.Items.Add(new ScriptNotebookItemRecord {
+                    Name = name, Sql = "", Parameters = new(),
+                });
+                break;
+
+            default:
+                throw new NotImplementedException();
+        }
         Rescan(notebookItemsOnly: true);
         SetDirty();
         return name;
     }
 
-    public void SetItemData(string name, string data) {
+    public void SetItemData(string name, NotebookItemRecord record) {
+        record.Name = name;
         var ud = Notebook.UserData;
-        var itemRec = ud.Items.FirstOrDefault(x => x.Name == name);
-        if (itemRec == null) {
-            throw new ArgumentException($"There is no item named \"{name}\".");
+        var oldItemRecord = ud.Items.FirstOrDefault(x => x.Name == name);
+        if (oldItemRecord != null) {
+            ud.Items.Remove(oldItemRecord);
+            oldItemRecord.Dispose();
         }
-
-        itemRec.Data = data;
+        ud.Items.Add(record);
 
         // if this is a Script, then we also need to update its list of parameters
-        if (itemRec.Type == "Script") {
-            ud.ScriptParameters.RemoveWhere(x => x.ScriptName == name);
-            var paramRec = new ScriptParameterRecord { ScriptName = name };
+        if (record is ScriptNotebookItemRecord script) {
+            if (script.Parameters == null) {
+                script.Parameters = new();
+            } else {
+                script.Parameters.Clear();
+            }
             try {
                 var parser = new ScriptParser(Notebook);
-                var ast = parser.Parse(data);
+                var ast = parser.Parse(script.Sql);
                 var paramNames =
                     ast.Traverse()
                     .OfType<DeclareStmt>()
                     .Where(x => x.IsParameter)
                     .Select(x => x.VariableName);
                 foreach (var paramName in paramNames) {
-                    paramRec.ParamNames.Add(paramName);
+                    script.Parameters.Add(paramName);
                 }
             } catch (Exception) { }
-            ud.ScriptParameters.Add(paramRec);
         }
     }
 
-    public string GetItemData(string name) {
-        var itemRec = Notebook.UserData.Items.FirstOrDefault(x => x.Name == name);
-        if (itemRec == null) {
-            return "";
-        } else {
-            return itemRec.Data;
-        }
-    }
+    public NotebookItemRecord GetItemData(string name) =>
+        Notebook.UserData.Items.FirstOrDefault(x => x.Name == name);
 
     public void ExecuteScriptNoOutput(string code, IReadOnlyDictionary<string, object> args = null,
         TransactionType transactionType = TransactionType.NoTransaction
@@ -277,10 +289,6 @@ public sealed class NotebookManager {
 
     public void DeleteItem(NotebookItem item) {
         switch (item.Type) {
-            case NotebookItemType.Script:
-                Notebook.UserData.Items.RemoveWhere(x => x.Name == item.Name);
-                break;
-
             case NotebookItemType.Table:
                 Notebook.Invoke(() => Notebook.Execute($"DROP TABLE {item.Name.DoubleQuote()}"));
                 break;
@@ -288,6 +296,16 @@ public sealed class NotebookManager {
             case NotebookItemType.View:
                 Notebook.Invoke(() => Notebook.Execute($"DROP VIEW {item.Name.DoubleQuote()}"));
                 break;
+
+            case NotebookItemType.Script:
+            case NotebookItemType.Page: {
+                    var itemRecord = Notebook.UserData.Items.FirstOrDefault(x => x.Name == item.Name);
+                    if (itemRecord != null) {
+                        Notebook.UserData.Items.Remove(itemRecord);
+                        itemRecord.Dispose();
+                    }
+                    break;
+                }
         }
         SetDirty();
     }
@@ -308,13 +326,6 @@ public sealed class NotebookManager {
 
                 var itemRec = Notebook.UserData.Items.Single(x => x.Name == item.Name);
                 itemRec.Name = newName;
-
-                if (item.Type == NotebookItemType.Script) {
-                    var scriptParamRec = Notebook.UserData.ScriptParameters.SingleOrDefault(x => x.ScriptName == item.Name);
-                    if (scriptParamRec != null) {
-                        scriptParamRec.ScriptName = newName;
-                    }
-                }
                 break;
 
             case NotebookItemType.Table:
