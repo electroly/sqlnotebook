@@ -192,6 +192,8 @@ public sealed class ImportDatabaseStmtRunner {
                 };
             srcConnection.Open();
 
+            var pkColumns = GetSourcePrimaryKey(srcConnection);
+
             srcCommand = srcConnection.CreateCommand();
             if (_sql != null) {
                 srcCommand.CommandText = _sql;
@@ -204,7 +206,7 @@ public sealed class ImportDatabaseStmtRunner {
             }
             reader = srcCommand.ExecuteReader();
 
-            ImportCopyCore(reader, status);
+            ImportCopyCore(reader, pkColumns, status);
         } finally {
             // Dispose on another thread; it can take time.
             _ = Task.Run(() => {
@@ -215,7 +217,78 @@ public sealed class ImportDatabaseStmtRunner {
         }
     }
 
-    private void ImportCopyCore(IDataReader reader, WaitStatus.InFlightRows status) {
+    private List<string> GetSourcePrimaryKey(IDbConnection connection) {
+        try {
+            using var command = connection.CreateCommand();
+            if (_vendor == "pgsql") {
+                command.CommandText = @$"
+SELECT k.column_name
+FROM information_schema.table_constraints c, information_schema.key_column_usage k
+WHERE
+    c.constraint_type = 'PRIMARY KEY' AND
+    c.table_schema = current_schema() AND
+    c.table_name = @srcTableName AND
+    k.constraint_catalog = c.constraint_catalog AND
+    k.constraint_schema = c.constraint_schema AND
+    k.constraint_name = c.constraint_name
+ORDER BY k.ordinal_position;";
+            } else if (_vendor == "mssql") {
+                var schema = string.IsNullOrEmpty(_srcSchemaName) ? "dbo" : _srcSchemaName;
+                command.CommandText = @$"
+SELECT k.COLUMN_NAME
+FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS c, INFORMATION_SCHEMA.KEY_COLUMN_USAGE k
+WHERE
+    c.CONSTRAINT_TYPE = 'PRIMARY KEY' AND
+    c.TABLE_SCHEMA = @srcSchemaName AND
+    c.TABLE_NAME = @srcTableName AND
+    k.CONSTRAINT_CATALOG = c.CONSTRAINT_CATALOG AND
+    k.CONSTRAINT_SCHEMA = c.CONSTRAINT_SCHEMA AND
+    k.CONSTRAINT_NAME = c.CONSTRAINT_NAME
+ORDER BY k.ORDINAL_POSITION;";
+            } else if (_vendor == "mysql") {
+                command.CommandText = @$"
+SELECT k.COLUMN_NAME
+FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS c, INFORMATION_SCHEMA.KEY_COLUMN_USAGE k
+WHERE
+    c.CONSTRAINT_TYPE = 'PRIMARY KEY' AND
+    c.TABLE_SCHEMA = database() AND
+    c.TABLE_NAME = @srcTableName AND
+    k.CONSTRAINT_CATALOG = c.CONSTRAINT_CATALOG AND
+    k.CONSTRAINT_SCHEMA = c.CONSTRAINT_SCHEMA AND
+    k.CONSTRAINT_NAME = c.CONSTRAINT_NAME AND
+    k.TABLE_SCHEMA = c.TABLE_SCHEMA AND
+    k.TABLE_NAME = c.TABLE_NAME
+ORDER BY k.ORDINAL_POSITION;";
+            } else {
+                throw new NotImplementedException();
+            }
+        
+            var srcTableName = command.CreateParameter();
+            srcTableName.ParameterName = "@srcTableName";
+            srcTableName.DbType = DbType.String;
+            srcTableName.Value = _srcTableName;
+            command.Parameters.Add(srcTableName);
+
+            if (_vendor == "mssql") {
+                var srcSchemaName = command.CreateParameter();
+                srcSchemaName.ParameterName = "@srcSchemaName";
+                srcSchemaName.DbType = DbType.String;
+                srcSchemaName.Value = _srcSchemaName;
+                command.Parameters.Add(srcSchemaName);
+            }
+
+            using var reader = command.ExecuteReader();
+            List<string> list = new();
+            while (reader.Read()) {
+                list.Add(reader.GetString(0));
+            }
+            return list;
+        } catch {
+            return new();
+        }
+    }
+
+    private void ImportCopyCore(IDataReader reader, List<string> pkColumns, WaitStatus.InFlightRows status) {
         List<string> srcColumnNames = new();
         List<Type> srcColumnTypes = new();
         for (var i = 0; i < reader.FieldCount; i++) {
@@ -225,21 +298,31 @@ public sealed class ImportDatabaseStmtRunner {
 
         // Create table
         List<string> dstCreateColumns = new();
+        var pkColumnsSet = pkColumns.ToHashSet();
+        var pkColumnsSeen = 0;
         for (int i = 0; i < srcColumnNames.Count; i++) {
             var t = srcColumnTypes[i];
             string sqlType;
             if (t == typeof(short) || t == typeof(int) || t == typeof(long) || t == typeof(byte) || t == typeof(bool)) {
-                sqlType = "integer";
+                sqlType = "INTEGER";
             } else if (t == typeof(float) || t == typeof(double) || t == typeof(decimal)) {
-                sqlType = "real";
+                sqlType = "REAL";
             } else {
-                sqlType = "text";
+                sqlType = "TEXT";
             }
-            dstCreateColumns.Add("\"" + srcColumnNames[i].Replace("\"", "\"\"") + "\" " + sqlType);
+            var columnName = srcColumnNames[i];
+            dstCreateColumns.Add("\"" + columnName.Replace("\"", "\"\"") + "\" " + sqlType);
+            if (pkColumnsSet.Contains(columnName)) {
+                pkColumnsSeen++;
+            }
         }
+        var pk =
+            pkColumnsSeen > 0 && pkColumnsSeen == pkColumns.Count
+            ? $", PRIMARY KEY ({string.Join(", ", pkColumns.Select(x => x.DoubleQuote()))})"
+            : "";
         _notebook.Execute(
             $"CREATE {(_temporaryTable ? "TEMPORARY" : "")} TABLE IF NOT EXISTS {_dstTableName.DoubleQuote()} " +
-            $"({string.Join(", ", dstCreateColumns)})");
+            $"({string.Join(", ", dstCreateColumns)}{pk})");
 
         if (_truncateExistingTable) {
             _notebook.Execute($"DELETE FROM {_dstTableName.DoubleQuote()};");
