@@ -18,7 +18,7 @@ public partial class WaitForm : ZForm {
     private readonly System.Windows.Forms.Timer _timer;
         
     // Set this at startup.
-    public static Form MainAppForm { private get; set; }
+    public static MainForm MainAppForm { private get; set; }
 
     public event EventHandler CancelRequested;
     public Task WaitTask { get; }
@@ -100,6 +100,7 @@ public partial class WaitForm : ZForm {
         Action cancelAction = null
         ) {
         success = false;
+        var sw = Stopwatch.StartNew();
 
         // Try running the action briefly before pulling up the wait form, to avoid a flicker of the wait form for
         // very fast tasks.
@@ -135,6 +136,7 @@ public partial class WaitForm : ZForm {
         }
 
         success = true;
+        MainAppForm?.SetFinished(sw.Elapsed);
         return;
     }
 

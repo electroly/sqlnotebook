@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ToolStripSeparator _helpSeparator1;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             this._toolStripContainer = new System.Windows.Forms.ToolStripContainer();
@@ -64,6 +65,8 @@
             this._transactionCommitMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._transactionRollbackMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._updateAvailableMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this._finishedMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this._finishedTimer = new System.Windows.Forms.Timer(this.components);
             _helpSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
@@ -112,7 +115,8 @@
             this._windowMnu,
             this.helpToolStripMenuItem,
             this._transactionMenu,
-            this._updateAvailableMenu});
+            this._updateAvailableMenu,
+            this._finishedMenu});
             this._menuStrip.Location = new System.Drawing.Point(0, 0);
             this._menuStrip.Name = "_menuStrip";
             this._menuStrip.Padding = new System.Windows.Forms.Padding(2, 2, 0, 2);
@@ -250,7 +254,7 @@
             // _exportCsvMnu
             // 
             this._exportCsvMnu.Name = "_exportCsvMnu";
-            this._exportCsvMnu.Size = new System.Drawing.Size(270, 34);
+            this._exportCsvMnu.Size = new System.Drawing.Size(253, 34);
             this._exportCsvMnu.Text = "To &CSV file (.csv)...";
             this._exportCsvMnu.Click += new System.EventHandler(this.ExportMnu_Click);
             // 
@@ -391,6 +395,21 @@
             this._updateAvailableMenu.Visible = false;
             this._updateAvailableMenu.Click += new System.EventHandler(this.UpdateAvailableMenu_Click);
             // 
+            // _finishedMenu
+            // 
+            this._finishedMenu.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this._finishedMenu.ForeColor = System.Drawing.Color.Gray;
+            this._finishedMenu.Name = "_finishedMenu";
+            this._finishedMenu.Size = new System.Drawing.Size(156, 29);
+            this._finishedMenu.Text = "Finished in 0 ms";
+            this._finishedMenu.Visible = false;
+            this._finishedMenu.Paint += new System.Windows.Forms.PaintEventHandler(this.FinishedMenu_Paint);
+            // 
+            // _finishedTimer
+            // 
+            this._finishedTimer.Interval = 16;
+            this._finishedTimer.Tick += new System.EventHandler(this.FinishedTimer_Tick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
@@ -449,6 +468,8 @@
         private System.Windows.Forms.ToolStripMenuItem _windowOptionsMenu;
         private System.Windows.Forms.ToolStripMenuItem _fileNewPageMenu;
         private System.Windows.Forms.ToolStripMenuItem _helpLicenseInformationMenu;
+        private System.Windows.Forms.ToolStripMenuItem _finishedMenu;
+        private System.Windows.Forms.Timer _finishedTimer;
     }
 }
 

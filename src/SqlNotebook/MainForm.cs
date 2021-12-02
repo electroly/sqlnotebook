@@ -13,7 +13,6 @@ using SqlNotebook.Pages;
 using SqlNotebook.Properties;
 using SqlNotebookScript;
 using SqlNotebookScript.Core;
-using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -33,6 +32,7 @@ public partial class MainForm : ZForm {
     private readonly CueToolStripTextBox _searchTxt;
     private readonly Slot<bool> _isDirty = new();
     private readonly Slot<bool> _isTransactionOpen = new();
+    private Stopwatch _finishedMenuFade;
 
     private readonly Dictionary<NotebookItem, UserControlDockContent> _openItems
         = new Dictionary<NotebookItem, UserControlDockContent>();
@@ -872,5 +872,52 @@ public partial class MainForm : ZForm {
     private void HelpLicenseInformationMenu_Click(object sender, EventArgs e) {
         var filePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "ThirdPartyLicenses.html");
         Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+    }
+
+    private void FinishedTimer_Tick(object sender, EventArgs e) {
+        var fadeTime = TimeSpan.FromSeconds(2);
+
+        if (_finishedMenuFade.Elapsed >= fadeTime) {
+            _finishedMenu.Visible = false;
+            _finishedTimer.Stop();
+        }
+
+        var percent = _finishedMenuFade.Elapsed.TotalSeconds / fadeTime.TotalSeconds;
+
+        // Instead of a linear fade, fade slowly at first and then rapidly at the end.
+        percent = Math.Pow(percent, 3);
+
+        var c = Color.Blue;
+        int Scale(int x) => Math.Min(255, Math.Max(0, (int)((250 - x) * percent + x)));
+        _finishedMenu.ForeColor = Color.FromArgb(Scale(c.R), Scale(c.G), Scale(c.B));
+    }
+
+    public void SetFinished(TimeSpan duration) {
+        BeginInvoke(new(() => {
+            if (duration < TimeSpan.FromSeconds(1)) {
+                _finishedMenu.Text = $"Finished in {duration.TotalMilliseconds:#,##0} ms";
+            } else {
+                _finishedMenu.Text = $"Finished in {duration.TotalSeconds:#,##0.0} sec";
+            }
+            _finishedMenuFade = Stopwatch.StartNew();
+            _finishedMenu.ForeColor = Color.Blue;
+            _finishedMenu.Visible = true;
+            _finishedTimer.Stop();
+            _finishedTimer.Start();
+        }));
+    }
+
+    private void FinishedMenu_Paint(object sender, PaintEventArgs e) {
+        using SolidBrush bg = new(Color.FromArgb(250, 250, 250));
+        e.Graphics.FillRectangle(bg, e.ClipRectangle);
+        var size = e.Graphics.MeasureString(_finishedMenu.Text, _finishedMenu.Font);
+        using SolidBrush fg = new(_finishedMenu.ForeColor);
+        e.Graphics.DrawString(
+            _finishedMenu.Text,
+            _finishedMenu.Font,
+            fg,
+            new PointF(
+                _finishedMenu.Width / 2 - size.Width / 2,
+                _finishedMenu.Height / 2 - size.Height / 2));
     }
 }
