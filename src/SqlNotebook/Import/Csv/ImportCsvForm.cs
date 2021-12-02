@@ -198,7 +198,7 @@ public partial class ImportCsvForm : ZForm {
                 using var dt = _manager.ExecuteScript($"PRAGMA TABLE_INFO ({tempTableName.DoubleQuote()})")
                     .DataTables[0];
                 var nameCol = dt.GetIndex("name");
-                return dt.Rows.Select(x => x[nameCol].ToString()).ToList();
+                return dt.Rows.Select(x => x[nameCol].ToString()).Where(x => !string.IsNullOrEmpty(x)).ToList();
             });
         } finally {
             await Task.Run(() => {

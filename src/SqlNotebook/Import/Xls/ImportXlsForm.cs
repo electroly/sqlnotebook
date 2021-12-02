@@ -251,7 +251,7 @@ public partial class ImportXlsForm : ZForm {
 
         List<string> columnNames = new();
         for (var columnIndex = minColumnIndex; columnIndex <= maxColumnIndex; columnIndex++) {
-            var columnName = XlsUtil.ConvertNumToColString(columnIndex);
+            var columnName = $"column{columnIndex - minColumnIndex + 1}";
             if (_columnNamesCheck.Checked) {
                 try {
                     columnName = sheetInfo.DataTable.Rows[minRowIndex][columnIndex].ToString();
@@ -260,7 +260,7 @@ public partial class ImportXlsForm : ZForm {
                 }
             }
             if (string.IsNullOrWhiteSpace(columnName)) {
-                columnName = $"column{columnIndex + 1}";
+                continue;
             }
 
             columnNames.Add(columnName);
