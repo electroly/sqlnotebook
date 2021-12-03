@@ -797,12 +797,13 @@ public partial class MainForm : ZForm {
     private void SaveUserLayout(bool offset = false) {
         try {
             var offsetAmount = (int)(32 * (double)DeviceDpi / 96);
+            var bounds = WindowState != FormWindowState.Normal ? RestoreBounds : Bounds;
 
             UserLayout layout = new() {
-                Left = Left + (offset ? offsetAmount : 0),
-                Top = Top + (offset ? offsetAmount : 0),
-                Width = Width,
-                Height = Height,
+                Left = bounds.Left + (offset ? offsetAmount : 0),
+                Top = bounds.Top + (offset ? offsetAmount : 0),
+                Width = bounds.Width,
+                Height = bounds.Height,
                 Dpi = DeviceDpi,
                 WindowState = (int)WindowState,
                 TableOfContentsDockState = (int)_contentsDockContent.DockState,
