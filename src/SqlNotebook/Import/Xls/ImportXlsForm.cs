@@ -37,7 +37,7 @@ public partial class ImportXlsForm : ZForm {
         _manager = manager;
 
         _originalFilePanel.Controls.Add(_grid = DataGridViewUtil.NewDataGridView(
-            rowHeadersVisible: true, autoGenerateColumns: false));
+            rowHeadersVisible: true, autoGenerateColumns: false, allowSort: false));
         _columnsPanel.Controls.Add(_columnsControl = new() {
             Dock = DockStyle.Fill
         });
