@@ -249,48 +249,21 @@ public partial class SqlTextControl : UserControl {
     private void SetupSyntaxColoring() {
         var opt = UserOptions.Instance;
         var colors = opt.GetColors();
-        
-        // Set foreground colors
+
+        _scintilla.SetWhitespaceBackColor(true, colors[UserOptionsColor.CODE_BACKGROUND]);
+        _scintilla.CaretForeColor = colors[UserOptionsColor.CODE_PLAIN];
+        foreach (var style in _scintilla.Styles) {
+            style.ForeColor = colors[UserOptionsColor.CODE_PLAIN];
+            style.BackColor = colors[UserOptionsColor.CODE_BACKGROUND];
+        }
+
         // In the future we may want to support: Number, Operator, User1 (variables)
         if (_syntaxColoring) {
             _scintilla.Styles[Style.Sql.String].ForeColor = colors[UserOptionsColor.CODE_STRING];
             _scintilla.Styles[Style.Sql.Comment].ForeColor = colors[UserOptionsColor.CODE_COMMENT];
             _scintilla.Styles[Style.Sql.Word].ForeColor = colors[UserOptionsColor.CODE_KEYWORD];
         }
-        
-        // Set background colors
-        _scintilla.SetWhitespaceBackColor(true, colors[UserOptionsColor.CODE_BACKGROUND]);
-        foreach (var style in _scintilla.Styles) {
-            style.BackColor = colors[UserOptionsColor.CODE_BACKGROUND];
-        }
+
         _scintilla.Styles[Style.LineNumber].ForeColor = colors[UserOptionsColor.CODE_LINENUMS];
-
-        //var opt = UserOptions.Instance;
-        //if (_syntaxColoring) {
-        //    var xml =
-        //        Encoding.UTF8.GetString(Resources.SQL_Mode_xshd)
-        //        .Replace("[COMMENT_COLOR]", opt.GetHexColor(UserOptionsColor.CODE_COMMENT))
-        //        .Replace("[STRING_COLOR]", opt.GetHexColor(UserOptionsColor.CODE_STRING))
-        //        .Replace("[KEYWORD_COLOR]", opt.GetHexColor(UserOptionsColor.CODE_KEYWORD))
-        //        ;
-        //    IHighlightingDefinition def;
-        //    using (MemoryStream stream = new(Encoding.UTF8.GetBytes(xml))) {
-        //        using XmlTextReader reader = new(stream);
-        //        def = HighlightingLoader.Load(reader, HighlightingManager.Instance);
-        //    }
-
-        //    _scintilla.SyntaxHighlighting = def;
-        //}
-
-        //var colors = opt.GetColors();
-        //var bg = colors[UserOptionsColor.CODE_BACKGROUND];
-        //_scintilla.Background = new System.Windows.Media.SolidColorBrush(
-        //    System.Windows.Media.Color.FromRgb(bg.R, bg.G, bg.B));
-        //var fg = colors[UserOptionsColor.CODE_PLAIN];
-        //_scintilla.Foreground = new System.Windows.Media.SolidColorBrush(
-        //    System.Windows.Media.Color.FromRgb(fg.R, fg.G, fg.B));
-        //var line = colors[UserOptionsColor.CODE_LINENUMS];
-        //_scintilla.LineNumbersForeground = new System.Windows.Media.SolidColorBrush(
-        //    System.Windows.Media.Color.FromRgb(line.R, line.G, line.B));
     }
 }
