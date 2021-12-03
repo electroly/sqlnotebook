@@ -57,7 +57,6 @@ Copy-Item -Force "$srcdir\SqlNotebook\SqlNotebookIcon.ico" "$relDir\SqlNotebookI
 $filesXml = ""
 $refsXml = ""
 
-Write-Host "`"$wixDir\heat.exe`" dir -o `"$tempWxsFilePath`" -cg SqlNotebookComponentGroup -sfrag -gg -g1 -sreg -svb6 -scom"
 & "$wixDir\heat.exe" dir . -o "$tempWxsFilePath" -cg SqlNotebookComponentGroup -sfrag -gg -g1 -sreg -svb6 -scom -suid
 $heatLines = [System.IO.File]::ReadAllLines($tempWxsFilePath)
 Remove-Item $tempWxsFilePath
