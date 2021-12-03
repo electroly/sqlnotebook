@@ -169,14 +169,18 @@ public partial class ConsoleControl : UserControl {
             grid.ScrollBars = ScrollBars.None;
             _outputFlow.Controls.Add(grid);
             grid.DataSource = simpleDataTable.ToDataTable(MAX_GRID_ROWS);
-            grid.AutoSizeColumns(maxColWidth);
             foreach (DataGridViewColumn col in grid.Columns) {
                 col.SortMode = DataGridViewColumnSortMode.NotSortable;
             }
-            grid.Size = new(
-                grid.Columns.OfType<DataGridViewColumn>().Sum(x => x.Width),
-                grid.ColumnHeadersHeight + grid.Rows.OfType<DataGridViewRow>().Sum(x => x.Height));
             grid.ClearSelection();
+
+            // Why do I need BeginInvoke() for autosize to work properly?
+            BeginInvoke(new Action(() => {
+                grid.AutoSizeColumns(maxColWidth);
+                grid.Size = new(
+                    grid.Columns.OfType<DataGridViewColumn>().Sum(x => x.Width),
+                    grid.ColumnHeadersHeight + grid.Rows.OfType<DataGridViewRow>().Sum(x => x.Height));
+            }));
         }
 
         _outputFlow.Controls.Add(new Panel {
