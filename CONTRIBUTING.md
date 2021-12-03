@@ -82,7 +82,7 @@ In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
 - Commit changes using commit message "Version X.X.X", and push.
 - Create release on GitHub, upload zip and msi.
 - Update `web\appversion.txt` with new version and MSI URL.
-- Run `ps1\Update-GitHubPages.ps1` and push the `sqlnotebook-gh-pages` repo.
+- Run `ps1\Update-GitHubPages.ps1` and force push the `sqlnotebook-gh-pages` repo.
 - Update `src\chocolatey\sqlnotebook.nuspec` with version.
 - Update `src\chocolatey\tools\chocolateyInstall.ps1` with MSI URL.
 - In PowerShell:
