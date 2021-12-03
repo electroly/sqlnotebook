@@ -109,6 +109,7 @@ public partial class ExportForm : ZForm {
             FileName = "explorer.exe",
             Arguments = $"/e, /select, \"{filePath}\""
         });
+        Close();
     }
 
     private void List_SelectedIndexChanged(object sender, EventArgs e) {
