@@ -34,6 +34,7 @@ public partial class SqlTextControl : UserControl {
     private float _digitWidth;
 
     public event EventHandler F5KeyPress;
+    public event EventHandler F10KeyPress;
 
     public enum ScrollbarVisibility {
         Auto,
@@ -120,6 +121,9 @@ public partial class SqlTextControl : UserControl {
         _scintilla.KeyDown += (sender, e) => {
             if (e.KeyCode == Keys.F5 && e.Modifiers == Keys.None) {
                 F5KeyPress?.Invoke(this, EventArgs.Empty);
+                e.Handled = true;
+            } else if (e.KeyCode == Keys.F10 && e.Modifiers == Keys.None) {
+                F10KeyPress?.Invoke(this, EventArgs.Empty);
                 e.Handled = true;
             }
         };

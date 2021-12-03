@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
 using SqlNotebookScript;
-using SqlNotebookScript.Core;
 
 namespace SqlNotebook.Pages;
 

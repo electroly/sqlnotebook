@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
 using System.Windows.Forms;
 
 namespace SqlNotebook.Pages;
@@ -10,6 +9,7 @@ public abstract class BlockControl : UserControl {
     private const int HORIZONTAL_MARGIN_UNSCALED = 10;
     private const int VERTICAL_MARGIN_UNSCALED = 5;
 
+    protected readonly ToolTip _tooltip = new();
     protected readonly MouseHover _hover;
     public bool EditMode { get; protected set; }
 
@@ -22,6 +22,7 @@ public abstract class BlockControl : UserControl {
         ResizeRedraw = true;
         this.EnableDoubleBuffering();
         UserOptions.OnUpdate(this, Invalidate);
+        Disposed += delegate { _tooltip.Dispose(); };
     }
 
     public abstract int CalculateHeight();
@@ -85,7 +86,7 @@ public abstract class BlockControl : UserControl {
         Button upButton = new() {
             Dock = DockStyle.Fill,
             FlatStyle = FlatStyle.Flat,
-            Margin = Padding.Empty,
+            Margin = new(this.Scaled(2), 0, 0, this.Scaled(2)),
             Text = "▲",
             Padding = Padding.Empty,
             BackColor = Color.WhiteSmoke,
@@ -99,7 +100,7 @@ public abstract class BlockControl : UserControl {
         Button downButton = new() {
             Dock = DockStyle.Fill,
             FlatStyle = FlatStyle.Flat,
-            Margin = Padding.Empty,
+            Margin = new(this.Scaled(2), 0, 0, this.Scaled(2)),
             Text = "▼",
             Padding = Padding.Empty,
             BackColor = Color.WhiteSmoke,
@@ -113,7 +114,7 @@ public abstract class BlockControl : UserControl {
         Button acceptButton = new() {
             Dock = DockStyle.Fill,
             FlatStyle = FlatStyle.Flat,
-            Margin = Padding.Empty,
+            Margin = new(this.Scaled(2), 0, 0, this.Scaled(2)),
             Text = "✔️",
             BackColor = Color.AliceBlue,
             Cursor = Cursors.Hand,
@@ -123,7 +124,7 @@ public abstract class BlockControl : UserControl {
         Button deleteButton = new() {
             Dock = DockStyle.Fill,
             FlatStyle = FlatStyle.Flat,
-            Margin = Padding.Empty,
+            Margin = new(this.Scaled(2), 0, 0, 0),
             Text = "❌",
             BackColor = Color.WhiteSmoke,
             Cursor = Cursors.Hand,
@@ -146,7 +147,7 @@ public abstract class BlockControl : UserControl {
         table.RowStyles.Add(new(SizeType.Absolute, this.Scaled(25)));
         table.RowStyles.Add(new(SizeType.Percent, 100));
         table.RowStyles.Add(new(SizeType.Absolute, this.Scaled(25)));
-        table.ColumnStyles.Add(new(SizeType.Absolute, this.Scaled(30)));
+        table.ColumnStyles.Add(new(SizeType.Absolute, this.Scaled(40)));
         table.ColumnStyles.Add(new(SizeType.Percent, 100));
             
         table.Controls.Add(upButton);
@@ -164,16 +165,21 @@ public abstract class BlockControl : UserControl {
         table.Controls.Add(deleteButton);
         table.SetRow(deleteButton, 3);
         table.SetColumn(deleteButton, 0);
-            
+
         Panel panel = new() {
             Dock = DockStyle.Fill,
-            Margin = new(this.Scaled(10), 0, this.Scaled(10), 0),
+            Margin = new(this.Scaled(2), 0, this.Scaled(5), 0),
             Padding = Padding.Empty,
         };
         table.Controls.Add(panel);
         table.SetRow(panel, 0);
         table.SetColumn(panel, 1);
         table.SetRowSpan(panel, 4);
+
+        _tooltip.SetToolTip(acceptButton, "Accept changes to this block (F10)");
+        _tooltip.SetToolTip(upButton, "Move this block up");
+        _tooltip.SetToolTip(downButton, "Move this block down");
+        _tooltip.SetToolTip(deleteButton, "Remove this block from the page");
 
         return (acceptButton, table, panel);
     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 using SqlNotebookScript;
 
@@ -66,13 +65,14 @@ public sealed class TextBlockControl : BlockControl {
         _textBox = new(readOnly: false, syntaxColoring: false, wrap: true) {
             Dock = DockStyle.Fill,
             Margin = Padding.Empty,
-            BorderStyle = BorderStyle.FixedSingle,
+            BorderStyle = BorderStyle.None,
             SqlText = BlockText,
         };
         panel.Controls.Add(_textBox);
         Controls.Add(table);
         _textBox.Focus();
         _textBox.SqlTextChanged += delegate { RaiseDirty(); };
+        _textBox.F10KeyPress += delegate { StopEditing(); };
 
         acceptButton.Click += delegate {
             StopEditing();

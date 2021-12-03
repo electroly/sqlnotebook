@@ -325,7 +325,7 @@ public sealed class QueryBlockControl : BlockControl {
 
         QueryControl = new(_manager, isPageContext: true, initialText: SqlText) {
             Dock = DockStyle.Fill,
-            BorderStyle = BorderStyle.FixedSingle,
+            BorderStyle = BorderStyle.None,
             Margin = Padding.Empty,
             Output = Output?.TakeRef(),
             MaxRows = MaxDisplayRows,
@@ -335,11 +335,10 @@ public sealed class QueryBlockControl : BlockControl {
         panel.Controls.Add(QueryControl);
         Controls.Add(table);
         QueryControl.TextControl.Focus();
+        
         QueryControl.Dirty += delegate { RaiseDirty(); };
-
-        acceptButton.Click += delegate {
-            StopEditing();
-        };
+        QueryControl.TextControl.F10KeyPress += delegate { StopEditing(); };
+        acceptButton.Click += delegate { StopEditing(); };
 
         Height = CalculateHeight();
         Invalidate(true);

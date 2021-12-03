@@ -7,7 +7,6 @@ using System.Linq;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
 using SqlNotebookScript;
-using SqlNotebookScript.Core;
 using SqlNotebookScript.DataTables;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
