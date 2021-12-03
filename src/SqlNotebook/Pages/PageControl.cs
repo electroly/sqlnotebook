@@ -100,8 +100,8 @@ public sealed class PageControl : UserControl, IDocumentControl {
             var index = 1; // Start at 1 because the top divider is already in place.
 
             var pageRecord = (PageNotebookItemRecord)_manager.GetItemData(ItemName);
-            if (pageRecord == null) {
-                // New page. By default let's add an empty query.
+            if (pageRecord.Blocks.Count == 0) {
+                // Empty page. By default let's add a query.
                 QueryBlockControl queryBlock = new(_manager);
                 InsertBlock(queryBlock, index++);
                 
@@ -110,7 +110,9 @@ public sealed class PageControl : UserControl, IDocumentControl {
                 InsertBlock(bottomDivider, index++);
 
                 queryBlock.StartEditing();
-                queryBlock.QueryControl.TextControl.SqlFocus();
+                BeginInvoke(new Action(() => {
+                    queryBlock.QueryControl.TextControl.SqlFocus();
+                }));
 
                 return;
             }
