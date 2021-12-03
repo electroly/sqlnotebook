@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using HtmlAgilityPack;
+using SqlNotebookScript;
 using SqlNotebookScript.Core;
 using SqlNotebookScript.Utils;
 
@@ -67,9 +68,39 @@ public static class HelpSearcher {
             notebook.Execute(
                 @"CREATE TABLE art (file_path TEXT PRIMARY KEY, content BLOB)");
             notebook.Execute("CREATE VIRTUAL TABLE docs_fts USING fts5 (id, title, text)");
+
+            using var status = WaitStatus.StartCustom("Documentation index");
             for (var i = 0; i < htmlFiles.Count; i++) {
+                status.SetProgress($"{i * 100 / htmlFiles.Count}% complete");
                 var (filePath, content) = htmlFiles[i];
-                ParseHtml(content, out var text, out var title);
+                var filename = Path.GetFileName(filePath);
+                if (filename == "doc.html" || filename == "index.html") {
+                    continue;
+                }
+
+                // Parse out the title.
+                var title = "(no title)";
+                {
+                    var startIndex = content.IndexOf("<title>");
+                    var endIndex = content.IndexOf("</title>");
+                    if (startIndex >= 0 && endIndex > startIndex) {
+                        title = WebUtility.HtmlDecode(content[(startIndex + "<title>".Length)..endIndex]).Trim();
+                        content = content[..startIndex] + content[(endIndex + "</title>".Length)..];
+                    }
+                }
+
+                // Remove our navigation header
+                {
+                    var startIndex = content.IndexOf("<header>");
+                    var endIndex = content.IndexOf("</header>");
+                    if (startIndex >= 0 && endIndex > startIndex) {
+                        content = content[..startIndex] + content[(endIndex + "</header>".Length)..];
+                    }
+                }
+
+                var text = ParseHtml(content);
+
+                title = title.Replace("- SQL Notebook", "").Trim();
 
                 notebook.Execute("INSERT INTO docs VALUES (@id, @path, @book, @title, @html)", new Dictionary<string, object> {
                     ["@id"] = i,
@@ -85,12 +116,13 @@ public static class HelpSearcher {
                 });
             }
 
+            status.SetProgress("100% complete");
             notebook.Execute("COMMIT");
             notebook.Execute("ANALYZE");
         });
     }
 
-    private static void ParseHtml(string html, out string text, out string title) {
+    private static string ParseHtml(string html) {
         HtmlAgilityPack.HtmlDocument htmlDoc = new() {
             OptionDefaultStreamEncoding = Encoding.UTF8
         };
@@ -112,21 +144,20 @@ public static class HelpSearcher {
                 stack.Push(child);
             }
         }
-        text = WebUtility.HtmlDecode(htmlDoc.DocumentNode.InnerText
+        var text = WebUtility.HtmlDecode(htmlDoc.DocumentNode.InnerText
             .Replace("\r", " ").Replace("\n", " ").Replace("\t", " ").Replace("&nbsp;", " "));
         while (text.Contains("  ")) {
             text = text.Replace("  ", " ");
         }
-
-        title = htmlDoc.DocumentNode.Descendants("title").FirstOrDefault()?.InnerText ?? "(no title)";
+        return text;
     }
 
     private static List<Result> SearchQuery(Notebook notebook, string keyword) { // run from notebook thread
         using var dt = notebook.Query(
             @"SELECT
                 f.id, d.path, d.book,
-                HIGHLIGHT(docs_fts, 1, '<b>', '</b>'),
-                SNIPPET(docs_fts, 2, '<b>', '</b>', '...', 25)
+                HIGHLIGHT(docs_fts, 1, '', ''),
+                SNIPPET(docs_fts, 2, '', '', '...', 25)
             FROM docs_fts f
             INNER JOIN docs d ON f.id = d.id
             WHERE f.docs_fts MATCH @keyword

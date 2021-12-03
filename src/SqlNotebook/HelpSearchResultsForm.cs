@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace SqlNotebook;
@@ -34,7 +33,7 @@ public partial class HelpSearchResultsForm : ZForm {
             var resultFilePath = result.Path;
             LinkLabel titleLabel = new() {
                 AutoSize = true,
-                Text = StripTags(result.Title),
+                Text = result.Title,
                 Font = titleFont,
                 Margin = new(ui.XWidth(1), ui.XHeight(0.75), ui.XWidth(1), ui.XHeight(0.2)),
                 Cursor = Cursors.Hand,
@@ -42,7 +41,7 @@ public partial class HelpSearchResultsForm : ZForm {
             titleLabel.Click += OnResultClick;
             Label snippetLabel = new() {
                 AutoSize = true,
-                Text = StripTags(result.Snippet),
+                Text = result.Snippet,
                 Font = snippetFont,
                 Margin = new(ui.XWidth(1), 0, ui.XWidth(1), ui.XHeight(1)),
                 Cursor = Cursors.Hand,
@@ -62,9 +61,5 @@ public partial class HelpSearchResultsForm : ZForm {
         });
 
         _resultsFlow.ResumeLayout(true);
-    }
-
-    private static string StripTags(string html) {
-        return Regex.Replace(html, "<[^>]+>", "");
     }
 }
