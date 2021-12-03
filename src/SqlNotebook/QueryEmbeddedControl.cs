@@ -161,9 +161,16 @@ public partial class QueryEmbeddedControl : UserControl {
             _tabs.TabPages.Add(page);
             _ui.Init(page);
             page.Controls.Add(grids[i]);
-            grids[i].AutoSizeColumns(this.Scaled(500));
         }
         ShowHideResultsPane(show: true);
+
+        // AutoSizeColumns doesn't work properly if we do it before the query control is shown, and that happens when
+        // opening a saved output in a query page block.
+        BeginInvoke(new Action(() => {
+            foreach (var grid in grids) {
+                grid.AutoSizeColumns(this.Scaled(500));
+            }
+        }));
     }
 
     private void ShowHideResultsPane(bool show) {
