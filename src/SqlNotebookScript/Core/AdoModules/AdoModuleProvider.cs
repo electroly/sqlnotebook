@@ -708,8 +708,11 @@ public abstract class AdoModuleProvider : IDisposable {
                 var reader = (NpgsqlDataReader)cursorMetadata.Reader;
                 ResultText16(ctx, ((DateTime)reader.GetDate(n)).ToString("yyyy-MM-dd"));
             } else if (type == typeof(NpgsqlTypes.NpgsqlDateTime) || type == typeof(DateTime)) {
-                ResultText16(ctx, (cursorMetadata.Reader.GetDateTime(n)).ToString("yyyy-MM-dd HH:mm:ss.fff zzz"));
+                ResultText16(ctx, cursorMetadata.Reader.GetDateTime(n).ToString("yyyy-MM-dd HH:mm:ss.fff"));
 #pragma warning restore CS0618 // Type or member is obsolete
+            } else if (type == typeof(DateTimeOffset)) {
+                ResultText16(ctx, ((DateTimeOffset)cursorMetadata.Reader.GetValue(n))
+                    .UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"));
             } else {
                 ResultText16(ctx, cursorMetadata.Reader.GetValue(n).ToString());
             }
