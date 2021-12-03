@@ -93,7 +93,6 @@
             listViewGroup3,
             listViewGroup4});
             this._list.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this._list.HideSelection = false;
             this._list.LabelEdit = true;
             this._list.LabelWrap = false;
             this._list.Location = new System.Drawing.Point(0, 0);
@@ -302,8 +301,8 @@
             this._toolbarNewPageButton.Image = ((System.Drawing.Image)(resources.GetObject("_toolbarNewPageButton.Image")));
             this._toolbarNewPageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._toolbarNewPageButton.Name = "_toolbarNewPageButton";
-            this._toolbarNewPageButton.Size = new System.Drawing.Size(117, 29);
-            this._toolbarNewPageButton.Text = "Add Page";
+            this._toolbarNewPageButton.Size = new System.Drawing.Size(119, 29);
+            this._toolbarNewPageButton.Text = "Add page";
             this._toolbarNewPageButton.ToolTipText = "Add a new page to the notebook";
             this._toolbarNewPageButton.Click += new System.EventHandler(this.ToolbarNewPageButton_Click);
             // 
@@ -312,8 +311,8 @@
             this._toolbarNewScriptButton.Image = ((System.Drawing.Image)(resources.GetObject("_toolbarNewScriptButton.Image")));
             this._toolbarNewScriptButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._toolbarNewScriptButton.Name = "_toolbarNewScriptButton";
-            this._toolbarNewScriptButton.Size = new System.Drawing.Size(124, 29);
-            this._toolbarNewScriptButton.Text = "Add Script";
+            this._toolbarNewScriptButton.Size = new System.Drawing.Size(122, 29);
+            this._toolbarNewScriptButton.Text = "Add script";
             this._toolbarNewScriptButton.ToolTipText = "Add a new SQL script to the notebook";
             this._toolbarNewScriptButton.Click += new System.EventHandler(this.ToolbarNewScriptButton_Click);
             // 

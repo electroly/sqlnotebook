@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
 
@@ -19,14 +18,18 @@ public sealed class DividerBlockControl : BlockControl {
 
         _addMenu = new();
         _addMenu.SetMenuAppearance();
-        _addMenu.Items.Add(_addTextMenu = new ToolStripMenuItem("Add Text"));
+        _addMenu.Items.Add(_addTextMenu = new ToolStripMenuItem("Insert text here"));
         _addTextMenu.Click += AddTextMenu_Click;
-        _addMenu.Items.Add(_addQueryMenu = new ToolStripMenuItem("Add Query"));
+        _addMenu.Items.Add(_addQueryMenu = new ToolStripMenuItem("Insert query here"));
         _addQueryMenu.Click += AddQueryMenu_Click;
 
         Ui ui = new(this, padded: false);
-        ui.Init(_addTextMenu, Resources.font, Resources.font32);
-        ui.Init(_addQueryMenu, Resources.table, Resources.table32);
+        var addTextIcon16 = Ui.SuperimposePlusSymbol(Resources.font);
+        var addTextIcon32 = Ui.SuperimposePlusSymbol(Resources.font32);
+        var addQueryIcon16 = Ui.SuperimposePlusSymbol(Resources.table);
+        var addQueryIcon32 = Ui.SuperimposePlusSymbol(Resources.table32);
+        ui.Init(_addTextMenu, addTextIcon16, addTextIcon32);
+        ui.Init(_addQueryMenu, addQueryIcon16, addQueryIcon32);
     }
 
     private void AddTextMenu_Click(object sender, EventArgs e) {

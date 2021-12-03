@@ -14,6 +14,8 @@ public sealed class PageControl : UserControl, IDocumentControl {
     private readonly ToolStrip _toolStrip;
     private readonly ToolStripButton _executeAllButton;
     private readonly ToolStripButton _acceptAllButton;
+    private readonly ToolStripButton _addQueryButton;
+    private readonly ToolStripButton _addTextButton;
     private readonly Panel _scrollPanel;
     private readonly FlowLayoutPanel _flow;
 
@@ -46,6 +48,16 @@ public sealed class PageControl : UserControl, IDocumentControl {
             Enabled = false
         });
         _acceptAllButton.Click += AcceptAllButton_Click;
+        var separator = new ToolStripSeparator();
+        _toolStrip.Items.Add(separator);
+        _toolStrip.Items.Add(_addTextButton = new ToolStripButton {
+            Text = "Add text"
+        });
+        _addTextButton.Click += AddTextButton_Click;
+        _toolStrip.Items.Add(_addQueryButton = new ToolStripButton {
+            Text = "Add query"
+        });
+        _addQueryButton.Click += AddQueryButton_Click;
         _toolStrip.SetMenuAppearance();
 
         DividerBlockControl divider = new();
@@ -56,6 +68,13 @@ public sealed class PageControl : UserControl, IDocumentControl {
         ui.Init(_toolStrip);
         ui.Init(_executeAllButton, Resources.ControlPlayBlue, Resources.control_play_blue32);
         ui.Init(_acceptAllButton, Resources.accept_button, Resources.accept_button32);
+        ui.Init(separator);
+        var addTextIcon16 = Ui.SuperimposePlusSymbol(Resources.font);
+        var addTextIcon32 = Ui.SuperimposePlusSymbol(Resources.font32);
+        var addQueryIcon16 = Ui.SuperimposePlusSymbol(Resources.table);
+        var addQueryIcon32 = Ui.SuperimposePlusSymbol(Resources.table32);
+        ui.Init(_addTextButton, addTextIcon16, addTextIcon32);
+        ui.Init(_addQueryButton, addQueryIcon16, addQueryIcon32);
         ui.Init(_scrollPanel);
         ui.Init(_flow);
 
@@ -74,6 +93,16 @@ public sealed class PageControl : UserControl, IDocumentControl {
         LoadPage();
     }
 
+    private void AddQueryButton_Click(object sender, EventArgs e) {
+        QueryBlockControl block = new(_manager);
+        AppendBlockAndDivider(block);
+    }
+
+    private void AddTextButton_Click(object sender, EventArgs e) {
+        TextBlockControl block = new();
+        AppendBlockAndDivider(block);
+    }
+
     private void Divider_AddPart(object sender, AddBlockEventArgs e) {
         BlockControl block = e.Type switch {
             BlockType.Query => new QueryBlockControl(_manager),
@@ -81,6 +110,15 @@ public sealed class PageControl : UserControl, IDocumentControl {
             _ => throw new NotImplementedException(),
         };
         var dividerPartIndex = GetPartIndex(e.Divider);
+        InsertBlockAndDivider(block, dividerPartIndex);
+    }
+
+    private void AppendBlockAndDivider(BlockControl block) {
+        var dividerPartIndex = _flow.Controls.Count - 1;
+        InsertBlockAndDivider(block, dividerPartIndex);
+    }
+
+    private void InsertBlockAndDivider(BlockControl block, int dividerPartIndex) {
         InsertBlock(block, dividerPartIndex + 1);
 
         DividerBlockControl bottomDivider = new();
@@ -200,6 +238,7 @@ public sealed class PageControl : UserControl, IDocumentControl {
     private void Block_BlockClicked(object sender, EventArgs e) {
         OnSizeChanged(EventArgs.Empty);
         _acceptAllButton.Enabled = _flow.Controls.Cast<BlockControl>().Any(x => x.EditMode);
+        TopLevelControl?.Focus();
     }
 
     private void Block_BlockMoved(BlockControl block, bool up) {
