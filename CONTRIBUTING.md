@@ -70,7 +70,6 @@ In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
     $p = "src\packages"; if (Test-Path $p) { rm -Force -Recurse $p }
     $p = "web\site"; if (Test-Path $p) { rm -Force -Recurse $p }
     ps1\Update-Deps.ps1
-    ps1\Update-Docs.ps1
     ```
 - In Dev Command Prompt from `src\SqlNotebook`:
     ```

@@ -50,13 +50,13 @@
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>sqlite3</TargetName>
-    <IncludePath>$(SolutionDir)..\ext\sqlite;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\ext\sqlite;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>sqlite3</TargetName>
-    <IncludePath>$(SolutionDir)..\ext\sqlite;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\ext\sqlite;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
