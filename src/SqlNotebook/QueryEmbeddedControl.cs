@@ -273,55 +273,53 @@ public partial class QueryEmbeddedControl : UserControl {
         var sql = SqlText;
         var tabIndex = _tabs.SelectedIndex;
         WaitForm.GoWithCancel(TopLevelControl, "Send", "Sending results to table...", out var success, cancel => {
-            Notebook.Invoke(() => {
-                SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
-                    _manager.ExecuteScriptNoOutput(createSql);
-                    using var insertStmt = _manager.Notebook.Prepare(insertSql);
-                    if (!rerun) {
-                        using var status = WaitStatus.StartRows(name);
-                        foreach (var row in sdt.Rows) {
+            SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
+                _manager.ExecuteScriptNoOutput(createSql);
+                using var insertStmt = _manager.Notebook.Prepare(insertSql);
+                if (!rerun) {
+                    using var status = WaitStatus.StartRows(name);
+                    foreach (var row in sdt.Rows) {
+                        cancel.ThrowIfCancellationRequested();
+                        insertStmt.ExecuteNoOutput(row, cancel);
+                        status.IncrementRows();
+                    }
+                    return;
+                }
+
+                ScriptOutput output;
+                using (var status = WaitStatus.StartRows("Script output")) {
+                    output = _manager.ExecuteScript(sql, onRow: status.IncrementRows);
+                }
+
+                using (var status = WaitStatus.StartRows(name)) {
+                    var scalarResultTabIndex =
+                        output.ScalarResult != null ? 0
+                        : -1;
+                    var textTabIndex =
+                        output.ScalarResult == null && output.TextOutput.Any() ? 0 :
+                        output.ScalarResult != null && output.TextOutput.Any() ? 1 :
+                        -1;
+                    var tablesTabOffset =
+                        (output.ScalarResult != null ? 1 : 0) +
+                        (output.TextOutput.Any() ? 1 : 0);
+
+                    if (tabIndex == scalarResultTabIndex) {
+                        insertStmt.ExecuteNoOutput(new object[] { output.ScalarResult }, cancel);
+                    } else if (tabIndex == textTabIndex) {
+                        foreach (var line in output.TextOutput) {
+                            cancel.ThrowIfCancellationRequested();
+                            insertStmt.ExecuteNoOutput(new object[] { line }, cancel);
+                        }
+                    } else {
+                        var table = output.DataTables[tabIndex - tablesTabOffset];
+                        foreach (var row in table.Rows) {
                             cancel.ThrowIfCancellationRequested();
                             insertStmt.ExecuteNoOutput(row, cancel);
                             status.IncrementRows();
                         }
-                        return;
                     }
-
-                    ScriptOutput output;
-                    using (var status = WaitStatus.StartRows("Script output")) {
-                        output = _manager.ExecuteScript(sql, onRow: status.IncrementRows);
-                    }
-
-                    using (var status = WaitStatus.StartRows(name)) {
-                        var scalarResultTabIndex =
-                            output.ScalarResult != null ? 0
-                            : -1;
-                        var textTabIndex =
-                            output.ScalarResult == null && output.TextOutput.Any() ? 0 :
-                            output.ScalarResult != null && output.TextOutput.Any() ? 1 :
-                            -1;
-                        var tablesTabOffset =
-                            (output.ScalarResult != null ? 1 : 0) +
-                            (output.TextOutput.Any() ? 1 : 0);
-
-                        if (tabIndex == scalarResultTabIndex) {
-                            insertStmt.ExecuteNoOutput(new object[] { output.ScalarResult }, cancel);
-                        } else if (tabIndex == textTabIndex) {
-                            foreach (var line in output.TextOutput) {
-                                cancel.ThrowIfCancellationRequested();
-                                insertStmt.ExecuteNoOutput(new object[] { line }, cancel);
-                            }
-                        } else {
-                            var table = output.DataTables[tabIndex - tablesTabOffset];
-                            foreach (var row in table.Rows) {
-                                cancel.ThrowIfCancellationRequested();
-                                insertStmt.ExecuteNoOutput(row, cancel);
-                                status.IncrementRows();
-                            }
-                        }
-                    }
-                }, cancel);
-            });
+                }
+            }, cancel);
         });
         _manager.SetDirty();
         _manager.Rescan();

@@ -23,18 +23,16 @@ public sealed class DatabaseSchema {
         var tableSchemas = new List<TableSchema>();
         var nonTables = new List<string>();
 
-        Notebook.Invoke(() => {
-            using var tablesDt = notebook.Query("SELECT name, type FROM sqlite_master");
-            for (int i = 0; i < tablesDt.Rows.Count; i++) {
-                var tableName = tablesDt.Get(i, "name").ToString();
-                var tableType = tablesDt.Get(i, "type").ToString();
-                if (tableType == "table") {
-                    tableSchemas.Add(GetTableSchema(notebook, tableName));
-                } else {
-                    nonTables.Add(tableName);
-                }
+        using var tablesDt = notebook.Query("SELECT name, type FROM sqlite_master");
+        for (int i = 0; i < tablesDt.Rows.Count; i++) {
+            var tableName = tablesDt.Get(i, "name").ToString();
+            var tableType = tablesDt.Get(i, "type").ToString();
+            if (tableType == "table") {
+                tableSchemas.Add(GetTableSchema(notebook, tableName));
+            } else {
+                nonTables.Add(tableName);
             }
-        });
+        }
 
         return new DatabaseSchema(tableSchemas, nonTables);
     }

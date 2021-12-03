@@ -90,22 +90,18 @@ public sealed class NotebookManager {
 
     public void Save(CancellationToken cancel) {
         NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
-        Notebook.Invoke(() => {
-            using var status = WaitStatus.StartCustom(Path.GetFileName(Notebook.OriginalFilePath));
-            Notebook.Save(
-                c => status.SetProgress($"{c}% complete"),
-                cancel);
-        });
+        using var status = WaitStatus.StartCustom(Path.GetFileName(Notebook.OriginalFilePath));
+        Notebook.Save(
+            c => status.SetProgress($"{c}% complete"),
+            cancel);
     }
 
     public void SaveAs(string filePath, CancellationToken cancel) {
         NotebookItemsSaveRequest?.Invoke(this, EventArgs.Empty);
-        Notebook.Invoke(() => {
-            using var status = WaitStatus.StartCustom(Path.GetFileName(filePath));
-            Notebook.SaveAs(filePath,
-                c => status.SetProgress($"{c}% complete"),
-                cancel);
-        });
+        using var status = WaitStatus.StartCustom(Path.GetFileName(filePath));
+        Notebook.SaveAs(filePath,
+            c => status.SetProgress($"{c}% complete"),
+            cancel);
     }
 
     public void Rescan(bool notebookItemsOnly = false) {
@@ -120,9 +116,7 @@ public sealed class NotebookManager {
 
         if (!notebookItemsOnly) {
             // also check the transaction status
-            Notebook.Invoke(() => {
-                _isTransactionOpen.Value = Notebook.IsTransactionActive();
-            });
+            _isTransactionOpen.Value = Notebook.IsTransactionActive();
         }
     }
 
@@ -143,7 +137,7 @@ public sealed class NotebookManager {
 
         if (!notebookItemsOnly) {
             // tables and views
-            using var dt = Notebook.SpecialReadOnlyQuery(
+            using var dt = Notebook.Query(
                 "SELECT name, type, sql FROM sqlite_master WHERE type = 'table' OR type = 'view' ",
                 new Dictionary<string, object>());
             for (int i = 0; i < dt.Rows.Count; i++) {
@@ -269,20 +263,19 @@ public sealed class NotebookManager {
         var env = new ScriptEnv {
             OnRow = onRow,
         };
-        var output = Invoke(() => {
-            var parser = new ScriptParser(Notebook);
-            var script = parser.Parse(code);
-            var runner = new ScriptRunner(Notebook, Notebook.GetScripts());
-            if (transactionType == TransactionType.Transaction) {
-                return SqlUtil.WithTransaction(Notebook, 
-                    () => runner.Execute(script, env, args ?? new Dictionary<string, object>()));
-            } else if (transactionType == TransactionType.RollbackTransaction) {
-                return SqlUtil.WithRollbackTransaction(Notebook, 
-                    () => runner.Execute(script, env, args ?? new Dictionary<string, object>()));
-            } else {
-                return runner.Execute(script, env, args ?? new Dictionary<string, object>());
-            }
-        });
+        ScriptOutput output;
+        var parser = new ScriptParser(Notebook);
+        var script = parser.Parse(code);
+        var runner = new ScriptRunner(Notebook, Notebook.GetScripts());
+        if (transactionType == TransactionType.Transaction) {
+            output = SqlUtil.WithTransaction(Notebook, 
+                () => runner.Execute(script, env, args ?? new Dictionary<string, object>()));
+        } else if (transactionType == TransactionType.RollbackTransaction) {
+            output = SqlUtil.WithRollbackTransaction(Notebook, 
+                () => runner.Execute(script, env, args ?? new Dictionary<string, object>()));
+        } else {
+            output = runner.Execute(script, env, args ?? new Dictionary<string, object>());
+        }
         vars = env.Vars;
         return output;
     }
@@ -290,11 +283,11 @@ public sealed class NotebookManager {
     public void DeleteItem(NotebookItem item) {
         switch (item.Type) {
             case NotebookItemType.Table:
-                Notebook.Invoke(() => Notebook.Execute($"DROP TABLE {item.Name.DoubleQuote()}"));
+                Notebook.Execute($"DROP TABLE {item.Name.DoubleQuote()}");
                 break;
 
             case NotebookItemType.View:
-                Notebook.Invoke(() => Notebook.Execute($"DROP VIEW {item.Name.DoubleQuote()}"));
+                Notebook.Execute($"DROP VIEW {item.Name.DoubleQuote()}");
                 break;
 
             case NotebookItemType.Script:
@@ -333,41 +326,27 @@ public sealed class NotebookManager {
                 // to something else and then rename back
                 if (isCaseChange) {
                     var tempName = $"temp_{Guid.NewGuid()}";
-                    Notebook.Invoke(() => {
-                        Notebook.Execute($"ALTER TABLE {item.Name.DoubleQuote()} RENAME TO {tempName.DoubleQuote()};");
-                        Notebook.Execute($"ALTER TABLE {tempName.DoubleQuote()} RENAME TO {newName.DoubleQuote()};");
-                    });
+                    Notebook.Execute($"ALTER TABLE {item.Name.DoubleQuote()} RENAME TO {tempName.DoubleQuote()};");
+                    Notebook.Execute($"ALTER TABLE {tempName.DoubleQuote()} RENAME TO {newName.DoubleQuote()};");
                 } else {
-                    Notebook.Invoke(() => {
-                        Notebook.Execute($"ALTER TABLE {item.Name.DoubleQuote()} RENAME TO {newName.DoubleQuote()}");
-                    });
+                    Notebook.Execute($"ALTER TABLE {item.Name.DoubleQuote()} RENAME TO {newName.DoubleQuote()}");
                 }
                 break;
 
             case NotebookItemType.View:
-                Notebook.Invoke(() => {
-                    var createViewSql = (string)Notebook.QueryValue("SELECT sql FROM sqlite_master WHERE name = @old_name",
-                        new Dictionary<string, object> { ["@old_name"] = item.Name });
-                    var tokens = Notebook.Tokenize(createViewSql);
-                    if (tokens.Count < 3 || tokens[0].Type != TokenType.Create || tokens[1].Type != TokenType.View) {
-                        throw new Exception($"Unable to parse the original CREATE VIEW statement for \"{item.Name}\".");
-                    }
-                    var suffix = string.Join(" ", tokens.Select(x => x.Text).Skip(3)); // everything after "CREATE VIEW viewname"
-                    Notebook.Execute($"DROP VIEW {item.Name.DoubleQuote()}");
-                    Notebook.Execute($"CREATE VIEW {newName.DoubleQuote()} {suffix}");
-                });
+                var createViewSql = (string)Notebook.QueryValue("SELECT sql FROM sqlite_master WHERE name = @old_name",
+                    new Dictionary<string, object> { ["@old_name"] = item.Name });
+                var tokens = Notebook.Tokenize(createViewSql);
+                if (tokens.Count < 3 || tokens[0].Type != TokenType.Create || tokens[1].Type != TokenType.View) {
+                    throw new Exception($"Unable to parse the original CREATE VIEW statement for \"{item.Name}\".");
+                }
+                var suffix = string.Join(" ", tokens.Select(x => x.Text).Skip(3)); // everything after "CREATE VIEW viewname"
+                Notebook.Execute($"DROP VIEW {item.Name.DoubleQuote()}");
+                Notebook.Execute($"CREATE VIEW {newName.DoubleQuote()} {suffix}");
                 break;
         }
 
         NotebookItemRename?.Invoke(this, new NotebookItemRenameEventArgs(item, newName));
         SetDirty();
-    }
-
-    private T Invoke<T>(Func<T> func) {
-        T value = default(T);
-        Notebook.Invoke(() => {
-            value = func();
-        });
-        return value;
     }
 }

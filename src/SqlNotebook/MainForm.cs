@@ -541,10 +541,7 @@ public partial class MainForm : ZForm {
     }
 
     private bool PrepareToCloseFile() {
-        var isTransactionActive = false;
-        Notebook.Invoke(() => {
-            isTransactionActive = _notebook.IsTransactionActive();
-        });
+        var isTransactionActive = _notebook.IsTransactionActive();
         if (isTransactionActive) {
             ErrorBox("SQL Notebook", "A transaction is active.",
                 "Execute either \"COMMIT\" or \"ROLLBACK\" to end the transaction before exiting.");

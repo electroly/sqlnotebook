@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using SqlNotebookScript.Core.AdoModules;
 using SqlNotebookScript.Core.GenericModules;
@@ -17,24 +16,21 @@ using static SqlNotebookScript.Core.SqliteInterop.NativeMethods;
 namespace SqlNotebookScript.Core;
 
 public sealed class Notebook : IDisposable {
-    public static bool CancelInProgress { get; set; } = false;
-
     private const int CURRENT_FILE_VERSION = 2;
 
-    private delegate void ExecuteGenericFunctionDelegate(IntPtr a, int b, IntPtr c);
+    // We disable all synchronization in SQLite, so this lock protects any call into SQLite.
+    private static readonly object _lock = new();
 
+    private delegate void ExecuteGenericFunctionDelegate(IntPtr a, int b, IntPtr c);
     private static readonly Lazy<(IntPtr Ptr, ExecuteGenericFunctionDelegate Delegate)> _executeGenericFunctionFunc = new(() => {
         ExecuteGenericFunctionDelegate @delegate = ExecuteGenericFunction;
         return (Marshal.GetFunctionPointerForDelegate(@delegate), @delegate);
     });
 
-    private bool _disposedValue;
-
-    private static readonly object _lock = new();
-
     // Just hang onto these. They are used as unmanaged callbacks.
     private readonly List<object> _delegates = new();
 
+    private bool _disposedValue;
     private List<AdoModuleProvider> _adoModuleProviders = new();
     private List<GenericModuleProvider> _genericModuleProviders = new();
     public string OriginalFilePath { get; set; }
@@ -42,11 +38,15 @@ public sealed class Notebook : IDisposable {
     private IntPtr _sqlite; // sqlite3*
 
     public NotebookUserData UserData { get; set; }
+
+    // This is the last error message thrown by user code.
     public static string ErrorMessage { get; set; }
 
     // If the AdoModuleProvider gets an error with an underlying query, there's no way to pass it up through SQLite.
     // So SQLite returns a generic logic error and we store a more specific error message here.
     public static string SqliteVtabErrorMessage { get; set; }
+
+    public static bool CancelInProgress { get; set; } = false;
 
     public static Notebook New() =>
         new(null, true, null, CancellationToken.None);
@@ -66,7 +66,7 @@ public sealed class Notebook : IDisposable {
         }
 
         OriginalFilePath = filePath;
-        Invoke(Init);
+        Init();
     }
 
     private void Dispose(bool disposing) {
@@ -79,8 +79,10 @@ public sealed class Notebook : IDisposable {
             // free unmanaged resources (unmanaged objects) and override finalizer
             // set large fields to null
             if (_sqlite != IntPtr.Zero) {
-                var result = sqlite3_close(_sqlite);
-                Debug.Assert(result == SQLITE_OK);
+                lock (_lock) {
+                    var result = sqlite3_close(_sqlite);
+                    Debug.Assert(result == SQLITE_OK);
+                }
                 _sqlite = IntPtr.Zero;
             }
             
@@ -136,50 +138,56 @@ public sealed class Notebook : IDisposable {
 
     // See https://sqlite.org/c3ref/initialize.html
     public static void InitSqlite() {
-        SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_initialize());
+        lock (_lock) {
+            SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_initialize());
+        }
     }
     public static void ShutdownSqlite() {
-        SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_shutdown());
+        lock (_lock) {
+            SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_shutdown());
+        }
     }
 
     private void Init() {
-        FileVersionMigrator.MigrateIfNeeded(_workingCopyFilePath);
+        lock (_lock) {
+            FileVersionMigrator.MigrateIfNeeded(_workingCopyFilePath);
 
-        using NativeString filePathNative = new(_workingCopyFilePath);
-        using NativeBuffer sqliteNative = new(IntPtr.Size);
-        SqliteUtil.ThrowIfError(IntPtr.Zero,
-            sqlite3_open(filePathNative.Ptr, sqliteNative.Ptr));
-        _sqlite = Marshal.ReadIntPtr(sqliteNative.Ptr); // sqlite3*
+            using NativeString filePathNative = new(_workingCopyFilePath);
+            using NativeBuffer sqliteNative = new(IntPtr.Size);
+            SqliteUtil.ThrowIfError(IntPtr.Zero,
+                sqlite3_open(filePathNative.Ptr, sqliteNative.Ptr));
+            _sqlite = Marshal.ReadIntPtr(sqliteNative.Ptr); // sqlite3*
 
-        SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_series_init(_sqlite, IntPtr.Zero, IntPtr.Zero));
-        SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_uuid_init(_sqlite, IntPtr.Zero, IntPtr.Zero));
+            SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_series_init(_sqlite, IntPtr.Zero, IntPtr.Zero));
+            SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_uuid_init(_sqlite, IntPtr.Zero, IntPtr.Zero));
 
-        foreach (var x in _adoModuleProviders) {
-            x.Dispose();
+            foreach (var x in _adoModuleProviders) {
+                x.Dispose();
+            }
+            _adoModuleProviders.Clear();
+            _adoModuleProviders.Add(new MySqlAdoModuleProvider());
+            _adoModuleProviders.Add(new PostgreSqlAdoModuleProvider());
+            _adoModuleProviders.Add(new SqlServerAdoModuleProvider());
+            foreach (var x in _adoModuleProviders) {
+                x.Install(_sqlite);
+            }
+
+            var (tableFunctions, scalarFunctions) = FindCustomFunctions();
+            foreach (var tableFunction in tableFunctions) {
+                GenericModuleProvider provider = new();
+                provider.Install(_sqlite, tableFunction);
+                _genericModuleProviders.Add(provider);
+            }
+            foreach (var scalarFunction in scalarFunctions) {
+                RegisterGenericFunction(scalarFunction);
+            }
+
+            CustomFunctionsProvider.InstallCustomFunctions(_sqlite);
+
+            UserData = NotebookUserData.Load(this);
+            NotebookUserData.DropTables(this);
+            Execute("DROP TABLE IF EXISTS _sqlnotebook_version;");
         }
-        _adoModuleProviders.Clear();
-        _adoModuleProviders.Add(new MySqlAdoModuleProvider());
-        _adoModuleProviders.Add(new PostgreSqlAdoModuleProvider());
-        _adoModuleProviders.Add(new SqlServerAdoModuleProvider());
-        foreach (var x in _adoModuleProviders) {
-            x.Install(_sqlite);
-        }
-
-        var (tableFunctions, scalarFunctions) = FindCustomFunctions();
-        foreach (var tableFunction in tableFunctions) {
-            GenericModuleProvider provider = new();
-            provider.Install(_sqlite, tableFunction);
-            _genericModuleProviders.Add(provider);
-        }
-        foreach (var scalarFunction in scalarFunctions) {
-            RegisterGenericFunction(scalarFunction);
-        }
-
-        CustomFunctionsProvider.InstallCustomFunctions(_sqlite);
-
-        UserData = NotebookUserData.Load(this);
-        NotebookUserData.DropTables(this);
-        Execute("DROP TABLE IF EXISTS _sqlnotebook_version;");
     }
 
     private delegate object GenericFunctionExecuteDelegate(IReadOnlyList<object> args);
@@ -220,32 +228,36 @@ public sealed class Notebook : IDisposable {
     }
 
     public void SaveAs(string filePath, Action<int> onPercentComplete = null, CancellationToken cancel = default) {
-        OriginalFilePath = filePath;
-        Save(onPercentComplete, cancel);
+        lock (_lock) {
+            OriginalFilePath = filePath;
+            Save(onPercentComplete, cancel);
+        }
     }
 
     public void Save(Action<int> onPercentComplete = null, CancellationToken cancel = default) {
-        Debug.Assert(OriginalFilePath != null);
-        if (IsTransactionActive()) {
-            throw new Exception("A transaction is active. Execute either \"COMMIT\" or \"ROLLBACK\" to end the transaction before saving.");
-        }
-
-        UserData.Save(this);
-        WriteFileVersion();
-
-        SqliteUtil.ThrowIfError(_sqlite, sqlite3_close(_sqlite));
-        _sqlite = IntPtr.Zero;
-
-        try {
-            var tempFilePath = OriginalFilePath + ".tmp";
-            try {
-                CopyFile(_workingCopyFilePath, tempFilePath, onPercentComplete, cancel);
-                File.Move(tempFilePath, OriginalFilePath, true);
-            } finally {
-                File.Delete(tempFilePath);
+        lock (_lock) {
+            Debug.Assert(OriginalFilePath != null);
+            if (IsTransactionActive()) {
+                throw new Exception("A transaction is active. Execute either \"COMMIT\" or \"ROLLBACK\" to end the transaction before saving.");
             }
-        } finally {
-            Init();
+
+            UserData.Save(this);
+            WriteFileVersion();
+
+            SqliteUtil.ThrowIfError(_sqlite, sqlite3_close(_sqlite));
+            _sqlite = IntPtr.Zero;
+
+            try {
+                var tempFilePath = OriginalFilePath + ".tmp";
+                try {
+                    CopyFile(_workingCopyFilePath, tempFilePath, onPercentComplete, cancel);
+                    File.Move(tempFilePath, OriginalFilePath, true);
+                } finally {
+                    File.Delete(tempFilePath);
+                }
+            } finally {
+                Init();
+            }
         }
     }
 
@@ -273,25 +285,6 @@ public sealed class Notebook : IDisposable {
             new Dictionary<string, object> {
                 ["@version"] = CURRENT_FILE_VERSION
             });
-    }
-
-    public static void Invoke(Action action) {
-        lock (_lock) {
-            action();
-        }
-    }
-
-    public bool TryInvoke(Action action) {
-        if (Monitor.TryEnter(_lock)) {
-            try {
-                action();
-                return true;
-            } finally {
-                Monitor.Exit(_lock);
-            }
-        } else {
-            return false;
-        }
     }
 
     public void Execute(string sql) {
@@ -338,12 +331,6 @@ public sealed class Notebook : IDisposable {
         return QueryCore(sql, null, args, true, _sqlite, GetCancelling, null);
     }
 
-    public SimpleDataTable SpecialReadOnlyQuery(string sql, IReadOnlyDictionary<string, object> args) {
-        SimpleDataTable sdt = null;
-        Invoke(() => sdt = Query(sql, args));
-        return sdt;
-    }
-
     public object QueryValue(string sql) =>
         QueryValue(sql, Array.Empty<object>());
 
@@ -377,12 +364,14 @@ public sealed class Notebook : IDisposable {
             throw new OperationCanceledException();
         }
 
-        using PreparedStatement statement = new(db, sql);
-        var argArray =
-            namedArgs != null ? statement.GetArgs(namedArgs) :
-            orderedArgs is object[] a ? a :
-            orderedArgs.ToArray();
-        return statement.Execute(argArray, returnResult, onRow, CancellationToken.None);
+        lock (_lock) {
+            using PreparedStatement statement = new(db, sql);
+            var argArray =
+                namedArgs != null ? statement.GetArgs(namedArgs) :
+                orderedArgs is object[] a ? a :
+                orderedArgs.ToArray();
+            return statement.Execute(argArray, returnResult, onRow, CancellationToken.None);
+        }
     }
 
     public string GetFilePath() {
@@ -390,10 +379,10 @@ public sealed class Notebook : IDisposable {
     }
 
     public static IReadOnlyList<Token> Tokenize(string input) {
-        using NativeBuffer scratch = new(IntPtr.Size);
-        List<Token> list = new();
-        using NativeString inputNative = new(input);
         lock (_lock) {
+            using NativeBuffer scratch = new(IntPtr.Size);
+            List<Token> list = new();
+            using NativeString inputNative = new(input);
             var tokenType = 0;
             var oldPos = 0;
             var pos = 0;
@@ -414,8 +403,8 @@ public sealed class Notebook : IDisposable {
 
                 oldPos = pos;
             }
+            return list;
         }
-        return list;
     }
 
     private static int GetToken(
@@ -478,17 +467,21 @@ public sealed class Notebook : IDisposable {
     }
 
     public IReadOnlyDictionary<string, string> GetScripts() {
-        Dictionary<string, string> dict = new();
-        foreach (var item in UserData.Items) {
-            if (item is ScriptNotebookItemRecord script) {
-                dict.Add(item.Name.ToLowerInvariant(), script.Sql);
+        lock (_lock) {
+            Dictionary<string, string> dict = new();
+            foreach (var item in UserData.Items) {
+                if (item is ScriptNotebookItemRecord script) {
+                    dict.Add(item.Name.ToLowerInvariant(), script.Sql);
+                }
             }
+            return dict;
         }
-        return dict;
     }
 
     public bool IsTransactionActive() {
-        return sqlite3_get_autocommit(_sqlite) == 0;
+        lock (_lock) {
+            return sqlite3_get_autocommit(_sqlite) == 0;
+        }
     }
 
     private bool GetCancelling() => CancelInProgress;

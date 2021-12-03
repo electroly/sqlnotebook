@@ -27,9 +27,7 @@ public static class HelpSearcher {
                 if (!hasCache) {
                     InitHelpNotebook(notebook, tempFilePath);
                 }
-                Notebook.Invoke(() => {
-                    results = SearchQuery(notebook, keyword);
-                });
+                results = SearchQuery(notebook, keyword);
                 if (!hasCache) {
                     notebook.SaveAs(tempFilePath);
                 }
@@ -52,74 +50,72 @@ public static class HelpSearcher {
             select (FilePath: htmlFilePath, Content: content)
             ).ToList();
 
-        Notebook.Invoke(() => {
-            notebook.Execute("BEGIN");
+        notebook.Execute("BEGIN");
 
-            notebook.Execute(
-                @"CREATE TABLE docs (
-                    id INTEGER PRIMARY KEY,
-                    path TEXT NOT NULL,
-                    book TEXT NOT NULL, 
-                    title TEXT NOT NULL,
-                    html TEXT NOT NULL
-                )");
-            notebook.Execute(
-                @"CREATE TABLE books_txt (number INTEGER PRIMARY KEY, line TEXT NOT NULL)");
-            notebook.Execute(
-                @"CREATE TABLE art (file_path TEXT PRIMARY KEY, content BLOB)");
-            notebook.Execute("CREATE VIRTUAL TABLE docs_fts USING fts5 (id, title, text)");
+        notebook.Execute(
+            @"CREATE TABLE docs (
+                id INTEGER PRIMARY KEY,
+                path TEXT NOT NULL,
+                book TEXT NOT NULL, 
+                title TEXT NOT NULL,
+                html TEXT NOT NULL
+            )");
+        notebook.Execute(
+            @"CREATE TABLE books_txt (number INTEGER PRIMARY KEY, line TEXT NOT NULL)");
+        notebook.Execute(
+            @"CREATE TABLE art (file_path TEXT PRIMARY KEY, content BLOB)");
+        notebook.Execute("CREATE VIRTUAL TABLE docs_fts USING fts5 (id, title, text)");
 
-            using var status = WaitStatus.StartCustom("Documentation index");
-            for (var i = 0; i < htmlFiles.Count; i++) {
-                status.SetProgress($"{i * 100 / htmlFiles.Count}% complete");
-                var (filePath, content) = htmlFiles[i];
-                var filename = Path.GetFileName(filePath);
-                if (filename == "doc.html" || filename == "index.html") {
-                    continue;
-                }
-
-                // Parse out the title.
-                var title = "(no title)";
-                {
-                    var startIndex = content.IndexOf("<title>");
-                    var endIndex = content.IndexOf("</title>");
-                    if (startIndex >= 0 && endIndex > startIndex) {
-                        title = WebUtility.HtmlDecode(content[(startIndex + "<title>".Length)..endIndex]).Trim();
-                        content = content[..startIndex] + content[(endIndex + "</title>".Length)..];
-                    }
-                }
-
-                // Remove our navigation header
-                {
-                    var startIndex = content.IndexOf("<header>");
-                    var endIndex = content.IndexOf("</header>");
-                    if (startIndex >= 0 && endIndex > startIndex) {
-                        content = content[..startIndex] + content[(endIndex + "</header>".Length)..];
-                    }
-                }
-
-                var text = ParseHtml(content);
-
-                title = title.Replace("- SQL Notebook", "").Trim();
-
-                notebook.Execute("INSERT INTO docs VALUES (@id, @path, @book, @title, @html)", new Dictionary<string, object> {
-                    ["@id"] = i,
-                    ["@path"] = filePath,
-                    ["@book"] = "SQLite Documentation",
-                    ["@title"] = title,
-                    ["@html"] = content
-                });
-                notebook.Execute("INSERT INTO docs_fts VALUES (@id, @title, @text)", new Dictionary<string, object> {
-                    ["@id"] = i,
-                    ["@title"] = title,
-                    ["@text"] = text
-                });
+        using var status = WaitStatus.StartCustom("Documentation index");
+        for (var i = 0; i < htmlFiles.Count; i++) {
+            status.SetProgress($"{i * 100 / htmlFiles.Count}% complete");
+            var (filePath, content) = htmlFiles[i];
+            var filename = Path.GetFileName(filePath);
+            if (filename == "doc.html" || filename == "index.html") {
+                continue;
             }
 
-            status.SetProgress("100% complete");
-            notebook.Execute("COMMIT");
-            notebook.Execute("ANALYZE");
-        });
+            // Parse out the title.
+            var title = "(no title)";
+            {
+                var startIndex = content.IndexOf("<title>");
+                var endIndex = content.IndexOf("</title>");
+                if (startIndex >= 0 && endIndex > startIndex) {
+                    title = WebUtility.HtmlDecode(content[(startIndex + "<title>".Length)..endIndex]).Trim();
+                    content = content[..startIndex] + content[(endIndex + "</title>".Length)..];
+                }
+            }
+
+            // Remove our navigation header
+            {
+                var startIndex = content.IndexOf("<header>");
+                var endIndex = content.IndexOf("</header>");
+                if (startIndex >= 0 && endIndex > startIndex) {
+                    content = content[..startIndex] + content[(endIndex + "</header>".Length)..];
+                }
+            }
+
+            var text = ParseHtml(content);
+
+            title = title.Replace("- SQL Notebook", "").Trim();
+
+            notebook.Execute("INSERT INTO docs VALUES (@id, @path, @book, @title, @html)", new Dictionary<string, object> {
+                ["@id"] = i,
+                ["@path"] = filePath,
+                ["@book"] = "SQLite Documentation",
+                ["@title"] = title,
+                ["@html"] = content
+            });
+            notebook.Execute("INSERT INTO docs_fts VALUES (@id, @title, @text)", new Dictionary<string, object> {
+                ["@id"] = i,
+                ["@title"] = title,
+                ["@text"] = text
+            });
+        }
+
+        status.SetProgress("100% complete");
+        notebook.Execute("COMMIT");
+        notebook.Execute("ANALYZE");
     }
 
     private static string ParseHtml(string html) {

@@ -235,16 +235,14 @@ public sealed class PageControl : UserControl, IDocumentControl {
         List<Action> uiThreadActions = new();
         var queryBlockControls = _flow.Controls.OfType<QueryBlockControl>().ToList();
         WaitForm.Go(TopLevelControl, "Page Execution", "Executing all queries...", out _, () => {
-            Notebook.Invoke(() => {
-                foreach (var queryBlockControl in queryBlockControls) {
-                    var output = queryBlockControl.ExecuteOnWorkerThread();
-                    uiThreadActions.Add(() => {
-                        queryBlockControl.Output?.Dispose();
-                        queryBlockControl.Output = output;
-                        queryBlockControl.Invalidate();
-                    });
-                }
-            });
+            foreach (var queryBlockControl in queryBlockControls) {
+                var output = queryBlockControl.ExecuteOnWorkerThread();
+                uiThreadActions.Add(() => {
+                    queryBlockControl.Output?.Dispose();
+                    queryBlockControl.Output = output;
+                    queryBlockControl.Invalidate();
+                });
+            }
         });
 
         foreach (var action in uiThreadActions) {

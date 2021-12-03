@@ -179,7 +179,7 @@ public partial class ExplorerControl : UserControl {
 
         try {
             if (lvi.Group.Name == "Table" || lvi.Group.Name == "View") {
-                using var dt = n.SpecialReadOnlyQuery($"PRAGMA table_info ({lvi.Text.DoubleQuote()})",
+                using var dt = n.Query($"PRAGMA table_info ({lvi.Text.DoubleQuote()})",
                     new Dictionary<string, object>());
                 for (int i = 0; i < dt.Rows.Count; i++) {
                     var name = (string)dt.Get(i, "name");

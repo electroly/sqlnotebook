@@ -153,15 +153,14 @@ public partial class DatabaseImportTablesForm : ZForm {
         // First make a list of all the existing names that start with "query" so we can avoid them.
         var notebook = _manager.Notebook;
         List<string> existingNames = new();
-        Notebook.Invoke(() => {
-            using var sdt = notebook.Query("SELECT name FROM sqlite_master");
+        using (var sdt = notebook.Query("SELECT name FROM sqlite_master")) {
             foreach (var row in sdt.Rows) {
                 var name = (string)row[0];
                 if (name.StartsWith("query", StringComparison.OrdinalIgnoreCase)) {
                     existingNames.Add((string)row[0]);
                 }
             }
-        });
+        }
         foreach (var t in _tables) {
             existingNames.Add(t.TargetTableName);
         }
