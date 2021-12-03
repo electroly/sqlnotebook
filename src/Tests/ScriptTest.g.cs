@@ -87,7 +87,6 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_THROW_from_sub_script_sql() => TestScript(@"THROW from sub-script.sql");
     [TestMethod] public void Test_THROW_rethrow_sql() => TestScript(@"THROW rethrow.sql");
     [TestMethod] public void Test_THROW_sql() => TestScript(@"THROW.sql");
-    [TestMethod] public void Test_TO_DATETIMEOFFSET_sql() => TestScript(@"TO_DATETIMEOFFSET.sql");
     [TestMethod] public void Test_UPDATE_RETURNING_sql() => TestScript(@"UPDATE RETURNING.sql");
     [TestMethod] public void Test_USER_NAME_sql() => TestScript(@"USER_NAME.sql");
     [TestMethod] public void Test_UUID_sql() => TestScript(@"UUID.sql");
@@ -110,7 +109,6 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_date_name_func_sql() => TestScript(@"doc\date-name-func.sql");
     [TestMethod] public void Test_doc_date_part_func_sql() => TestScript(@"doc\date-part-func.sql");
     [TestMethod] public void Test_doc_date_time_from_parts_func_sql() => TestScript(@"doc\date-time-from-parts-func.sql");
-    [TestMethod] public void Test_doc_date_time_offset_from_parts_func_sql() => TestScript(@"doc\date-time-offset-from-parts-func.sql");
     [TestMethod] public void Test_doc_date_trunc_func_sql() => TestScript(@"doc\date-trunc-func.sql");
     [TestMethod] public void Test_doc_day_func_sql() => TestScript(@"doc\day-func.sql");
     [TestMethod] public void Test_doc_declare_stmt_sql() => TestScript(@"doc\declare-stmt.sql");
@@ -151,7 +149,6 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_split_func_sql() => TestScript(@"doc\split-func.sql");
     [TestMethod] public void Test_doc_stricttables___The_ANY_datatype_1_sql() => TestScript(@"doc\stricttables - The ANY datatype 1.sql");
     [TestMethod] public void Test_doc_stricttables___The_ANY_datatype_2_sql() => TestScript(@"doc\stricttables - The ANY datatype 2.sql");
-    [TestMethod] public void Test_doc_switch_offset_func_sql() => TestScript(@"doc\switch-offset-func.sql");
     [TestMethod] public void Test_doc_to_date_func_sql() => TestScript(@"doc\to-date-func.sql");
     [TestMethod] public void Test_doc_to_date_time_func_sql() => TestScript(@"doc\to-date-time-func.sql");
     [TestMethod] public void Test_doc_try_catch_stmt_sql() => TestScript(@"doc\try-catch-stmt.sql");

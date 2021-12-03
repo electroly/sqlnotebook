@@ -121,8 +121,7 @@
             "INTEGER",
             "REAL",
             "DATE",
-            "DATETIME",
-            "DATETIMEOFFSET"});
+            "DATETIME"});
             this._conversionColumn.MinimumWidth = 8;
             this._conversionColumn.Name = "_conversionColumn";
             this._conversionColumn.Width = 130;

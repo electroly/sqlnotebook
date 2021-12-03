@@ -23,7 +23,7 @@ public partial class SqlTextControl : UserControl {
 
     private static readonly IReadOnlySet<string> _sqlnbKeywords = new HashSet<string>(new[] {
         "declare", "parameter", "while", "break", "continue", "print", "execute", "exec", "return", "throw",
-        "try", "catch", "import", "csv", "options", "text", "integer", "real", "date", "datetime", "datetimeoffset",
+        "try", "catch", "import", "csv", "options", "text", "integer", "real", "date", "datetime",
         "table", "txt"
     });
 

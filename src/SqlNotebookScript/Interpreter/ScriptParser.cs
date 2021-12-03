@@ -325,7 +325,6 @@ public sealed class ScriptParser {
             case "real": q.Take(); n.TypeConversion = Ast.TypeConversion.Real; break;
             case "date": q.Take(); n.TypeConversion = Ast.TypeConversion.Date; break;
             case "datetime": q.Take(); n.TypeConversion = Ast.TypeConversion.DateTime; break;
-            case "datetimeoffset": q.Take(); n.TypeConversion = Ast.TypeConversion.DateTimeOffset; break;
         }
         return n;
     }

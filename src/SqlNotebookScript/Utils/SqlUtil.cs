@@ -140,15 +140,6 @@ public static class SqlUtil {
                     return false;
                 }
 
-            case Ast.TypeConversion.DateTimeOffset:
-                DateTimeOffset dateTimeOffsetValue;
-                if (DateTimeOffset.TryParse(rawValue.ToString(), out dateTimeOffsetValue)) {
-                    parsedValue = DateTimeUtil.FormatDateTimeOffset(dateTimeOffsetValue);
-                    return true;
-                } else {
-                    return false;
-                }
-
             default:
                 throw new Exception($"Internal error: unknown type conversion \"{conversion}\".");
 

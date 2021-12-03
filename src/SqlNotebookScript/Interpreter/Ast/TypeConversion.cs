@@ -6,5 +6,4 @@ public enum TypeConversion {
     Real,
     Date,
     DateTime,
-    DateTimeOffset
 }

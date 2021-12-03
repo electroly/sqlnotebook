@@ -1,42 +1,44 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta content="text/html; charset=utf-8" http-equiv="content-type">
-  <title>DATEADD Function</title>
-</head>
-<body>
-  <h1><code>DATEADD</code> Function</h1>
-  <p>Returns a new date by adding a specified time interval to an existing date.</p>
-  <h2>Syntax</h2><code>DATEADD(<i>date-part</i>, <i>number</i>, <i>date</i>)</code><br>
-  <h2>Parameters</h2>
-  <ul class="args">
-    <li>
-      <i>date-part</i>: text<br>
-      One of the following predefined strings. Each <i>date-part</i> has abbreviated aliases that can be used in place
-      of the longer names without affecting the behavior.
-      <ul class="enum">
-        <li><code>year</code>, <code>yy</code>, <code>yyyy</code></li>
-        <li><code>quarter</code>, <code>qq</code>, <code>q</code></li>
-        <li><code>month</code>, <code>mm</code>, <code>m</code></li>
-        <li><code>dayofyear</code>, <code>dy</code>, <code>y</code></li>
-        <li><code>day</code>, <code>dd</code>, <code>d</code></li>
-        <li><code>week</code>, <code>wk</code>, <code>ww</code></li>
-        <li><code>weekday</code>, <code>dw</code></li>
-        <li><code>hour</code>, <code>hh</code></li>
-        <li><code>minute</code>, <code>mi</code>, <code>n</code></li>
-        <li><code>second</code>, <code>ss</code>, <code>s</code></li>
-        <li><code>millisecond</code>, <code>ms</code></li>
-      </ul>
-    </li>
-    <li><i>number</i>: integer<br>
-    The value added to the specified part of the date.</li>
-    <li><i>date</i>: text<br>
-    A text value that can be parsed into a date/time with time zone offset. If no time zone is specified in the string,
-    then the system's local time zone is assumed.</li>
-  </ul>
-  <h2>Return Value</h2>A date/time with time zone offset (i.e. a string like "2016-07-23 21:13:23.350 -04:00"),
-  calculated by adding <i>number</i> to the part of <i>date</i> that is specified by <i>date-part</i>.<br>
-  <h2>Example</h2>
-  <pre><i>-- Prints a date in the system's local time zone like</i><i><br></i><i>-- "2016-08-23 00:00:00.000 -04:00". This may differ based</i><i><br></i><i>-- on your computer's time zone.</i><br>PRINT DATEADD('month', 1, '2016-07-23');<br><br><i>-- Prints "2015-01-29 12:41:25.000 +05:00".</i><br>PRINT DATEADD('day', -5, '2015-02-03 12:41:25 +5');<br><br><i>--  Prints "2015-02-05 16:41:25.000 +02:30".</i><br>PRINT DATEADD('hh', 52, '2015-02-03 12:41:25 +2:30');<br></pre>
-</body>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>DATEADD Function</title>
+  </head>
+  <body>
+    <h1><code>DATEADD</code> Function</h1>
+    <p>Returns a new date by adding a specified time interval to an
+      existing date.</p>
+    <h2>Syntax</h2>
+    <code>DATEADD(<i>date-part</i>, <i>number</i>, <i>date</i>)</code><br>
+    <h2>Parameters</h2>
+    <ul class="args">
+      <li> <i>date-part</i>: text<br>
+        One of the following predefined strings. Each <i>date-part</i>
+        has abbreviated aliases that can be used in place of the longer
+        names without affecting the behavior.
+        <ul class="enum">
+          <li><code>year</code>, <code>yy</code>, <code>yyyy</code></li>
+          <li><code>quarter</code>, <code>qq</code>, <code>q</code></li>
+          <li><code>month</code>, <code>mm</code>, <code>m</code></li>
+          <li><code>dayofyear</code>, <code>dy</code>, <code>y</code></li>
+          <li><code>day</code>, <code>dd</code>, <code>d</code></li>
+          <li><code>week</code>, <code>wk</code>, <code>ww</code></li>
+          <li><code>weekday</code>, <code>dw</code></li>
+          <li><code>hour</code>, <code>hh</code></li>
+          <li><code>minute</code>, <code>mi</code>, <code>n</code></li>
+          <li><code>second</code>, <code>ss</code>, <code>s</code></li>
+          <li><code>millisecond</code>, <code>ms</code></li>
+        </ul>
+      </li>
+      <li><i>number</i>: integer<br>
+        The value added to the specified part of the date.</li>
+      <li><i>date</i>: text<br>
+        A text value that can be parsed into a date/time.</li>
+    </ul>
+    <h2>Return Value</h2>
+    A string like "2016-07-23 21:13:23.350", calculated by adding <i>number</i>
+    to the part of <i>date</i> that is specified by <i>date-part</i>.<br>
+    <h2>Example</h2>
+    <pre><i>-- Prints "2016-08-23 00:00:00.000"</i><i>.<br></i>PRINT DATEADD('month', 1, '2016-07-23');<br><br><i>-- Prints "2015-01-29 12:41:25.000".</i><br>PRINT DATEADD('day', -5, '2015-02-03 12:41:25');<br><br><i>-- Prints "2015-02-05 16:41:25.000".</i><br>PRINT DATEADD('hh', 52, '2015-02-03 12:41:25');<br></pre>
+  </body>
 </html>

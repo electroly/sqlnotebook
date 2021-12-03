@@ -1,33 +1,36 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta content="text/html; charset=utf-8" http-equiv="content-type">
-  <title>DATETIMEFROMPARTS Function</title>
-</head>
-<body>
-  <h1><code>DATETIMEFROMPARTS</code> Function</h1>
-  <p>Returns a string formatted like "2015-12-25 06:54:47.152" based on the provided date and time values.</p>
-  <h2>Syntax</h2><code>DATETIMEFROMPARTS(<i>year</i>, <i>month</i>, <i>day</i>, <i>hour</i>, <i>minute</i>,
-  <i>second</i>, <i>millisecond</i>)</code><br>
-  <h2>Parameters</h2>
-  <ul class="args">
-    <li><i>year</i>: integer<br>
-    Four-digit year.</li>
-    <li><i>month</i>: integer (1-12)<br>
-    Calendar month specified as a 1-based integer.</li>
-    <li><i>day</i>: integer (1-31)<br>
-    Day of the month specified as a 1-based integer.</li>
-    <li><i>hour</i>: integer (0-23)<br>
-    Clock hour expressed as a 0-based integer in 24-hour time.</li>
-    <li><i>minute</i>: integer (0-59)<br>
-    Clock minute.</li>
-    <li><i>second</i>: integer (0-59)<br>
-    Clock second.</li>
-    <li><i>millisecond</i>: integer (0-999)<br>
-    Clock millisecond.</li>
-  </ul>
-  <h2>Return Value</h2>A date/time string (without time zone offset) formatted like "2015-01-02 05:45:30.123".<br>
-  <h2>Example</h2>
-  <pre><i>-- Prints "2015-01-02 05:45:30.123".</i><br>PRINT DATETIMEFROMPARTS(2015, 1, 2, 5, 45, 30, 123)<br></pre>
-</body>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>DATETIMEFROMPARTS Function</title>
+  </head>
+  <body>
+    <h1><code>DATETIMEFROMPARTS</code> Function</h1>
+    <p>Returns a string formatted like "2015-12-25 06:54:47.152" based
+      on the provided date and time values.</p>
+    <h2>Syntax</h2>
+    <code>DATETIMEFROMPARTS(<i>year</i>, <i>month</i>, <i>day</i>, <i>hour</i>,
+      <i>minute</i>, <i>second</i>, <i>millisecond</i>)</code><br>
+    <h2>Parameters</h2>
+    <ul class="args">
+      <li><i>year</i>: integer<br>
+        Four-digit year.</li>
+      <li><i>month</i>: integer (1-12)<br>
+        Calendar month specified as a 1-based integer.</li>
+      <li><i>day</i>: integer (1-31)<br>
+        Day of the month specified as a 1-based integer.</li>
+      <li><i>hour</i>: integer (0-23)<br>
+        Clock hour expressed as a 0-based integer in 24-hour time.</li>
+      <li><i>minute</i>: integer (0-59)<br>
+        Clock minute.</li>
+      <li><i>second</i>: integer (0-59)<br>
+        Clock second.</li>
+      <li><i>millisecond</i>: integer (0-999)<br>
+        Clock millisecond.</li>
+    </ul>
+    <h2>Return Value</h2>
+    A date/time string formatted like "2015-01-02 05:45:30.123".<br>
+    <h2>Example</h2>
+    <pre><i>-- Prints "2015-01-02 05:45:30.123".</i><br>PRINT DATETIMEFROMPARTS(2015, 1, 2, 5, 45, 30, 123)<br></pre>
+  </body>
 </html>

@@ -15,25 +15,19 @@ public sealed class DateAddFunction : CustomScalarFunction {
         var datePart = ArgUtil.GetDatePartArg(args[0], "date-part", Name);
         var number = ArgUtil.GetInt32Arg(args[1], "number", Name);
         var date = ArgUtil.GetDateArg(args[2], "date", Name);
-        var newDate = date;
-
-        switch (datePart) {
-            case DatePart.Year: newDate = date.AddYears(number); break;
-            case DatePart.Quarter: newDate = date.AddMonths(number * 3); break;
-            case DatePart.Month: newDate = date.AddMonths(number); break;
-            case DatePart.DayOfYear: case DatePart.Day: case DatePart.DayOfWeek:
-                newDate = date.AddDays(number); break;
-            case DatePart.Week: newDate = date.AddDays(7 * number); break;
-            case DatePart.Hour: newDate = date.AddHours(number); break;
-            case DatePart.Minute: newDate = date.AddMinutes(number); break;
-            case DatePart.Second: newDate = date.AddSeconds(number); break;
-            case DatePart.Millisecond: newDate = date.AddMilliseconds(number); break;
-            case DatePart.TzOffset: throw new Exception(
-                $"{Name.ToUpper()}: The \"date-part\" argument must not be 'TZOFFSET'.");
-            default: throw new Exception($"Internal error: unrecognized DatePart.");
-        }
-
-        return DateTimeUtil.FormatDateTimeOffset(newDate);
+        var newDate = datePart switch {
+            DatePart.Year => date.AddYears(number),
+            DatePart.Quarter => date.AddMonths(number * 3),
+            DatePart.Month => date.AddMonths(number),
+            DatePart.DayOfYear or DatePart.Day or DatePart.DayOfWeek => date.AddDays(number),
+            DatePart.Week => date.AddDays(7 * number),
+            DatePart.Hour => date.AddHours(number),
+            DatePart.Minute => date.AddMinutes(number),
+            DatePart.Second => date.AddSeconds(number),
+            DatePart.Millisecond => date.AddMilliseconds(number),
+            _ => throw new Exception($"Internal error: unrecognized DatePart."),
+        };
+        return DateTimeUtil.FormatDateTime(newDate);
     }
 }
 
@@ -71,8 +65,6 @@ public sealed class DateDiffFunction : CustomScalarFunction {
             case DatePart.Minute: return (long)span.TotalMinutes;
             case DatePart.Second: return (long)span.TotalSeconds;
             case DatePart.Millisecond: return (long)span.TotalMilliseconds;
-            case DatePart.TzOffset: throw new Exception(
-                $"{Name.ToUpper()}: The \"date-part\" argument must not be 'TZOFFSET'.");
             default: throw new Exception("Internal error: unrecognized DatePart.");
         }
     }
@@ -108,11 +100,9 @@ public sealed class DateNameFunction : CustomScalarFunction {
 
         switch (datePart) {
             case DatePart.Month:
-                return dtf.GetMonthName(cal.GetMonth(date.DateTime));
+                return dtf.GetMonthName(cal.GetMonth(date));
             case DatePart.DayOfWeek:
-                return dtf.GetDayName(cal.GetDayOfWeek(date.DateTime));
-            case DatePart.TzOffset:
-                return $"{date.Offset.Hours:+00;-00}:{Math.Abs(date.Offset.Minutes):00}";
+                return dtf.GetDayName(cal.GetDayOfWeek(date));
             default:
                 return DateTimeUtil.GetDatePart(date, datePart).ToString();
         }
@@ -137,7 +127,7 @@ public sealed class DateTruncFunction : CustomScalarFunction {
     public override object Execute(IReadOnlyList<object> args) {
         var datePart = ArgUtil.GetDatePartArg(args[0], "date-part", Name);
         var date = ArgUtil.GetDateArg(args[1], "date", Name);
-        return DateTimeUtil.FormatDateTimeOffset(DateTimeUtil.TruncateDate(datePart, date));
+        return DateTimeUtil.FormatDateTime(DateTimeUtil.TruncateDate(datePart, date));
     }
 }
 
@@ -158,29 +148,6 @@ public sealed class DateTimeFromPartsFunction : CustomScalarFunction {
         var msec = ArgUtil.GetInt32Arg(args[6], "millisecond", Name);
         var date = new DateTime(year, month, day, hour, minute, second, msec);
         return DateTimeUtil.FormatDateTime(date);
-    }
-}
-
-public sealed class DateTimeOffsetFromPartsFunction : CustomScalarFunction {
-    public override bool IsDeterministic => true;
-    public override string Name => "datetimeoffsetfromparts";
-    public override int ParamCount => 9;
-    public override object Execute(IReadOnlyList<object> args) {
-        if (args.Take(ParamCount).OfType<DBNull>().Any()) {
-            return DBNull.Value;
-        }
-        var year = ArgUtil.GetInt32Arg(args[0], "year", Name);
-        var month = ArgUtil.GetInt32Arg(args[1], "month", Name);
-        var day = ArgUtil.GetInt32Arg(args[2], "day", Name);
-        var hour = ArgUtil.GetInt32Arg(args[3], "hour", Name);
-        var minute = ArgUtil.GetInt32Arg(args[4], "minute", Name);
-        var second = ArgUtil.GetInt32Arg(args[5], "second", Name);
-        var msec = ArgUtil.GetInt32Arg(args[6], "millisecond", Name);
-        var hourOffset = ArgUtil.GetInt32Arg(args[7], "hour-offset", Name);
-        var minuteOffset = ArgUtil.GetInt32Arg(args[8], "minute-offset", Name);
-        var offset = new TimeSpan(hourOffset, minuteOffset, 0);
-        var date = new DateTimeOffset(year, month, day, hour, minute, second, msec, offset);
-        return DateTimeUtil.FormatDateTimeOffset(date);
     }
 }
 
@@ -225,7 +192,7 @@ public sealed class GetDateFunction : CustomScalarFunction {
     public override string Name => "getdate";
     public override int ParamCount => 0;
     public override object Execute(IReadOnlyList<object> args)
-        => DateTimeUtil.FormatDateTimeOffset(DateTimeOffset.Now);
+        => DateTimeUtil.FormatDateTime(DateTime.Now);
 }
 
 public sealed class NowFunction : CustomScalarFunction {
@@ -233,7 +200,7 @@ public sealed class NowFunction : CustomScalarFunction {
     public override string Name => "now";
     public override int ParamCount => 0;
     public override object Execute(IReadOnlyList<object> args)
-        => DateTimeUtil.FormatDateTimeOffset(DateTimeOffset.Now);
+        => DateTimeUtil.FormatDateTime(DateTime.Now);
 }
 
 public sealed class GetUtcDateFunction : CustomScalarFunction {
@@ -241,7 +208,7 @@ public sealed class GetUtcDateFunction : CustomScalarFunction {
     public override string Name => "getutcdate";
     public override int ParamCount => 0;
     public override object Execute(IReadOnlyList<object> args)
-        => DateTimeUtil.FormatDateTimeOffset(DateTimeOffset.UtcNow);
+        => DateTimeUtil.FormatDateTime(DateTime.UtcNow);
 }
 
 public sealed class IsDateFunction : CustomScalarFunction {
@@ -250,8 +217,7 @@ public sealed class IsDateFunction : CustomScalarFunction {
     public override int ParamCount => 1;
     public override object Execute(IReadOnlyList<object> args) {
         var arg = args[0].ToString();
-        DateTimeOffset dto;
-        return DateTimeOffset.TryParse(arg, out dto) ? 1 : 0;
+        return DateTime.TryParse(arg, out _) ? 1 : 0;
     }
 }
 
@@ -263,34 +229,6 @@ public sealed class MonthFunction : CustomScalarFunction {
         var date = ArgUtil.GetDateArg(args[0], "date", Name);
         return DateTimeUtil.GetDatePart(date, DatePart.Month);
     }
-}
-
-public sealed class SwitchOffsetFunction : CustomScalarFunction {
-    public override bool IsDeterministic => true;
-    public override string Name => "switchoffset";
-    public override int ParamCount => 2;
-    public override object Execute(IReadOnlyList<object> args) {
-        var date = ArgUtil.GetDateArg(args[0], "date", Name);
-        TimeSpan offset;
-        if (args[1] is int || args[1] is long) {
-            var minutes = ArgUtil.GetInt32Arg(args[1], "time-zone", Name);
-            offset = new TimeSpan(0, minutes, 0);
-        } else {
-            var offsetStr = ArgUtil.GetStrArg(args[1], "time-zone", Name);
-            var m = _tzOffsetRegex.Match(offsetStr);
-            if (m.Success) {
-                var sign = m.Groups[1].Value == "+" ? 1 : -1;
-                var hour = int.Parse(m.Groups[2].Value);
-                var minute = int.Parse(m.Groups[3].Value);
-                offset = new TimeSpan(sign * hour, sign * minute, 0);
-            } else {
-                throw new Exception($"{Name.ToUpper()}: \"{offsetStr}\" is not a valid time zone offset.");
-            }
-        }
-        var newDate = new DateTimeOffset(date.DateTime, offset);
-        return DateTimeUtil.FormatDateTimeOffset(newDate);
-    }
-    private Regex _tzOffsetRegex = new Regex(@"^([+-])([0-9][0-9]?):([0-9][0-9]?)$");
 }
 
 public sealed class YearFunction : CustomScalarFunction {
@@ -309,7 +247,7 @@ public sealed class ToDateFunction : CustomScalarFunction {
     public override int ParamCount => 1;
     public override object Execute(IReadOnlyList<object> args) {
         var input = ArgUtil.GetDateArg(args[0], "input", Name);
-        return DateTimeUtil.FormatDate(input.DateTime);
+        return DateTimeUtil.FormatDate(input);
     }
 }
 
@@ -319,16 +257,6 @@ public sealed class ToDateTimeFunction : CustomScalarFunction {
     public override int ParamCount => 1;
     public override object Execute(IReadOnlyList<object> args) {
         var input = ArgUtil.GetDateArg(args[0], "input", Name);
-        return DateTimeUtil.FormatDateTime(input.DateTime);
-    }
-}
-
-public sealed class ToDateTimeOffsetFunction : CustomScalarFunction {
-    public override bool IsDeterministic => true;
-    public override string Name => "to_datetimeoffset";
-    public override int ParamCount => 1;
-    public override object Execute(IReadOnlyList<object> args) {
-        var input = ArgUtil.GetDateArg(args[0], "input", Name);
-        return DateTimeUtil.FormatDateTimeOffset(input);
+        return DateTimeUtil.FormatDateTime(input);
     }
 }

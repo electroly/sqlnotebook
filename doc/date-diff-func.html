@@ -1,45 +1,49 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta content="text/html; charset=utf-8" http-equiv="content-type">
-  <title>DATEDIFF Function</title>
-</head>
-<body>
-  <h1><code>DATEDIFF</code> Function</h1>
-  <p>Returns the number of calendar or clock boundaries crossed between two dates. A calendar boundary is a transition
-  from one day to the next, from one month to the next, etc. A clock boundary is a transition from one hour of the day
-  to the next, one minute of the day to the next, etc.</p>
-  <h2>Syntax</h2><code>DATEDIFF(<i>date-part</i>, <i>start-date</i>, <i>end-date</i>)</code><br>
-  <h2>Parameters</h2>
-  <ul class="args">
-    <li>
-      <i>date-part</i>: text<br>
-      One of the following predefined strings. Each <i>date-part</i> has abbreviated aliases that can be used in place
-      of the longer names without affecting the behavior.
-      <ul class="enum">
-        <li><code>year</code>, <code>yy</code>, <code>yyyy</code></li>
-        <li><code>quarter</code>, <code>qq</code>, <code>q</code></li>
-        <li><code>month</code>, <code>mm</code>, <code>m</code></li>
-        <li><code>dayofyear</code>, <code>dy</code>, <code>y</code></li>
-        <li><code>day</code>, <code>dd</code>, <code>d</code></li>
-        <li><code>week</code>, <code>wk</code>, <code>ww</code></li>
-        <li><code>weekday</code>, <code>dw</code></li>
-        <li><code>hour</code>, <code>hh</code></li>
-        <li><code>minute</code>, <code>mi</code>, <code>n</code></li>
-        <li><code>second</code>, <code>ss</code>, <code>s</code></li>
-        <li><code>millisecond</code>, <code>ms</code></li>
-      </ul>
-    </li>
-    <li><i>start-date</i>: text<br>
-    A text value that can be parsed into a date/time with time zone offset. If no time zone is specified in the string,
-    then the system's local time zone is assumed.</li>
-    <li><i>end-date</i>: text<br>
-    A text value that can be parsed into a date/time with time zone offset. If no time zone is specified in the string,
-    then the system's local time zone is assumed.</li>
-  </ul>
-  <h2>Return Value</h2>An integer representing the number of the specified <i>date-part</i> boundaries that are crossed
-  between <i>start-date</i> and <i>end-date</i>.<br>
-  <h2>Example</h2>
-  <pre><i>-- Prints "1" because the clock crosses midnight once.</i><br>PRINT DATEDIFF('day', '2016-03-04 03:53', '2016-03-05 11:53');<br><br><i>-- Prints "1" because the clock crosses the top of the hour once.</i><br>PRINT DATEDIFF('hh', '2016-01-01 03:59', '2016-01-01 04:01');  -- "1"<br><br><i>-- Prints "0" because the clock does not cross the top of the hour.</i><br>PRINT DATEDIFF('hh', '2016-01-01 03:50', '2016-01-01 03:52');<br><br><i>-- Prints "2". Take note of the time zone offsets.</i><br>PRINT DATEDIFF('hh', '2016-07-23 21:25 -04:00', '2016-07-23 21:25 -06:00');<br></pre>
-</body>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>DATEDIFF Function</title>
+  </head>
+  <body>
+    <h1><code>DATEDIFF</code> Function</h1>
+    <p>Returns the number of calendar or clock boundaries crossed
+      between two dates. A calendar boundary is a transition from one
+      day to the next, from one month to the next, etc. A clock boundary
+      is a transition from one hour of the day to the next, one minute
+      of the day to the next, etc.</p>
+    <h2>Syntax</h2>
+    <code>DATEDIFF(<i>date-part</i>, <i>start-date</i>, <i>end-date</i>)</code><br>
+    <h2>Parameters</h2>
+    <ul class="args">
+      <li> <i>date-part</i>: text<br>
+        One of the following predefined strings. Each <i>date-part</i>
+        has abbreviated aliases that can be used in place of the longer
+        names without affecting the behavior.
+        <ul class="enum">
+          <li><code>year</code>, <code>yy</code>, <code>yyyy</code></li>
+          <li><code>quarter</code>, <code>qq</code>, <code>q</code></li>
+          <li><code>month</code>, <code>mm</code>, <code>m</code></li>
+          <li><code>dayofyear</code>, <code>dy</code>, <code>y</code></li>
+          <li><code>day</code>, <code>dd</code>, <code>d</code></li>
+          <li><code>week</code>, <code>wk</code>, <code>ww</code></li>
+          <li><code>weekday</code>, <code>dw</code></li>
+          <li><code>hour</code>, <code>hh</code></li>
+          <li><code>minute</code>, <code>mi</code>, <code>n</code></li>
+          <li><code>second</code>, <code>ss</code>, <code>s</code></li>
+          <li><code>millisecond</code>, <code>ms</code></li>
+        </ul>
+      </li>
+      <li><i>start-date</i>: text<br>
+        A text value that can be parsed into a date/time.<br>
+      </li>
+      <li><i>end-date</i>: text<br>
+        A text value that can be parsed into a date/time.<br>
+      </li>
+    </ul>
+    <h2>Return Value</h2>
+    An integer representing the number of the specified <i>date-part</i>
+    boundaries that are crossed between <i>start-date</i> and <i>end-date</i>.<br>
+    <h2>Example</h2>
+    <pre><i>-- Prints "1" because the clock crosses midnight once.</i><br>PRINT DATEDIFF('day', '2016-03-04 03:53', '2016-03-05 11:53');<br><br><i>-- Prints "1" because the clock crosses the top of the hour once.</i><br>PRINT DATEDIFF('hh', '2016-01-01 03:59', '2016-01-01 04:01');<br><br><i>-- Prints "0" because the clock does not cross the top of the hour.</i><br>PRINT DATEDIFF('hh', '2016-01-01 03:50', '2016-01-01 03:52');<br></pre>
+  </body>
 </html>

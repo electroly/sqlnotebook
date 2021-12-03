@@ -3,7 +3,7 @@
 namespace SqlNotebookScript.Utils;
 
 public enum DatePart {
-    Year, Quarter, Month, DayOfYear, Day, Week, DayOfWeek, Hour, Minute, Second, Millisecond, TzOffset
+    Year, Quarter, Month, DayOfYear, Day, Week, DayOfWeek, Hour, Minute, Second, Millisecond
 }
 
 public static class ArgUtil {
@@ -68,10 +68,9 @@ public static class ArgUtil {
         }
     }
 
-    public static DateTimeOffset GetDateArg(object arg, string paramName, string functionName) {
+    public static DateTime GetDateArg(object arg, string paramName, string functionName) {
         var text = GetStrArg(arg, paramName, functionName);
-        DateTimeOffset date;
-        if (DateTimeOffset.TryParse(text, out date)) {
+        if (DateTime.TryParse(text, out var date)) {
             return date;
         } else {
             throw new Exception(
@@ -93,7 +92,6 @@ public static class ArgUtil {
             case "minute": case "mi": case "n": return DatePart.Minute;
             case "second": case "ss": case "s": return DatePart.Second;
             case "millisecond": case "ms": return DatePart.Millisecond;
-            case "tzoffset": case "tz": return DatePart.TzOffset;
             default: throw new Exception(
                 $"{functionName.ToUpper()}: The \"{paramName}\" argument must be one of the recognized " +
                 "date part strings, such as 'year' or 'day'.");

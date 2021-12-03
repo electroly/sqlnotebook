@@ -1,104 +1,120 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta content="text/html; charset=utf-8" http-equiv="content-type">
-  <title>IMPORT CSV Statement</title>
-</head>
-<body>
-  <h1><code>IMPORT</code> <code>CSV</code> Statement</h1>
-  <p>Imports a CSV (comma-separated values) file from disk into a notebook table. This statement is the scripting
-  equivalent of the visual import wizard accessed via the Import menu.</p>
-  <h2>Syntax</h2><img src="art/import-csv-stmt-syntax.svg" alt="" class="railroad" moz-do-not-send="true" width="815"
-  height="390"><br>
-  <h2>Parameters</h2>
-  <ul class="args">
-    <li><i>filename</i>: text<br>
-    The absolute path to the CSV file to be imported.</li>
-    <li><i>table-name</i>: text or identifier<br>
-    The name of the notebook table to import the CSV file into. If the table does not exist, it will be created. If it
-    does exist, by default new rows will be appended, but the <code>TRUNCATE_EXISTING_TABLE</code> option can be used
-    to overwrite the existing table data.</li>
-    <li><i>src-column-name</i>: text or identifier<br>
-    The name of a column in the source file to import. If this column name is not found in the source file, then the
-    import operation fails with an error. If no column list is provided, then all columns are imported.</li>
-    <li><i>dst-column-name</i>: text or identifier (optional)<br>
-    If provided, this maps the source column to a different name in the destination table. If not provided, then the
-    target column name is the same as the source column name. If multiple columns are mapped to the same target column
-    name in this way, then the import operation fails with an error.</li>
-    <li>
-      <i>data-type</i>: keyword (optional)<br>
-      If provided, the column data will be parsed into the specified data type. <i>data-type</i> may be one of the
-      following values:
-      <ul class="enum">
-        <li><code>TEXT</code>: The input is imported without change (default)</li>
-        <li><code>INTEGER</code>: A positive or negative integer</li>
-        <li><code>REAL</code>: Any numeric value</li>
-        <li><code>DATE</code>: Best-effort conversion into the text format: "YYYY-MM-DD"</li>
-        <li><code>DATETIME</code>: Best-effort conversion into the text format: "YYYY-MM-DD hh:mm:ss.sss"</li>
-        <li><code>DATETIMEOFFSET</code>: Best-effort conversion into the text format: "YYYY-MM-DD hh:mm:ss.sss
-        +ZZ:ZZ"</li>
-      </ul>
-    </li>
-  </ul>
-  <h2>Options</h2>
-  <ul class="opts">
-    <li><tt>SKIP_LINES</tt>: integer (non-negative, default: 0)<br>
-    Indicates how many initial lines should be skipped in the input file.<br></li>
-    <li><tt>TAKE_LINES</tt>: integer (-1 or non-negative, default: -1)<br>
-    Indicates the maximum number of data lines to read from the file (not including the column header and any lines
-    skipped due to the <code>SKIP_LINES</code> option). If -1 is specified, then the whole file is read.</li>
-    <li>
-      <tt>HEADER_ROW</tt>: integer (0-1, default: 1)<br>
-      Indicates whether the CSV file begins with a column header line. If the file contains a column header but not on
-      the first line of the file, use the <code>SKIP_LINES</code> option to indicate how many lines to skip before the
-      column header appears.
-      <ul class="enum">
-        <li>0 = No column header. The generic column names <code>column1</code>, <code>column2</code>, etc. will be
-        used.</li>
-        <li>1 = A column header row exists.</li>
-      </ul>
-    </li>
-    <li><tt>SEPARATOR</tt>: text (default: <tt>','</tt>)<br>
-    Allows separators other than commas. The separator must be a single character (specifically, a single UTF-16 code
-    unit). To specify a tab separator, use <tt>CHAR(9)</tt> which uses the ASCII code 9 to produce the tab
-    character.</li>
-    <li>
-      <tt>TRUNCATE_EXISTING_TABLE</tt>: integer (0-1, default: 0)<br>
-      If the target table name exists, this option indicates whether the existing data rows should be deleted.
-      <ul class="enum">
-        <li>0 = Keep existing rows and append new rows</li>
-        <li>1 = Delete existing rows</li>
-      </ul>
-    </li>
-    <li>
-      <tt>TEMPORARY_TABLE</tt>: integer (0-1, default: 0)<br>
-      If the target table name does not exist, and therefore a new table will be created, this option indicates whether
-      the new table will be a temporary table.
-      <ul class="enum">
-        <li>0 = Use <code>CREATE TABLE</code></li>
-        <li>1 = Use <code>CREATE TEMPORARY TABLE</code></li>
-      </ul>
-    </li>
-    <li>
-      <tt>FILE_ENCODING</tt>: integer (0-65535, default: 0)<br>
-      Indicates the text encoding to use when reading the CSV file. Specify 0 to detect the encoding automatically. Any
-      nonzero integer is treated as a Windows code page number. See <a moz-do-not-send="true" href=
-      "character-encodings-in-csv-and-text-files.html">Character Encodings in CSV and Text Files</a> for a list of
-      these code page numbers.<br>
-    </li>
-    <li>
-      <tt>IF_CONVERSION_FAILS</tt>: integer (1-3, default: 1)<br>
-      If data conversion fails (for instance, if a non-numeric value appears in the file in a column defined in the
-      <code>IMPORT CSV</code> statement as <code>INTEGER</code>), this option controls what happens.
-      <ul class="enum">
-        <li>1 = Import the value as plain text</li>
-        <li>2 = Skip the data row</li>
-        <li>3 = Abort with an error</li>
-      </ul>
-    </li>
-  </ul>
-  <h2>Example</h2>
-  <pre><i>-- All column imported as text.</i><br>IMPORT CSV 'C:\file.csv' INTO table1;<br><br><i>-- Selected columns imported as text.</i><br>IMPORT CSV 'C:\file.csv' INTO table2 (foo);<br><br><i>-- Selected columns imported with specified data conversions, falling</i><i><br></i><i>-- back to text for any value in the input data that can't be converted.</i><i><br></i>IMPORT CSV 'C:\file.csv' INTO table3 (foo INTEGER, bar TEXT);<br><br><i>-- No header row in the file. Default names "column1", "column2", etc.</i><i><br></i><i>-- can be renamed with "AS".</i><i><br></i>IMPORT CSV 'C:\file.csv' INTO table4 (column1 AS foo, column2 AS bar)<br>OPTIONS (HEADER_ROW: 0);<br><br><i>-- Semicolon-separated file.</i><br>IMPORT CSV 'C:\semicolon.csv' INTO table5 OPTIONS (SEPARATOR: ';');</pre>
-  <ol class="examples"></ol>
-</body>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>IMPORT CSV Statement</title>
+  </head>
+  <body>
+    <h1><code>IMPORT</code> <code>CSV</code> Statement</h1>
+    <p>Imports a CSV (comma-separated values) file from disk into a
+      notebook table. This statement is the scripting equivalent of the
+      visual import wizard accessed via the Import menu.</p>
+    <h2>Syntax</h2>
+    <img src="art/import-csv-stmt-syntax.svg" alt="" class="railroad"
+      moz-do-not-send="true" width="815" height="390"><br>
+    <h2>Parameters</h2>
+    <ul class="args">
+      <li><i>filename</i>: text<br>
+        The absolute path to the CSV file to be imported.</li>
+      <li><i>table-name</i>: text or identifier<br>
+        The name of the notebook table to import the CSV file into. If
+        the table does not exist, it will be created. If it does exist,
+        by default new rows will be appended, but the <code>TRUNCATE_EXISTING_TABLE</code>
+        option can be used to overwrite the existing table data.</li>
+      <li><i>src-column-name</i>: text or identifier<br>
+        The name of a column in the source file to import. If this
+        column name is not found in the source file, then the import
+        operation fails with an error. If no column list is provided,
+        then all columns are imported.</li>
+      <li><i>dst-column-name</i>: text or identifier (optional)<br>
+        If provided, this maps the source column to a different name in
+        the destination table. If not provided, then the target column
+        name is the same as the source column name. If multiple columns
+        are mapped to the same target column name in this way, then the
+        import operation fails with an error.</li>
+      <li> <i>data-type</i>: keyword (optional)<br>
+        If provided, the column data will be parsed into the specified
+        data type. <i>data-type</i> may be one of the following values:
+        <ul class="enum">
+          <li><code>TEXT</code>: The input is imported without change
+            (default)</li>
+          <li><code>INTEGER</code>: A positive or negative integer</li>
+          <li><code>REAL</code>: Any numeric value</li>
+          <li><code>DATE</code>: Best-effort conversion into the text
+            format: "YYYY-MM-DD"</li>
+          <li><code>DATETIME</code>: Best-effort conversion into the
+            text format: "YYYY-MM-DD hh:mm:ss.sss"</li>
+        </ul>
+      </li>
+    </ul>
+    <h2>Options</h2>
+    <ul class="opts">
+      <li><tt>SKIP_LINES</tt>: integer (non-negative, default: 0)<br>
+        Indicates how many initial lines should be skipped in the input
+        file.<br>
+      </li>
+      <li><tt>TAKE_LINES</tt>: integer (-1 or non-negative, default: -1)<br>
+        Indicates the maximum number of data lines to read from the file
+        (not including the column header and any lines skipped due to
+        the <code>SKIP_LINES</code> option). If -1 is specified, then
+        the whole file is read.</li>
+      <li> <tt>HEADER_ROW</tt>: integer (0-1, default: 1)<br>
+        Indicates whether the CSV file begins with a column header line.
+        If the file contains a column header but not on the first line
+        of the file, use the <code>SKIP_LINES</code> option to indicate
+        how many lines to skip before the column header appears.
+        <ul class="enum">
+          <li>0 = No column header. The generic column names <code>column1</code>,
+            <code>column2</code>, etc. will be used.</li>
+          <li>1 = A column header row exists.</li>
+        </ul>
+      </li>
+      <li><tt>SEPARATOR</tt>: text (default: <tt>','</tt>)<br>
+        Allows separators other than commas. The separator must be a
+        single character (specifically, a single UTF-16 code unit). To
+        specify a tab separator, use <tt>CHAR(9)</tt> which uses the
+        ASCII code 9 to produce the tab character.</li>
+      <li> <tt>TRUNCATE_EXISTING_TABLE</tt>: integer (0-1, default: 0)<br>
+        If the target table name exists, this option indicates whether
+        the existing data rows should be deleted.
+        <ul class="enum">
+          <li>0 = Keep existing rows and append new rows</li>
+          <li>1 = Delete existing rows</li>
+        </ul>
+      </li>
+      <li> <tt>TEMPORARY_TABLE</tt>: integer (0-1, default: 0)<br>
+        If the target table name does not exist, and therefore a new
+        table will be created, this option indicates whether the new
+        table will be a temporary table.
+        <ul class="enum">
+          <li>0 = Use <code>CREATE TABLE</code></li>
+          <li>1 = Use <code>CREATE TEMPORARY TABLE</code></li>
+        </ul>
+      </li>
+      <li> <tt>FILE_ENCODING</tt>: integer (0-65535, default: 0)<br>
+        Indicates the text encoding to use when reading the CSV file.
+        Specify 0 to detect the encoding automatically. Any nonzero
+        integer is treated as a Windows code page number. See <a
+          moz-do-not-send="true"
+          href="character-encodings-in-csv-and-text-files.html">Character
+          Encodings in CSV and Text Files</a> for a list of these code
+        page numbers.<br>
+      </li>
+      <li> <tt>IF_CONVERSION_FAILS</tt>: integer (1-3, default: 1)<br>
+        If data conversion fails (for instance, if a non-numeric value
+        appears in the file in a column defined in the <code>IMPORT CSV</code>
+        statement as <code>INTEGER</code>), this option controls what
+        happens.
+        <ul class="enum">
+          <li>1 = Import the value as plain text</li>
+          <li>2 = Skip the data row</li>
+          <li>3 = Abort with an error</li>
+        </ul>
+      </li>
+    </ul>
+    <h2>Example</h2>
+    <pre><i>-- All column imported as text.</i><br>IMPORT CSV 'C:\file.csv' INTO table1;<br><br><i>-- Selected columns imported as text.</i><br>IMPORT CSV 'C:\file.csv' INTO table2 (foo);<br><br><i>-- Selected columns imported with specified data conversions, falling</i><i><br></i><i>-- back to text for any value in the input data that can't be converted.</i><i><br></i>IMPORT CSV 'C:\file.csv' INTO table3 (foo INTEGER, bar TEXT);<br><br><i>-- No header row in the file. Default names "column1", "column2", etc.</i><i><br></i><i>-- can be renamed with "AS".</i><i><br></i>IMPORT CSV 'C:\file.csv' INTO table4 (column1 AS foo, column2 AS bar)<br>OPTIONS (HEADER_ROW: 0);<br><br><i>-- Semicolon-separated file.</i><br>IMPORT CSV 'C:\semicolon.csv' INTO table5 OPTIONS (SEPARATOR: ';');</pre>
+    <ol class="examples">
+    </ol>
+  </body>
 </html>

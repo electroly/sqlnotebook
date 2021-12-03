@@ -75,7 +75,7 @@ public static class SqliteUtil {
                 ResultText16(ctx, x.ToString("yyyy-MM-dd HH:mm:ss.fff"));
                 break;
             case DateTimeOffset x:
-                ResultText16(ctx, x.ToString("yyyy-MM-dd HH:mm:ss.fff zzz"));
+                ResultText16(ctx, x.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"));
                 break;
             case byte[] x:
                 ResultBlob(ctx, x);

@@ -6,46 +6,30 @@ namespace SqlNotebookScript.Utils;
 public static class DateTimeUtil {
     public static string FormatDate(DateTime dt) => dt.ToString("yyyy-MM-dd");
     public static string FormatDateTime(DateTime dt) => dt.ToString("yyyy-MM-dd HH:mm:ss.fff");
-    public static string FormatDateTimeOffset(DateTime dt) => dt.ToString("yyyy-MM-dd HH:mm:ss.fff zzz");
-    public static string FormatDateTimeOffset(DateTimeOffset dt) => dt.ToString("yyyy-MM-dd HH:mm:ss.fff zzz");
-    public static int GetQuarter(DateTimeOffset dt) => GetQuarter(dt.Month);
+    public static int GetQuarter(DateTime dt) => GetQuarter(dt.Month);
     public static int GetQuarter(int month) =>
         month <= 3 ? 1 :
         month <= 6 ? 2 :
         month <= 9 ? 3 :
         4;
 
-    public static int GetDatePart(DateTimeOffset date, DatePart datePart) {
+    public static int GetDatePart(DateTime date, DatePart datePart) {
         var cal = CultureInfo.CurrentCulture.Calendar;
         var dtf = CultureInfo.CurrentCulture.DateTimeFormat;
-        switch (datePart) {
-            case DatePart.Year:
-                return cal.GetYear(date.DateTime);
-            case DatePart.Quarter:
-                return GetQuarter(date);
-            case DatePart.Month:
-                return cal.GetMonth(date.DateTime);
-            case DatePart.DayOfYear:
-                return cal.GetDayOfYear(date.DateTime);
-            case DatePart.Day:
-                return cal.GetDayOfMonth(date.DateTime);
-            case DatePart.Week:
-                return cal.GetWeekOfYear(date.DateTime, dtf.CalendarWeekRule, dtf.FirstDayOfWeek);
-            case DatePart.DayOfWeek:
-                return DayOfWeekToInt(cal.GetDayOfWeek(date.DateTime));
-            case DatePart.Hour:
-                return cal.GetHour(date.DateTime);
-            case DatePart.Minute:
-                return cal.GetMinute(date.DateTime);
-            case DatePart.Second:
-                return cal.GetSecond(date.DateTime);
-            case DatePart.Millisecond:
-                return (int)cal.GetMilliseconds(date.DateTime);
-            case DatePart.TzOffset:
-                return (int)date.Offset.TotalMinutes;
-            default:
-                throw new Exception("Internal error: unrecognized DatePart.");
-        }
+        return datePart switch {
+            DatePart.Year => cal.GetYear(date),
+            DatePart.Quarter => GetQuarter(date),
+            DatePart.Month => cal.GetMonth(date),
+            DatePart.DayOfYear => cal.GetDayOfYear(date),
+            DatePart.Day => cal.GetDayOfMonth(date),
+            DatePart.Week => cal.GetWeekOfYear(date, dtf.CalendarWeekRule, dtf.FirstDayOfWeek),
+            DatePart.DayOfWeek => DayOfWeekToInt(cal.GetDayOfWeek(date)),
+            DatePart.Hour => cal.GetHour(date),
+            DatePart.Minute => cal.GetMinute(date),
+            DatePart.Second => cal.GetSecond(date),
+            DatePart.Millisecond => (int)cal.GetMilliseconds(date),
+            _ => throw new Exception("Internal error: unrecognized DatePart."),
+        };
     }
 
     public static int DayOfWeekToInt(DayOfWeek dow) {
@@ -74,26 +58,29 @@ public static class DateTimeUtil {
         }
     }
 
-    public static DateTimeOffset TruncateDate(DatePart datePart, DateTimeOffset date) {
+    public static DateTime TruncateDate(DatePart datePart, DateTime date) {
         switch (datePart) {
-            case DatePart.Year: return new DateTimeOffset(date.Year, 1, 1, 0, 0, 0, date.Offset);
-            case DatePart.Quarter: return new DateTimeOffset(date.Year,
-                (DateTimeUtil.GetQuarter(date) - 1) * 3 + 1, 1, 0, 0, 0, date.Offset);
-            case DatePart.Month: return new DateTimeOffset(date.Year, date.Month, 1, 0, 0, 0, date.Offset);
-            case DatePart.DayOfYear: case DatePart.Day: case DatePart.DayOfWeek:
-                return new DateTimeOffset(date.Year, date.Month, date.Day, 0, 0, 0, date.Offset);
+            case DatePart.Year:
+                return new(date.Year, 1, 1, 0, 0, 0);
+            case DatePart.Quarter:
+                return new(date.Year, (GetQuarter(date) - 1) * 3 + 1, 1, 0, 0, 0);
+            case DatePart.Month:
+                return new(date.Year, date.Month, 1, 0, 0, 0);
+            case DatePart.DayOfYear:
+            case DatePart.Day:
+            case DatePart.DayOfWeek:
+                return new DateTime(date.Year, date.Month, date.Day, 0, 0, 0);
             case DatePart.Week:
                 while (date.DayOfWeek != CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek) {
                     date = date.AddDays(-1);
                 }
-                return new DateTimeOffset(date.Year, date.Month, date.Day, 0, 0, 0, date.Offset);
+                return new(date.Year, date.Month, date.Day, 0, 0, 0);
             case DatePart.Hour:
-                return new DateTimeOffset(date.Year, date.Month, date.Day, date.Hour, 0, 0, date.Offset);
+                return new(date.Year, date.Month, date.Day, date.Hour, 0, 0);
             case DatePart.Minute:
-                return new DateTimeOffset(date.Year, date.Month, date.Day, date.Hour, date.Minute, 0, date.Offset);
+                return new(date.Year, date.Month, date.Day, date.Hour, date.Minute, 0);
             case DatePart.Second:
-                return new DateTimeOffset(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second,
-                    date.Offset);
+                return new(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
             default:
                 return date;
         }
