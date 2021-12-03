@@ -27,17 +27,28 @@ public sealed class XlsWorksheetInfo {
             dataTable.Columns.Add("A");
         }
 
+        dataTable.BeginLoadData();
         foreach (var row in data) {
-            var dataRow = dataTable.NewRow();
+            // Format numbers.
+            for (var i = 0; i < row.Length; i++) {
+                if (row[i] is int intValue) {
+                    row[i] = $"{intValue:#,##0}";
+                } else if (row[i] is long longValue) {
+                    row[i] = $"{longValue:#,##0}";
+                } else if (row[i] is double doubleValue) {
+                    row[i] = $"{doubleValue:#,##0.####}";
+                }
+            }
+
             if (row.Length == numColumns) {
-                dataRow.ItemArray = row;
+                dataTable.LoadDataRow(row, true);
             } else {
                 var extendedRow = new object[numColumns];
                 Array.Copy(row, extendedRow, row.Length);
-                dataRow.ItemArray = extendedRow;
+                dataTable.LoadDataRow(extendedRow, true);
             }
-            dataTable.Rows.Add(dataRow);
         }
+        dataTable.EndLoadData();
 
         return new() {
             Index = worksheetIndex,

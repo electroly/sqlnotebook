@@ -53,6 +53,7 @@ public partial class ImportXlsForm : ZForm {
             _grid.RowHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             _grid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             _grid.SelectionMode = DataGridViewSelectionMode.ColumnHeaderSelect;
+            
             DataGridViewUtil.ApplyCustomRowHeaderPaint(_grid);
 
             _tableNameCombo.Text = Path.GetFileNameWithoutExtension(input.FilePath);
@@ -200,14 +201,15 @@ public partial class ImportXlsForm : ZForm {
         _grid.Columns.Clear();
         var dataTable = sheetInfo.DataTable;
         foreach (DataColumn column in dataTable.Columns) {
-            _grid.Columns.Add(new DataGridViewTextBoxColumn {
+            DataGridViewTextBoxColumn gridColumn = new() {
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
                 Width = _columnWidth,
                 HeaderText = column.ColumnName,
                 SortMode = DataGridViewColumnSortMode.NotSortable,
                 DataPropertyName = column.ColumnName,
                 Resizable = DataGridViewTriState.True,
-            });
+            };
+            _grid.Columns.Add(gridColumn);
         }
         _grid.DataSource = dataTable;
         _grid.AutoSizeColumns(this.Scaled(500));
