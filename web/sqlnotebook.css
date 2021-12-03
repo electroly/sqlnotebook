@@ -22,12 +22,12 @@ a#title {
 a#title:hover {
     text-decoration: none;
 }
-ul#nav {
+ul.nav {
     padding-left: 0px;
     padding-top: 0px;
     margin: 0px;
 }
-ul#nav li {
+ul.nav li {
     display: inline-block;
     padding-right: 15px;
     font-size: 20px;
@@ -68,7 +68,7 @@ div.caption {
 li {
     margin-bottom: 15px;
 }
-ul#nav li, ul.doc-list li, ul.enum li, ul.tight li {
+ul.nav li, ul.doc-list li, ul.enum li, ul.tight li {
     margin-bottom: 0;
 }
 ul.enum {
@@ -121,7 +121,7 @@ span#header-doc-short {
 img.railroad {
     max-width: 100%;
 }
-table#nav td {
+table.nav td {
     border: 0;
     vertical-align: middle;
     padding: 0;
