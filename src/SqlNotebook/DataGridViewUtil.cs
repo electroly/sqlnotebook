@@ -1,5 +1,8 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace SqlNotebook;
@@ -8,7 +11,8 @@ public static class DataGridViewUtil {
     public static DataGridView NewDataGridView(
         bool rowHeadersVisible = false,
         bool autoGenerateColumns = true,
-        bool allowColumnResize = true
+        bool allowColumnResize = true,
+        bool allowSort = true
         ) {
         DoubleBufferedDataGridView grid = new() {
             AutoSize = true,
@@ -33,7 +37,78 @@ public static class DataGridViewUtil {
             ShowCellToolTips = false,
         };
         AttachFontColorEventHandler(grid);
+        if (allowSort) {
+            grid.ColumnHeaderMouseClick += Grid_ColumnHeaderMouseClick;
+            grid.ColumnAdded += (sender, e) => e.Column.SortMode = DataGridViewColumnSortMode.Programmatic; 
+        } else {
+            grid.ColumnAdded += (sender, e) => e.Column.SortMode = DataGridViewColumnSortMode.NotSortable;
+        }
         return grid;
+    }
+
+    private static void Grid_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e) {
+        var grid = (DataGridView)sender;
+        if (grid.DataSource is not DataTable table) {
+            return; // ???
+        }
+
+        var desc = grid.Columns[e.ColumnIndex].HeaderCell.SortGlyphDirection == SortOrder.Ascending;
+
+        List<object[]> rows = new(table.Rows.Count);
+        foreach (DataRow row in table.Rows) {
+            rows.Add(row.ItemArray);
+        }
+        rows.Sort(desc ? CompareDesc : Compare);
+
+        var clone = table.Clone();
+        clone.BeginLoadData();
+        foreach (var row in rows) {
+            clone.LoadDataRow(row, true);
+        }
+        clone.EndLoadData();
+
+        grid.DataSource = clone;
+
+        for (var i = 0; i < grid.Columns.Count; i++) {
+            var header = grid.Columns[i].HeaderCell;
+            if (i == e.ColumnIndex) {
+                header.SortGlyphDirection = desc ? SortOrder.Descending : SortOrder.Ascending;
+            } else {
+                header.SortGlyphDirection = SortOrder.None;
+            }
+        }
+
+        int CompareDesc(object[] xRow, object[] yRow) {
+            return -Compare(xRow, yRow);
+        }
+
+        int Compare(object[] xRow, object[] yRow) {
+            var compare = CompareColumn(xRow, yRow, e.ColumnIndex);
+            // Tie-breaker: every column starting from the left.
+            for (var j = 0; compare == 0 && j < xRow.Length; j++) {
+                compare = CompareColumn(xRow, yRow, j);
+            }
+            return compare;
+        }
+
+        static int CompareColumn(object[] xRow, object[] yRow, int columnIndex) {
+            var xObj = xRow[columnIndex];
+            var yObj = yRow[columnIndex];
+            if (xObj is double xDbl && yObj is double yDbl) {
+                return xDbl.CompareTo(yDbl);
+            } else if (xObj is int xInt && yObj is int yInt) {
+                return xInt.CompareTo(yInt);
+            } else if (xObj is long xLong && yObj is long yLong) {
+                return xLong.CompareTo(yLong);
+            }
+            var xStr = xObj?.ToString() ?? "";
+            var yStr = yObj?.ToString() ?? "";
+            if (double.TryParse(xStr, out var lhsNum) && double.TryParse(yStr, out var rhsNum)) {
+                return lhsNum.CompareTo(rhsNum);
+            } else {
+                return xStr.CompareTo(yStr);
+            }
+        }
     }
 
     public static void AttachFontColorEventHandler(DataGridView grid) {

@@ -163,15 +163,12 @@ public partial class ConsoleControl : UserControl {
 
             _outputFlow.Controls.Add(label);
 
-            var grid = DataGridViewUtil.NewDataGridView(allowColumnResize: false);
+            var grid = DataGridViewUtil.NewDataGridView(allowColumnResize: false, allowSort: false);
             grid.Margin = _outputTableMargin;
             grid.ContextMenuStrip = _contextMenuStrip;
             grid.ScrollBars = ScrollBars.None;
             _outputFlow.Controls.Add(grid);
             grid.DataSource = simpleDataTable.ToDataTable(MAX_GRID_ROWS);
-            foreach (DataGridViewColumn col in grid.Columns) {
-                col.SortMode = DataGridViewColumnSortMode.NotSortable;
-            }
             grid.ClearSelection();
 
             // Why do I need BeginInvoke() for autosize to work properly?
