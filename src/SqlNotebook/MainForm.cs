@@ -60,12 +60,12 @@ public partial class MainForm : ZForm {
                 _searchTxt.Text = "";
             }
         };
-             
+
         Ui ui = new(this, 180, 50, false);
         MinimumSize = new(Size.Width / 2, Size.Height / 2);
         Padding = new(0, 0, 0, ui.SizeGripHeight);
-        var newPageImage16 = Ui.SuperimposePlusSymbol(Resources.note);
-        var newPageImage32 = Ui.SuperimposePlusSymbol(Resources.note32);
+        var newPageImage16 = Ui.SuperimposePlusSymbol(Resources.page);
+        var newPageImage32 = Ui.SuperimposePlusSymbol(Resources.page32);
         var newScriptImage16 = Ui.SuperimposePlusSymbol(Resources.script);
         var newScriptImage32 = Ui.SuperimposePlusSymbol(Ui.ShiftImage(Resources.script32, 0, 1));
         ui.Init(_newMnu, Resources.PageWhite, Resources.page_white32);
@@ -75,7 +75,7 @@ public partial class MainForm : ZForm {
         ui.Init(_fileNewPageMenu, newPageImage16, newPageImage32);
         ui.Init(_importFromFileMnu, Resources.TextImports, Resources.text_imports32);
         ui.Init(_exportCsvMnu, Resources.TextExports, Resources.text_exports32);
-        ui.Init(_contentsMnu, Resources.list, Resources.list32);
+        ui.Init(_contentsMnu, Resources.tree_list, Resources.tree_list32);
         ui.Init(_consoleMnu, Resources.zone_select, Resources.zone_select32);
         ui.Init(_windowOptionsMenu, Resources.cog, Resources.cog32);
         ui.Init(_viewDocMnu, Resources.Help, Resources.help32);

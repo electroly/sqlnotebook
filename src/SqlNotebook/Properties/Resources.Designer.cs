@@ -133,6 +133,26 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap bullet_white {
+            get {
+                object obj = ResourceManager.GetObject("bullet_white", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap bullet_white32 {
+            get {
+                object obj = ResourceManager.GetObject("bullet_white32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap check_box {
             get {
                 object obj = ResourceManager.GetObject("check_box", resourceCulture);
@@ -443,6 +463,26 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap key {
+            get {
+                object obj = ResourceManager.GetObject("key", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap key32 {
+            get {
+                object obj = ResourceManager.GetObject("key32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap link {
             get {
                 object obj = ResourceManager.GetObject("link", resourceCulture);
@@ -513,6 +553,16 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap page {
+            get {
+                object obj = ResourceManager.GetObject("page", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap page_white_excel {
             get {
                 object obj = ResourceManager.GetObject("page_white_excel", resourceCulture);
@@ -566,6 +616,16 @@ namespace SqlNotebook.Properties {
         internal static System.Drawing.Bitmap page_white32 {
             get {
                 object obj = ResourceManager.GetObject("page_white32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap page32 {
+            get {
+                object obj = ResourceManager.GetObject("page32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -926,6 +986,26 @@ namespace SqlNotebook.Properties {
         internal static System.Drawing.Bitmap TextImports {
             get {
                 object obj = ResourceManager.GetObject("TextImports", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tree_list {
+            get {
+                object obj = ResourceManager.GetObject("tree_list", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tree_list32 {
+            get {
+                object obj = ResourceManager.GetObject("tree_list32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -1,32 +1,37 @@
-﻿using SqlNotebook.Properties;
-using SqlNotebookScript.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using SqlNotebook.Properties;
+using SqlNotebookScript.Utils;
 
 namespace SqlNotebook;
 
 public partial class ExplorerControl : UserControl {
     private readonly NotebookManager _manager;
     private readonly IWin32Window _mainForm;
+    private readonly TreeView _tree;
 
     private const int ICON_PAGE = 0;
     private const int ICON_SCRIPT = 1;
     private const int ICON_TABLE = 2;
     private const int ICON_VIEW = 3;
     private const int ICON_LINKED_TABLE = 4;
+    private const int ICON_FOLDER = 5;
+    private const int ICON_KEY = 6;
+    private const int ICON_COLUMN = 7;
 
     public event EventHandler NewPageButtonClicked;
     public event EventHandler NewScriptButtonClicked;
 
+    private readonly TreeNode _pagesNode;
+    private readonly TreeNode _scriptsNode;
+    private readonly TreeNode _tablesNode;
+
     public ExplorerControl(NotebookManager manager, IWin32Window mainForm) {
         InitializeComponent();
-        _list.EnableDoubleBuffer();
-        _detailsGrid.EnableDoubleBuffering();
-        _detailsGrid.AutoGenerateColumns = false;
-
         _mainForm = mainForm;
         _manager = manager;
         _manager.NotebookChange += (sender, e) => HandleNotebookChange(e);
@@ -39,10 +44,10 @@ public partial class ExplorerControl : UserControl {
             ColorDepth = ColorDepth.Depth32Bit,
             ImageSize = new(this.Scaled(16), this.Scaled(16)),
         };
-            
+
         // Same order as the ICON_* constants.
         // ICON_PAGE
-        imageList.Images.Add(Ui.GetScaledIcon(this, Resources.note, Resources.note32, dispose: false));
+        imageList.Images.Add(Ui.GetScaledIcon(this, Resources.page, Resources.page32, dispose: false));
         // ICON_SCRIPT
         imageList.Images.Add(Ui.GetScaledIcon(this, Resources.script, Ui.ShiftImage(Resources.script32, 0, 1), dispose: false));
         // ICON_TABLE
@@ -51,51 +56,104 @@ public partial class ExplorerControl : UserControl {
         imageList.Images.Add(Ui.GetScaledIcon(this, Resources.filter, Resources.filter32, dispose: false));
         // ICON_LINKED_TABLE
         imageList.Images.Add(Ui.GetScaledIcon(this, Resources.link, Resources.link32, dispose: false));
-        _list.SmallImageList = imageList;
+        // ICON_FOLDER
+        imageList.Images.Add(Ui.GetScaledIcon(this, Resources.Folder, Resources.folder32, dispose: false));
+        // ICON_KEY
+        imageList.Images.Add(Ui.GetScaledIcon(this, Resources.key, Resources.key32, dispose: false));
+        // ICON_COLUMN
+        imageList.Images.Add(Ui.GetScaledIcon(this, Resources.bullet_white, Resources.bullet_white32, dispose: false));
+        
+        _tree = new ExplorerTreeView {
+            BorderStyle = BorderStyle.None,
+            ContextMenuStrip = _contextMenuStrip,
+            Dock = DockStyle.Fill,
+            FullRowSelect = true,
+            LabelEdit = true,
+            ShowRootLines = false,
+        };
+        _tree.AfterLabelEdit += Tree_AfterLabelEdit;
+        _tree.BeforeCollapse += Tree_BeforeCollapse;
+        _tree.BeforeExpand += Tree_BeforeExpand;
+        _tree.BeforeLabelEdit += Tree_BeforeLabelEdit;
+        _tree.KeyDown += Tree_KeyDown;
+        _tree.NodeMouseClick += Tree_NodeMouseClick;
+        _tree.NodeMouseDoubleClick += Tree_NodeMouseDoubleClick;
+        _tree.ImageList = imageList;
+        _tree.EnableDoubleBuffering();
+        _toolStripContainer.ContentPanel.Controls.Add(_tree);
+
+        _pagesNode = _tree.Nodes.Add("Pages");
+        _pagesNode.ImageIndex = ICON_FOLDER;
+        _pagesNode.SelectedImageIndex = ICON_FOLDER;
+        _scriptsNode = _tree.Nodes.Add("Scripts");
+        _scriptsNode.ImageIndex = ICON_FOLDER;
+        _scriptsNode.SelectedImageIndex = ICON_FOLDER;
+        _tablesNode = _tree.Nodes.Add("Tables");
+        _tablesNode.ImageIndex = ICON_FOLDER;
+        _tablesNode.SelectedImageIndex = ICON_FOLDER;
 
         Ui ui = new(this, false);
         Padding buttonPadding = new(this.Scaled(2));
-        var newPageImage16 = Ui.SuperimposePlusSymbol(Resources.note);
-        var newPageImage32 = Ui.SuperimposePlusSymbol(Resources.note32);
+        var newPageImage16 = Ui.SuperimposePlusSymbol(Resources.page);
+        var newPageImage32 = Ui.SuperimposePlusSymbol(Resources.page32);
         ui.Init(_toolbarNewPageButton, newPageImage16, newPageImage32);
         var newScriptImage16 = Ui.SuperimposePlusSymbol(Resources.script);
         var newScriptImage32 = Ui.SuperimposePlusSymbol(Ui.ShiftImage(Resources.script32, 0, 1));
         ui.Init(_toolbarNewScriptButton, newScriptImage16, newScriptImage32);
 
-        _list.GotFocus += (sender, e) => {
+        _tree.GotFocus += (sender, e) => {
             _manager.CommitOpenEditors();
             _manager.Rescan(notebookItemsOnly: true);
         };
-
-        _splitContainer.Panel2Collapsed = true;
-
-        _splitContainer.SplitterDistance = Math.Max(
-            _splitContainer.Height / 2, _splitContainer.Height - ui.XHeight(10));
     }
 
     public void TakeFocus() {
-        _list.Select();
+        _tree.Select();
     }
 
+    private TreeNode GetRootNode(NotebookItemType type) =>
+        type switch {
+            NotebookItemType.Page => _pagesNode,
+            NotebookItemType.Table => _tablesNode,
+            NotebookItemType.Script => _scriptsNode,
+            NotebookItemType.View => _tablesNode,
+            _ => throw new ArgumentOutOfRangeException(nameof(type))
+        };
+
+    private NotebookItemType GetItemTypeForRootNode(TreeNode root) =>
+        ReferenceEquals(root, _pagesNode) ? NotebookItemType.Page :
+        ReferenceEquals(root, _tablesNode) ? NotebookItemType.Table :
+        ReferenceEquals(root, _scriptsNode) ? NotebookItemType.Script :
+        throw new ArgumentOutOfRangeException(nameof(root));
+
     private void HandleNotebookChange(NotebookChangeEventArgs e) {
+        HashSet<NotebookItemType> addedItemTypes = new();
         if (e.RemovedItems.Any() || e.AddedItems.Any()) {
             BeginInvoke(new MethodInvoker(() => {
-                _list.BeginUpdate();
+                _tree.BeginUpdate();
                 foreach (var item in e.RemovedItems) {
-                    foreach (ListViewItem lvi in _list.Items) {
-                        if (lvi.Text == item.Name) {
-                            lvi.Remove();
+                    var root = GetRootNode(item.Type);
+                    foreach (TreeNode child in root.Nodes) {
+                        if (child.Text == item.Name) {
+                            child.Remove();
                             break;
                         }
                     }
                 }
                 foreach (var item in e.AddedItems) {
-                    var lvi = _list.Items.Add(item.Name);
-                    lvi.Group = _list.Groups[item.Type.ToString()];
+                    addedItemTypes.Add(item.Type);
+                    var root = GetRootNode(item.Type);
+                    int index;
+                    for (index = 0; index < root.Nodes.Count; index++) {
+                        if (item.Name.CompareTo(root.Nodes[index].Name) < 0) {
+                            break;
+                        }
+                    }
+                    var child = root.Nodes.Insert(index, item.Name);
                     if (item.IsVirtualTable) {
-                        lvi.ImageIndex = ICON_LINKED_TABLE;
+                        child.ImageIndex = ICON_LINKED_TABLE;
                     } else {
-                        lvi.ImageIndex =
+                        child.ImageIndex =
                             item.Type switch {
                                 NotebookItemType.Page => ICON_PAGE,
                                 NotebookItemType.Script => ICON_SCRIPT,
@@ -104,26 +162,25 @@ public partial class ExplorerControl : UserControl {
                                 _ => throw new NotImplementedException()
                             };
                     }
+                    child.SelectedImageIndex = child.ImageIndex;
+
+                    // For tables and views, we will show the columns as sub-nodes on-demand. For scripts, we will show
+                    // the parameters. We have to create a child node here so that the [+] button shows up. We will
+                    // replace it with the real items when the user expands the node.
+                    if (item.Type is NotebookItemType.Script or NotebookItemType.Table or NotebookItemType.View) {
+                        child.Nodes.Add("Loading...");
+                    }
                 }
-                _list.Sort();
-                _list.EndUpdate();
+                _tree.Sort();
+                _tree.EndUpdate();
             }));
         }
-    }
 
-    protected override void OnResize(EventArgs e) {
-        base.OnResize(e);
-        _list.Columns[0].Width = _list.Width - SystemInformation.VerticalScrollBarWidth - 5;
-    }
-
-    private void List_ItemActivate(object sender, EventArgs e) {
-        if (_list.SelectedItems.Count != 1) {
-            return;
-        }
-        var lvi = _list.SelectedItems[0];
-        var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
-
-        _manager.OpenItem(new NotebookItem(type, lvi.Text));
+        BeginInvoke(new Action(() => {
+            foreach (var itemType in addedItemTypes) {
+                GetRootNode(itemType).Expand();
+            }
+        }));
     }
 
     private void DeleteMnu_Click(object sender, EventArgs e) {
@@ -131,12 +188,12 @@ public partial class ExplorerControl : UserControl {
     }
 
     private void DoDelete() {
-        if (_list.SelectedItems.Count != 1) {
+        if (_tree.SelectedNode == null || _tree.SelectedNode.Parent == null) {
             return;
         }
-        var lvi = _list.SelectedItems[0];
-        var name = lvi.Text;
-        var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
+        var node = _tree.SelectedNode;
+        var name = node.Text;
+        var type = GetItemTypeForRootNode(node.Parent);
 
         var choice = Ui.ShowTaskDialog(
             _mainForm,
@@ -161,59 +218,8 @@ public partial class ExplorerControl : UserControl {
     }
 
     private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
-        var isSelection = _list.SelectedItems.Count == 1;
+        var isSelection = _tree.SelectedNode != null && _tree.SelectedNode.Parent != null;
         _openMnu.Enabled = _deleteMnu.Enabled = _renameMnu.Enabled = isSelection;
-    }
-
-    private void List_SelectedIndexChanged(object sender, EventArgs e) {
-        _detailsGrid.DataSource = null;
-        _selectionLabel.Text = "Selected item";
-        if (_list.SelectedItems.Count != 1) {
-            _splitContainer.Panel2Collapsed = true;;
-            return;
-        }
-        var lvi = _list.SelectedItems[0];
-        var notebookItemName = lvi.Text;
-        var n = _manager.Notebook;
-        var details = new List<Tuple<string, string>>();
-
-        try {
-            if (lvi.Group.Name == "Table" || lvi.Group.Name == "View") {
-                using var dt = n.Query($"PRAGMA table_info ({lvi.Text.DoubleQuote()})",
-                    new Dictionary<string, object>());
-                for (int i = 0; i < dt.Rows.Count; i++) {
-                    var name = (string)dt.Get(i, "name");
-                    var info = (string)dt.Get(i, "type");
-                    info += Convert.ToInt32(dt.Get(i, "notnull")) != 0 ? " NOT NULL" : "";
-                    info += Convert.ToInt32(dt.Get(i, "pk")) != 0 ? " PRIMARY KEY" : "";
-                    details.Add(Tuple.Create(name, info));
-                }
-            } else if (lvi.Group.Name == "Script") {
-                var paramNames = n.UserData.GetScriptParameters(notebookItemName);
-                if (paramNames != null) {
-                    foreach (var paramName in paramNames) {
-                        details.Add(Tuple.Create(paramName, "parameter"));
-                    }
-                }
-            } else if (lvi.Group.Name == "Note") {
-                // Nothing to show.
-            }
-        } catch (Exception) { }
-
-        List<Row> list = new();
-        foreach (var detail in details) {
-            var text = detail.Item1;
-            var extra = detail.Item2.Replace(" PRIMARY KEY", "");
-            if (extra.Any()) {
-                text += $" ({extra})";
-            }
-            var detailRow = new Row { Name = detail.Item1, Type = extra };
-            list.Add(detailRow);
-        }
-        _detailsGrid.DataSource = list;
-        _selectionLabel.Text = notebookItemName;
-
-        _splitContainer.Panel2Collapsed = list.Count == 0;
     }
 
     public sealed class Row {
@@ -222,35 +228,7 @@ public partial class ExplorerControl : UserControl {
     }
 
     private void RenameMnu_Click(object sender, EventArgs e) {
-        if (_list.SelectedItems.Count == 1) {
-            _list.SelectedItems[0].BeginEdit();
-        }
-    }
-
-    private void List_AfterLabelEdit(object sender, LabelEditEventArgs e) {
-        e.CancelEdit = true; // if this is a successful edit, we will update the label ourselves
-        var lvi = _list.Items[e.Item];
-        var type = (NotebookItemType)Enum.Parse(typeof(NotebookItemType), lvi.Group.Name);
-
-        if (e.Label == null) {
-            return; // user did not change the name
-        }
-
-        try {
-            _manager.RenameItem(new NotebookItem(type, lvi.Text), e.Label);
-        } catch (Exception ex) {
-            Ui.ShowError(TopLevelControl, "Rename Error", ex);
-        }
-    }
-
-    private void List_KeyDown(object sender, KeyEventArgs e) {
-        if (_list.SelectedItems.Count == 1) {
-            if (e.KeyData == Keys.F2) {
-                _list.SelectedItems[0].BeginEdit();
-            } else if (e.KeyCode == Keys.Delete) {
-                DoDelete();
-            }
-        }
+        _tree.SelectedNode?.BeginEdit();
     }
 
     private void ToolbarNewPageButton_Click(object sender, EventArgs e) {
@@ -259,5 +237,156 @@ public partial class ExplorerControl : UserControl {
 
     private void ToolbarNewScriptButton_Click(object sender, EventArgs e) {
         NewScriptButtonClicked?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void Tree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e) {
+        // Workaround: the double-click has already expanded or collapsed the node. Undo that.
+        if (_lastCollapseStopwatch.Elapsed < TimeSpan.FromMilliseconds(50)) {
+            e.Node.Expand();
+        } else if (_lastExpandStopwatch.Elapsed < TimeSpan.FromMilliseconds(50)) {
+            e.Node.Collapse();
+        }
+
+        DoOpen(e.Node);
+    }
+
+    private void DoOpen(TreeNode node) {
+        node ??= _tree.SelectedNode;
+        if (node == null || node.Parent == null) {
+            return;
+        }
+        var type = GetItemTypeForRootNode(node.Parent);
+        _manager.OpenItem(new NotebookItem(type, node.Text));
+    }
+
+    private void Tree_KeyDown(object sender, KeyEventArgs e) {
+        if (_tree.SelectedNode != null) {
+            if (e.KeyData == Keys.F2) {
+                _tree.SelectedNode.BeginEdit();
+            } else if (e.KeyCode == Keys.Delete) {
+                DoDelete();
+            } else if (e.KeyData == Keys.Enter) {
+                DoOpen(null);
+            }
+        }
+    }
+
+    private void Tree_AfterLabelEdit(object sender, NodeLabelEditEventArgs e) {
+        e.CancelEdit = true; // if this is a successful edit, we will update the label ourselves
+        var node = e.Node;
+        var type = GetItemTypeForRootNode(node.Parent);
+
+        if (e.Label == null) {
+            return; // user did not change the name
+        }
+
+        try {
+            _manager.RenameItem(new NotebookItem(type, node.Text), e.Label);
+        } catch (Exception ex) {
+            Ui.ShowError(TopLevelControl, "Rename Error", ex);
+        }
+    }
+
+    private void Tree_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e) {
+        // Don't allow renaming the root nodes.
+        if (e.Node.Parent == null) {
+            e.CancelEdit = true;
+        }
+    }
+
+    private void Tree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e) {
+        // By default, right-clicking on a node doesn't select it.
+        _tree.SelectedNode = e.Node;
+    }
+
+    private void OpenMnu_Click(object sender, EventArgs e) {
+        DoOpen(null);
+    }
+
+    private void PopulateScriptParameters(TreeNode node) {
+        node.Nodes.Clear();
+        var paramNames = _manager.Notebook.UserData.GetScriptParameters(node.Text);
+        if (paramNames != null) {
+            foreach (var paramName in paramNames) {
+                var child = node.Nodes.Add(paramName);
+                child.ImageIndex = ICON_COLUMN;
+                child.SelectedImageIndex = ICON_COLUMN;
+            }
+        }
+        if (node.Nodes.Count == 0) {
+            var child = node.Nodes.Add("(No parameters)");
+            child.ImageIndex = ICON_COLUMN;
+            child.SelectedImageIndex = ICON_COLUMN;
+        }
+    }
+
+    private void PopulateTableColumns(TreeNode node) {
+        node.Nodes.Clear();
+        using var dt = _manager.Notebook.Query($"PRAGMA table_info ({node.Text.DoubleQuote()})", Array.Empty<object>());
+        for (int i = 0; i < dt.Rows.Count; i++) {
+            var name = (string)dt.Get(i, "name");
+            var child = node.Nodes.Add(name);
+            if (Convert.ToInt32(dt.Get(i, "pk")) != 0) {
+                child.ImageIndex = ICON_KEY;
+            } else {
+                child.ImageIndex = ICON_COLUMN;
+            }
+            child.SelectedImageIndex = child.ImageIndex;
+        }
+    }
+
+    private readonly Stopwatch _lastExpandStopwatch = new();
+    private readonly Stopwatch _lastCollapseStopwatch = new();
+
+    private void Tree_BeforeExpand(object sender, TreeViewCancelEventArgs e) {
+        _lastExpandStopwatch.Restart();
+
+        if (e.Node.Parent == null) {
+            return;
+        }
+
+        switch (GetItemTypeForRootNode(e.Node.Parent)) {
+            case NotebookItemType.Script:
+                PopulateScriptParameters(e.Node);
+                break;
+
+            case NotebookItemType.Table:
+            case NotebookItemType.View:
+                PopulateTableColumns(e.Node);
+                break;
+        }
+    }
+
+    private void Tree_BeforeCollapse(object sender, TreeViewCancelEventArgs e) {
+        // Cannot collapse the root nodes.
+        if (e.Node.Parent == null) {
+            e.Cancel = true;
+            return;
+        }
+
+        _lastCollapseStopwatch.Restart();
+    }
+
+    // Don't expand or collapse tree nodes on double-click. It interferes with double-click to open.
+    private sealed class ExplorerTreeView : TreeView {
+        private bool _suppressExpandCollapse;
+        private DateTime _lastClick;
+
+        protected override void OnMouseDown(MouseEventArgs e) {
+            _suppressExpandCollapse =
+                (DateTime.Now - _lastClick).TotalMilliseconds < SystemInformation.DoubleClickTime;
+            _lastClick = DateTime.Now;
+            base.OnMouseDown(e);
+        }
+
+        protected override void OnBeforeCollapse(TreeViewCancelEventArgs e) {
+            e.Cancel = _suppressExpandCollapse;
+            base.OnBeforeCollapse(e);
+        }
+
+        protected override void OnBeforeExpand(TreeViewCancelEventArgs e) {
+            e.Cancel = _suppressExpandCollapse;
+            base.OnBeforeExpand(e);
+        }
     }
 }
