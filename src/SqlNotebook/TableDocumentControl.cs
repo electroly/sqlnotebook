@@ -20,7 +20,7 @@ public partial class TableDocumentControl : UserControl, IDocumentControl, IDocu
         _tableName = tableName;
         _toolStrip.SetMenuAppearance();
 
-        _grid = DataGridViewUtil.NewDataGridView();
+        _grid = DataGridViewUtil.NewDataGridView(contextMenu: true);
         _grid.Dock = DockStyle.Fill;
         _tablePanel.Controls.Add(_grid);
 

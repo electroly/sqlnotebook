@@ -135,7 +135,7 @@ public partial class QueryEmbeddedControl : UserControl {
         var dataTables = ConvertOutputToDataTables();
         List<DataGridView> grids = new(dataTables.Count);
         foreach (var table in dataTables) {
-            var grid = DataGridViewUtil.NewDataGridView();
+            var grid = DataGridViewUtil.NewDataGridView(contextMenu: true);
             grids.Add(grid);
             grid.Dock = DockStyle.Fill;
             grid.DataSource = table.DataTable;

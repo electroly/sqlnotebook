@@ -13,7 +13,8 @@ public static class DataGridViewUtil {
         bool autoGenerateColumns = true,
         bool allowColumnResize = true,
         bool allowSort = true,
-        bool userColors = true
+        bool userColors = true,
+        bool contextMenu = false
         ) {
         DoubleBufferedDataGridView grid = new() {
             AutoSize = true,
@@ -48,6 +49,30 @@ public static class DataGridViewUtil {
         } else {
             grid.ColumnAdded += (sender, e) => e.Column.SortMode = DataGridViewColumnSortMode.NotSortable;
         }
+
+        if (contextMenu) {
+            ContextMenuStrip contextMenuStrip = new();
+            contextMenuStrip.SetMenuAppearance();
+
+            ToolStripMenuItem viewFullTextMenuItem = new("View full text");
+            contextMenuStrip.Items.Add(viewFullTextMenuItem);
+
+            viewFullTextMenuItem.Click += (sender, e) => {
+                var text = grid.SelectedCells[0].Value.ToString();
+                using ViewFullTextForm f = new(text);
+                f.ShowDialog(grid.TopLevelControl);
+                grid.TopLevelControl.Focus();
+            };
+
+            grid.CellContextMenuStripNeeded += (sender, e) => {
+                e.ContextMenuStrip = grid.SelectedCells.Count == 1 ? contextMenuStrip : null;
+            };
+
+            grid.Disposed += delegate {
+                contextMenuStrip.Dispose();
+            };
+        }
+
         return grid;
     }
 
