@@ -23,30 +23,43 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DatabaseImportTablesForm));
             this._methodFlow = new System.Windows.Forms.FlowLayoutPanel();
             this._methodCopyRad = new System.Windows.Forms.RadioButton();
             this._methodLinkRad = new System.Windows.Forms.RadioButton();
-            this._listBox = new System.Windows.Forms.CheckedListBox();
             this._okBtn = new System.Windows.Forms.Button();
             this._cancelBtn = new System.Windows.Forms.Button();
             this._table = new System.Windows.Forms.TableLayoutPanel();
             this._buttonFlow = new System.Windows.Forms.FlowLayoutPanel();
-            this._importTablesLabel = new System.Windows.Forms.Label();
             this._methodLabel = new System.Windows.Forms.Label();
             this._buttonFlow2 = new System.Windows.Forms.FlowLayoutPanel();
             this._viewSqlButton = new System.Windows.Forms.Button();
-            this._toolStrip = new System.Windows.Forms.ToolStrip();
-            this._addQueryButton = new System.Windows.Forms.ToolStripButton();
+            this._selectionTable = new System.Windows.Forms.TableLayoutPanel();
+            this._selectionButtonsFlow = new System.Windows.Forms.FlowLayoutPanel();
+            this._addButton = new System.Windows.Forms.Button();
+            this._removeButton = new System.Windows.Forms.Button();
+            this._srcPanel = new System.Windows.Forms.Panel();
+            this._dstPanel = new System.Windows.Forms.Panel();
+            this._srcLabel = new System.Windows.Forms.Label();
+            this._dstLabel = new System.Windows.Forms.Label();
+            this._dstToolStrip = new System.Windows.Forms.ToolStrip();
             this._editTableButton = new System.Windows.Forms.ToolStripButton();
-            this._selectAllButton = new System.Windows.Forms.ToolStripButton();
-            this._selectNoneButton = new System.Windows.Forms.ToolStripButton();
-            this._listPanel = new System.Windows.Forms.Panel();
+            this._srcToolStrip = new System.Windows.Forms.ToolStrip();
+            this._addQueryButton = new System.Windows.Forms.ToolStripButton();
+            this._srcFilterText = new System.Windows.Forms.ToolStripTextBox();
+            this._srcFilterClearButton = new System.Windows.Forms.ToolStripButton();
+            this._middleLabel = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
             this._methodFlow.SuspendLayout();
             this._table.SuspendLayout();
             this._buttonFlow.SuspendLayout();
             this._buttonFlow2.SuspendLayout();
-            this._toolStrip.SuspendLayout();
-            this._listPanel.SuspendLayout();
+            this._selectionTable.SuspendLayout();
+            this._selectionButtonsFlow.SuspendLayout();
+            this._dstToolStrip.SuspendLayout();
+            this._srcToolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // _methodFlow
@@ -61,7 +74,7 @@
             this._methodFlow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this._methodFlow.Location = new System.Drawing.Point(3, 780);
             this._methodFlow.Name = "_methodFlow";
-            this._methodFlow.Size = new System.Drawing.Size(782, 70);
+            this._methodFlow.Size = new System.Drawing.Size(971, 70);
             this._methodFlow.TabIndex = 2;
             this._methodFlow.WrapContents = false;
             // 
@@ -86,18 +99,6 @@
             this._methodLinkRad.TabIndex = 0;
             this._methodLinkRad.Text = "&Live database connection";
             this._methodLinkRad.UseVisualStyleBackColor = true;
-            // 
-            // _listBox
-            // 
-            this._listBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this._listBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._listBox.IntegralHeight = false;
-            this._listBox.Location = new System.Drawing.Point(0, 0);
-            this._listBox.Margin = new System.Windows.Forms.Padding(0);
-            this._listBox.Name = "_listBox";
-            this._listBox.Size = new System.Drawing.Size(788, 693);
-            this._listBox.TabIndex = 6;
-            this._listBox.SelectedIndexChanged += new System.EventHandler(this.ListBox_SelectedIndexChanged);
             // 
             // _okBtn
             // 
@@ -128,25 +129,22 @@
             this._table.ColumnCount = 2;
             this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this._table.Controls.Add(this._methodFlow, 0, 4);
-            this._table.Controls.Add(this._buttonFlow, 1, 5);
-            this._table.Controls.Add(this._importTablesLabel, 0, 0);
-            this._table.Controls.Add(this._methodLabel, 0, 3);
-            this._table.Controls.Add(this._buttonFlow2, 0, 5);
-            this._table.Controls.Add(this._toolStrip, 0, 1);
-            this._table.Controls.Add(this._listPanel, 0, 2);
+            this._table.Controls.Add(this._methodFlow, 0, 3);
+            this._table.Controls.Add(this._buttonFlow, 1, 4);
+            this._table.Controls.Add(this._methodLabel, 0, 2);
+            this._table.Controls.Add(this._buttonFlow2, 0, 4);
+            this._table.Controls.Add(this._selectionTable, 0, 1);
             this._table.Dock = System.Windows.Forms.DockStyle.Fill;
             this._table.Location = new System.Drawing.Point(0, 0);
             this._table.Name = "_table";
-            this._table.RowCount = 6;
-            this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._table.RowCount = 5;
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this._table.Size = new System.Drawing.Size(788, 900);
+            this._table.Size = new System.Drawing.Size(977, 900);
             this._table.TabIndex = 6;
             // 
             // _buttonFlow
@@ -156,21 +154,11 @@
             this._buttonFlow.Controls.Add(this._okBtn);
             this._buttonFlow.Controls.Add(this._cancelBtn);
             this._buttonFlow.Dock = System.Windows.Forms.DockStyle.Right;
-            this._buttonFlow.Location = new System.Drawing.Point(597, 856);
+            this._buttonFlow.Location = new System.Drawing.Point(786, 856);
             this._buttonFlow.Name = "_buttonFlow";
             this._buttonFlow.Size = new System.Drawing.Size(188, 41);
             this._buttonFlow.TabIndex = 6;
             this._buttonFlow.WrapContents = false;
-            // 
-            // _importTablesLabel
-            // 
-            this._importTablesLabel.AutoSize = true;
-            this._table.SetColumnSpan(this._importTablesLabel, 2);
-            this._importTablesLabel.Location = new System.Drawing.Point(3, 0);
-            this._importTablesLabel.Name = "_importTablesLabel";
-            this._importTablesLabel.Size = new System.Drawing.Size(120, 25);
-            this._importTablesLabel.TabIndex = 7;
-            this._importTablesLabel.Text = "Import Tables";
             // 
             // _methodLabel
             // 
@@ -201,31 +189,125 @@
             this._viewSqlButton.UseVisualStyleBackColor = true;
             this._viewSqlButton.Click += new System.EventHandler(this.ViewSqlButton_Click);
             // 
-            // _toolStrip
+            // _selectionTable
             // 
-            this._table.SetColumnSpan(this._toolStrip, 2);
-            this._toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this._toolStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this._toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._addQueryButton,
-            this._editTableButton,
-            this._selectAllButton,
-            this._selectNoneButton});
-            this._toolStrip.Location = new System.Drawing.Point(0, 25);
-            this._toolStrip.Name = "_toolStrip";
-            this._toolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this._toolStrip.Size = new System.Drawing.Size(788, 34);
-            this._toolStrip.Stretch = true;
-            this._toolStrip.TabIndex = 16;
-            this._toolStrip.Text = "toolStrip1";
+            this._selectionTable.BackColor = System.Drawing.Color.White;
+            this._selectionTable.ColumnCount = 3;
+            this._table.SetColumnSpan(this._selectionTable, 2);
+            this._selectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this._selectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this._selectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this._selectionTable.Controls.Add(this._selectionButtonsFlow, 1, 3);
+            this._selectionTable.Controls.Add(this._srcPanel, 0, 2);
+            this._selectionTable.Controls.Add(this._dstPanel, 2, 2);
+            this._selectionTable.Controls.Add(this._srcLabel, 0, 0);
+            this._selectionTable.Controls.Add(this._dstLabel, 2, 0);
+            this._selectionTable.Controls.Add(this._dstToolStrip, 2, 1);
+            this._selectionTable.Controls.Add(this._srcToolStrip, 0, 1);
+            this._selectionTable.Controls.Add(this._middleLabel, 1, 0);
+            this._selectionTable.Controls.Add(this.panel1, 1, 1);
+            this._selectionTable.Controls.Add(this.panel2, 1, 2);
+            this._selectionTable.Controls.Add(this.panel3, 1, 4);
+            this._selectionTable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._selectionTable.Location = new System.Drawing.Point(3, 3);
+            this._selectionTable.Name = "_selectionTable";
+            this._selectionTable.RowCount = 5;
+            this._selectionTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._selectionTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._selectionTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this._selectionTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._selectionTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this._selectionTable.Size = new System.Drawing.Size(971, 746);
+            this._selectionTable.TabIndex = 19;
             // 
-            // _addQueryButton
+            // _selectionButtonsFlow
             // 
-            this._addQueryButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._addQueryButton.Name = "_addQueryButton";
-            this._addQueryButton.Size = new System.Drawing.Size(112, 29);
-            this._addQueryButton.Text = "Add &query...";
-            this._addQueryButton.Click += new System.EventHandler(this.AddQueryButton_Click);
+            this._selectionButtonsFlow.AutoSize = true;
+            this._selectionButtonsFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._selectionButtonsFlow.Controls.Add(this._addButton);
+            this._selectionButtonsFlow.Controls.Add(this._removeButton);
+            this._selectionButtonsFlow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this._selectionButtonsFlow.Location = new System.Drawing.Point(426, 362);
+            this._selectionButtonsFlow.Name = "_selectionButtonsFlow";
+            this._selectionButtonsFlow.Size = new System.Drawing.Size(118, 80);
+            this._selectionButtonsFlow.TabIndex = 0;
+            this._selectionButtonsFlow.WrapContents = false;
+            // 
+            // _addButton
+            // 
+            this._addButton.Enabled = false;
+            this._addButton.Location = new System.Drawing.Point(3, 3);
+            this._addButton.Name = "_addButton";
+            this._addButton.Size = new System.Drawing.Size(112, 34);
+            this._addButton.TabIndex = 0;
+            this._addButton.Text = "Add 🠖";
+            this._addButton.UseVisualStyleBackColor = true;
+            this._addButton.Click += new System.EventHandler(this.AddButton_Click);
+            // 
+            // _removeButton
+            // 
+            this._removeButton.Enabled = false;
+            this._removeButton.Location = new System.Drawing.Point(3, 43);
+            this._removeButton.Name = "_removeButton";
+            this._removeButton.Size = new System.Drawing.Size(112, 34);
+            this._removeButton.TabIndex = 1;
+            this._removeButton.Text = "🠔 Remove";
+            this._removeButton.UseVisualStyleBackColor = true;
+            this._removeButton.Click += new System.EventHandler(this.RemoveButton_Click);
+            // 
+            // _srcPanel
+            // 
+            this._srcPanel.BackColor = System.Drawing.Color.White;
+            this._srcPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._srcPanel.Location = new System.Drawing.Point(3, 62);
+            this._srcPanel.Name = "_srcPanel";
+            this._selectionTable.SetRowSpan(this._srcPanel, 3);
+            this._srcPanel.Size = new System.Drawing.Size(417, 681);
+            this._srcPanel.TabIndex = 1;
+            // 
+            // _dstPanel
+            // 
+            this._dstPanel.BackColor = System.Drawing.Color.White;
+            this._dstPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._dstPanel.Location = new System.Drawing.Point(550, 62);
+            this._dstPanel.Name = "_dstPanel";
+            this._selectionTable.SetRowSpan(this._dstPanel, 3);
+            this._dstPanel.Size = new System.Drawing.Size(418, 681);
+            this._dstPanel.TabIndex = 2;
+            // 
+            // _srcLabel
+            // 
+            this._srcLabel.AutoSize = true;
+            this._srcLabel.Location = new System.Drawing.Point(3, 0);
+            this._srcLabel.Name = "_srcLabel";
+            this._srcLabel.Size = new System.Drawing.Size(153, 25);
+            this._srcLabel.TabIndex = 3;
+            this._srcLabel.Text = "Source (database)";
+            // 
+            // _dstLabel
+            // 
+            this._dstLabel.AutoSize = true;
+            this._dstLabel.Location = new System.Drawing.Point(550, 0);
+            this._dstLabel.Name = "_dstLabel";
+            this._dstLabel.Size = new System.Drawing.Size(195, 25);
+            this._dstLabel.TabIndex = 4;
+            this._dstLabel.Text = "Destination (notebook)";
+            // 
+            // _dstToolStrip
+            // 
+            this._dstToolStrip.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._dstToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this._dstToolStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this._dstToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._editTableButton});
+            this._dstToolStrip.Location = new System.Drawing.Point(547, 25);
+            this._dstToolStrip.Name = "_dstToolStrip";
+            this._dstToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            this._dstToolStrip.ShowItemToolTips = false;
+            this._dstToolStrip.Size = new System.Drawing.Size(424, 34);
+            this._dstToolStrip.Stretch = true;
+            this._dstToolStrip.TabIndex = 16;
+            this._dstToolStrip.Text = "toolStrip1";
             // 
             // _editTableButton
             // 
@@ -235,33 +317,91 @@
             this._editTableButton.Text = "&Edit...";
             this._editTableButton.Click += new System.EventHandler(this.EditTableBtn_Click);
             // 
-            // _selectAllButton
+            // _srcToolStrip
             // 
-            this._selectAllButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._selectAllButton.Name = "_selectAllButton";
-            this._selectAllButton.Size = new System.Drawing.Size(84, 29);
-            this._selectAllButton.Text = "Select &all";
-            this._selectAllButton.Click += new System.EventHandler(this.SelectAllBtn_Click);
+            this._srcToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this._srcToolStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this._srcToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._addQueryButton,
+            this._srcFilterText,
+            this._srcFilterClearButton});
+            this._srcToolStrip.Location = new System.Drawing.Point(0, 25);
+            this._srcToolStrip.Name = "_srcToolStrip";
+            this._srcToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            this._srcToolStrip.Size = new System.Drawing.Size(423, 34);
+            this._srcToolStrip.TabIndex = 17;
             // 
-            // _selectNoneButton
+            // _addQueryButton
             // 
-            this._selectNoneButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._selectNoneButton.Name = "_selectNoneButton";
-            this._selectNoneButton.Size = new System.Drawing.Size(107, 29);
-            this._selectNoneButton.Text = "Select &none";
-            this._selectNoneButton.Click += new System.EventHandler(this.SelectNoneBtn_Click);
+            this._addQueryButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._addQueryButton.Name = "_addQueryButton";
+            this._addQueryButton.Size = new System.Drawing.Size(76, 29);
+            this._addQueryButton.Text = "&Query...";
+            this._addQueryButton.ToolTipText = "Import data from a remote SQL query.";
+            this._addQueryButton.Click += new System.EventHandler(this.AddQueryButton_Click);
             // 
-            // _listPanel
+            // _srcFilterText
             // 
-            this._listPanel.BackColor = System.Drawing.SystemColors.Window;
-            this._table.SetColumnSpan(this._listPanel, 2);
-            this._listPanel.Controls.Add(this._listBox);
-            this._listPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._listPanel.Location = new System.Drawing.Point(0, 59);
-            this._listPanel.Margin = new System.Windows.Forms.Padding(0);
-            this._listPanel.Name = "_listPanel";
-            this._listPanel.Size = new System.Drawing.Size(788, 693);
-            this._listPanel.TabIndex = 17;
+            this._srcFilterText.Name = "_srcFilterText";
+            this._srcFilterText.Size = new System.Drawing.Size(100, 34);
+            this._srcFilterText.TextChanged += new System.EventHandler(this.SrcFilterText_TextChanged);
+            // 
+            // _srcFilterClearButton
+            // 
+            this._srcFilterClearButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this._srcFilterClearButton.Image = ((System.Drawing.Image)(resources.GetObject("_srcFilterClearButton.Image")));
+            this._srcFilterClearButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._srcFilterClearButton.Name = "_srcFilterClearButton";
+            this._srcFilterClearButton.Size = new System.Drawing.Size(34, 29);
+            this._srcFilterClearButton.Text = "Clear search terms";
+            this._srcFilterClearButton.Click += new System.EventHandler(this.SrcFilterClearButton_Click);
+            // 
+            // _middleLabel
+            // 
+            this._middleLabel.AutoSize = true;
+            this._middleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._middleLabel.Location = new System.Drawing.Point(426, 0);
+            this._middleLabel.Name = "_middleLabel";
+            this._middleLabel.Size = new System.Drawing.Size(118, 25);
+            this._middleLabel.TabIndex = 18;
+            this._middleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // panel1
+            // 
+            this.panel1.AutoSize = true;
+            this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(250)))));
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(423, 25);
+            this.panel1.Margin = new System.Windows.Forms.Padding(0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(124, 34);
+            this.panel1.TabIndex = 19;
+            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.SelectionTable_Paint);
+            // 
+            // panel2
+            // 
+            this.panel2.AutoSize = true;
+            this.panel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(423, 59);
+            this.panel2.Margin = new System.Windows.Forms.Padding(0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(124, 300);
+            this.panel2.TabIndex = 20;
+            this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.SelectionTable_Paint);
+            // 
+            // panel3
+            // 
+            this.panel3.AutoSize = true;
+            this.panel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(423, 445);
+            this.panel3.Margin = new System.Windows.Forms.Padding(0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(124, 301);
+            this.panel3.TabIndex = 21;
+            this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.SelectionTable_Paint);
             // 
             // DatabaseImportTablesForm
             // 
@@ -269,7 +409,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._cancelBtn;
-            this.ClientSize = new System.Drawing.Size(788, 900);
+            this.ClientSize = new System.Drawing.Size(977, 900);
             this.Controls.Add(this._table);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.MaximizeBox = false;
@@ -280,7 +420,7 @@
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Import";
+            this.Text = "Database Import";
             this._methodFlow.ResumeLayout(false);
             this._methodFlow.PerformLayout();
             this._table.ResumeLayout(false);
@@ -288,9 +428,13 @@
             this._buttonFlow.ResumeLayout(false);
             this._buttonFlow.PerformLayout();
             this._buttonFlow2.ResumeLayout(false);
-            this._toolStrip.ResumeLayout(false);
-            this._toolStrip.PerformLayout();
-            this._listPanel.ResumeLayout(false);
+            this._selectionTable.ResumeLayout(false);
+            this._selectionTable.PerformLayout();
+            this._selectionButtonsFlow.ResumeLayout(false);
+            this._dstToolStrip.ResumeLayout(false);
+            this._dstToolStrip.PerformLayout();
+            this._srcToolStrip.ResumeLayout(false);
+            this._srcToolStrip.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -298,21 +442,31 @@
         #endregion
         private System.Windows.Forms.Button _okBtn;
         private System.Windows.Forms.Button _cancelBtn;
-        private System.Windows.Forms.CheckedListBox _listBox;
         private System.Windows.Forms.RadioButton _methodLinkRad;
         private System.Windows.Forms.RadioButton _methodCopyRad;
         private System.Windows.Forms.TableLayoutPanel _table;
         private System.Windows.Forms.FlowLayoutPanel _buttonFlow;
         private System.Windows.Forms.FlowLayoutPanel _methodFlow;
-        private System.Windows.Forms.Label _importTablesLabel;
         private System.Windows.Forms.FlowLayoutPanel _buttonFlow2;
         private System.Windows.Forms.Button _viewSqlButton;
-        private System.Windows.Forms.ToolStrip _toolStrip;
-        private System.Windows.Forms.ToolStripButton _addQueryButton;
+        private System.Windows.Forms.ToolStrip _dstToolStrip;
         private System.Windows.Forms.ToolStripButton _editTableButton;
-        private System.Windows.Forms.ToolStripButton _selectAllButton;
-        private System.Windows.Forms.ToolStripButton _selectNoneButton;
         private System.Windows.Forms.Label _methodLabel;
-        private System.Windows.Forms.Panel _listPanel;
+        private System.Windows.Forms.TableLayoutPanel _selectionTable;
+        private System.Windows.Forms.FlowLayoutPanel _selectionButtonsFlow;
+        private System.Windows.Forms.Button _addButton;
+        private System.Windows.Forms.Button _removeButton;
+        private System.Windows.Forms.Panel _srcPanel;
+        private System.Windows.Forms.Panel _dstPanel;
+        private System.Windows.Forms.Label _srcLabel;
+        private System.Windows.Forms.Label _dstLabel;
+        private System.Windows.Forms.ToolStrip _srcToolStrip;
+        private System.Windows.Forms.ToolStripTextBox _srcFilterText;
+        private System.Windows.Forms.ToolStripButton _srcFilterClearButton;
+        private System.Windows.Forms.ToolStripButton _addQueryButton;
+        private System.Windows.Forms.Label _middleLabel;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel3;
     }
 }

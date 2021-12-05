@@ -9,7 +9,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using SqlNotebookScript;
 using SqlNotebookScript.DataTables;
 using SqlNotebookScript.Utils;
 
@@ -34,46 +33,15 @@ public static class Extensions {
         textBox.SetFormattingRect(newRect);
     }
 
-    [StructLayout(LayoutKind.Sequential)]
-    private struct RECT {
-        public readonly int Left;
-        public readonly int Top;
-        public readonly int Right;
-        public readonly int Bottom;
-
-        private RECT(int left, int top, int right, int bottom) {
-            Left = left;
-            Top = top;
-            Right = right;
-            Bottom = bottom;
-        }
-
-        public RECT(Rectangle r) : this(r.Left, r.Top, r.Right, r.Bottom) { }
-    }
-
-    private const int EM_GETRECT = 0xB2;
-    private const int EM_SETRECT = 0xB3;
-
     private static void SetFormattingRect(this TextBoxBase textbox, Rectangle rect) {
-        var rc = new RECT(rect);
-        NativeMethods.SendMessageRefRect(textbox.Handle, EM_SETRECT, 0, ref rc);
+        NativeMethods.RECT rc = new(rect);
+        NativeMethods.SendMessageRefRect(textbox.Handle, NativeMethods.EM_SETRECT, 0, ref rc);
     }
 
     private static Rectangle GetFormattingRect(this TextBoxBase textbox) {
         var rect = new Rectangle();
-        NativeMethods.SendMessage(textbox.Handle, EM_GETRECT, (IntPtr)0, ref rect);
+        NativeMethods.SendMessage(textbox.Handle, NativeMethods.EM_GETRECT, (IntPtr)0, ref rect);
         return rect;
-    }
-
-    private static class NativeMethods {
-        [DllImport("user32.dll")]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wp, IntPtr lp);
-
-        [DllImport("user32.dll", EntryPoint = @"SendMessage", CharSet = CharSet.Auto)]
-        public static extern int SendMessageRefRect(IntPtr hWnd, uint msg, int wParam, ref RECT rect);
-
-        [DllImport("user32.dll", EntryPoint = @"SendMessage", CharSet = CharSet.Auto)]
-        public static extern int SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, ref Rectangle lParam);
     }
 
     public static void EnableDoubleBuffer(this ListView self) {
@@ -371,4 +339,49 @@ public static class Extensions {
         }
     }
     #endregion // Enum Descriptions
+
+    public static void SetCueText(this TextBox self, string text) {
+        if (self.IsHandleCreated) {
+            NativeMethods.SendMessage(self.Handle, NativeMethods.EM_SETCUEBANNER, (IntPtr)1, text);
+        } else {
+            self.HandleCreated += delegate { self.SetCueText(text); };
+        }
+    }
+
+    private static class NativeMethods {
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT {
+            public readonly int Left;
+            public readonly int Top;
+            public readonly int Right;
+            public readonly int Bottom;
+
+            private RECT(int left, int top, int right, int bottom) {
+                Left = left;
+                Top = top;
+                Right = right;
+                Bottom = bottom;
+            }
+
+            public RECT(Rectangle r) : this(r.Left, r.Top, r.Right, r.Bottom) { }
+        }
+
+        public const int EM_GETRECT = 0xB2;
+        public const int EM_SETRECT = 0xB3;
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wp, IntPtr lp);
+
+        [DllImport("user32.dll", EntryPoint = @"SendMessage", CharSet = CharSet.Auto)]
+        public static extern int SendMessageRefRect(IntPtr hWnd, uint msg, int wParam, ref RECT rect);
+
+        [DllImport("user32.dll", EntryPoint = @"SendMessage", CharSet = CharSet.Auto)]
+        public static extern int SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, ref Rectangle lParam);
+
+        public const uint ECM_FIRST = 0x1500;
+        public const uint EM_SETCUEBANNER = ECM_FIRST + 1;
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, UInt32 msg, IntPtr wp, string lp);
+    }
 }

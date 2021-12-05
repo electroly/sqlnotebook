@@ -157,6 +157,12 @@ public sealed class Ui {
         textbox.Font = _consolas;
     }
 
+    public void Init(ToolStripTextBox textbox, int width = 25) {
+        textbox.AutoSize = false;
+        textbox.Width = XWidth(width);
+        textbox.Font = _consolas;
+    }
+
     public void Init(ListView listView) {
         listView.TabIndex = _tabIndex++;
             

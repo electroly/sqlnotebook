@@ -2,17 +2,18 @@
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace SqlNotebook;
 
 public static class DataGridViewUtil {
     public static DataGridView NewDataGridView(
+        bool columnHeadersVisible = true,
         bool rowHeadersVisible = false,
         bool autoGenerateColumns = true,
         bool allowColumnResize = true,
-        bool allowSort = true
+        bool allowSort = true,
+        bool userColors = true
         ) {
         DoubleBufferedDataGridView grid = new() {
             AutoSize = true,
@@ -28,15 +29,19 @@ public static class DataGridViewUtil {
             BorderStyle = BorderStyle.None,
             BackgroundColor = Color.White,
             RowHeadersVisible = rowHeadersVisible,
-            ColumnHeadersVisible = true,
+            ColumnHeadersVisible = columnHeadersVisible,
             ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single,
-            EnableHeadersVisualStyles = false,
             SelectionMode = DataGridViewSelectionMode.CellSelect,
             ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
             RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing,
             ShowCellToolTips = false,
         };
-        AttachFontColorEventHandler(grid);
+
+        if (userColors) {
+            grid.EnableHeadersVisualStyles = false;
+            AttachFontColorEventHandler(grid);
+        }
+
         if (allowSort) {
             grid.ColumnHeaderMouseClick += Grid_ColumnHeaderMouseClick;
             grid.ColumnAdded += (sender, e) => e.Column.SortMode = DataGridViewColumnSortMode.Programmatic; 
