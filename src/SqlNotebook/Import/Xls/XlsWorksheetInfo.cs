@@ -9,8 +9,12 @@ public sealed class XlsWorksheetInfo {
     public int Index;
     public string Name;
     public DataTable DataTable;
+    public int FullCount;
 
     public static XlsWorksheetInfo Load(XlsUtil.IWorkbook workbook, int worksheetIndex) {
+        workbook.SeekToWorksheet(worksheetIndex);
+        var fullCount = workbook.GetRowCount();
+
         workbook.SeekToWorksheet(worksheetIndex);
         var data = workbook.ReadSheet(maxRows: 1000);
 
@@ -53,7 +57,8 @@ public sealed class XlsWorksheetInfo {
         return new() {
             Index = worksheetIndex,
             Name = workbook.GetSheetName(worksheetIndex),
-            DataTable = dataTable
+            DataTable = dataTable,
+            FullCount = fullCount,
         };
     }
 }

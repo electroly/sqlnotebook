@@ -16,6 +16,7 @@ public static class XlsUtil {
             int? lastColumnIndex = null,
             int maxRows = int.MaxValue);
         string GetSheetName(int index);
+        int GetRowCount();
     }
 
     private sealed class Workbook : IWorkbook, IDisposable {
@@ -124,6 +125,14 @@ public static class XlsUtil {
             }
 
             return list;
+        }
+
+        public int GetRowCount() {
+            var count = 0;
+            while (_reader.Read()) {
+                count++;
+            }
+            return count;
         }
     }
 

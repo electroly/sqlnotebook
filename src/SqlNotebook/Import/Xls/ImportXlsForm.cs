@@ -218,7 +218,7 @@ public partial class ImportXlsForm : ZForm {
             row.HeaderCell.Value = $"{rowNumber}";
             rowNumber++;
         }
-        _rowRangeLabel.Text = $"(1-{_grid.Rows.Count})";
+        _rowRangeLabel.Text = $"(1-{sheetInfo.FullCount:#,##0})";
         _columnRangeLabel.Text = $"(A-{XlsUtil.ConvertNumToColString(_grid.Columns.Count - 1)})";
     }
 
