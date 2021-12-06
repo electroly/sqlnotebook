@@ -183,19 +183,24 @@ public static class Extensions {
         foreach (var col in self.Columns) {
             dt.Columns.Add(col);
         }
+        dt.BeginLoadData();
         foreach (var row in self.Rows) {
-            var dtRow = dt.NewRow();
             var objs = new object[row.Length];
             for (int i = 0; i < row.Length; i++) {
-                objs[i] = row[i] is byte[] bytes ? BlobUtil.ToString(bytes) : row[i];
+                objs[i] =
+                    row[i] switch {
+                        double n => $"{n:0.####}",
+                        byte[] bytes => BlobUtil.ToString(bytes),
+                        _ => row[i]
+                    };
             }
-            dtRow.ItemArray = objs;
-            dt.Rows.Add(dtRow);
+            dt.LoadDataRow(objs, true);
 
             if (dt.Rows.Count >= maxRows) {
                 break;
             }
         }
+        dt.EndLoadData();
         return dt;
     }
 

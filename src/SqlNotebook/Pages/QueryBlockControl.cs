@@ -305,7 +305,7 @@ public sealed class QueryBlockControl : BlockControl {
 
     private static string FormatCellValue(object obj) =>
         obj switch {
-            double x => $"{x:#.####}",
+            double x => $"{x:0.####}",
             byte[] x => BlobUtil.ToString(x),
             _ => obj.ToString()
         };

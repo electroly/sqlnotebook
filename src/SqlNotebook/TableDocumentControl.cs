@@ -42,16 +42,7 @@ public partial class TableDocumentControl : UserControl, IDocumentControl, IDocu
             throw new OperationCanceledException();
         }
 
-        var dt = new DataTable();
-        foreach (var col in simpleDataTable.Columns) {
-            dt.Columns.Add(col);
-        }
-        foreach (var row in simpleDataTable.Rows) {
-            var dtRow = dt.NewRow();
-            dtRow.ItemArray = row;
-            dt.Rows.Add(dtRow);
-        }
-        _grid.DataSource = dt;
+        _grid.DataSource = simpleDataTable.ToDataTable();
         _grid.AutoSizeColumns(this.Scaled(500));
 
         _query = $"SELECT\r\n{string.Join(",\r\n", simpleDataTable.Columns.Select(x => "    " + x.DoubleQuote()))}\r\nFROM {_tableName.DoubleQuote()}\r\nLIMIT 1000;\r\n";
