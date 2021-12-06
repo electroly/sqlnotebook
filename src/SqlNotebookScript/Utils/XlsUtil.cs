@@ -197,7 +197,9 @@ public static class XlsUtil {
         } else if (headerRow) {
             foreach (var originalName in rows[0]) {
                 var isNull = originalName is DBNull || originalName == null;
-                if (!isNull) {
+                if (isNull) {
+                    columnNames.Add("");
+                } else {
                     columnNames.Add(originalName.ToString());
                 }
             }

@@ -26,7 +26,6 @@ public sealed class ImportXlsStmtRunner {
     private readonly bool _stopAtFirstBlankRow = true;
     private readonly IfConversionFails _ifConversionFails = IfConversionFails.ImportAsText;
 
-    // must be run from the SQLite thread
     public static void Run(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt) {
         var importer = new ImportXlsStmtRunner(notebook, env, runner, stmt);
         SqlUtil.WithTransaction(notebook, importer.Import);
