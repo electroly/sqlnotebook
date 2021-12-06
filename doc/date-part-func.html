@@ -1,46 +1,40 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-    <title>DATEPART Function</title>
-  </head>
-  <body>
-    <h1><code>DATEPART</code> Function</h1>
-    <p>Returns an integer representing the specified part of a date.
-      Weekdays are numbered starting with Monday as 1, Tuesday as 2, and
-      so forth until Sunday as 7.<br>
-    </p>
-    <h2>Syntax</h2>
-    <code>DATEPART(<i>date-part</i>, <i>date</i>)</code><br>
-    <h2>Parameters</h2>
-    <ul class="args">
-      <li> <i>date-part</i>: text<br>
-        One of the following predefined strings. Each <i>date-part</i>
-        has abbreviated aliases that can be used in place of the longer
-        names without affecting the behavior.
-        <ul class="enum">
-          <li><code>year</code>, <code>yy</code>, <code>yyyy</code></li>
-          <li><code>quarter</code>, <code>qq</code>, <code>q</code></li>
-          <li><code>month</code>, <code>mm</code>, <code>m</code></li>
-          <li><code>dayofyear</code>, <code>dy</code>, <code>y</code></li>
-          <li><code>day</code>, <code>dd</code>, <code>d</code></li>
-          <li><code>week</code>, <code>wk</code>, <code>ww</code></li>
-          <li><code>weekday</code>, <code>dw</code></li>
-          <li><code>hour</code>, <code>hh</code></li>
-          <li><code>minute</code>, <code>mi</code>, <code>n</code></li>
-          <li><code>second</code>, <code>ss</code>, <code>s</code></li>
-          <li><code>millisecond</code>, <code>ms</code></li>
-        </ul>
-      </li>
-      <li><i>date</i>: text<br>
-        A text value that can be parsed into a date/time.<br>
-      </li>
-    </ul>
-    <h2>Return Value</h2>
-    An integer representing the part of <i>date</i> that is specified
-    by <i>date-part</i>.<br>
-    <h2>Example</h2>
-    <pre>PRINT DATEPART('month', '2016-07-23');  <i>-- "7"</i><br>PRINT DATEPART('weekday', '2016-07-23');  <i>-- "6"</i><br>PRINT DATEPART('dd', '2016-07-23');  <i>-- "23"</i>
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>DATEPART Function</title>
+</head>
+<body>
+  <h1><code>DATEPART</code> Function</h1>
+  <p>Returns an integer representing the specified part of a date. Weekdays are numbered starting with Monday as 1,
+  Tuesday as 2, and so forth until Sunday as 7.<br></p>
+  <h2>Syntax</h2><code>DATEPART(<i>date-part</i>, <i>date</i>)</code><br>
+  <h2>Parameters</h2>
+  <ul class="args">
+    <li>
+      <i>date-part</i>: text<br>
+      One of the following predefined strings. Each <i>date-part</i> has abbreviated aliases that can be used in place
+      of the longer names without affecting the behavior.
+      <ul class="enum">
+        <li><code>year</code>, <code>yy</code>, <code>yyyy</code></li>
+        <li><code>quarter</code>, <code>qq</code>, <code>q</code></li>
+        <li><code>month</code>, <code>mm</code>, <code>m</code></li>
+        <li><code>dayofyear</code>, <code>dy</code>, <code>y</code></li>
+        <li><code>day</code>, <code>dd</code>, <code>d</code></li>
+        <li><code>week</code>, <code>wk</code>, <code>ww</code></li>
+        <li><code>weekday</code>, <code>dw</code></li>
+        <li><code>hour</code>, <code>hh</code></li>
+        <li><code>minute</code>, <code>mi</code>, <code>n</code></li>
+        <li><code>second</code>, <code>ss</code>, <code>s</code></li>
+        <li><code>millisecond</code>, <code>ms</code></li>
+      </ul>
+    </li>
+    <li><i>date</i>: text<br>
+    A text value that can be parsed into a date/time.<br></li>
+  </ul>
+  <h2>Return Value</h2>An integer representing the part of <i>date</i> that is specified by <i>date-part</i>.<br>
+  <h2>Example</h2>
+  <pre>PRINT DATEPART('month', '2016-07-23');  <i>-- "7"</i><br>PRINT DATEPART('weekday', '2016-07-23');  <i>-- "6"</i><br>PRINT DATEPART('dd', '2016-07-23');  <i>-- "23"</i>
 </pre>
-  </body>
+</body>
 </html>

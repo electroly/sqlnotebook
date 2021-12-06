@@ -1,139 +1,112 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-    <title>IMPORT XLS Statement</title>
-  </head>
-  <body>
-    <h1><code>IMPORT</code> <code>XLS</code> Statement</h1>
-    <p>Imports an Excel worksheet (in either <span style="font-family:
-        monospace;">.XLS</span> or <span style="font-family:
-        monospace;">.XLSX</span> format) from disk into a notebook
-      table. This statement is the scripting equivalent of the visual
-      import wizard accessed via the Import menu. If the workbook
-      contains multiple worksheets, use the&nbsp;<span
-        style="font-style: italic;">which-sheet</span> argument to
-      specify which worksheet to import. If needed, use the <a
-        href="list-xls-worksheets-func.html"><span style="font-family:
-          monospace;">LIST_XLS_WORKSHEETS</span></a> function to get a
-      list of the worksheets in the workbook.</p>
-    <h2>Syntax</h2>
-    <img src="art/import-xls-stmt-syntax.svg" alt="" class="railroad"
-      moz-do-not-send="true" width="810" height="487"><br>
-    <h2>Parameters</h2>
-    <ul class="args">
-      <li><i>filename</i>: text<br>
-        The absolute path to the Excel workbook (<code>.XLS</code> or <code>.XLSX</code>)
-        to be imported.</li>
-      <li><i>which-sheet</i>: text or integer (optional)<br>
-        If specified, this indicates which worksheet to import. If
-        omitted, the first worksheet is imported. This value can be
-        either the name of the worksheet or its 1-based index in the
-        workbook.</li>
-      <li><i>table-name</i>: text or identifier<br>
-        The name of the notebook table to import the worksheet into. If
-        the table does not exist, it will be created. If it does exist,
-        by default new rows will be appended, but the <code>TRUNCATE_EXISTING_TABLE</code>
-        option can be used to overwrite the existing table data.</li>
-      <li><i>column-name</i>: text or identifier<br>
-        The name of a column in the source file to import. If this
-        column name is not found in the source file, then the import
-        operation fails with an error. If no column list is provided,
-        then all columns are imported.</li>
-      <li><i>target-column-name</i>: text or identifier<br>
-        If provided, this maps the source column to a different name in
-        the destination table. If not provided, then the target column
-        name is the same as the source column name. If multiple columns
-        are mapped to the same target column name in this way, then the
-        import operation fails with an error.</li>
-      <li> <i>data-type</i>: keyword<br>
-        If provided, the column data will be parsed into the specified
-        data type. <i>data-type</i> may be one of the following values:
-        <ul class="enum">
-          <li><code>TEXT</code>: The input is imported without change
-            (default)</li>
-          <li><code>INTEGER</code>: A positive or negative integer</li>
-          <li><code>REAL</code>: Any numeric value</li>
-          <li><code>DATE</code>: Best-effort conversion into the text
-            format: "YYYY-MM-DD"</li>
-          <li><code>DATETIME</code>: Best-effort conversion into the
-            text format: "YYYY-MM-DD hh:mm:ss.sss"</li>
-        </ul>
-      </li>
-    </ul>
-    <h2>Options</h2>
-    <ul class="opts">
-      <li><tt>FIRST_ROW</tt>: integer (≥ 1, default: 1)<br>
-        The number (starting at 1) of the first row of the data to read.
-        If a row of column names is present (see the <code>HEADER_ROW</code>
-        option), <code>FIRST_ROW</code> specifies the row containing
-        the column names, with the data to follow on the next row. If no
-        column names are present, then <code>FIRST_ROW</code> specifies
-        the first row of data.</li>
-      <li><tt>LAST_ROW</tt>: integer (≥ 0, default: 0)<br>
-        Indicates how many rows of data to read. If a value of 0 is
-        specified, then all available rows in the worksheet are
-        imported. If a positive integer is specified, then it is the
-        last row number (inclusive) to be imported.</li>
-      <li><tt>FIRST_COLUMN</tt>: integer ≥ 1 or text (default: 1)<br>
-        The leftmost column (inclusive) to import. This may be a column
-        number (starting at 1) or a column string (A, B, C, ..., XFC,
-        XFD).</li>
-      <li><tt>LAST_COLUMN</tt>: integer ≥ 0 or text (default: 0)<br>
-        The rightmost column (inclusive) to import.&nbsp;This may be a
-        column number (starting at 1) or a column string (A, B, C, ...,
-        XFC, XFD).&nbsp;If 0 is specified, then all available columns in
-        the worksheet (after and including <code>FIRST_COLUMN</code>)
-        are imported.</li>
-      <li><tt>STOP_AT_FIRST_BLANK_ROW</tt>: integer (0-1, default: 1)<br>
-        Whether to stop processing rows when the first blank row is
-        encountered, even if it's before the configured <tt>LAST_ROW</tt>
-        or the last row in the spreadsheet.<br>
-      </li>
-      <li> <tt>HEADER_ROW</tt>: integer (0-1, default: 1)<br>
-        Indicates whether the worksheet begins with a column header
-        line. If the sheet contains a column header but not on the first
-        line of the file, use the <span style="font-family: monospace;">FIRST_ROW</span>
-        option to indicate how many rows to skip before the column
-        header appears.
-        <ul class="enum">
-          <li>0 = No column header. The generic column names <code>column1</code>,
-            <code>column2</code>, etc. will be used.</li>
-          <li>1 = A column header row exists.</li>
-        </ul>
-      </li>
-      <li> <tt>TRUNCATE_EXISTING_TABLE</tt>: integer (0-1, default: 0)<br>
-        If the target table name exists, this option indicates whether
-        the existing data rows should be deleted.
-        <ul class="enum">
-          <li>0 = Keep existing rows and append new rows</li>
-          <li>1 = Delete existing rows</li>
-        </ul>
-      </li>
-      <li> <tt>TEMPORARY_TABLE</tt>: integer (0-1, default: 0)<br>
-        If the target table name does not exist, and therefore a new
-        table will be created, this option indicates whether the new
-        table will be a temporary table.
-        <ul class="enum">
-          <li>0 = Use <code>CREATE TABLE</code></li>
-          <li>1 = Use <code>CREATE TEMPORARY TABLE</code></li>
-        </ul>
-      </li>
-      <li> <tt>IF_CONVERSION_FAILS</tt>: integer (1-3, default: 1)<br>
-        If data conversion fails (for instance, if a non-numeric value
-        appears in the file in a column defined in the <code>IMPORT CSV</code>
-        statement as <code>INTEGER</code>), this option controls what
-        happens.
-        <ul class="enum">
-          <li>1 = Import the value as plain text</li>
-          <li>2 = Skip the data row</li>
-          <li>3 = Abort with an error</li>
-        </ul>
-      </li>
-    </ul>
-    <h2>Examples</h2>
-    <pre><i>-- Imports the first worksheet in "Workbook.xlsx" into a notebook</i><i><br></i><i>-- table called mytable. Because no options are specified, it is</i><i><br></i><i>-- assumed that the file has a column header on the first line.</i><i><br></i><i>-- Because no column list is specified, all columns are imported</i><i><br></i><i>-- as text and the original column names are preserved.</i><br>IMPORT XLS 'C:\Workbook.xlsx' INTO mytable;<br><br><i>-- Worksheet can be specified by number or by name.</i><br>IMPORT XLS 'C:\Workbook.xlsx' WORKSHEET 1 INTO tbl1;<br>IMPORT XLS 'C:\Workbook.xlsx' WORKSHEET 'Sheet1' INTO tbl1;<br><br><i>-- The source columns (foo, bar) are explicitly specified. If</i><i><br></i><i>-- the source file contains other columns besides those two, then</i><i><br></i><i>-- they are not imported into the destination notebook table.</i><br>IMPORT XLS 'C:\Workbook.xlsx' INTO mytable (foo, bar);<br><br><i>-- Import a specific range of cells.</i><br>IMPORT XLS 'C:\Workbook.xlsx' INTO mytable<br>OPTIONS (<br>    FIRST_ROW: 1,<br>    LAST_ROW: 5,<br>    FIRST_COLUMN: 'A',<br>    LAST_COLUMN: 'B'<br>);</pre>
-    <ol class="examples">
-    </ol>
-  </body>
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>IMPORT XLS Statement</title>
+</head>
+<body>
+  <h1><code>IMPORT</code> <code>XLS</code> Statement</h1>
+  <p>Imports an Excel worksheet (in either <span style="font-family: monospace;">.XLS</span> or <span style=
+  "font-family: monospace;">.XLSX</span> format) from disk into a notebook table. This statement is the scripting
+  equivalent of the visual import wizard accessed via the Import menu. If the workbook contains multiple worksheets,
+  use the&nbsp;<span style="font-style: italic;">which-sheet</span> argument to specify which worksheet to import. If
+  needed, use the <a href="list-xls-worksheets-func.html"><span style=
+  "font-family: monospace;">LIST_XLS_WORKSHEETS</span></a> function to get a list of the worksheets in the
+  workbook.</p>
+  <h2>Syntax</h2><img src="art/import-xls-stmt-syntax.svg" alt="" class="railroad" moz-do-not-send="true" width="810"
+  height="487"><br>
+  <h2>Parameters</h2>
+  <ul class="args">
+    <li><i>filename</i>: text<br>
+    The absolute path to the Excel workbook (<code>.XLS</code> or <code>.XLSX</code>) to be imported.</li>
+    <li><i>which-sheet</i>: text or integer (optional)<br>
+    If specified, this indicates which worksheet to import. If omitted, the first worksheet is imported. This value can
+    be either the name of the worksheet or its 1-based index in the workbook.</li>
+    <li><i>table-name</i>: text or identifier<br>
+    The name of the notebook table to import the worksheet into. If the table does not exist, it will be created. If it
+    does exist, by default new rows will be appended, but the <code>TRUNCATE_EXISTING_TABLE</code> option can be used
+    to overwrite the existing table data.</li>
+    <li><i>column-name</i>: text or identifier<br>
+    The name of a column in the source file to import. If this column name is not found in the source file, then the
+    import operation fails with an error. If no column list is provided, then all columns are imported.</li>
+    <li><i>target-column-name</i>: text or identifier<br>
+    If provided, this maps the source column to a different name in the destination table. If not provided, then the
+    target column name is the same as the source column name. If multiple columns are mapped to the same target column
+    name in this way, then the import operation fails with an error.</li>
+    <li>
+      <i>data-type</i>: keyword<br>
+      If provided, the column data will be parsed into the specified data type. <i>data-type</i> may be one of the
+      following values:
+      <ul class="enum">
+        <li><code>TEXT</code>: The input is imported without change (default)</li>
+        <li><code>INTEGER</code>: A positive or negative integer</li>
+        <li><code>REAL</code>: Any numeric value</li>
+        <li><code>DATE</code>: Best-effort conversion into the text format: "YYYY-MM-DD"</li>
+        <li><code>DATETIME</code>: Best-effort conversion into the text format: "YYYY-MM-DD hh:mm:ss.sss"</li>
+      </ul>
+    </li>
+  </ul>
+  <h2>Options</h2>
+  <ul class="opts">
+    <li><tt>FIRST_ROW</tt>: integer (≥ 1, default: 1)<br>
+    The number (starting at 1) of the first row of the data to read. If a row of column names is present (see the
+    <code>HEADER_ROW</code> option), <code>FIRST_ROW</code> specifies the row containing the column names, with the
+    data to follow on the next row. If no column names are present, then <code>FIRST_ROW</code> specifies the first row
+    of data.</li>
+    <li><tt>LAST_ROW</tt>: integer (≥ 0, default: 0)<br>
+    Indicates how many rows of data to read. If a value of 0 is specified, then all available rows in the worksheet are
+    imported. If a positive integer is specified, then it is the last row number (inclusive) to be imported.</li>
+    <li><tt>FIRST_COLUMN</tt>: integer ≥ 1 or text (default: 1)<br>
+    The leftmost column (inclusive) to import. This may be a column number (starting at 1) or a column string (A, B, C,
+    ..., XFC, XFD).</li>
+    <li><tt>LAST_COLUMN</tt>: integer ≥ 0 or text (default: 0)<br>
+    The rightmost column (inclusive) to import.&nbsp;This may be a column number (starting at 1) or a column string (A,
+    B, C, ..., XFC, XFD).&nbsp;If 0 is specified, then all available columns in the worksheet (after and including
+    <code>FIRST_COLUMN</code>) are imported.</li>
+    <li><tt>STOP_AT_FIRST_BLANK_ROW</tt>: integer (0-1, default: 1)<br>
+    Whether to stop processing rows when the first blank row is encountered, even if it's before the configured
+    <tt>LAST_ROW</tt> or the last row in the spreadsheet.<br></li>
+    <li>
+      <tt>HEADER_ROW</tt>: integer (0-1, default: 1)<br>
+      Indicates whether the worksheet begins with a column header line. If the sheet contains a column header but not
+      on the first line of the file, use the <span style="font-family: monospace;">FIRST_ROW</span> option to indicate
+      how many rows to skip before the column header appears.
+      <ul class="enum">
+        <li>0 = No column header. The generic column names <code>column1</code>, <code>column2</code>, etc. will be
+        used.</li>
+        <li>1 = A column header row exists.</li>
+      </ul>
+    </li>
+    <li>
+      <tt>TRUNCATE_EXISTING_TABLE</tt>: integer (0-1, default: 0)<br>
+      If the target table name exists, this option indicates whether the existing data rows should be deleted.
+      <ul class="enum">
+        <li>0 = Keep existing rows and append new rows</li>
+        <li>1 = Delete existing rows</li>
+      </ul>
+    </li>
+    <li>
+      <tt>TEMPORARY_TABLE</tt>: integer (0-1, default: 0)<br>
+      If the target table name does not exist, and therefore a new table will be created, this option indicates whether
+      the new table will be a temporary table.
+      <ul class="enum">
+        <li>0 = Use <code>CREATE TABLE</code></li>
+        <li>1 = Use <code>CREATE TEMPORARY TABLE</code></li>
+      </ul>
+    </li>
+    <li>
+      <tt>IF_CONVERSION_FAILS</tt>: integer (1-3, default: 1)<br>
+      If data conversion fails (for instance, if a non-numeric value appears in the file in a column defined in the
+      <code>IMPORT CSV</code> statement as <code>INTEGER</code>), this option controls what happens.
+      <ul class="enum">
+        <li>1 = Import the value as plain text</li>
+        <li>2 = Skip the data row</li>
+        <li>3 = Abort with an error</li>
+      </ul>
+    </li>
+  </ul>
+  <h2>Examples</h2>
+  <pre><i>-- Imports the first worksheet in "Workbook.xlsx" into a notebook</i><i><br></i><i>-- table called mytable. Because no options are specified, it is</i><i><br></i><i>-- assumed that the file has a column header on the first line.</i><i><br></i><i>-- Because no column list is specified, all columns are imported</i><i><br></i><i>-- as text and the original column names are preserved.</i><br>IMPORT XLS 'C:\Workbook.xlsx' INTO mytable;<br><br><i>-- Worksheet can be specified by number or by name.</i><br>IMPORT XLS 'C:\Workbook.xlsx' WORKSHEET 1 INTO tbl1;<br>IMPORT XLS 'C:\Workbook.xlsx' WORKSHEET 'Sheet1' INTO tbl1;<br><br><i>-- The source columns (foo, bar) are explicitly specified. If</i><i><br></i><i>-- the source file contains other columns besides those two, then</i><i><br></i><i>-- they are not imported into the destination notebook table.</i><br>IMPORT XLS 'C:\Workbook.xlsx' INTO mytable (foo, bar);<br><br><i>-- Import a specific range of cells.</i><br>IMPORT XLS 'C:\Workbook.xlsx' INTO mytable<br>OPTIONS (<br>    FIRST_ROW: 1,<br>    LAST_ROW: 5,<br>    FIRST_COLUMN: 'A',<br>    LAST_COLUMN: 'B'<br>);</pre>
+  <ol class="examples"></ol>
+</body>
 </html>
