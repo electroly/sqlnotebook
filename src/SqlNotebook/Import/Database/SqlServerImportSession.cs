@@ -56,4 +56,10 @@ public sealed class SqlServerImportSession : ImportSessionBase<SqlConnectionStri
 
     protected override string GetDefaultConnectionString() => Settings.Default.SqlServerLastConnectionString;
     protected override void SetDefaultConnectionString(string str) => Settings.Default.SqlServerLastConnectionString = str;
+
+    public override void Clear(DbConnectionStringBuilder builder) {
+        var mssqlBuilder = (SqlConnectionStringBuilder)builder;
+        mssqlBuilder.Clear();
+        mssqlBuilder.Encrypt = false;
+    }
 }

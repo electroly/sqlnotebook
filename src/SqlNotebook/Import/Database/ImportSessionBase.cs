@@ -26,6 +26,10 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
 
     protected TConnectionStringBuilder _builder = new();
 
+    public ImportSessionBase() {
+        Clear(_builder);
+    }
+
     public bool FromConnectForm(IWin32Window owner) {
         var successfulConnect = false;
 
@@ -35,13 +39,12 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
                 try {
                     _builder.ConnectionString = initialConnectionString;
                 } catch { }
+            } else {
+                Clear(_builder);
             }
 
             using DatabaseConnectionForm f = new(
-                $"Connect to {ProductName}", 
-                _builder,
-                b => GetBasicOptions((TConnectionStringBuilder)b),
-                (b, o) => SetBasicOptions((TConnectionStringBuilder)b, o));
+                $"Connect to {ProductName}", _builder, this);
             if (f.ShowDialog(owner) != DialogResult.OK) {
                 return false;
             }
@@ -107,5 +110,17 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
             sb.Append(";\r\n\r\n");
         }
         return sb.ToString();
+    }
+
+    DatabaseConnectionForm.BasicOptions IImportSession.GetBasicOptions(DbConnectionStringBuilder builder) {
+        return GetBasicOptions((TConnectionStringBuilder)builder);
+    }
+
+    void IImportSession.SetBasicOptions(DbConnectionStringBuilder builder, DatabaseConnectionForm.BasicOptions opt) {
+        SetBasicOptions((TConnectionStringBuilder)builder, opt);
+    }
+
+    public virtual void Clear(DbConnectionStringBuilder builder) {
+        builder.Clear();
     }
 }

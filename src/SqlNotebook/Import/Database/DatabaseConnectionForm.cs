@@ -7,9 +7,8 @@ using MySql.Data.MySqlClient;
 namespace SqlNotebook.Import.Database;
 
 public partial class DatabaseConnectionForm : ZForm {
-    private readonly Func<DbConnectionStringBuilder, BasicOptions> _getBasicOptions;
-    private readonly Action<DbConnectionStringBuilder, BasicOptions> _setBasicOptions;
     private readonly DbConnectionStringBuilder _builder;
+    private readonly IImportSession _session;
 
     public sealed class BasicOptions {
         public string Server { get; set; } = "";
@@ -19,14 +18,11 @@ public partial class DatabaseConnectionForm : ZForm {
         public bool UseWindowsAuth { get; set; } = false;
     }
 
-    public DatabaseConnectionForm(string title, DbConnectionStringBuilder builder,
-        Func<DbConnectionStringBuilder, BasicOptions> getBasicOptions,
-        Action<DbConnectionStringBuilder, BasicOptions> setBasicOptions) {
+    public DatabaseConnectionForm(string title, DbConnectionStringBuilder builder, IImportSession session) {
         InitializeComponent();
 
-        _getBasicOptions = getBasicOptions;
-        _setBasicOptions = setBasicOptions;
         _builder = builder;
+        _session = session;
 
         Ui ui = new(this, 75, 30);
         ui.Init(_table);
@@ -64,7 +60,7 @@ public partial class DatabaseConnectionForm : ZForm {
         _propertyGrid.SelectedObject = builder;
         Text = title;
 
-        UpdateBasicOptionsUi(_getBasicOptions(builder)); // populate basic options with info from builder
+        UpdateBasicOptionsUi(_session.GetBasicOptions(builder)); // populate basic options with info from builder
 
         Load += delegate { _serverTxt.Select(); };
     }
@@ -90,7 +86,7 @@ public partial class DatabaseConnectionForm : ZForm {
     private void OkBtn_Click(object sender, EventArgs e) {
         if (_tabs.SelectedIndex == 0) {
             // "Basic" tab is selected.
-            _setBasicOptions(_builder, ReadBasicOptionsUi());
+            _session.SetBasicOptions(_builder, ReadBasicOptionsUi());
         }
         DialogResult = DialogResult.OK;
         Close();
@@ -103,16 +99,16 @@ public partial class DatabaseConnectionForm : ZForm {
     private void Tabs_TabIndexChanged(object sender, EventArgs e) {
         if (_tabs.SelectedIndex == 0) {
             // "Basic" tab is now selected.
-            UpdateBasicOptionsUi(_getBasicOptions(_builder));
+            UpdateBasicOptionsUi(_session.GetBasicOptions(_builder));
         } else {
             // "Advanced" tab is now selected.
-            _setBasicOptions(_builder, ReadBasicOptionsUi());
+            _session.SetBasicOptions(_builder, ReadBasicOptionsUi());
             _propertyGrid.SelectedObject = _builder; // Refresh the property grid.
         }
     }
 
     private void ClearButton_Click(object sender, EventArgs e) {
-        _builder.Clear();
-        UpdateBasicOptionsUi(_getBasicOptions(_builder)); // populate basic options with info from builder
+        _session.Clear(_builder);
+        UpdateBasicOptionsUi(_session.GetBasicOptions(_builder)); // populate basic options with info from builder
     }
 }
