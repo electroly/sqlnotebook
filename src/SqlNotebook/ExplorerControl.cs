@@ -102,7 +102,7 @@ public partial class ExplorerControl : UserControl {
                     return result;
                 }
             }
-            return xNode.Name.CompareTo(yNode.Name);
+            return xNode.Text.CompareTo(yNode.Text);
         }
 
         private static int GetOrder(NotebookItemType t) =>
