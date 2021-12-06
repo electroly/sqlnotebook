@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.Collections;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -19,16 +19,11 @@ public partial class ExplorerControl : UserControl {
     private const int ICON_TABLE = 2;
     private const int ICON_VIEW = 3;
     private const int ICON_LINKED_TABLE = 4;
-    private const int ICON_FOLDER = 5;
-    private const int ICON_KEY = 6;
-    private const int ICON_COLUMN = 7;
+    private const int ICON_KEY = 5;
+    private const int ICON_COLUMN = 6;
 
     public event EventHandler NewPageButtonClicked;
     public event EventHandler NewScriptButtonClicked;
-
-    private readonly TreeNode _pagesNode;
-    private readonly TreeNode _scriptsNode;
-    private readonly TreeNode _tablesNode;
 
     public ExplorerControl(NotebookManager manager, IWin32Window mainForm) {
         InitializeComponent();
@@ -56,8 +51,6 @@ public partial class ExplorerControl : UserControl {
         imageList.Images.Add(Ui.GetScaledIcon(this, Resources.filter, Resources.filter32, dispose: false));
         // ICON_LINKED_TABLE
         imageList.Images.Add(Ui.GetScaledIcon(this, Resources.link, Resources.link32, dispose: false));
-        // ICON_FOLDER
-        imageList.Images.Add(Ui.GetScaledIcon(this, Resources.Folder, Resources.folder32, dispose: false));
         // ICON_KEY
         imageList.Images.Add(Ui.GetScaledIcon(this, Resources.key, Resources.key32, dispose: false));
         // ICON_COLUMN
@@ -69,28 +62,18 @@ public partial class ExplorerControl : UserControl {
             Dock = DockStyle.Fill,
             FullRowSelect = true,
             LabelEdit = true,
-            ShowRootLines = false,
+            ShowRootLines = true,
         };
+        _tree.ImageList = imageList;
+        _tree.TreeViewNodeSorter = new ExplorerNodeComparer();
         _tree.AfterLabelEdit += Tree_AfterLabelEdit;
-        _tree.BeforeCollapse += Tree_BeforeCollapse;
         _tree.BeforeExpand += Tree_BeforeExpand;
         _tree.BeforeLabelEdit += Tree_BeforeLabelEdit;
         _tree.KeyDown += Tree_KeyDown;
         _tree.NodeMouseClick += Tree_NodeMouseClick;
         _tree.NodeMouseDoubleClick += Tree_NodeMouseDoubleClick;
-        _tree.ImageList = imageList;
         _tree.EnableDoubleBuffering();
         _toolStripContainer.ContentPanel.Controls.Add(_tree);
-
-        _pagesNode = _tree.Nodes.Add("Pages");
-        _pagesNode.ImageIndex = ICON_FOLDER;
-        _pagesNode.SelectedImageIndex = ICON_FOLDER;
-        _scriptsNode = _tree.Nodes.Add("Scripts");
-        _scriptsNode.ImageIndex = ICON_FOLDER;
-        _scriptsNode.SelectedImageIndex = ICON_FOLDER;
-        _tablesNode = _tree.Nodes.Add("Tables");
-        _tablesNode.ImageIndex = ICON_FOLDER;
-        _tablesNode.SelectedImageIndex = ICON_FOLDER;
 
         Ui ui = new(this, false);
         Padding buttonPadding = new(this.Scaled(2));
@@ -107,50 +90,52 @@ public partial class ExplorerControl : UserControl {
         };
     }
 
+    private sealed class ExplorerNodeComparer : IComparer {
+        public int Compare(object x, object y) {
+            var xNode = (TreeNode)x;
+            var yNode = (TreeNode)y;
+            if (xNode.Parent is null && yNode.Parent is null) {
+                var xType = (NotebookItemType)xNode.Tag;
+                var yType = (NotebookItemType)yNode.Tag;
+                var result = GetOrder(xType).CompareTo(GetOrder(yType));
+                if (result != 0) {
+                    return result;
+                }
+            }
+            return xNode.Name.CompareTo(yNode.Name);
+        }
+
+        private static int GetOrder(NotebookItemType t) =>
+            t switch {
+                NotebookItemType.Page => 0,
+                NotebookItemType.Script => 1,
+                NotebookItemType.Table => 2,
+                NotebookItemType.View => 2,
+                _ => throw new NotImplementedException()
+            };
+    }
+
     public void TakeFocus() {
         _tree.Select();
     }
-
-    private TreeNode GetRootNode(NotebookItemType type) =>
-        type switch {
-            NotebookItemType.Page => _pagesNode,
-            NotebookItemType.Table => _tablesNode,
-            NotebookItemType.Script => _scriptsNode,
-            NotebookItemType.View => _tablesNode,
-            _ => throw new ArgumentOutOfRangeException(nameof(type))
-        };
-
-    private NotebookItemType GetItemTypeForRootNode(TreeNode root) =>
-        ReferenceEquals(root, _pagesNode) ? NotebookItemType.Page :
-        ReferenceEquals(root, _tablesNode) ? NotebookItemType.Table :
-        ReferenceEquals(root, _scriptsNode) ? NotebookItemType.Script :
-        throw new ArgumentOutOfRangeException(nameof(root));
 
     private void HandleNotebookChange(NotebookChangeEventArgs e) {
         if (e.RemovedItems.Any() || e.AddedItems.Any()) {
             BeginInvoke(new Action(() => {
                 _tree.BeginUpdate();
                 try {
-                    HashSet<NotebookItemType> addedItemTypes = new();
                     foreach (var item in e.RemovedItems) {
-                        var root = GetRootNode(item.Type);
-                        foreach (TreeNode child in root.Nodes) {
-                            if (child.Text == item.Name) {
-                                child.Remove();
+                        foreach (TreeNode node in _tree.Nodes) {
+                            if (node.Text == item.Name && (NotebookItemType)node.Tag == item.Type) {
+                                node.Remove();
                                 break;
                             }
                         }
                     }
                     foreach (var item in e.AddedItems) {
-                        addedItemTypes.Add(item.Type);
-                        var root = GetRootNode(item.Type);
-                        int index;
-                        for (index = 0; index < root.Nodes.Count; index++) {
-                            if (item.Name.CompareTo(root.Nodes[index].Name) < 0) {
-                                break;
-                            }
-                        }
-                        var child = root.Nodes.Insert(index, item.Name);
+                        TreeNode child = new(item.Name);
+                        child.Tag = item.Type;
+                        _tree.Nodes.Add(child);
                         if (item.IsVirtualTable) {
                             child.ImageIndex = ICON_LINKED_TABLE;
                         } else {
@@ -176,15 +161,6 @@ public partial class ExplorerControl : UserControl {
                 } finally {
                     _tree.EndUpdate();
                 }
-
-                _pagesNode.Expand();
-                _scriptsNode.Expand();
-                _tablesNode.Expand();
-
-                // Work around an issue where the root nodes suddenly collapse, and the above calls to Expand don't
-                // take effect until the user clicks on the tree.
-                _tree.Visible = false;
-                _tree.Visible = true;
             }));
         }
     }
@@ -194,12 +170,12 @@ public partial class ExplorerControl : UserControl {
     }
 
     private void DoDelete() {
-        if (_tree.SelectedNode == null || _tree.SelectedNode.Parent == null) {
+        if (_tree.SelectedNode == null || _tree.SelectedNode.Parent != null) {
             return;
         }
         var node = _tree.SelectedNode;
         var name = node.Text;
-        var type = GetItemTypeForRootNode(node.Parent);
+        var type = (NotebookItemType)node.Tag;
 
         var choice = Ui.ShowTaskDialog(
             _mainForm,
@@ -223,8 +199,8 @@ public partial class ExplorerControl : UserControl {
         _manager.Rescan(notebookItemsOnly: !isTableOrView);
     }
 
-    private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
-        var isSelection = _tree.SelectedNode != null && _tree.SelectedNode.Parent != null;
+    private void ContextMenuStrip_Opening(object sender, CancelEventArgs e) {
+        var isSelection = _tree.SelectedNode != null && _tree.SelectedNode.Parent == null;
         _openMnu.Enabled = _deleteMnu.Enabled = _renameMnu.Enabled = isSelection;
     }
 
@@ -246,22 +222,15 @@ public partial class ExplorerControl : UserControl {
     }
 
     private void Tree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e) {
-        // Workaround: the double-click has already expanded or collapsed the node. Undo that.
-        if (_lastCollapseStopwatch.Elapsed < TimeSpan.FromMilliseconds(50)) {
-            e.Node.Expand();
-        } else if (_lastExpandStopwatch.Elapsed < TimeSpan.FromMilliseconds(50)) {
-            e.Node.Collapse();
-        }
-
         DoOpen(e.Node);
     }
 
     private void DoOpen(TreeNode node) {
         node ??= _tree.SelectedNode;
-        if (node == null || node.Parent == null) {
+        if (node == null || node.Parent != null) {
             return;
         }
-        var type = GetItemTypeForRootNode(node.Parent);
+        var type = (NotebookItemType)node.Tag;
         _manager.OpenItem(new NotebookItem(type, node.Text));
     }
 
@@ -280,8 +249,8 @@ public partial class ExplorerControl : UserControl {
     private void Tree_AfterLabelEdit(object sender, NodeLabelEditEventArgs e) {
         e.CancelEdit = true; // if this is a successful edit, we will update the label ourselves
         var node = e.Node;
-        var type = GetItemTypeForRootNode(node.Parent);
-
+        var type = (NotebookItemType)node.Tag;
+        
         if (e.Label == null) {
             return; // user did not change the name
         }
@@ -294,8 +263,8 @@ public partial class ExplorerControl : UserControl {
     }
 
     private void Tree_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e) {
-        // Don't allow renaming the root nodes.
-        if (e.Node.Parent == null) {
+        // Don't allow renaming the child nodes.
+        if (e.Node.Parent != null) {
             e.CancelEdit = true;
         }
     }
@@ -341,17 +310,10 @@ public partial class ExplorerControl : UserControl {
         }
     }
 
-    private readonly Stopwatch _lastExpandStopwatch = new();
-    private readonly Stopwatch _lastCollapseStopwatch = new();
-
     private void Tree_BeforeExpand(object sender, TreeViewCancelEventArgs e) {
-        _lastExpandStopwatch.Restart();
+        var type = (NotebookItemType)e.Node.Tag;
 
-        if (e.Node.Parent == null) {
-            return;
-        }
-
-        switch (GetItemTypeForRootNode(e.Node.Parent)) {
+        switch (type) {
             case NotebookItemType.Script:
                 PopulateScriptParameters(e.Node);
                 break;
@@ -361,16 +323,6 @@ public partial class ExplorerControl : UserControl {
                 PopulateTableColumns(e.Node);
                 break;
         }
-    }
-
-    private void Tree_BeforeCollapse(object sender, TreeViewCancelEventArgs e) {
-        // Cannot collapse the root nodes.
-        if (e.Node.Parent == null) {
-            e.Cancel = true;
-            return;
-        }
-
-        _lastCollapseStopwatch.Restart();
     }
 
     // Don't expand or collapse tree nodes on double-click. It interferes with double-click to open.
