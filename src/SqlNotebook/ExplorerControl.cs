@@ -127,60 +127,66 @@ public partial class ExplorerControl : UserControl {
         throw new ArgumentOutOfRangeException(nameof(root));
 
     private void HandleNotebookChange(NotebookChangeEventArgs e) {
-        HashSet<NotebookItemType> addedItemTypes = new();
         if (e.RemovedItems.Any() || e.AddedItems.Any()) {
-            BeginInvoke(new MethodInvoker(() => {
+            BeginInvoke(new Action(() => {
                 _tree.BeginUpdate();
-                foreach (var item in e.RemovedItems) {
-                    var root = GetRootNode(item.Type);
-                    foreach (TreeNode child in root.Nodes) {
-                        if (child.Text == item.Name) {
-                            child.Remove();
-                            break;
+                try {
+                    HashSet<NotebookItemType> addedItemTypes = new();
+                    foreach (var item in e.RemovedItems) {
+                        var root = GetRootNode(item.Type);
+                        foreach (TreeNode child in root.Nodes) {
+                            if (child.Text == item.Name) {
+                                child.Remove();
+                                break;
+                            }
                         }
                     }
-                }
-                foreach (var item in e.AddedItems) {
-                    addedItemTypes.Add(item.Type);
-                    var root = GetRootNode(item.Type);
-                    int index;
-                    for (index = 0; index < root.Nodes.Count; index++) {
-                        if (item.Name.CompareTo(root.Nodes[index].Name) < 0) {
-                            break;
+                    foreach (var item in e.AddedItems) {
+                        addedItemTypes.Add(item.Type);
+                        var root = GetRootNode(item.Type);
+                        int index;
+                        for (index = 0; index < root.Nodes.Count; index++) {
+                            if (item.Name.CompareTo(root.Nodes[index].Name) < 0) {
+                                break;
+                            }
                         }
-                    }
-                    var child = root.Nodes.Insert(index, item.Name);
-                    if (item.IsVirtualTable) {
-                        child.ImageIndex = ICON_LINKED_TABLE;
-                    } else {
-                        child.ImageIndex =
-                            item.Type switch {
-                                NotebookItemType.Page => ICON_PAGE,
-                                NotebookItemType.Script => ICON_SCRIPT,
-                                NotebookItemType.Table => ICON_TABLE,
-                                NotebookItemType.View => ICON_VIEW,
-                                _ => throw new NotImplementedException()
-                            };
-                    }
-                    child.SelectedImageIndex = child.ImageIndex;
+                        var child = root.Nodes.Insert(index, item.Name);
+                        if (item.IsVirtualTable) {
+                            child.ImageIndex = ICON_LINKED_TABLE;
+                        } else {
+                            child.ImageIndex =
+                                item.Type switch {
+                                    NotebookItemType.Page => ICON_PAGE,
+                                    NotebookItemType.Script => ICON_SCRIPT,
+                                    NotebookItemType.Table => ICON_TABLE,
+                                    NotebookItemType.View => ICON_VIEW,
+                                    _ => throw new NotImplementedException()
+                                };
+                        }
+                        child.SelectedImageIndex = child.ImageIndex;
 
-                    // For tables and views, we will show the columns as sub-nodes on-demand. For scripts, we will show
-                    // the parameters. We have to create a child node here so that the [+] button shows up. We will
-                    // replace it with the real items when the user expands the node.
-                    if (item.Type is NotebookItemType.Script or NotebookItemType.Table or NotebookItemType.View) {
-                        child.Nodes.Add("Loading...");
+                        // For tables and views, we will show the columns as sub-nodes on-demand. For scripts, we will show
+                        // the parameters. We have to create a child node here so that the [+] button shows up. We will
+                        // replace it with the real items when the user expands the node.
+                        if (item.Type is NotebookItemType.Script or NotebookItemType.Table or NotebookItemType.View) {
+                            child.Nodes.Add("Loading...");
+                        }
                     }
+                    _tree.Sort();
+                } finally {
+                    _tree.EndUpdate();
                 }
-                _tree.Sort();
-                _tree.EndUpdate();
+
+                _pagesNode.Expand();
+                _scriptsNode.Expand();
+                _tablesNode.Expand();
+
+                // Work around an issue where the root nodes suddenly collapse, and the above calls to Expand don't
+                // take effect until the user clicks on the tree.
+                _tree.Visible = false;
+                _tree.Visible = true;
             }));
         }
-
-        BeginInvoke(new Action(() => {
-            foreach (var itemType in addedItemTypes) {
-                GetRootNode(itemType).Expand();
-            }
-        }));
     }
 
     private void DeleteMnu_Click(object sender, EventArgs e) {
