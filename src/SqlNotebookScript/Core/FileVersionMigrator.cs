@@ -1,4 +1,5 @@
-﻿using SqlNotebookScript.Core.SqliteInterop;
+﻿using HtmlAgilityPack;
+using SqlNotebookScript.Core.SqliteInterop;
 using SqlNotebookScript.Utils;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace SqlNotebookScript.Core;
 
@@ -134,11 +136,15 @@ public static class FileVersionMigrator {
                         Parameters = scriptParameters.TryGetValue(item.Name, out var p) ? p : new()
                     });
                 } else if (item.Type == "Note") {
+                    HtmlDocument doc = new();
+                    doc.LoadHtml(item.Data);
+                    var str = Regex.Replace(doc.DocumentNode.InnerText.Replace("\r", ""), "\n\n\n+", "\n\n")
+                        .Replace("\n", "\r\n");
                     newUserData.Items.Add(new PageNotebookItemRecord {
                         Name = item.Name,
                         Blocks = new() {
                             new TextPageBlockRecord {
-                                Content = item.Data
+                                Content = str,
                             }
                         }
                     });

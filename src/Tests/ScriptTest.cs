@@ -22,10 +22,7 @@ public sealed partial class ScriptTest {
         }
 
         // Find the Tests directory by searching in the filesystem above this assembly.
-        var testsDir = typeof(ScriptTest).Assembly.Location;
-        while (!Path.GetFileName(testsDir).Equals("Tests", StringComparison.OrdinalIgnoreCase)) {
-            testsDir = Path.GetDirectoryName(testsDir);
-        }
+        var testsDir = TestUtil.GetTestsDir();
 
         // Locate the files directory.
         var filesDir = Path.Combine(testsDir, "files");
