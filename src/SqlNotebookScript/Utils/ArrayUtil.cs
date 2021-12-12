@@ -35,7 +35,7 @@ public static class ArrayUtil {
     }
 
     // write the element records (but not the initial sentinel nor count)
-    public static void ConvertToSqlArray(IReadOnlyList<object> objects, BinaryWriter writer) {
+    private static void ConvertToSqlArray(IReadOnlyList<object> objects, BinaryWriter writer) {
         var cbByte = sizeof(byte);
         var cbInt32 = sizeof(int);
         var cbInt64 = sizeof(long);
@@ -75,13 +75,12 @@ public static class ArrayUtil {
     }
 
     public static byte[] ConvertToSqlArray(IReadOnlyList<object> objects) {
-        using (var memoryStream = new MemoryStream())
-        using (var writer = new BinaryWriter(memoryStream)) {
-            writer.Write(_sentinel);
-            writer.Write((int)objects.Count);
-            ConvertToSqlArray(objects, writer);
-            return memoryStream.ToArray();
-        }
+        using var memoryStream = new MemoryStream();
+        using var writer = new BinaryWriter(memoryStream);
+        writer.Write(_sentinel);
+        writer.Write((int)objects.Count);
+        ConvertToSqlArray(objects, writer);
+        return memoryStream.ToArray();
     }
 
     private static void VerifySentinel(byte[] blob) {

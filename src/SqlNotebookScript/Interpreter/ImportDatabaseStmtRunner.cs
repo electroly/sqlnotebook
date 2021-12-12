@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -273,7 +274,7 @@ ORDER BY k.ORDINAL_POSITION;";
                 var srcSchemaName = command.CreateParameter();
                 srcSchemaName.ParameterName = "@srcSchemaName";
                 srcSchemaName.DbType = DbType.String;
-                srcSchemaName.Value = _srcSchemaName;
+                srcSchemaName.Value = string.IsNullOrEmpty(_srcSchemaName) ? "dbo" : _srcSchemaName;
                 command.Parameters.Add(srcSchemaName);
             }
 
@@ -303,10 +304,15 @@ ORDER BY k.ORDINAL_POSITION;";
         for (int i = 0; i < srcColumnNames.Count; i++) {
             var t = srcColumnTypes[i];
             string sqlType;
-            if (t == typeof(short) || t == typeof(int) || t == typeof(long) || t == typeof(byte) || t == typeof(bool)) {
+            if (t == typeof(short) || t == typeof(ushort) || t == typeof(int) || t == typeof(uint) ||
+                t == typeof(long) || t == typeof(ulong) || t == typeof(byte) || t == typeof(sbyte) ||
+                t == typeof(bool)
+                ) {
                 sqlType = "INTEGER";
             } else if (t == typeof(float) || t == typeof(double) || t == typeof(decimal)) {
                 sqlType = "REAL";
+            } else if (t == typeof(byte[]) || t == typeof(BitArray)) {
+                sqlType = "BLOB";
             } else {
                 sqlType = "TEXT";
             }
@@ -344,7 +350,23 @@ ORDER BY k.ORDINAL_POSITION;";
         void Produce(object[][] buffer, out int batchCount) {
             batchCount = 0;
             while (batchCount < buffer.Length && reader.Read()) {
-                reader.GetValues(buffer[batchCount]);
+                var thisBuffer = buffer[batchCount];
+                reader.GetValues(thisBuffer);
+                for (var i = 0; i < thisBuffer.Length; i++) {
+                    thisBuffer[i] =
+                        thisBuffer[i] switch {
+                            null or DBNull => null,
+                            short or ushort or int or uint or long or ulong or byte or sbyte or bool => Convert.ToInt64(thisBuffer[i]),
+                            float or double or decimal => Convert.ToDouble(thisBuffer[i]),
+                            DateTime a => $"{a:yyyy-MM-dd HH:mm:ss.fff}",
+                            DateTimeOffset a => $"{a.UtcDateTime:yyyy-MM-dd HH:mm:ss.fff}",
+                            TimeSpan a => (a < TimeSpan.Zero ? "-" : "") +
+                                a.ToString(a < TimeSpan.FromDays(1) ? @"hh\:mm\:ss\.fff" : @"d\.hh\:mm\:ss\.fff"),
+                            byte[] a => a,
+                            BitArray a => BitArrayToSqlArray(a),
+                            _ => Convert.ToString(thisBuffer[i])
+                        };
+                }
                 batchCount++;
             }
         }
@@ -357,5 +379,13 @@ ORDER BY k.ORDINAL_POSITION;";
         }
 
         OverlappedProducerConsumer.Go(NewBuffer, Produce, Consume, _cancel);
+    }
+
+    private static byte[] BitArrayToSqlArray(BitArray a) {
+        List<object> objectList = new(a.Count);
+        for (var i = 0; i < a.Count; i++) {
+            objectList.Add((long)(a[i] ? 1 : 0));
+        }
+        return ArrayUtil.ConvertToSqlArray(objectList);
     }
 }
