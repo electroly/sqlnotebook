@@ -9,7 +9,7 @@ using SqlNotebookScript.Utils;
 namespace SqlNotebook.Import.Csv;
 
 public partial class ImportCsvOptionsControl : UserControl {
-    private readonly List<Tuple<int, string>> _encodings = new List<Tuple<int, string>> {
+    private readonly List<Tuple<int, string>> _encodings = new() {
         Tuple.Create(0, "Auto detect")
         // populated in constructor
     };
@@ -26,12 +26,19 @@ public partial class ImportCsvOptionsControl : UserControl {
         Tuple.Create(ImportConversionFailOption.Abort, "Stop import with error")
     };
 
+    private readonly Tuple<BlankValuesOption, string>[] _blankValuesOptions = new[] {
+        Tuple.Create(BlankValuesOption.EmptyString, "Blank text"),
+        Tuple.Create(BlankValuesOption.Null, "NULL"),
+        Tuple.Create(BlankValuesOption.EmptyStringOrNull, "NULL for non-TEXT columns only")
+    };
+
     public Slot<int> SkipLines { get; } = new();
     public Slot<bool> HasColumnHeaders { get; } = new();
     public Slot<int> FileEncoding { get; } = new();
     public Slot<string> TargetTableName { get; } = new();
     public Slot<ImportTableExistsOption> IfTableExists { get; } = new();
     public Slot<ImportConversionFailOption> IfConversionFails { get; } = new();
+    public Slot<BlankValuesOption> BlankValues { get; } = new();
     public Slot<string> Separator { get; } = new();
 
     public ImportCsvOptionsControl(DatabaseSchema schema) {
@@ -39,7 +46,6 @@ public partial class ImportCsvOptionsControl : UserControl {
 
         Ui ui = new(this);
         ui.Init(_fileInputTitle);
-        ui.MarginBottom(_fileInputTitle);
         ui.Init(_sourceFlow);
         ui.Init(_skipLinesFlow);
         ui.Init(_skipLinesLabel);
@@ -56,7 +62,6 @@ public partial class ImportCsvOptionsControl : UserControl {
         ui.Init(_separatorCombo, 10);
         ui.Init(_tableOutputTitle);
         ui.MarginTop(_tableOutputTitle);
-        ui.MarginBottom(_tableOutputTitle);
         ui.Init(_tableLabel);
         ui.Init(_targetFlow);
         ui.Init(_tableNameFlow);
@@ -66,9 +71,14 @@ public partial class ImportCsvOptionsControl : UserControl {
         ui.Init(_ifExistsFlow);
         ui.Init(_ifExistsCmb, 30);
         ui.Init(_convertFailFlow);
+        ui.MarginRight(_convertFailFlow);
         ui.Init(_ifConversionFailsLabel);
-        ui.MarginTop(_ifConversionFailsLabel);
         ui.Init(_convertFailCmb, 30);
+        ui.Init(_targetFlow2);
+        ui.MarginTop(_targetFlow2);
+        ui.Init(_blankValuesFlow);
+        ui.Init(_blankValuesLabel);
+        ui.Init(_blankValuesCombo, 40);
 
         foreach (var tableName in schema.Tables.Keys) {
             _tableCmb.Items.Add(tableName);
@@ -236,15 +246,21 @@ public partial class ImportCsvOptionsControl : UserControl {
         _convertFailCmb.DisplayMember = "Item2";
         _convertFailCmb.DataSource = _conversionFailOptions;
 
+        _blankValuesCombo.ValueMember = "Item1";
+        _blankValuesCombo.DisplayMember = "Item2";
+        _blankValuesCombo.DataSource = _blankValuesOptions;
+
         _skipLinesTxt.BindValue(SkipLines);
         _headerChk.BindChecked(HasColumnHeaders);
         _encodingCmb.BindSelectedValue(FileEncoding);
         _tableCmb.BindText(TargetTableName);
         _ifExistsCmb.BindSelectedValue(IfTableExists);
         _convertFailCmb.BindSelectedValue(IfConversionFails);
+        _blankValuesCombo.BindSelectedValue(BlankValues);
         _separatorCombo.BindText(Separator);
 
         _separatorCombo.SelectionLength = 0;
+        BlankValues.Value = BlankValuesOption.Null;
     }
 
     public void SelectTableCombo() {

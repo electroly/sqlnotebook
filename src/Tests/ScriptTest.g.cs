@@ -39,6 +39,10 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_GETDATE_sql() => TestScript(@"GETDATE.sql");
     [TestMethod] public void Test_GETUTCDATE_sql() => TestScript(@"GETUTCDATE.sql");
     [TestMethod] public void Test_HOST_NAME_sql() => TestScript(@"HOST_NAME.sql");
+    [TestMethod] public void Test_IMPORT_CSV_BLANK_VALUES_1_sql() => TestScript(@"IMPORT CSV BLANK_VALUES 1.sql");
+    [TestMethod] public void Test_IMPORT_CSV_BLANK_VALUES_2_sql() => TestScript(@"IMPORT CSV BLANK_VALUES 2.sql");
+    [TestMethod] public void Test_IMPORT_CSV_BLANK_VALUES_3_sql() => TestScript(@"IMPORT CSV BLANK_VALUES 3.sql");
+    [TestMethod] public void Test_IMPORT_CSV_BLANK_VALUES_DEFAULT_sql() => TestScript(@"IMPORT CSV BLANK_VALUES DEFAULT.sql");
     [TestMethod] public void Test_IMPORT_CSV_FILE_ENCODING_sql() => TestScript(@"IMPORT CSV FILE_ENCODING.sql");
     [TestMethod] public void Test_IMPORT_CSV_HEADER_ROW_sql() => TestScript(@"IMPORT CSV HEADER_ROW.sql");
     [TestMethod] public void Test_IMPORT_CSV_IF_CONVERSION_FAILS_sql() => TestScript(@"IMPORT CSV IF_CONVERSION_FAILS.sql");
@@ -54,6 +58,10 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_IMPORT_TXT_TAKE_LINES_sql() => TestScript(@"IMPORT TXT TAKE_LINES.sql");
     [TestMethod] public void Test_IMPORT_TXT_TEMPORARY_TABLE_sql() => TestScript(@"IMPORT TXT TEMPORARY_TABLE.sql");
     [TestMethod] public void Test_IMPORT_TXT_TRUNCATE_EXISTING_TABLE_sql() => TestScript(@"IMPORT TXT TRUNCATE_EXISTING_TABLE.sql");
+    [TestMethod] public void Test_IMPORT_XLS_BLANK_VALUES_1_sql() => TestScript(@"IMPORT XLS BLANK_VALUES 1.sql");
+    [TestMethod] public void Test_IMPORT_XLS_BLANK_VALUES_2_sql() => TestScript(@"IMPORT XLS BLANK_VALUES 2.sql");
+    [TestMethod] public void Test_IMPORT_XLS_BLANK_VALUES_3_sql() => TestScript(@"IMPORT XLS BLANK_VALUES 3.sql");
+    [TestMethod] public void Test_IMPORT_XLS_BLANK_VALUES_DEFAULT_sql() => TestScript(@"IMPORT XLS BLANK_VALUES DEFAULT.sql");
     [TestMethod] public void Test_IMPORT_XLS_FIRST_COLUMN_first_and_last__letter_sql() => TestScript(@"IMPORT XLS FIRST_COLUMN first and last, letter.sql");
     [TestMethod] public void Test_IMPORT_XLS_FIRST_COLUMN_first_and_last__number_sql() => TestScript(@"IMPORT XLS FIRST_COLUMN first and last, number.sql");
     [TestMethod] public void Test_IMPORT_XLS_FIRST_COLUMN_first_beyond_end_of_data_sql() => TestScript(@"IMPORT XLS FIRST_COLUMN first beyond end of data.sql");

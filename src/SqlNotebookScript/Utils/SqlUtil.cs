@@ -39,6 +39,7 @@ public static class SqlUtil {
         bool truncateExistingTable,
         bool stopAtFirstBlankRow,
         IfConversionFails ifConversionFails,
+        BlankValuesOption blankValuesMethod,
         Notebook notebook,
         ScriptRunner runner,
         ScriptEnv env
@@ -50,7 +51,8 @@ public static class SqlUtil {
         }
         CreateOrTruncateTable(mappings, dstTableName, temporaryTable, truncateExistingTable, notebook);
         VerifyColumnsExist(mappings.Select(x => x.DstColumnName), dstTableName, notebook);
-        InsertDataRows(dataRows, srcColNames, mappings, dstTableName, ifConversionFails, stopAtFirstBlankRow, notebook);
+        InsertDataRows(dataRows, srcColNames, mappings, dstTableName, ifConversionFails, stopAtFirstBlankRow,
+            blankValuesMethod, notebook);
     }
 
     public static string GetInsertSql(string tableName, IReadOnlyList<ImportColumnMapping> mappings) {
@@ -242,6 +244,7 @@ public static class SqlUtil {
         string dstTableName,
         IfConversionFails ifConversionFails,
         bool stopAtFirstBlankRow,
+        BlankValuesOption blankValuesMethod,
         Notebook notebook
         ) {
         // Find the source column index for each source mapping.
@@ -284,6 +287,23 @@ public static class SqlUtil {
                 var srcColIndex = sourceColumnIndices[mappingIndex];
                 var originalValue = srcColIndex < row.Length ? row[srcColIndex] : "";
                 var typeConversion = mappings[mappingIndex].ImportColumn.TypeConversion ?? Ast.TypeConversion.Text;
+
+                var isBlank =
+                    (originalValue is string s && s.Length == 0) ||
+                    originalValue is null or DBNull;
+                if (isBlank) {
+                    switch (blankValuesMethod) {
+                        case BlankValuesOption.Null:
+                        case BlankValuesOption.EmptyStringOrNull when (typeConversion != Ast.TypeConversion.Text):
+                            insertArgs.Add(DBNull.Value);
+                            continue;
+
+                        case BlankValuesOption.EmptyString:
+                        case BlankValuesOption.EmptyStringOrNull when (typeConversion == Ast.TypeConversion.Text):
+                            originalValue = "";
+                            break;
+                    }
+                }
 
                 if (TryParseValue(originalValue, typeConversion, out var converted)) {
                     insertArgs.Add(converted);
@@ -407,10 +427,4 @@ public static class SqlUtil {
         Marshal.Copy(inputArrayNative, outputArray, 0, cb);
         return outputArray;
     }
-}
-
-public enum IfConversionFails {
-    ImportAsText = 1,
-    SkipRow = 2,
-    Abort = 3
 }

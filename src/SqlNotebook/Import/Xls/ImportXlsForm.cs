@@ -24,6 +24,12 @@ public partial class ImportXlsForm : ZForm {
         Tuple.Create(ImportConversionFailOption.Abort, "Stop import with error")
     };
 
+    private readonly Tuple<BlankValuesOption, string>[] _blankValuesOptions = new[] {
+        Tuple.Create(BlankValuesOption.EmptyString, "Blank text"),
+        Tuple.Create(BlankValuesOption.Null, "NULL"),
+        Tuple.Create(BlankValuesOption.EmptyStringOrNull, "NULL for non-TEXT columns only")
+    };
+
     private readonly List<Tuple<int, string>> _sheets = new();
     private readonly XlsInput _input;
     private readonly NotebookManager _manager;
@@ -75,20 +81,21 @@ public partial class ImportXlsForm : ZForm {
             ui.Init(_sheetLabel);
             ui.Init(_sheetCombo);
             ui.Init(_originalFilePanel);
+
             ui.Init(_optionsOuterTable);
             ui.Init(_optionsScrollPanel);
             ui.InitHeader(_optionsLabel);
-            ui.Init(_optionsTable);
-            ui.PadBig(_optionsTable);
+            ui.Init(_optionsFlow);
+            ui.PadBig(_optionsFlow);
+
             ui.Init(_sourceLabel);
+            ui.Init(_srcTable);
             ui.Init(_specificColumnsCheck);
-            ui.Init(_specificColumnsFlow);
             ui.Init(_columnStartText, 10);
             ui.Init(_columnToLabel);
             ui.Init(_columnEndText, 10);
             ui.Init(_columnRangeLabel);
             ui.Init(_specificRowsCheck);
-            ui.Init(_specificRowsFlow);
             ui.Init(_rowStartText, 10);
             ui.Init(_rowToLabel);
             ui.Init(_rowEndText, 10);
@@ -97,17 +104,28 @@ public partial class ImportXlsForm : ZForm {
             ui.MarginBottom(_useSelectionLink);
             ui.Init(_columnNamesCheck);
             ui.Init(_stopAtFirstBlankRowCheck);
+            
             ui.Init(_targetLabel);
             ui.MarginTop(_targetLabel);
+            ui.Init(_dstFlow1);
+            ui.Init(_tableNameFlow);
             ui.Init(_tableNameLabel);
             ui.Init(_tableNameCombo, 40);
             ui.MarginBottom(_tableNameCombo);
             ui.MarginRight(_tableNameCombo);
+            ui.Init(_ifTableExistsFlow);
             ui.Init(_ifTableExistsLabel);
             ui.Init(_ifExistsCombo, 30);
             ui.MarginRight(_ifExistsCombo);
+            ui.Init(_dstFlow2);
+            ui.Init(_convertFailFlow);
             ui.Init(_ifConversionFailsLabel);
             ui.Init(_convertFailCombo, 30);
+            ui.MarginRight(_convertFailCombo);
+            ui.Init(_blankValuesFlow);
+            ui.Init(_blankValuesLabel);
+            ui.Init(_blankValuesCombo, 40);
+
             ui.Init(_columnsTable);
             ui.InitHeader(_columnsLabel);
             ui.Init(_buttonFlow1);
@@ -121,6 +139,8 @@ public partial class ImportXlsForm : ZForm {
             _sheetCombo.DataSource = _sheets;
             _ifExistsCombo.DataSource = _ifExistsOptions;
             _convertFailCombo.DataSource = _conversionFailOptions;
+            _blankValuesCombo.DataSource = _blankValuesOptions;
+            _blankValuesCombo.SelectedValue = BlankValuesOption.Null;
             EnableDisableRowColumnTextboxes();
             LoadOriginalSheetPreview();
             LoadColumns();
@@ -325,6 +345,7 @@ public partial class ImportXlsForm : ZForm {
         var ifConversionFails = (ImportConversionFailOption)_convertFailCombo.SelectedValue;
         var sqlColumnList = GetValidatedSqlColumnList();
         var stopAtFirstBlankRow = _stopAtFirstBlankRowCheck.Checked;
+        var blankValues = (BlankValuesOption)_blankValuesCombo.SelectedValue;
 
         StringBuilder sb = new();
 
@@ -358,7 +379,8 @@ public partial class ImportXlsForm : ZForm {
         sb.AppendLine($"    STOP_AT_FIRST_BLANK_ROW: {(stopAtFirstBlankRow ? 1 : 0)},");
         sb.AppendLine($"    HEADER_ROW: {(columnHeaders == ColumnHeadersOption.Present ? 1 : 0)}, -- {columnHeaders.GetDescription()}");
         sb.AppendLine($"    TRUNCATE_EXISTING_TABLE: {(ifTableExists == ImportTableExistsOption.DeleteExistingRows ? 1 : 0)}, -- {ifTableExists.GetDescription()}");
-        sb.AppendLine($"    IF_CONVERSION_FAILS: {(int)ifConversionFails} -- {ifConversionFails.GetDescription()}");
+        sb.AppendLine($"    IF_CONVERSION_FAILS: {(int)ifConversionFails}, -- {ifConversionFails.GetDescription()}");
+        sb.AppendLine($"    BLANK_VALUES: {(int)blankValues} -- {blankValues.GetDescription()}");
         sb.AppendLine($");");
 
         return sb.ToString();

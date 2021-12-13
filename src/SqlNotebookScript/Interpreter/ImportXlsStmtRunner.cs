@@ -25,6 +25,7 @@ public sealed class ImportXlsStmtRunner {
     private readonly bool _temporaryTable = false;
     private readonly bool _stopAtFirstBlankRow = true;
     private readonly IfConversionFails _ifConversionFails = IfConversionFails.ImportAsText;
+    private readonly BlankValuesOption _blankValuesMethod = BlankValuesOption.Null;
 
     public static void Run(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt) {
         var importer = new ImportXlsStmtRunner(notebook, env, runner, stmt);
@@ -106,6 +107,11 @@ public sealed class ImportXlsStmtRunner {
                     _stopAtFirstBlankRow = _stmt.OptionsList.GetOptionBool(option, _runner, _env, true);
                     break;
 
+                case "BLANK_VALUES":
+                    _blankValuesMethod = (BlankValuesOption)_stmt.OptionsList.GetOptionLong(
+                        option, _runner, _env, 2, minValue: 1, maxValue: 3);
+                    break;
+
                 default:
                     throw new Exception($"\"{option}\" is not a recognized option name.");
             }
@@ -125,6 +131,7 @@ public sealed class ImportXlsStmtRunner {
                 truncateExistingTable: _truncateExistingTable, 
                 stopAtFirstBlankRow: _stopAtFirstBlankRow,
                 ifConversionFails: _ifConversionFails, 
+                blankValuesMethod: _blankValuesMethod,
                 notebook: _notebook, 
                 runner: _runner,
                 env: _env);

@@ -24,6 +24,7 @@ public sealed class ImportCsvStmtRunner {
     private readonly char _separator = ',';
     private readonly Encoding _fileEncoding = null; // or null for automatic
     private readonly IfConversionFails _ifConversionFails = IfConversionFails.ImportAsText;
+    private readonly BlankValuesOption _blankValuesMethod = BlankValuesOption.Null;
 
     // must be run from the SQLite thread
     public static void Run(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportCsvStmt stmt) {
@@ -80,6 +81,11 @@ public sealed class ImportCsvStmtRunner {
                         option, _runner, _env, 1, minValue: 1, maxValue: 3);
                     break;
 
+                case "BLANK_VALUES":
+                    _blankValuesMethod = (BlankValuesOption)_stmt.OptionsList.GetOptionLong(
+                        option, _runner, _env, 2, minValue: 1, maxValue: 3);
+                    break;
+
                 default:
                     throw new Exception($"\"{option}\" is not a recognized option name.");
             }
@@ -106,6 +112,7 @@ public sealed class ImportCsvStmtRunner {
             _truncateExistingTable,
             false, // stopAtFirstBlankRow
             _ifConversionFails,
+            _blankValuesMethod,
             _notebook,
             _runner,
             _env);

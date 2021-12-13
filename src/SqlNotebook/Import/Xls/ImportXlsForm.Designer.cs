@@ -32,30 +32,37 @@ namespace SqlNotebook.Import.Xls {
             this._optionsLabel = new System.Windows.Forms.Label();
             this._optionsOuterTable = new System.Windows.Forms.TableLayoutPanel();
             this._optionsScrollPanel = new System.Windows.Forms.Panel();
-            this._optionsTable = new System.Windows.Forms.TableLayoutPanel();
-            this._ifConversionFailsLabel = new System.Windows.Forms.Label();
-            this._specificRowsCheck = new System.Windows.Forms.CheckBox();
-            this._specificRowsFlow = new System.Windows.Forms.FlowLayoutPanel();
-            this._rowStartText = new System.Windows.Forms.TextBox();
-            this._rowToLabel = new System.Windows.Forms.Label();
-            this._rowEndText = new System.Windows.Forms.TextBox();
-            this._rowRangeLabel = new System.Windows.Forms.Label();
-            this._specificColumnsCheck = new System.Windows.Forms.CheckBox();
-            this._specificColumnsFlow = new System.Windows.Forms.FlowLayoutPanel();
-            this._columnStartText = new System.Windows.Forms.TextBox();
-            this._columnToLabel = new System.Windows.Forms.Label();
-            this._columnEndText = new System.Windows.Forms.TextBox();
-            this._columnRangeLabel = new System.Windows.Forms.Label();
+            this._optionsFlow = new System.Windows.Forms.FlowLayoutPanel();
             this._sourceLabel = new System.Windows.Forms.Label();
+            this._srcTable = new System.Windows.Forms.TableLayoutPanel();
+            this._useSelectionLink = new System.Windows.Forms.LinkLabel();
+            this._rowRangeLabel = new System.Windows.Forms.Label();
+            this._rowEndText = new System.Windows.Forms.TextBox();
+            this._rowToLabel = new System.Windows.Forms.Label();
+            this._rowStartText = new System.Windows.Forms.TextBox();
+            this._columnRangeLabel = new System.Windows.Forms.Label();
+            this._specificRowsCheck = new System.Windows.Forms.CheckBox();
+            this._columnEndText = new System.Windows.Forms.TextBox();
+            this._columnToLabel = new System.Windows.Forms.Label();
+            this._columnStartText = new System.Windows.Forms.TextBox();
+            this._specificColumnsCheck = new System.Windows.Forms.CheckBox();
             this._columnNamesCheck = new System.Windows.Forms.CheckBox();
+            this._stopAtFirstBlankRowCheck = new System.Windows.Forms.CheckBox();
             this._targetLabel = new System.Windows.Forms.Label();
+            this._dstFlow1 = new System.Windows.Forms.FlowLayoutPanel();
+            this._tableNameFlow = new System.Windows.Forms.FlowLayoutPanel();
             this._tableNameLabel = new System.Windows.Forms.Label();
             this._tableNameCombo = new System.Windows.Forms.ComboBox();
-            this._useSelectionLink = new System.Windows.Forms.LinkLabel();
+            this._ifTableExistsFlow = new System.Windows.Forms.FlowLayoutPanel();
             this._ifTableExistsLabel = new System.Windows.Forms.Label();
             this._ifExistsCombo = new System.Windows.Forms.ComboBox();
+            this._dstFlow2 = new System.Windows.Forms.FlowLayoutPanel();
+            this._convertFailFlow = new System.Windows.Forms.FlowLayoutPanel();
+            this._ifConversionFailsLabel = new System.Windows.Forms.Label();
             this._convertFailCombo = new System.Windows.Forms.ComboBox();
-            this._stopAtFirstBlankRowCheck = new System.Windows.Forms.CheckBox();
+            this._blankValuesFlow = new System.Windows.Forms.FlowLayoutPanel();
+            this._blankValuesLabel = new System.Windows.Forms.Label();
+            this._blankValuesCombo = new System.Windows.Forms.ComboBox();
             this._buttonFlow1 = new System.Windows.Forms.FlowLayoutPanel();
             this._lowerSplit = new System.Windows.Forms.SplitContainer();
             this._originalFileLabel = new System.Windows.Forms.Label();
@@ -73,9 +80,14 @@ namespace SqlNotebook.Import.Xls {
             this._columnsTable.SuspendLayout();
             this._optionsOuterTable.SuspendLayout();
             this._optionsScrollPanel.SuspendLayout();
-            this._optionsTable.SuspendLayout();
-            this._specificRowsFlow.SuspendLayout();
-            this._specificColumnsFlow.SuspendLayout();
+            this._optionsFlow.SuspendLayout();
+            this._srcTable.SuspendLayout();
+            this._dstFlow1.SuspendLayout();
+            this._tableNameFlow.SuspendLayout();
+            this._ifTableExistsFlow.SuspendLayout();
+            this._dstFlow2.SuspendLayout();
+            this._convertFailFlow.SuspendLayout();
+            this._blankValuesFlow.SuspendLayout();
             this._buttonFlow1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._lowerSplit)).BeginInit();
             this._lowerSplit.Panel1.SuspendLayout();
@@ -163,198 +175,34 @@ namespace SqlNotebook.Import.Xls {
             // 
             this._optionsScrollPanel.AutoScroll = true;
             this._optionsScrollPanel.BackColor = System.Drawing.Color.White;
-            this._optionsScrollPanel.Controls.Add(this._optionsTable);
+            this._optionsScrollPanel.Controls.Add(this._optionsFlow);
             this._optionsScrollPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._optionsScrollPanel.Location = new System.Drawing.Point(3, 28);
             this._optionsScrollPanel.Name = "_optionsScrollPanel";
             this._optionsScrollPanel.Size = new System.Drawing.Size(565, 482);
             this._optionsScrollPanel.TabIndex = 1;
             // 
-            // _optionsTable
+            // _optionsFlow
             // 
-            this._optionsTable.AutoSize = true;
-            this._optionsTable.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this._optionsTable.ColumnCount = 3;
-            this._optionsTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this._optionsTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this._optionsTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this._optionsTable.Controls.Add(this._ifConversionFailsLabel, 0, 9);
-            this._optionsTable.Controls.Add(this._specificRowsCheck, 0, 2);
-            this._optionsTable.Controls.Add(this._specificRowsFlow, 1, 2);
-            this._optionsTable.Controls.Add(this._specificColumnsCheck, 0, 1);
-            this._optionsTable.Controls.Add(this._specificColumnsFlow, 1, 1);
-            this._optionsTable.Controls.Add(this._sourceLabel, 0, 0);
-            this._optionsTable.Controls.Add(this._columnNamesCheck, 0, 4);
-            this._optionsTable.Controls.Add(this._targetLabel, 0, 6);
-            this._optionsTable.Controls.Add(this._tableNameLabel, 0, 7);
-            this._optionsTable.Controls.Add(this._tableNameCombo, 0, 8);
-            this._optionsTable.Controls.Add(this._useSelectionLink, 1, 3);
-            this._optionsTable.Controls.Add(this._ifTableExistsLabel, 2, 7);
-            this._optionsTable.Controls.Add(this._ifExistsCombo, 2, 8);
-            this._optionsTable.Controls.Add(this._convertFailCombo, 0, 10);
-            this._optionsTable.Controls.Add(this._stopAtFirstBlankRowCheck, 0, 5);
-            this._optionsTable.Location = new System.Drawing.Point(0, 0);
-            this._optionsTable.Name = "_optionsTable";
-            this._optionsTable.RowCount = 11;
-            this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._optionsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this._optionsTable.Size = new System.Drawing.Size(475, 359);
-            this._optionsTable.TabIndex = 1;
-            // 
-            // _ifConversionFailsLabel
-            // 
-            this._ifConversionFailsLabel.AutoSize = true;
-            this._ifConversionFailsLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._ifConversionFailsLabel.Location = new System.Drawing.Point(3, 295);
-            this._ifConversionFailsLabel.Name = "_ifConversionFailsLabel";
-            this._ifConversionFailsLabel.Size = new System.Drawing.Size(213, 25);
-            this._ifConversionFailsLabel.TabIndex = 35;
-            this._ifConversionFailsLabel.Text = "If data conversion &fails:";
-            this._ifConversionFailsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // _specificRowsCheck
-            // 
-            this._specificRowsCheck.AutoSize = true;
-            this._specificRowsCheck.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._specificRowsCheck.Location = new System.Drawing.Point(3, 71);
-            this._specificRowsCheck.Name = "_specificRowsCheck";
-            this._specificRowsCheck.Size = new System.Drawing.Size(213, 37);
-            this._specificRowsCheck.TabIndex = 2;
-            this._specificRowsCheck.Text = "Specific &rows only:";
-            this._specificRowsCheck.UseVisualStyleBackColor = true;
-            this._specificRowsCheck.CheckedChanged += new System.EventHandler(this.SpecificRowsCheck_CheckedChanged);
-            // 
-            // _specificRowsFlow
-            // 
-            this._specificRowsFlow.AutoSize = true;
-            this._specificRowsFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this._optionsTable.SetColumnSpan(this._specificRowsFlow, 2);
-            this._specificRowsFlow.Controls.Add(this._rowStartText);
-            this._specificRowsFlow.Controls.Add(this._rowToLabel);
-            this._specificRowsFlow.Controls.Add(this._rowEndText);
-            this._specificRowsFlow.Controls.Add(this._rowRangeLabel);
-            this._specificRowsFlow.Location = new System.Drawing.Point(222, 71);
-            this._specificRowsFlow.Name = "_specificRowsFlow";
-            this._specificRowsFlow.Size = new System.Drawing.Size(208, 37);
-            this._specificRowsFlow.TabIndex = 3;
-            this._specificRowsFlow.WrapContents = false;
-            // 
-            // _rowStartText
-            // 
-            this._rowStartText.Location = new System.Drawing.Point(3, 3);
-            this._rowStartText.Name = "_rowStartText";
-            this._rowStartText.Size = new System.Drawing.Size(57, 31);
-            this._rowStartText.TabIndex = 0;
-            this._rowStartText.TextChanged += new System.EventHandler(this.SpecificRowColumnText_TextChanged);
-            // 
-            // _rowToLabel
-            // 
-            this._rowToLabel.AutoSize = true;
-            this._rowToLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._rowToLabel.Location = new System.Drawing.Point(66, 0);
-            this._rowToLabel.Name = "_rowToLabel";
-            this._rowToLabel.Size = new System.Drawing.Size(29, 37);
-            this._rowToLabel.TabIndex = 1;
-            this._rowToLabel.Text = "to";
-            this._rowToLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // _rowEndText
-            // 
-            this._rowEndText.Location = new System.Drawing.Point(101, 3);
-            this._rowEndText.Name = "_rowEndText";
-            this._rowEndText.Size = new System.Drawing.Size(39, 31);
-            this._rowEndText.TabIndex = 2;
-            this._rowEndText.TextChanged += new System.EventHandler(this.SpecificRowColumnText_TextChanged);
-            // 
-            // _rowRangeLabel
-            // 
-            this._rowRangeLabel.AutoSize = true;
-            this._rowRangeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._rowRangeLabel.Location = new System.Drawing.Point(146, 0);
-            this._rowRangeLabel.Name = "_rowRangeLabel";
-            this._rowRangeLabel.Size = new System.Drawing.Size(59, 37);
-            this._rowRangeLabel.TabIndex = 3;
-            this._rowRangeLabel.Text = "(1-10)";
-            this._rowRangeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // _specificColumnsCheck
-            // 
-            this._specificColumnsCheck.AutoSize = true;
-            this._specificColumnsCheck.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._specificColumnsCheck.Location = new System.Drawing.Point(3, 28);
-            this._specificColumnsCheck.Name = "_specificColumnsCheck";
-            this._specificColumnsCheck.Size = new System.Drawing.Size(213, 37);
-            this._specificColumnsCheck.TabIndex = 0;
-            this._specificColumnsCheck.Text = "Specific &columns only:";
-            this._specificColumnsCheck.UseVisualStyleBackColor = true;
-            this._specificColumnsCheck.CheckedChanged += new System.EventHandler(this.SpecificColumnsCheck_CheckedChanged);
-            // 
-            // _specificColumnsFlow
-            // 
-            this._specificColumnsFlow.AutoSize = true;
-            this._specificColumnsFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this._optionsTable.SetColumnSpan(this._specificColumnsFlow, 2);
-            this._specificColumnsFlow.Controls.Add(this._columnStartText);
-            this._specificColumnsFlow.Controls.Add(this._columnToLabel);
-            this._specificColumnsFlow.Controls.Add(this._columnEndText);
-            this._specificColumnsFlow.Controls.Add(this._columnRangeLabel);
-            this._specificColumnsFlow.Location = new System.Drawing.Point(222, 28);
-            this._specificColumnsFlow.Name = "_specificColumnsFlow";
-            this._specificColumnsFlow.Size = new System.Drawing.Size(200, 37);
-            this._specificColumnsFlow.TabIndex = 1;
-            this._specificColumnsFlow.WrapContents = false;
-            // 
-            // _columnStartText
-            // 
-            this._columnStartText.Location = new System.Drawing.Point(3, 3);
-            this._columnStartText.Name = "_columnStartText";
-            this._columnStartText.Size = new System.Drawing.Size(57, 31);
-            this._columnStartText.TabIndex = 0;
-            this._columnStartText.TextChanged += new System.EventHandler(this.SpecificRowColumnText_TextChanged);
-            // 
-            // _columnToLabel
-            // 
-            this._columnToLabel.AutoSize = true;
-            this._columnToLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._columnToLabel.Location = new System.Drawing.Point(66, 0);
-            this._columnToLabel.Name = "_columnToLabel";
-            this._columnToLabel.Size = new System.Drawing.Size(29, 37);
-            this._columnToLabel.TabIndex = 1;
-            this._columnToLabel.Text = "to";
-            this._columnToLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // _columnEndText
-            // 
-            this._columnEndText.Location = new System.Drawing.Point(101, 3);
-            this._columnEndText.Name = "_columnEndText";
-            this._columnEndText.Size = new System.Drawing.Size(39, 31);
-            this._columnEndText.TabIndex = 2;
-            this._columnEndText.TextChanged += new System.EventHandler(this.SpecificRowColumnText_TextChanged);
-            // 
-            // _columnRangeLabel
-            // 
-            this._columnRangeLabel.AutoSize = true;
-            this._columnRangeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._columnRangeLabel.Location = new System.Drawing.Point(146, 0);
-            this._columnRangeLabel.Name = "_columnRangeLabel";
-            this._columnRangeLabel.Size = new System.Drawing.Size(51, 37);
-            this._columnRangeLabel.TabIndex = 3;
-            this._columnRangeLabel.Text = "(A-Z)";
-            this._columnRangeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this._optionsFlow.AutoSize = true;
+            this._optionsFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._optionsFlow.Controls.Add(this._sourceLabel);
+            this._optionsFlow.Controls.Add(this._srcTable);
+            this._optionsFlow.Controls.Add(this._columnNamesCheck);
+            this._optionsFlow.Controls.Add(this._stopAtFirstBlankRowCheck);
+            this._optionsFlow.Controls.Add(this._targetLabel);
+            this._optionsFlow.Controls.Add(this._dstFlow1);
+            this._optionsFlow.Controls.Add(this._dstFlow2);
+            this._optionsFlow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this._optionsFlow.Location = new System.Drawing.Point(0, 0);
+            this._optionsFlow.Name = "_optionsFlow";
+            this._optionsFlow.Size = new System.Drawing.Size(481, 377);
+            this._optionsFlow.TabIndex = 2;
+            this._optionsFlow.WrapContents = false;
             // 
             // _sourceLabel
             // 
             this._sourceLabel.AutoSize = true;
-            this._optionsTable.SetColumnSpan(this._sourceLabel, 2);
             this._sourceLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this._sourceLabel.Location = new System.Drawing.Point(3, 0);
             this._sourceLabel.Name = "_sourceLabel";
@@ -362,55 +210,41 @@ namespace SqlNotebook.Import.Xls {
             this._sourceLabel.TabIndex = 4;
             this._sourceLabel.Text = "Source";
             // 
-            // _columnNamesCheck
+            // _srcTable
             // 
-            this._columnNamesCheck.AutoSize = true;
-            this._columnNamesCheck.Checked = true;
-            this._columnNamesCheck.CheckState = System.Windows.Forms.CheckState.Checked;
-            this._optionsTable.SetColumnSpan(this._columnNamesCheck, 3);
-            this._columnNamesCheck.Location = new System.Drawing.Point(3, 139);
-            this._columnNamesCheck.Name = "_columnNamesCheck";
-            this._columnNamesCheck.Size = new System.Drawing.Size(309, 29);
-            this._columnNamesCheck.TabIndex = 5;
-            this._columnNamesCheck.Text = "Sheet includes column &header row";
-            this._columnNamesCheck.UseVisualStyleBackColor = true;
-            this._columnNamesCheck.CheckedChanged += new System.EventHandler(this.ColumnNamesCheck_CheckedChanged);
-            // 
-            // _targetLabel
-            // 
-            this._targetLabel.AutoSize = true;
-            this._targetLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this._targetLabel.Location = new System.Drawing.Point(3, 206);
-            this._targetLabel.Name = "_targetLabel";
-            this._targetLabel.Size = new System.Drawing.Size(110, 25);
-            this._targetLabel.TabIndex = 6;
-            this._targetLabel.Text = "Destination";
-            // 
-            // _tableNameLabel
-            // 
-            this._tableNameLabel.AutoSize = true;
-            this._tableNameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._tableNameLabel.Location = new System.Drawing.Point(3, 231);
-            this._tableNameLabel.Name = "_tableNameLabel";
-            this._tableNameLabel.Size = new System.Drawing.Size(213, 25);
-            this._tableNameLabel.TabIndex = 7;
-            this._tableNameLabel.Text = "Import into &table:";
-            this._tableNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // _tableNameCombo
-            // 
-            this._optionsTable.SetColumnSpan(this._tableNameCombo, 2);
-            this._tableNameCombo.FormattingEnabled = true;
-            this._tableNameCombo.Location = new System.Drawing.Point(3, 259);
-            this._tableNameCombo.Name = "_tableNameCombo";
-            this._tableNameCombo.Size = new System.Drawing.Size(238, 33);
-            this._tableNameCombo.TabIndex = 8;
+            this._srcTable.AutoSize = true;
+            this._srcTable.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._srcTable.ColumnCount = 5;
+            this._srcTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this._srcTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this._srcTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this._srcTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this._srcTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this._srcTable.Controls.Add(this._rowRangeLabel, 4, 1);
+            this._srcTable.Controls.Add(this._rowEndText, 3, 1);
+            this._srcTable.Controls.Add(this._useSelectionLink, 1, 2);
+            this._srcTable.Controls.Add(this._rowToLabel, 2, 1);
+            this._srcTable.Controls.Add(this._rowStartText, 1, 1);
+            this._srcTable.Controls.Add(this._columnRangeLabel, 4, 0);
+            this._srcTable.Controls.Add(this._specificRowsCheck, 0, 1);
+            this._srcTable.Controls.Add(this._columnEndText, 3, 0);
+            this._srcTable.Controls.Add(this._columnToLabel, 2, 0);
+            this._srcTable.Controls.Add(this._columnStartText, 1, 0);
+            this._srcTable.Controls.Add(this._specificColumnsCheck, 0, 0);
+            this._srcTable.Location = new System.Drawing.Point(3, 28);
+            this._srcTable.Name = "_srcTable";
+            this._srcTable.RowCount = 3;
+            this._srcTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._srcTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._srcTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this._srcTable.Size = new System.Drawing.Size(475, 99);
+            this._srcTable.TabIndex = 5;
             // 
             // _useSelectionLink
             // 
             this._useSelectionLink.AutoSize = true;
-            this._optionsTable.SetColumnSpan(this._useSelectionLink, 2);
-            this._useSelectionLink.Location = new System.Drawing.Point(222, 111);
+            this._srcTable.SetColumnSpan(this._useSelectionLink, 4);
+            this._useSelectionLink.Location = new System.Drawing.Point(222, 74);
             this._useSelectionLink.Name = "_useSelectionLink";
             this._useSelectionLink.Size = new System.Drawing.Size(250, 25);
             this._useSelectionLink.TabIndex = 37;
@@ -418,10 +252,201 @@ namespace SqlNotebook.Import.Xls {
             this._useSelectionLink.Text = "Use selection from grid above";
             this._useSelectionLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.UseSelectionLink_LinkClicked);
             // 
+            // _rowRangeLabel
+            // 
+            this._rowRangeLabel.AutoSize = true;
+            this._rowRangeLabel.Dock = System.Windows.Forms.DockStyle.Left;
+            this._rowRangeLabel.Location = new System.Drawing.Point(365, 37);
+            this._rowRangeLabel.Name = "_rowRangeLabel";
+            this._rowRangeLabel.Size = new System.Drawing.Size(59, 37);
+            this._rowRangeLabel.TabIndex = 3;
+            this._rowRangeLabel.Text = "(1-10)";
+            this._rowRangeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // _rowEndText
+            // 
+            this._rowEndText.Location = new System.Drawing.Point(320, 40);
+            this._rowEndText.Name = "_rowEndText";
+            this._rowEndText.Size = new System.Drawing.Size(39, 31);
+            this._rowEndText.TabIndex = 2;
+            this._rowEndText.TextChanged += new System.EventHandler(this.SpecificRowColumnText_TextChanged);
+            // 
+            // _rowToLabel
+            // 
+            this._rowToLabel.AutoSize = true;
+            this._rowToLabel.Dock = System.Windows.Forms.DockStyle.Left;
+            this._rowToLabel.Location = new System.Drawing.Point(285, 37);
+            this._rowToLabel.Name = "_rowToLabel";
+            this._rowToLabel.Size = new System.Drawing.Size(29, 37);
+            this._rowToLabel.TabIndex = 1;
+            this._rowToLabel.Text = "to";
+            this._rowToLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // _rowStartText
+            // 
+            this._rowStartText.Location = new System.Drawing.Point(222, 40);
+            this._rowStartText.Name = "_rowStartText";
+            this._rowStartText.Size = new System.Drawing.Size(57, 31);
+            this._rowStartText.TabIndex = 0;
+            this._rowStartText.TextChanged += new System.EventHandler(this.SpecificRowColumnText_TextChanged);
+            // 
+            // _columnRangeLabel
+            // 
+            this._columnRangeLabel.AutoSize = true;
+            this._columnRangeLabel.Dock = System.Windows.Forms.DockStyle.Left;
+            this._columnRangeLabel.Location = new System.Drawing.Point(365, 0);
+            this._columnRangeLabel.Name = "_columnRangeLabel";
+            this._columnRangeLabel.Size = new System.Drawing.Size(51, 37);
+            this._columnRangeLabel.TabIndex = 3;
+            this._columnRangeLabel.Text = "(A-Z)";
+            this._columnRangeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // _specificRowsCheck
+            // 
+            this._specificRowsCheck.AutoSize = true;
+            this._specificRowsCheck.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._specificRowsCheck.Location = new System.Drawing.Point(3, 40);
+            this._specificRowsCheck.Name = "_specificRowsCheck";
+            this._specificRowsCheck.Size = new System.Drawing.Size(213, 31);
+            this._specificRowsCheck.TabIndex = 2;
+            this._specificRowsCheck.Text = "Specific &rows only:";
+            this._specificRowsCheck.UseVisualStyleBackColor = true;
+            this._specificRowsCheck.CheckedChanged += new System.EventHandler(this.SpecificRowsCheck_CheckedChanged);
+            // 
+            // _columnEndText
+            // 
+            this._columnEndText.Location = new System.Drawing.Point(320, 3);
+            this._columnEndText.Name = "_columnEndText";
+            this._columnEndText.Size = new System.Drawing.Size(39, 31);
+            this._columnEndText.TabIndex = 2;
+            this._columnEndText.TextChanged += new System.EventHandler(this.SpecificRowColumnText_TextChanged);
+            // 
+            // _columnToLabel
+            // 
+            this._columnToLabel.AutoSize = true;
+            this._columnToLabel.Dock = System.Windows.Forms.DockStyle.Left;
+            this._columnToLabel.Location = new System.Drawing.Point(285, 0);
+            this._columnToLabel.Name = "_columnToLabel";
+            this._columnToLabel.Size = new System.Drawing.Size(29, 37);
+            this._columnToLabel.TabIndex = 1;
+            this._columnToLabel.Text = "to";
+            this._columnToLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // _columnStartText
+            // 
+            this._columnStartText.Location = new System.Drawing.Point(222, 3);
+            this._columnStartText.Name = "_columnStartText";
+            this._columnStartText.Size = new System.Drawing.Size(57, 31);
+            this._columnStartText.TabIndex = 0;
+            this._columnStartText.TextChanged += new System.EventHandler(this.SpecificRowColumnText_TextChanged);
+            // 
+            // _specificColumnsCheck
+            // 
+            this._specificColumnsCheck.AutoSize = true;
+            this._specificColumnsCheck.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._specificColumnsCheck.Location = new System.Drawing.Point(3, 3);
+            this._specificColumnsCheck.Name = "_specificColumnsCheck";
+            this._specificColumnsCheck.Size = new System.Drawing.Size(213, 31);
+            this._specificColumnsCheck.TabIndex = 0;
+            this._specificColumnsCheck.Text = "Specific &columns only:";
+            this._specificColumnsCheck.UseVisualStyleBackColor = true;
+            this._specificColumnsCheck.CheckedChanged += new System.EventHandler(this.SpecificColumnsCheck_CheckedChanged);
+            // 
+            // _columnNamesCheck
+            // 
+            this._columnNamesCheck.AutoSize = true;
+            this._columnNamesCheck.Checked = true;
+            this._columnNamesCheck.CheckState = System.Windows.Forms.CheckState.Checked;
+            this._columnNamesCheck.Location = new System.Drawing.Point(3, 133);
+            this._columnNamesCheck.Name = "_columnNamesCheck";
+            this._columnNamesCheck.Size = new System.Drawing.Size(309, 29);
+            this._columnNamesCheck.TabIndex = 5;
+            this._columnNamesCheck.Text = "Sheet includes column &header row";
+            this._columnNamesCheck.UseVisualStyleBackColor = true;
+            this._columnNamesCheck.CheckedChanged += new System.EventHandler(this.ColumnNamesCheck_CheckedChanged);
+            // 
+            // _stopAtFirstBlankRowCheck
+            // 
+            this._stopAtFirstBlankRowCheck.AutoSize = true;
+            this._stopAtFirstBlankRowCheck.Checked = true;
+            this._stopAtFirstBlankRowCheck.CheckState = System.Windows.Forms.CheckState.Checked;
+            this._stopAtFirstBlankRowCheck.Location = new System.Drawing.Point(3, 168);
+            this._stopAtFirstBlankRowCheck.Name = "_stopAtFirstBlankRowCheck";
+            this._stopAtFirstBlankRowCheck.Size = new System.Drawing.Size(213, 29);
+            this._stopAtFirstBlankRowCheck.TabIndex = 38;
+            this._stopAtFirstBlankRowCheck.Text = "Stop at first blank row";
+            this._stopAtFirstBlankRowCheck.UseVisualStyleBackColor = true;
+            // 
+            // _targetLabel
+            // 
+            this._targetLabel.AutoSize = true;
+            this._targetLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this._targetLabel.Location = new System.Drawing.Point(3, 200);
+            this._targetLabel.Name = "_targetLabel";
+            this._targetLabel.Size = new System.Drawing.Size(110, 25);
+            this._targetLabel.TabIndex = 6;
+            this._targetLabel.Text = "Destination";
+            // 
+            // _dstFlow1
+            // 
+            this._dstFlow1.AutoSize = true;
+            this._dstFlow1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._dstFlow1.Controls.Add(this._tableNameFlow);
+            this._dstFlow1.Controls.Add(this._ifTableExistsFlow);
+            this._dstFlow1.Location = new System.Drawing.Point(3, 228);
+            this._dstFlow1.Name = "_dstFlow1";
+            this._dstFlow1.Size = new System.Drawing.Size(443, 70);
+            this._dstFlow1.TabIndex = 39;
+            this._dstFlow1.WrapContents = false;
+            // 
+            // _tableNameFlow
+            // 
+            this._tableNameFlow.AutoSize = true;
+            this._tableNameFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._tableNameFlow.Controls.Add(this._tableNameLabel);
+            this._tableNameFlow.Controls.Add(this._tableNameCombo);
+            this._tableNameFlow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this._tableNameFlow.Location = new System.Drawing.Point(3, 3);
+            this._tableNameFlow.Name = "_tableNameFlow";
+            this._tableNameFlow.Size = new System.Drawing.Size(244, 64);
+            this._tableNameFlow.TabIndex = 0;
+            this._tableNameFlow.WrapContents = false;
+            // 
+            // _tableNameLabel
+            // 
+            this._tableNameLabel.AutoSize = true;
+            this._tableNameLabel.Location = new System.Drawing.Point(3, 0);
+            this._tableNameLabel.Name = "_tableNameLabel";
+            this._tableNameLabel.Size = new System.Drawing.Size(151, 25);
+            this._tableNameLabel.TabIndex = 7;
+            this._tableNameLabel.Text = "Import into &table:";
+            this._tableNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // _tableNameCombo
+            // 
+            this._tableNameCombo.FormattingEnabled = true;
+            this._tableNameCombo.Location = new System.Drawing.Point(3, 28);
+            this._tableNameCombo.Name = "_tableNameCombo";
+            this._tableNameCombo.Size = new System.Drawing.Size(238, 33);
+            this._tableNameCombo.TabIndex = 8;
+            // 
+            // _ifTableExistsFlow
+            // 
+            this._ifTableExistsFlow.AutoSize = true;
+            this._ifTableExistsFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._ifTableExistsFlow.Controls.Add(this._ifTableExistsLabel);
+            this._ifTableExistsFlow.Controls.Add(this._ifExistsCombo);
+            this._ifTableExistsFlow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this._ifTableExistsFlow.Location = new System.Drawing.Point(253, 3);
+            this._ifTableExistsFlow.Name = "_ifTableExistsFlow";
+            this._ifTableExistsFlow.Size = new System.Drawing.Size(187, 64);
+            this._ifTableExistsFlow.TabIndex = 1;
+            this._ifTableExistsFlow.WrapContents = false;
+            // 
             // _ifTableExistsLabel
             // 
             this._ifTableExistsLabel.AutoSize = true;
-            this._ifTableExistsLabel.Location = new System.Drawing.Point(247, 231);
+            this._ifTableExistsLabel.Location = new System.Drawing.Point(3, 0);
             this._ifTableExistsLabel.Name = "_ifTableExistsLabel";
             this._ifTableExistsLabel.Size = new System.Drawing.Size(149, 25);
             this._ifTableExistsLabel.TabIndex = 24;
@@ -433,36 +458,90 @@ namespace SqlNotebook.Import.Xls {
             this._ifExistsCombo.DisplayMember = "Item2";
             this._ifExistsCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._ifExistsCombo.FormattingEnabled = true;
-            this._ifExistsCombo.Location = new System.Drawing.Point(247, 259);
+            this._ifExistsCombo.Location = new System.Drawing.Point(3, 28);
             this._ifExistsCombo.Name = "_ifExistsCombo";
-            this._ifExistsCombo.Size = new System.Drawing.Size(179, 33);
+            this._ifExistsCombo.Size = new System.Drawing.Size(181, 33);
             this._ifExistsCombo.TabIndex = 34;
             this._ifExistsCombo.ValueMember = "Item1";
             // 
+            // _dstFlow2
+            // 
+            this._dstFlow2.AutoSize = true;
+            this._dstFlow2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._dstFlow2.Controls.Add(this._convertFailFlow);
+            this._dstFlow2.Controls.Add(this._blankValuesFlow);
+            this._dstFlow2.Location = new System.Drawing.Point(3, 304);
+            this._dstFlow2.Name = "_dstFlow2";
+            this._dstFlow2.Size = new System.Drawing.Size(413, 70);
+            this._dstFlow2.TabIndex = 40;
+            this._dstFlow2.WrapContents = false;
+            // 
+            // _convertFailFlow
+            // 
+            this._convertFailFlow.AutoSize = true;
+            this._convertFailFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._convertFailFlow.Controls.Add(this._ifConversionFailsLabel);
+            this._convertFailFlow.Controls.Add(this._convertFailCombo);
+            this._convertFailFlow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this._convertFailFlow.Location = new System.Drawing.Point(3, 3);
+            this._convertFailFlow.Name = "_convertFailFlow";
+            this._convertFailFlow.Size = new System.Drawing.Size(200, 64);
+            this._convertFailFlow.TabIndex = 0;
+            this._convertFailFlow.WrapContents = false;
+            // 
+            // _ifConversionFailsLabel
+            // 
+            this._ifConversionFailsLabel.AutoSize = true;
+            this._ifConversionFailsLabel.Location = new System.Drawing.Point(3, 0);
+            this._ifConversionFailsLabel.Name = "_ifConversionFailsLabel";
+            this._ifConversionFailsLabel.Size = new System.Drawing.Size(194, 25);
+            this._ifConversionFailsLabel.TabIndex = 35;
+            this._ifConversionFailsLabel.Text = "If data conversion &fails:";
+            this._ifConversionFailsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // _convertFailCombo
             // 
-            this._optionsTable.SetColumnSpan(this._convertFailCombo, 3);
             this._convertFailCombo.DisplayMember = "Item2";
             this._convertFailCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._convertFailCombo.FormattingEnabled = true;
-            this._convertFailCombo.Location = new System.Drawing.Point(3, 323);
+            this._convertFailCombo.Location = new System.Drawing.Point(3, 28);
             this._convertFailCombo.Name = "_convertFailCombo";
             this._convertFailCombo.Size = new System.Drawing.Size(179, 33);
             this._convertFailCombo.TabIndex = 36;
             this._convertFailCombo.ValueMember = "Item1";
             // 
-            // _stopAtFirstBlankRowCheck
+            // _blankValuesFlow
             // 
-            this._stopAtFirstBlankRowCheck.AutoSize = true;
-            this._stopAtFirstBlankRowCheck.Checked = true;
-            this._stopAtFirstBlankRowCheck.CheckState = System.Windows.Forms.CheckState.Checked;
-            this._optionsTable.SetColumnSpan(this._stopAtFirstBlankRowCheck, 3);
-            this._stopAtFirstBlankRowCheck.Location = new System.Drawing.Point(3, 174);
-            this._stopAtFirstBlankRowCheck.Name = "_stopAtFirstBlankRowCheck";
-            this._stopAtFirstBlankRowCheck.Size = new System.Drawing.Size(213, 29);
-            this._stopAtFirstBlankRowCheck.TabIndex = 38;
-            this._stopAtFirstBlankRowCheck.Text = "Stop at first blank row";
-            this._stopAtFirstBlankRowCheck.UseVisualStyleBackColor = true;
+            this._blankValuesFlow.AutoSize = true;
+            this._blankValuesFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._blankValuesFlow.Controls.Add(this._blankValuesLabel);
+            this._blankValuesFlow.Controls.Add(this._blankValuesCombo);
+            this._blankValuesFlow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this._blankValuesFlow.Location = new System.Drawing.Point(209, 3);
+            this._blankValuesFlow.Name = "_blankValuesFlow";
+            this._blankValuesFlow.Size = new System.Drawing.Size(201, 64);
+            this._blankValuesFlow.TabIndex = 1;
+            this._blankValuesFlow.WrapContents = false;
+            // 
+            // _blankValuesLabel
+            // 
+            this._blankValuesLabel.AutoSize = true;
+            this._blankValuesLabel.Location = new System.Drawing.Point(3, 0);
+            this._blankValuesLabel.Name = "_blankValuesLabel";
+            this._blankValuesLabel.Size = new System.Drawing.Size(195, 25);
+            this._blankValuesLabel.TabIndex = 39;
+            this._blankValuesLabel.Text = "Import blank values as:";
+            // 
+            // _blankValuesCombo
+            // 
+            this._blankValuesCombo.DisplayMember = "Item2";
+            this._blankValuesCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._blankValuesCombo.FormattingEnabled = true;
+            this._blankValuesCombo.Location = new System.Drawing.Point(3, 28);
+            this._blankValuesCombo.Name = "_blankValuesCombo";
+            this._blankValuesCombo.Size = new System.Drawing.Size(182, 33);
+            this._blankValuesCombo.TabIndex = 40;
+            this._blankValuesCombo.ValueMember = "Item1";
             // 
             // _buttonFlow1
             // 
@@ -667,12 +746,22 @@ namespace SqlNotebook.Import.Xls {
             this._optionsOuterTable.PerformLayout();
             this._optionsScrollPanel.ResumeLayout(false);
             this._optionsScrollPanel.PerformLayout();
-            this._optionsTable.ResumeLayout(false);
-            this._optionsTable.PerformLayout();
-            this._specificRowsFlow.ResumeLayout(false);
-            this._specificRowsFlow.PerformLayout();
-            this._specificColumnsFlow.ResumeLayout(false);
-            this._specificColumnsFlow.PerformLayout();
+            this._optionsFlow.ResumeLayout(false);
+            this._optionsFlow.PerformLayout();
+            this._srcTable.ResumeLayout(false);
+            this._srcTable.PerformLayout();
+            this._dstFlow1.ResumeLayout(false);
+            this._dstFlow1.PerformLayout();
+            this._tableNameFlow.ResumeLayout(false);
+            this._tableNameFlow.PerformLayout();
+            this._ifTableExistsFlow.ResumeLayout(false);
+            this._ifTableExistsFlow.PerformLayout();
+            this._dstFlow2.ResumeLayout(false);
+            this._dstFlow2.PerformLayout();
+            this._convertFailFlow.ResumeLayout(false);
+            this._convertFailFlow.PerformLayout();
+            this._blankValuesFlow.ResumeLayout(false);
+            this._blankValuesFlow.PerformLayout();
             this._buttonFlow1.ResumeLayout(false);
             this._buttonFlow1.PerformLayout();
             this._lowerSplit.Panel1.ResumeLayout(false);
@@ -718,18 +807,15 @@ namespace SqlNotebook.Import.Xls {
         private System.Windows.Forms.ComboBox _sheetCombo;
         private System.Windows.Forms.Panel _optionsScrollPanel;
         private System.Windows.Forms.CheckBox _specificColumnsCheck;
-        private System.Windows.Forms.FlowLayoutPanel _specificColumnsFlow;
         private System.Windows.Forms.TextBox _columnStartText;
         private System.Windows.Forms.Label _columnToLabel;
         private System.Windows.Forms.TextBox _columnEndText;
         private System.Windows.Forms.Label _columnRangeLabel;
         private System.Windows.Forms.CheckBox _specificRowsCheck;
-        private System.Windows.Forms.FlowLayoutPanel _specificRowsFlow;
         private System.Windows.Forms.TextBox _rowStartText;
         private System.Windows.Forms.Label _rowToLabel;
         private System.Windows.Forms.TextBox _rowEndText;
         private System.Windows.Forms.Label _rowRangeLabel;
-        private System.Windows.Forms.TableLayoutPanel _optionsTable;
         private System.Windows.Forms.Label _sourceLabel;
         private System.Windows.Forms.CheckBox _columnNamesCheck;
         private System.Windows.Forms.Label _targetLabel;
@@ -742,5 +828,15 @@ namespace SqlNotebook.Import.Xls {
         private System.Windows.Forms.LinkLabel _useSelectionLink;
         private System.Windows.Forms.Timer _updateTimer;
         private System.Windows.Forms.CheckBox _stopAtFirstBlankRowCheck;
+        private System.Windows.Forms.Label _blankValuesLabel;
+        private System.Windows.Forms.ComboBox _blankValuesCombo;
+        private System.Windows.Forms.FlowLayoutPanel _optionsFlow;
+        private System.Windows.Forms.TableLayoutPanel _srcTable;
+        private System.Windows.Forms.FlowLayoutPanel _dstFlow1;
+        private System.Windows.Forms.FlowLayoutPanel _tableNameFlow;
+        private System.Windows.Forms.FlowLayoutPanel _ifTableExistsFlow;
+        private System.Windows.Forms.FlowLayoutPanel _dstFlow2;
+        private System.Windows.Forms.FlowLayoutPanel _convertFailFlow;
+        private System.Windows.Forms.FlowLayoutPanel _blankValuesFlow;
     }
 }

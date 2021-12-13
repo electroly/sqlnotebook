@@ -209,7 +209,6 @@ public partial class ImportCsvForm : ZForm {
 
     private void UpdateTargetColumns() {
         var targetTable = _optionsControl.TargetTableName.Value;
-        TableSchema schema;
 
         if (_databaseSchema.NonTables.Contains(targetTable.ToLower())) {
             throw new Exception($"\"{targetTable}\" already exists, but is not a table.");
@@ -217,7 +216,7 @@ public partial class ImportCsvForm : ZForm {
 
         if (_optionsControl.IfTableExists.Value == ImportTableExistsOption.DropTable) {
             _columnsControl.SetTargetToNewTable();
-        } else if (_databaseSchema.Tables.TryGetValue(targetTable.ToLower(), out schema)) {
+        } else if (_databaseSchema.Tables.TryGetValue(targetTable.ToLower(), out var schema)) {
             _columnsControl.SetTargetToExistingTable(schema);
         } else {
             _columnsControl.SetTargetToNewTable();
@@ -262,6 +261,9 @@ public partial class ImportCsvForm : ZForm {
         }
         if (_optionsControl.IfConversionFails.Value != ImportConversionFailOption.ImportAsText) {
             options.Add($"    IF_CONVERSION_FAILS: {(int)_optionsControl.IfConversionFails.Value}");
+        }
+        if (_optionsControl.BlankValues.Value != BlankValuesOption.Null) {
+            options.Add($"    BLANK_VALUES: {(int)_optionsControl.BlankValues.Value}");
         }
         if (options.Count > 0) {
             sb.AppendLine(") OPTIONS (");

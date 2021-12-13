@@ -48,7 +48,11 @@
             this._targetFlow = new System.Windows.Forms.FlowLayoutPanel();
             this._tableNameFlow = new System.Windows.Forms.FlowLayoutPanel();
             this._ifExistsFlow = new System.Windows.Forms.FlowLayoutPanel();
+            this._targetFlow2 = new System.Windows.Forms.FlowLayoutPanel();
             this._convertFailFlow = new System.Windows.Forms.FlowLayoutPanel();
+            this._blankValuesFlow = new System.Windows.Forms.FlowLayoutPanel();
+            this._blankValuesLabel = new System.Windows.Forms.Label();
+            this._blankValuesCombo = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this._skipLinesTxt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._errorProvider)).BeginInit();
             this._sourceFlow.SuspendLayout();
@@ -59,7 +63,9 @@
             this._targetFlow.SuspendLayout();
             this._tableNameFlow.SuspendLayout();
             this._ifExistsFlow.SuspendLayout();
+            this._targetFlow2.SuspendLayout();
             this._convertFailFlow.SuspendLayout();
+            this._blankValuesFlow.SuspendLayout();
             this.SuspendLayout();
             // 
             // _ifTableExistsLabel
@@ -75,10 +81,10 @@
             // _tableOutputTitle
             // 
             this._tableOutputTitle.AutoSize = true;
-            this._tableOutputTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
+            this._tableOutputTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this._tableOutputTitle.Location = new System.Drawing.Point(3, 136);
             this._tableOutputTitle.Name = "_tableOutputTitle";
-            this._tableOutputTitle.Size = new System.Drawing.Size(64, 25);
+            this._tableOutputTitle.Size = new System.Drawing.Size(66, 25);
             this._tableOutputTitle.TabIndex = 27;
             this._tableOutputTitle.Text = "Target";
             this._tableOutputTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -98,10 +104,10 @@
             // _fileInputTitle
             // 
             this._fileInputTitle.AutoSize = true;
-            this._fileInputTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
+            this._fileInputTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this._fileInputTitle.Location = new System.Drawing.Point(3, 0);
             this._fileInputTitle.Name = "_fileInputTitle";
-            this._fileInputTitle.Size = new System.Drawing.Size(65, 25);
+            this._fileInputTitle.Size = new System.Drawing.Size(70, 25);
             this._fileInputTitle.TabIndex = 21;
             this._fileInputTitle.Text = "Source";
             this._fileInputTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -278,7 +284,7 @@
             this._flow.Controls.Add(this._headerChk);
             this._flow.Controls.Add(this._tableOutputTitle);
             this._flow.Controls.Add(this._targetFlow);
-            this._flow.Controls.Add(this._convertFailFlow);
+            this._flow.Controls.Add(this._targetFlow2);
             this._flow.Dock = System.Windows.Forms.DockStyle.Fill;
             this._flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this._flow.Location = new System.Drawing.Point(0, 0);
@@ -325,6 +331,18 @@
             this._ifExistsFlow.TabIndex = 1;
             this._ifExistsFlow.WrapContents = false;
             // 
+            // _targetFlow2
+            // 
+            this._targetFlow2.AutoSize = true;
+            this._targetFlow2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._targetFlow2.Controls.Add(this._convertFailFlow);
+            this._targetFlow2.Controls.Add(this._blankValuesFlow);
+            this._targetFlow2.Location = new System.Drawing.Point(3, 240);
+            this._targetFlow2.Name = "_targetFlow2";
+            this._targetFlow2.Size = new System.Drawing.Size(413, 70);
+            this._targetFlow2.TabIndex = 43;
+            this._targetFlow2.WrapContents = false;
+            // 
             // _convertFailFlow
             // 
             this._convertFailFlow.AutoSize = true;
@@ -332,11 +350,42 @@
             this._convertFailFlow.Controls.Add(this._ifConversionFailsLabel);
             this._convertFailFlow.Controls.Add(this._convertFailCmb);
             this._convertFailFlow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this._convertFailFlow.Location = new System.Drawing.Point(3, 240);
+            this._convertFailFlow.Location = new System.Drawing.Point(3, 3);
             this._convertFailFlow.Name = "_convertFailFlow";
             this._convertFailFlow.Size = new System.Drawing.Size(200, 64);
             this._convertFailFlow.TabIndex = 42;
             this._convertFailFlow.WrapContents = false;
+            // 
+            // _blankValuesFlow
+            // 
+            this._blankValuesFlow.AutoSize = true;
+            this._blankValuesFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._blankValuesFlow.Controls.Add(this._blankValuesLabel);
+            this._blankValuesFlow.Controls.Add(this._blankValuesCombo);
+            this._blankValuesFlow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this._blankValuesFlow.Location = new System.Drawing.Point(209, 3);
+            this._blankValuesFlow.Name = "_blankValuesFlow";
+            this._blankValuesFlow.Size = new System.Drawing.Size(201, 64);
+            this._blankValuesFlow.TabIndex = 43;
+            this._blankValuesFlow.WrapContents = false;
+            // 
+            // _blankValuesLabel
+            // 
+            this._blankValuesLabel.AutoSize = true;
+            this._blankValuesLabel.Location = new System.Drawing.Point(3, 0);
+            this._blankValuesLabel.Name = "_blankValuesLabel";
+            this._blankValuesLabel.Size = new System.Drawing.Size(195, 25);
+            this._blankValuesLabel.TabIndex = 0;
+            this._blankValuesLabel.Text = "Import blank values as:";
+            // 
+            // _blankValuesCombo
+            // 
+            this._blankValuesCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._blankValuesCombo.FormattingEnabled = true;
+            this._blankValuesCombo.Location = new System.Drawing.Point(3, 28);
+            this._blankValuesCombo.Name = "_blankValuesCombo";
+            this._blankValuesCombo.Size = new System.Drawing.Size(182, 33);
+            this._blankValuesCombo.TabIndex = 1;
             // 
             // ImportCsvOptionsControl
             // 
@@ -366,8 +415,12 @@
             this._tableNameFlow.PerformLayout();
             this._ifExistsFlow.ResumeLayout(false);
             this._ifExistsFlow.PerformLayout();
+            this._targetFlow2.ResumeLayout(false);
+            this._targetFlow2.PerformLayout();
             this._convertFailFlow.ResumeLayout(false);
             this._convertFailFlow.PerformLayout();
+            this._blankValuesFlow.ResumeLayout(false);
+            this._blankValuesFlow.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -399,5 +452,9 @@
         private System.Windows.Forms.FlowLayoutPanel _tableNameFlow;
         private System.Windows.Forms.FlowLayoutPanel _ifExistsFlow;
         private System.Windows.Forms.FlowLayoutPanel _convertFailFlow;
+        private System.Windows.Forms.FlowLayoutPanel _targetFlow2;
+        private System.Windows.Forms.FlowLayoutPanel _blankValuesFlow;
+        private System.Windows.Forms.Label _blankValuesLabel;
+        private System.Windows.Forms.ComboBox _blankValuesCombo;
     }
 }
