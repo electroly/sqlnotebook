@@ -66,6 +66,9 @@
     <None Update="doc\choose-func.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="doc\CNAME">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="doc\continue-stmt.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

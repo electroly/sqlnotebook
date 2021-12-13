@@ -253,6 +253,7 @@ function Update-DocWebsite {
     }
 
     WriteFile .\site\index.html (FormatHtmlPage "" .\index.html "Open source tool for casual data exploration in SQL.")
+    WriteFile .\site\CNAME "sqlnotebook.com"
 
     # sqlite docs
     Remove-Item -Force -Recurse ".\site\sqlite" -ErrorAction SilentlyContinue
@@ -280,11 +281,12 @@ function Update-DocWebsite {
     Remove-Item -Force "$rootDir\src\SqlNotebook\doc\*.txt"
     Remove-Item -Force "$rootDir\src\SqlNotebook\doc\art\*.txt"
     Remove-Item -Force "$rootDir\src\SqlNotebook\doc\favicon.ico"
+    Remove-Item -Force "$rootDir\src\SqlNotebook\doc\CNAME"
 
     # Remove SQLite docs from the actual website and only include it with the app. This is a bit of a hack that should
     # have been planned better...
     Remove-Item -Force -Recurse "$rootDir\web\site\sqlite"
-    foreach ($htmlFilePath in [System.IO.Directory]::GetFiles("$rootDir\web\site")) {
+    foreach ($htmlFilePath in [System.IO.Directory]::GetFiles("$rootDir\web\site", "*.html")) {
         $html = [System.IO.File]::ReadAllText($htmlFilePath)
         $html = $html.Replace('href="sqlite/', 'href="https://sqlite.org/')
         [System.IO.File]::WriteAllText($htmlFilePath, $html)
