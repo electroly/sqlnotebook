@@ -23,6 +23,8 @@ In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
 - Install [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms).
 - Install [PostgreSQL](https://www.postgresql.org/download/windows/). Set the `postgres` password to `password`.
 - Install [MySQL](https://dev.mysql.com/downloads/mysql/). Set the `root` password to `password`.
+- Install [Chocolatey](https://chocolatey.org/install).
+- Install [NuGet](https://www.nuget.org/downloads) and put it in your `PATH`.
 
 ## How to build from source
 
@@ -78,17 +80,27 @@ In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
     msbuild /t:publish /p:Configuration=Release /p:Platform=x64 /p:PublishProfile=FolderProfile SqlNotebook.csproj
     ```
 - In PowerShell from the repo root: `ps1\New-Release.ps1`
-- Test the zip and MSI in `src\SqlNotebook\bin`.
+- Test the zip and MSI in `src\SqlNotebook\bin`. Rename them to `SQLNotebook-X.X.X.*`.
 - Commit changes using commit message "Version X.X.X", and push.
 - Create release on GitHub, upload zip and msi.
+    - Let GitHub create a new tag, name it `vX.X.X`.
+    - Set release title to `vX.X.X`.
+    - Copy the release verbiage from the previous release, and edit in the new release notes.
+    - Edit the previous release and remove the first two lines, the download links. We don't want to confuse users who visit the releases page.
 - Update `web\appversion.txt` with new version and MSI URL.
 - Run `ps1\Update-GitHubPages.ps1` and force push the `sqlnotebook-gh-pages` repo.
-- Update `src\chocolatey\sqlnotebook.nuspec` with version.
+- Update `src\chocolatey\sqlnotebook.nuspec` with copyright and version.
 - Update `src\chocolatey\tools\chocolateyInstall.ps1` with MSI URL.
-- In PowerShell:
+- Put a copy of the code signing certificate into `C:\Tools\Brian Luft.pfx`.
+- Get your [Chocolatey API key](https://community.chocolatey.org/account).
+- In PowerShell from `src\chocolatey`:
     ```
     choco pack
-    choco apikey -k <chocolatey api key> -source https://chocolatey.org/
+    nuget sign sqlnotebook.X.X.X.nupkg -CertificatePath "C:\Tools\Brian Luft.pfx" -Timestamper http://timestamp.digicert.com
+    choco install sqlnotebook -s .
+    (test that it worked)
+    $api = '<chocolatey api key>'
+    choco apikey -k "$api" -source https://chocolatey.org/
     choco push .\sqlnotebook.X.X.X.nupkg -s https://chocolatey.org/
     ```
 - Commit changes using commit message "Update website and Chocolatey to version X.X.X", and push.

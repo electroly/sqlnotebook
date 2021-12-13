@@ -8,6 +8,7 @@
 *.pfx
 *.sdf
 *.user
+.nupkg
 .vs/
 Debug/
 Desktop.ini

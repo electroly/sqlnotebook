@@ -5,14 +5,14 @@
         <!-- Read this before publishing packages to chocolatey.org: https://github.com/chocolatey/choco/wiki/CreatePackages -->
         <id>sqlnotebook</id>
         <title>SQL Notebook</title>
-        <version>0.6.0</version>
+        <version>1.0.0</version>
         <authors>Brian Luft</authors>
         <owners>Brian Luft</owners>
-        <summary>Tool for ad-hoc exploration and manipulation of tabular data.</summary>
-        <description>Tool for ad-hoc exploration and manipulation of tabular data.</description>
+        <summary>Casual data exploration in SQL.</summary>
+        <description>Casual data exploration in SQL.</description>
         <projectUrl>https://sqlnotebook.com</projectUrl>
-        <tags>sql sqlite mysql postgresql sql server mssql csv json xls excel admin</tags>
-        <copyright>Copyright (C) 2016 Brian Luft</copyright>
+        <tags>sql sqlite mysql postgresql sql server mssql csv xls excel admin</tags>
+        <copyright>Copyright (C) 2016-2021 Brian Luft</copyright>
         <licenseUrl>https://sqlnotebook.com/license.html</licenseUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <releaseNotes><![CDATA[
