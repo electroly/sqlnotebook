@@ -13,7 +13,7 @@
         <projectUrl>https://sqlnotebook.com</projectUrl>
         <tags>sql sqlite mysql postgresql sql server mssql csv xls excel admin</tags>
         <copyright>Copyright (C) 2016-2021 Brian Luft</copyright>
-        <licenseUrl>https://sqlnotebook.com/license.html</licenseUrl>
+        <licenseUrl>https://github.com/electroly/sqlnotebook/blob/master/LICENSE</licenseUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <releaseNotes><![CDATA[
             For historical release notes, view the [releases on GitHub](https://github.com/electroly/sqlnotebook/releases).
