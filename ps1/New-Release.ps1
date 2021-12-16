@@ -3,10 +3,16 @@ Set-StrictMode -Version 3
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-$windows10SdkVersion = '10.0.20348.0'
-$windows10SdkDir = "C:\Program Files (x86)\Windows Kits\10\Redist\$windows10SdkVersion\ucrt\DLLs\x64"
-if (-not (Test-Path $windows10SdkDir)) {
-    throw "Windows 10 SDK $windows10SdkVersion not found!"
+$windowsSdkVersion = '10.0.20348.0'
+$windowsSdkDir = "C:\Program Files (x86)\Windows Kits\10\Redist\$windowsSdkVersion\ucrt\DLLs\x64"
+if (-not (Test-Path $windowsSdkDir)) {
+    throw "Windows 10 SDK $windowsSdkVersion not found!"
+}
+
+$vsRuntimeVersion = '14.30.30704'
+$vsRuntimeDir = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\$vsRuntimeVersion\x64\Microsoft.VC143.CRT"
+if (-not (Test-Path $vsRuntimeDir)) {
+    throw "Visual C++ Redistributable $vsRuntimeVersion not found!"
 }
 
 $wixDir = "C:\Program Files (x86)\WiX Toolset v3.11\bin"
@@ -33,7 +39,15 @@ Remove-Item "$relDir\*.wixpdb" -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.wixobj" -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.wxs" -ErrorAction SilentlyContinue
 Copy-Item -Force "$rootDir\src\SqlNotebookDb\bin\x64\Release\sqlite3.dll" "$relDir\sqlite3.dll"
-Copy-Item -Force "$windows10SdkDir\*.dll" "$relDir\"
+Copy-Item -Force "$windowsSdkDir\*.dll" "$relDir\"
+Copy-Item -Force "$vsRuntimeDir\*.dll" "$relDir\"
+
+# Delete all the localized folders
+foreach ($dir in [System.IO.Directory]::GetDirectories($relDir)) {
+    if ([System.IO.Path]::GetFileName($dir) -ne 'doc') {
+        [System.IO.Directory]::Delete($dir, $true)
+    }
+}
 
 Push-Location $relDir
 

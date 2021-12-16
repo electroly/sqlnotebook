@@ -7,6 +7,8 @@ In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
 - Install [Visual Studio Community 2022](https://visualstudio.microsoft.com/vs/).
     - Include ".NET desktop development" workload.
     - Include "Desktop development with C++" workload.
+    - Include individual component: Windows Universal CRT SDK
+    - Include individual component: Windows Universal C Runtime
 - Install [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/) with Ubuntu 20.04, and install `tidy`, `unix2dos`, and `pwsh` inside.
     ```
     sudo apt-get update
@@ -58,8 +60,16 @@ In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
 
 ## How to release a new version
 
+- Update Visual Studio.
+    - In the Visual Studio Installer, check to see if there's a newer Windows 10 SDK under Invididual Components. If there is, then:
+        - Install the SDK update.
+        - SqlNotebookDb > Properties > All Configurations > General > Set "Windows SDK Version" to the new version.
+        - Update `New-Release.ps1` with the new SDK version.
+    - Look in `C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC` and update `New-Release.ps1` with the new version if there is one.
+- Check for new updates to NuGet packages.
 - Bump `AssemblyFileVersion` and `AssemblyCopyright` in `src\SqlNotebook\Properties\AssemblyInfo.cs`.
 - Bump `ProductVersion` in `src\SqlNotebook.wxs`.
+- Add a news entry in `web\index.html`.
 - Close Visual Studio.
 - In PowerShell from the repo root:
     ```
@@ -75,7 +85,7 @@ In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
     ```
 - In Dev Command Prompt from `src\SqlNotebook`:
     ```
-    msbuild /t:restore /p:Configuration=Release /p:Platform=x64 SqlNotebook.csproj
+    msbuild /t:restore /p:Configuration=Release /p:Platform=x64 /p:PublishReadyToRun=true SqlNotebook.csproj
     msbuild /t:build /p:Configuration=Release /p:Platform=x64 ..\SqlNotebookDb\SqlNotebookDb.vcxproj
     msbuild /t:publish /p:Configuration=Release /p:Platform=x64 /p:PublishProfile=FolderProfile SqlNotebook.csproj
     ```
