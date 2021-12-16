@@ -66,9 +66,6 @@
     <None Update="doc\choose-func.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="doc\CNAME">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="doc\continue-stmt.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -3174,6 +3171,36 @@
     <Compile Update="OptionsForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Import\Database\DatabaseImportCustomQueryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Import\Database\DatabaseImportScriptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Import\Database\DatabaseImportTablesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Pages\DividerBlockControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Pages\PageControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Pages\BlockControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Pages\QueryBlockControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Pages\TextBlockControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="QueryEmbeddedControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ViewFullTextForm.cs">
+      <SubType>Form</SubType>
+    </Compile>    
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /Y $(ProjectDir)..\SqlNotebookDb\bin\$(Platform)\$(Configuration)\sqlite3.dll $(TargetDir)sqlite3.dll" />
