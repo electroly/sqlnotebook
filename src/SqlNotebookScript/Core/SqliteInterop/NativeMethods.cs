@@ -233,4 +233,7 @@ internal static class NativeMethods {
 
     [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_enable_load_extension", SetLastError = false)]
     public static extern int sqlite3_enable_load_extension(IntPtr db, int onoff);
+
+    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_load_extension", SetLastError = false)]
+    public static extern int sqlite3_load_extension(IntPtr db, IntPtr zFile, IntPtr zProc, IntPtr pzErrMsg);
 }

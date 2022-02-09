@@ -18,6 +18,7 @@ bin/
 ext/Windows-API-Code-Pack/
 ext/downloads/
 ext/sqlite/
+ext/sqlean/
 ipch/
 obj/
 packages/

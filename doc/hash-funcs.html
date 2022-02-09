@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>Cryptographic Hash Functions</title>
+</head>
+<body>
+  <h1>Cryptographic Hash Functions</h1>
+  <p>These standard hash functions accept a <tt>TEXT</tt> or <tt>BLOB</tt> input and return a hash as a <tt>BLOB</tt>.
+  These functions are provided by the <a moz-do-not-send="true" href="https://github.com/nalgeon/sqlean">sqlean
+  "crypto"</a> extension which is built into SQL Notebook.<br></p>
+  <h2>Syntax</h2><code>MD5(<i>data</i>)<br>
+  SHA1(<i>data</i>)<br>
+  SHA256(<i>data</i>)<br>
+  SHA384(<i>data</i>)<br>
+  SHA512(<i>data</i>)<br></code>
+  <h2>Return Value</h2>The calculated hash as a <tt>BLOB</tt>.<br>
+  <h2>Example</h2>
+  <pre>PRINT HEX(MD5('abc'));<br><i>-- prints "900150983CD24FB0D6963F7D28E17F72"</i><br></pre>
+</body>
+</html>

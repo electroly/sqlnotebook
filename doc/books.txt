@@ -1,7 +1,8 @@
 Group#SQL Notebook Help#Control Flow#^(BREAK|CONTINUE|DECLARE|EXECUTE|IF|PRINT|RETURN|SET|THROW|TRY/CATCH|WHILE|FOR) Statement$|^ERROR_.*Function$
 Group#SQL Notebook Help#Import and Export#^(IMPORT|EXPORT).*Statement$|Encodings
 Group#SQL Notebook Help#File I/O#^(READ_|LIST_FILES|LIST_XLS|DOWNLOAD).*Function$
-Group#SQL Notebook Help#Text Manipulation#^(UUID|SPLIT).*Function$
+Group#SQL Notebook Help#Text Manipulation#^(UUID|SPLIT|Phonetic|String|ISNUMERIC).*$
+Group#SQL Notebook Help#Math#^(Algebra|Crypto|Statistic).*$
 Group#SQL Notebook Help#Arrays#^ARRAY.*Function$
 Group#SQL Notebook Help#Dates and Times#^(DATE|DAY|EOMONTH|GETDATE|GETUTCDATE|ISDATE|MONTH|SWITCHOFFSET|YEAR|TO_DATE|NOW).*Function$
 Group#SQL Notebook Help#Other#.*

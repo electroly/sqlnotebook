@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>String Distance Functions</title>
+</head>
+<body>
+  <h1>String Distance Functions</h1>
+  <p>These functions provide standard algorithms for determining the similarity of two strings. They each accept two
+  strings as parameters and return a numeric score where a lower score indicates more similar strings. The specific
+  meaning of the numeric score depends on the algorithm. These functions support ASCII strings only; they will throw an
+  error if a string containing non-ASCII characters is provided. These functions are provided by the
+  <a moz-do-not-send="true" href="https://github.com/nalgeon/sqlean">sqlean "fuzzy"</a> extension which is built into
+  SQL Notebook.<br></p>
+  <h2>Syntax</h2><code>DLEVENSHTEIN(</code><code><code><i>x</i>, <i>y</i></code>)&nbsp; <i>--</i>
+  <i><a moz-do-not-send="true" href=
+  "https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance">Damerau-Levenshtein distance</a></i><br>
+  EDIT_DISTANCE(</code><code><code><i>x</i>, <i>y</i></code>) <i>--</i> <i><a moz-do-not-send="true" href=
+  "https://en.wikipedia.org/wiki/Edit_distance">Spellcheck edit distance</a></i><br>
+  HAMMING(</code><code><code><i>x</i>, <i>y</i></code>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>--</i>
+  <i><a moz-do-not-send="true" href="https://en.wikipedia.org/wiki/Hamming_distance">Hamming distance</a></i><br>
+  JARO_WINKLER(</code><code><code><i>x</i>, <i>y</i></code>)&nbsp; <i>--</i> <i><a moz-do-not-send="true" href=
+  "https://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance">Jaro-Winkler distance</a></i><br>
+  LEVENSHTEIN(</code><code><code><i>x</i>, <i>y</i></code>)&nbsp;&nbsp; <i>--</i> <i><a moz-do-not-send="true" href=
+  "https://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein distance</a></i><br>
+  OSA_DISTANCE(<i>x</i>, <i>y</i>)&nbsp; <i>--</i> <i><a moz-do-not-send="true" href=
+  "https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance#Optimal_string_alignment_distance">Optimal string
+  alignment distance</a></i><br></code>
+  <h2>Return Value</h2>Numeric string distance. The specific meaning depends on the algorithm.<br>
+  <h2>Example</h2>
+  <pre>PRINT LEVENSHTEIN('pickle', 'pickle'); <i>-- 0</i><br>PRINT LEVENSHTEIN('pickle', 'tickle'); <i>-- 1</i><br>PRINT LEVENSHTEIN('pickle', 'stick');  <i>-- 4</i><br>PRINT LEVENSHTEIN('pickle', '🙂stick'); <i>-- error: non-ASCII string</i><br></pre>
+</body>
+</html>

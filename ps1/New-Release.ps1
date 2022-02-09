@@ -39,6 +39,9 @@ Remove-Item "$relDir\*.wixpdb" -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.wixobj" -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.wxs" -ErrorAction SilentlyContinue
 Copy-Item -Force "$rootDir\src\SqlNotebookDb\bin\x64\Release\sqlite3.dll" "$relDir\sqlite3.dll"
+Copy-Item -Force "$rootDir\ext\sqlean\crypto.dll" "$relDir\crypto.dll"
+Copy-Item -Force "$rootDir\ext\sqlean\fuzzy.dll" "$relDir\fuzzy.dll"
+Copy-Item -Force "$rootDir\ext\sqlean\stats.dll" "$relDir\stats.dll"
 Copy-Item -Force "$windowsSdkDir\*.dll" "$relDir\"
 Copy-Item -Force "$vsRuntimeDir\*.dll" "$relDir\"
 
@@ -61,6 +64,9 @@ rm "$relDir\SqlNotebook.wixobj" -ErrorAction SilentlyContinue
 rm "$relDir\SqlNotebook.wxs" -ErrorAction SilentlyContinue
 
 & $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com "$relDir\sqlite3.dll" | Write-Output
+& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com "$relDir\crypto.dll" | Write-Output
+& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com "$relDir\fuzzy.dll" | Write-Output
+& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com "$relDir\stats.dll" | Write-Output
 & $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com "$relDir\SqlNotebook.exe" | Write-Output
 Copy-Item -Force "$srcdir\SqlNotebook\SqlNotebookIcon.ico" "$relDir\SqlNotebookIcon.ico"
 

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>Statistical Aggregate Functions</title>
+</head>
+<body>
+  <h1>Statistical Aggregate Functions</h1>
+  <p>These standard statistical functions are provided by the <a moz-do-not-send="true" href=
+  "https://github.com/nalgeon/sqlean">sqlean "stats"</a> extension which is built into SQL Notebook.</p>
+  <h2>Syntax</h2>
+  <pre>MEDIAN(<i>x</i>)<br>PERCENTILE_25(<i>x</i>)<br>PERCENTILE_75(<i>x</i>)<br>PERCENTILE_90(<i>x</i>)<br>PERCENTILE_95(<i>x</i>)<br>PERCENTILE_99(<i>x</i>)<br>PERCENTILE(<i>x</i>, <i>percentile</i>)  <i>-- 0-100</i><br>STDDEV(<i>x</i>)      <i>-- Sample standard deviation</i><br>STDDEV_SAMP(<i>x</i>) <i>-- Alias for STDDEV()</i><br>STDDEV_POP(<i>x</i>)  <i>-- Population standard deviation</i><br>VARIANCE(<i>x</i>)    <i>-- Sample variance</i><br>VAR_SAMP(<i>x</i>)    <i>-- Alias for VARIANCE()</i><br>VAR_POP(<i>x</i>)     <i>-- Population variance</i><br></pre>
+  <h2>Example</h2>
+  <pre>SELECT MEDIAN(value) FROM GENERATE_SERIES(100, 200);  <i>-- 150</i>
+</pre>
+</body>
+</html>

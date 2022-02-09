@@ -159,6 +159,10 @@ public sealed class Notebook : IDisposable {
             _sqlite = Marshal.ReadIntPtr(sqliteNative.Ptr); // sqlite3*
             SqliteUtil.ThrowIfError(_sqlite, sqlite3_enable_load_extension(_sqlite, 1));
 
+            LoadExtension(_sqlite, "crypto.dll");
+            LoadExtension(_sqlite, "fuzzy.dll");
+            LoadExtension(_sqlite, "stats.dll");
+
             SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_series_init(_sqlite, IntPtr.Zero, IntPtr.Zero));
             SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_uuid_init(_sqlite, IntPtr.Zero, IntPtr.Zero));
 
@@ -188,6 +192,24 @@ public sealed class Notebook : IDisposable {
             UserData = NotebookUserData.Load(this);
             NotebookUserData.DropTables(this);
             Execute("DROP TABLE IF EXISTS _sqlnotebook_version;");
+        }
+
+        static void LoadExtension(IntPtr db, string filename) {
+            using var process = Process.GetCurrentProcess();
+            var filePath = Path.Combine(Path.GetDirectoryName(process.MainModule.FileName), filename);
+            if (!File.Exists(filePath)) {
+                throw new Exception($"Extension library not found: \"{filename}\".");
+            }
+            using NativeString filePathNative = new(filePath);
+            using NativeBuffer errMsgPtrBuf = new(Marshal.SizeOf<IntPtr>());
+            if (sqlite3_load_extension(db, filePathNative.Ptr, IntPtr.Zero, errMsgPtrBuf.Ptr) == SQLITE_OK) {
+                return;
+            }
+
+            var errMsgPtr = Marshal.ReadIntPtr(errMsgPtrBuf.Ptr);
+            var errMsg = Marshal.PtrToStringUTF8(errMsgPtr);
+            sqlite3_free(errMsgPtr);
+            throw new Exception(errMsg.Trim());
         }
     }
 

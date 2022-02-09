@@ -1,12 +1,22 @@
 # Downloads non-NuGet deps
+
 $sqliteCodeUrl = 'https://sqlite.org/2022/sqlite-amalgamation-3370200.zip'
 $sqliteCodeHash = 'CB25DF0FB90B77BE6660F6ACE641BBEA88F3D0441110D394CE418F35F7561BB0'
 $sqliteDocUrl = 'https://sqlite.org/2022/sqlite-doc-3370200.zip'
 $sqliteDocHash = '0538AA78A5BA82EE3D2033329E4056BE2EAF7B320D2FA0535714EDD794F55EAF'
 $sqliteSrcUrl = 'https://sqlite.org/2022/sqlite-src-3370200.zip'
 $sqliteSrcHash = '486770B4D5F88B5BB0DBA540DD6EE1763067D7539DFEE18A7C66FE9BB03D16D9'
+
 $wapiUrl = 'https://github.com/contre/Windows-API-Code-Pack-1.1/archive/a8377ef8bb6fa95ff8800dd4c79089537087d539.zip'
 $wapiHash = '38E59E6AE3BF0FD0CCB05C026F7332D3B56AF81D8C69A62882D04CABAD5EF4AE'
+
+$sqleanVersion = '0.15.1'
+$sqleanCryptoUrl = "https://github.com/nalgeon/sqlean/releases/download/$sqleanVersion/crypto.dll"
+$sqleanCryptoHash = '72C7A243713E36E69F6A024E25F280B9C1C6D8973C547492246E7BA4D0F8C09C'
+$sqleanFuzzyUrl = "https://github.com/nalgeon/sqlean/releases/download/$sqleanVersion/fuzzy.dll"
+$sqleanFuzzyHash = 'A032D03855AFA60B6880486EE65E1D31A3B18FDB7F9F67668601235C18601057'
+$sqleanStatsUrl = "https://github.com/nalgeon/sqlean/releases/download/$sqleanVersion/stats.dll"
+$sqleanStatsHash = '7B05F566ECD04B7BD3AFB4B5FED40B724C7EC498B95CE9D6EB6C8BAD3D37DDBD'
 
 $global:ProgressPreference = "SilentlyContinue"
 $ErrorActionPreference = "Stop"
@@ -52,6 +62,28 @@ function Update-WindowsApiCodePack {
     $cs = [System.IO.File]::ReadAllText("$wapiDir\source\WindowsAPICodePack\Shell\Resources\LocalizedMessages.Designer.cs")
     $cs = $cs.Replace("Microsoft.WindowsAPICodePack.Resources", "Microsoft.WindowsAPICodePack.Shell.Resources")
     [System.IO.File]::WriteAllText("$wapiDir\source\WindowsAPICodePack\Shell\Resources\LocalizedMessages.Designer.cs", $cs)
+}
+
+function Update-SqleanDll {
+    param ($SqleanDir, $Filename, $Url, $Hash)
+    $filePath = Join-Path $downloadsDir "$Filename-$sqleanVersion"
+    if (-not (Test-Path $filePath)) {
+        Write-Host "Downloading: $Url"
+        Invoke-WebRequest -UseBasicParsing -Uri $Url -OutFile $filePath
+    }
+    VerifyHash $filePath $Hash
+    $dstFilePath = Join-Path $SqleanDir $Filename
+    Copy-Item $filePath $dstFilePath -Force
+}
+
+function Update-Sqlean {
+    $sqleanDir = Join-Path $extDir "sqlean"
+    if (Test-Path $sqleanDir) { Remove-Item -Force -Recurse $sqleanDir }
+    mkdir $sqleanDir
+
+    Update-SqleanDll -SqleanDir $sqleanDir -Filename "crypto.dll" -Url $sqleanCryptoUrl -Hash $sqleanCryptoHash
+    Update-SqleanDll -SqleanDir $sqleanDir -Filename "fuzzy.dll" -Url $sqleanFuzzyUrl -Hash $sqleanFuzzyHash
+    Update-SqleanDll -SqleanDir $sqleanDir -Filename "stats.dll" -Url $sqleanStatsUrl -Hash $sqleanStatsHash
 }
 
 function Update-Sqlite {
@@ -189,4 +221,5 @@ function VerifyHash($filePath, $expectedHash) {
 
 Update-Sqlite
 Update-WindowsApiCodePack
+Update-Sqlean
 & "$PSScriptRoot\Update-Docs.ps1"

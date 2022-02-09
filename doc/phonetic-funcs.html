@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <title>Phonetic Matching Functions</title>
+</head>
+<body>
+  <h1>Phonetic Matching Functions</h1>
+  <p>These functions provide standard algorithms for phonetic fuzzy matching on strings. They each accept a string as a
+  parameter and return a canonical string representing the pronunciation of the input. The specific meaning of the
+  resulting string depends on the algorithm. These functions support ASCII strings only; they will throw an error if a
+  string containing non-ASCII characters is provided. These functions are provided by the <a moz-do-not-send="true"
+  href="https://github.com/nalgeon/sqlean">sqlean "fuzzy"</a> extension which is built into SQL Notebook.<br></p>
+  <h2>Syntax</h2><code>CAVERPHONE(x) &nbsp; &nbsp; &nbsp; <i>--</i> <i><a moz-do-not-send="true" href=
+  "https://en.wikipedia.org/wiki/Caverphone">Caverphone</a></i><br>
+  PHONETIC_HASH(x, y) <i>-- Spellcheck phonetic code</i><br>
+  SOUNDEX(x) &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <i>--</i> <i><a moz-do-not-send="true" href=
+  "https://en.wikipedia.org/wiki/Soundex">Soundex</a></i><br>
+  RSOUNDEX(x)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>-- Refined Soundex</i><br></code>
+  <h2>Return Value</h2>Canonical representation of the pronunciation of the input string.<br>
+  <h2>Example</h2>
+  <pre>PRINT SOUNDEX('Robert');  <i>-- 'R163'</i><br>PRINT SOUNDEX('🙂');<i>  </i><i>-- error: non-ASCII string</i><br></pre>
+</body>
+</html>
