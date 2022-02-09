@@ -157,6 +157,7 @@ public sealed class Notebook : IDisposable {
             SqliteUtil.ThrowIfError(IntPtr.Zero,
                 sqlite3_open(filePathNative.Ptr, sqliteNative.Ptr));
             _sqlite = Marshal.ReadIntPtr(sqliteNative.Ptr); // sqlite3*
+            SqliteUtil.ThrowIfError(_sqlite, sqlite3_enable_load_extension(_sqlite, 1));
 
             SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_series_init(_sqlite, IntPtr.Zero, IntPtr.Zero));
             SqliteUtil.ThrowIfError(IntPtr.Zero, sqlite3_uuid_init(_sqlite, IntPtr.Zero, IntPtr.Zero));
