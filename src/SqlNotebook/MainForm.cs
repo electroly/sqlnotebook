@@ -918,4 +918,24 @@ public partial class MainForm : ZForm {
                 _finishedMenu.Width / 2 - size.Width / 2,
                 _finishedMenu.Height / 2 - size.Height / 2));
     }
+
+    private void MainForm_DragEnter(object sender, DragEventArgs e) {
+        e.Effect = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
+    }
+
+    private void MainForm_DragDrop(object sender, DragEventArgs e) {
+        if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+            foreach (var filePath in (string[])e.Data.GetData(DataFormats.FileDrop)) {
+                if (File.Exists(filePath)) {
+                    try {
+                        FileImporter.Start(this, filePath, _manager);
+                    } catch (Exception ex) {
+                        Ui.ShowError(this, "Import Error", ex);
+                    }
+                    Focus();
+                    return;
+                }
+            }
+        }
+    }
 }

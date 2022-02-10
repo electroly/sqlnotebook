@@ -412,6 +412,7 @@
             // 
             // MainForm
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1527, 968);
@@ -422,6 +423,8 @@
             this.Name = "MainForm";
             this.Text = "Untitled - SQL Notebook";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.MainForm_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.MainForm_DragEnter);
             this._toolStripContainer.TopToolStripPanel.ResumeLayout(false);
             this._toolStripContainer.TopToolStripPanel.PerformLayout();
             this._toolStripContainer.ResumeLayout(false);
