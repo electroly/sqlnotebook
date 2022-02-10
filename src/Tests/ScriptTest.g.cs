@@ -130,6 +130,7 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_for_stmt_sql() => TestScript(@"doc\for-stmt.sql");
     [TestMethod] public void Test_doc_gencol_1_sql() => TestScript(@"doc\gencol 1.sql");
     [TestMethod] public void Test_doc_gencol_2_sql() => TestScript(@"doc\gencol 2.sql");
+    [TestMethod] public void Test_doc_hash_funcs_sql() => TestScript(@"doc\hash-funcs.sql");
     [TestMethod] public void Test_doc_if_stmt_sql() => TestScript(@"doc\if-stmt.sql");
     [TestMethod] public void Test_doc_import_csv_stmt_sql() => TestScript(@"doc\import-csv-stmt.sql");
     [TestMethod] public void Test_doc_import_txt_stmt_sql() => TestScript(@"doc\import-txt-stmt.sql");
@@ -144,6 +145,8 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_list_xls_worksheets_func_sql() => TestScript(@"doc\list-xls-worksheets-func.sql");
     [TestMethod] public void Test_doc_math_funcs_sql() => TestScript(@"doc\math-funcs.sql");
     [TestMethod] public void Test_doc_month_func_sql() => TestScript(@"doc\month-func.sql");
+    [TestMethod] public void Test_doc_phonetic_funcs_1_sql() => TestScript(@"doc\phonetic-funcs-1.sql");
+    [TestMethod] public void Test_doc_phonetic_funcs_2_sql() => TestScript(@"doc\phonetic-funcs-2.sql");
     [TestMethod] public void Test_doc_print_stmt_sql() => TestScript(@"doc\print-stmt.sql");
     [TestMethod] public void Test_doc_rowvalue___Clarity_of_presentation_1_sql() => TestScript(@"doc\rowvalue - Clarity of presentation 1.sql");
     [TestMethod] public void Test_doc_rowvalue___Clarity_of_presentation_2_sql() => TestScript(@"doc\rowvalue - Clarity of presentation 2.sql");
@@ -159,8 +162,11 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_rowvalue___Update_multiple_columns_of_a_table_based_on_a_query_sql_sql() => TestScript(@"doc\rowvalue - Update multiple columns of a table based on a query.sql.sql");
     [TestMethod] public void Test_doc_set_stmt_sql() => TestScript(@"doc\set-stmt.sql");
     [TestMethod] public void Test_doc_split_func_sql() => TestScript(@"doc\split-func.sql");
+    [TestMethod] public void Test_doc_stats_aggregate_funcs_sql() => TestScript(@"doc\stats-aggregate-funcs.sql");
     [TestMethod] public void Test_doc_stricttables___The_ANY_datatype_1_sql() => TestScript(@"doc\stricttables - The ANY datatype 1.sql");
     [TestMethod] public void Test_doc_stricttables___The_ANY_datatype_2_sql() => TestScript(@"doc\stricttables - The ANY datatype 2.sql");
+    [TestMethod] public void Test_doc_string_distance_funcs_1_sql() => TestScript(@"doc\string-distance-funcs-1.sql");
+    [TestMethod] public void Test_doc_string_distance_funcs_2_sql() => TestScript(@"doc\string-distance-funcs-2.sql");
     [TestMethod] public void Test_doc_to_date_func_sql() => TestScript(@"doc\to-date-func.sql");
     [TestMethod] public void Test_doc_to_date_time_func_sql() => TestScript(@"doc\to-date-time-func.sql");
     [TestMethod] public void Test_doc_try_catch_stmt_sql() => TestScript(@"doc\try-catch-stmt.sql");

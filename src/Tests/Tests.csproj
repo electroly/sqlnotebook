@@ -44,6 +44,9 @@
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /Y $(ProjectDir)..\SqlNotebookDb\bin\$(Platform)\$(Configuration)\sqlite3.dll $(TargetDir)sqlite3.dll" />
+    <Exec Command="copy /Y $(ProjectDir)..\..\ext\sqlean\crypto.dll $(TargetDir)crypto.dll" />
+    <Exec Command="copy /Y $(ProjectDir)..\..\ext\sqlean\fuzzy.dll $(TargetDir)fuzzy.dll" />
+    <Exec Command="copy /Y $(ProjectDir)..\..\ext\sqlean\stats.dll $(TargetDir)stats.dll" />
   </Target>
 
 </Project>
