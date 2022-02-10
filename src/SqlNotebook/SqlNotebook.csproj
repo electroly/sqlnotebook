@@ -8,8 +8,8 @@
     <Platforms>x64</Platforms>
     <LangVersion>latest</LangVersion>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-	<ApplicationIcon>SqlNotebookIcon.ico</ApplicationIcon>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ApplicationIcon>SqlNotebookIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ext\dockpanelsuite\WinFormsUI\ThemeVS2012Light.csproj" />
