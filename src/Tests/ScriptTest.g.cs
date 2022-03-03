@@ -136,6 +136,8 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_doc_import_txt_stmt_sql() => TestScript(@"doc\import-txt-stmt.sql");
     [TestMethod] public void Test_doc_is_date_func_sql() => TestScript(@"doc\is-date-func.sql");
     [TestMethod] public void Test_doc_is_numeric_func_sql() => TestScript(@"doc\is-numeric-func.sql");
+    [TestMethod] public void Test_doc_json1___Arrow_operators_1_sql() => TestScript(@"doc\json1 - Arrow operators 1.sql");
+    [TestMethod] public void Test_doc_json1___Arrow_operators_2_sql() => TestScript(@"doc\json1 - Arrow operators 2.sql");
     [TestMethod] public void Test_doc_lang_returning___Typical_Use_sql() => TestScript(@"doc\lang_returning - Typical Use.sql");
     [TestMethod] public void Test_doc_lang_update___UPDATE_FROM_sql() => TestScript(@"doc\lang_update - UPDATE FROM.sql");
     [TestMethod] public void Test_doc_lang_upsert___Examples_1_sql() => TestScript(@"doc\lang_upsert - Examples 1.sql");

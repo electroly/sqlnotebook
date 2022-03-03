@@ -596,10 +596,10 @@ public static class SqliteGrammar {
         //
         // From https://www.sqlite.org/lang_expr.html:
         //      SQLite understands the following binary operators, in order from highest to lowest precedence:
-        //          ||
+        //          ||   ->   ->>
         //          *    /    %
         //          +    -
-        //          <<   >>  &    |
+        //          <<   >>   &    |
         //          <    <=   >    >=
         //          =    ==   !=   <>    IS   IS NOT   IN   LIKE   GLOB  MATCH   REGEXP
         //          AND
@@ -720,9 +720,9 @@ public static class SqliteGrammar {
             LstP(".term", Or(Tok("*"), Tok("/"), Tok("%")), 1, SubProd("concat-expr"))
         );
 
-        // concat-expr ::= <unary-expr> [ "||" <unary-expr> ]*
+        // concat-expr ::= <unary-expr> [ ("||" | "->" | "->>") <unary-expr> ]*
         TopProd(p = "concat-expr", 1,
-            LstP(".term", Tok("||"), 1, SubProd("unary-expr"))
+            LstP(".term", Or(Tok("||"), Tok("->"), Tok("->>")), 1, SubProd("unary-expr"))
         );
 
         // unary-expr ::= [ "-" | "+" | "NOT" | "~" ]* <collate-expr>
