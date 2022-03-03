@@ -19,6 +19,7 @@ public sealed class PreparedStatement : IDisposable {
     });
 
     private readonly IntPtr _sqlite; // sqlite3* - do not dispose
+    private readonly string _sql;
     private readonly IntPtr _stmt; // sqlite3_stmt* - dispose
     private readonly int _paramCount;
     private readonly List<string> _paramNames;
@@ -26,10 +27,12 @@ public sealed class PreparedStatement : IDisposable {
 
     public PreparedStatement(IntPtr sqlite, string sql) {
         _sqlite = sqlite;
+        _sql = sql;
         using NativeString sqlNative = new(sql);
         using NativeBuffer stmtNative = new(IntPtr.Size);
         SqliteUtil.ThrowIfError(sqlite,
-            sqlite3_prepare_v2(sqlite, sqlNative.Ptr, sqlNative.ByteCount, stmtNative.Ptr, IntPtr.Zero));
+            sqlite3_prepare_v2(sqlite, sqlNative.Ptr, sqlNative.ByteCount, stmtNative.Ptr, IntPtr.Zero),
+            sql);
         _stmt = Marshal.ReadIntPtr(stmtNative.Ptr);
         if (_stmt == IntPtr.Zero) {
             throw new Exception("Invalid statement.");
@@ -244,11 +247,11 @@ public sealed class PreparedStatement : IDisposable {
                 Notebook.SqliteVtabErrorMessage = null;
                 throw new ExceptionEx("A remote database query failed.", vtabMessage);
             }
-            SqliteUtil.ThrowIfError(_sqlite, SQLITE_ERROR);
+            SqliteUtil.ThrowIfError(_sqlite, SQLITE_ERROR, _sql);
         } else if (ret == SQLITE_INTERRUPT) {
             throw new OperationCanceledException("SQL query canceled by the user.");
         } else {
-            SqliteUtil.ThrowIfError(_sqlite, ret);
+            SqliteUtil.ThrowIfError(_sqlite, ret, _sql);
         }
     }
 

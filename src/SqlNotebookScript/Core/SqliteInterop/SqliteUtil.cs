@@ -12,7 +12,7 @@ public static class SqliteUtil {
         return (Marshal.GetFunctionPointerForDelegate(@delegate), @delegate);
     });
 
-    public static void ThrowIfError(IntPtr sqlite, int result) {
+    public static void ThrowIfError(IntPtr sqlite, int result, string sql = null) {
         if (result != SQLITE_OK) {
             if (sqlite == IntPtr.Zero) {
                 throw new SqliteException($"SQLite error {result}");
@@ -20,7 +20,19 @@ public static class SqliteUtil {
 
             var messageUnmanaged = sqlite3_errmsg16(sqlite);
             var message = Marshal.PtrToStringUni(messageUnmanaged);
-            throw new SqliteException(message);
+
+            SqliteException ex = new(message);
+
+            var errorOffset = sqlite3_error_offset(sqlite);
+            if (errorOffset >= 0 && sql != null) {
+                var snippet = sql[errorOffset..];
+                if (snippet.Length > 30) {
+                    snippet = snippet[..30] + "...";
+                }
+                ex.Snippet = snippet;
+            }
+
+            throw ex;
         }
     }
 

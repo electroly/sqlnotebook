@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
 using SqlNotebookScript;
+using SqlNotebookScript.Core;
 using SqlNotebookScript.DataTables;
 using SqlNotebookScript.Interpreter;
 using SqlNotebookScript.Utils;
@@ -192,15 +193,19 @@ public partial class QueryEmbeddedControl : UserControl {
             var none = _transactionNoneMenu.Checked;
             var rollback = _transactionRollbackMenu.Checked;
             var output = WaitForm.GoWithCancel(TopLevelControl, "Script", "Executing script...", out var success, cancel => {
-                using var status = WaitStatus.StartRows("Script output");
-                if (none) {
-                    return SqlUtil.WithCancellation(_manager.Notebook, () => {
-                        return _manager.ExecuteScript(sql, onRow: status.IncrementRows);
-                    }, cancel);
-                } else {
-                    return SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
-                        return _manager.ExecuteScript(sql, onRow: status.IncrementRows);
-                    }, rollback, cancel);
+                try {
+                    using var status = WaitStatus.StartRows("Script output");
+                    if (none) {
+                        return SqlUtil.WithCancellation(_manager.Notebook, () => {
+                            return _manager.ExecuteScript(sql, onRow: status.IncrementRows);
+                        }, cancel);
+                    } else {
+                        return SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
+                            return _manager.ExecuteScript(sql, onRow: status.IncrementRows);
+                        }, rollback, cancel);
+                    }
+                } catch (UncaughtErrorScriptException uncaughtException) when (uncaughtException.Snippet != null) {
+                    throw new ExceptionEx(uncaughtException.Message, $"Error at:\r\n\"{uncaughtException.Snippet}\"");
                 }
             });
             _manager.SetDirty();

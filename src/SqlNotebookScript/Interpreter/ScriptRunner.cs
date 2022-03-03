@@ -72,7 +72,8 @@ public sealed class ScriptRunner {
                 throw new ScriptException($"Attempted to CONTINUE outside of a WHILE loop.");
             }
         } catch (Exception ex) {
-            throw new UncaughtErrorScriptException(ex.GetExceptionMessage(), ex);
+            var snippet = ex is SqliteException s ? s.Snippet : null;
+            throw new UncaughtErrorScriptException(ex.GetExceptionMessage(), ex) { Snippet = snippet };
         }
     }
 
