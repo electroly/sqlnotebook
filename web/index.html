@@ -22,6 +22,12 @@
   <hr width="100%" size="2">
   <h2>News</h2>
   <ul>
+    <li><b>2022-03-04</b> - Version 1.1.0 is released. This version includes <a moz-do-not-send="true" href=
+    "https://www.sqlite.org/releaselog/3_38_0.html">SQLite 3.38</a> providing improved JSON functionality. New
+    functions for cryptographic hashes, fuzzy matching, and statistical aggregates from <a moz-do-not-send="true" href=
+    "https://github.com/nalgeon/sqlean">Anton Zhiyanov's sqlean library</a> are now built-in. Additional SQLite
+    extensions can be loaded with the <a moz-do-not-send="true" href=
+    "https://sqlite.org/lang_corefunc.html#load_extension">load_extension function</a>.<br></li>
     <li><b>2021-12-16</b> - Version 1.0.1 is released. This release adds support for Windows 7 and 8.</li>
     <li><b>2021-12-13</b> - SQL Notebook version 1.0.0 has been released. This is the first stable release. All aspects
     of SQL Notebook have been improved compared to version 0.6.0.</li>
@@ -90,7 +96,7 @@ SELECT filename FROM LIST_FILES('C:\') WHERE extension IN ('.csv', '.xls');
   <ul class="tight">
     <li>Full-featured import and export statements: <a href="import-csv-stmt.html"><code>IMPORT CSV</code></a> •
     <a href="import-xls-stmt.html"><code>IMPORT XLS</code></a> • <a moz-do-not-send="true" href=
-    "import-database-stmt.html"><tt>IMPORT DATABASE</tt></a> • <a href="export-csv-stmt.html" moz-do-not-send=
+    "import-database-stmt.html"><code>IMPORT DATABASE</code></a> • <a href="export-csv-stmt.html" moz-do-not-send=
     "true"><code>EXPORT CSV</code></a> • <a href="export-txt-stmt.html"><code>EXPORT TXT</code></a></li>
     <li>Quick functions for reading files: <a href="list-files-func.html"><code>LIST_FILES</code></a> • <a href=
     "read-csv-func.html"><code>READ_CSV</code></a> • <a href="read-file-func.html"><code>READ_FILE</code></a> •
