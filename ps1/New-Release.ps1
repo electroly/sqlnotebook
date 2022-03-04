@@ -9,7 +9,7 @@ if (-not (Test-Path $windowsSdkDir)) {
     throw "Windows 10 SDK $windowsSdkVersion not found!"
 }
 
-$vsRuntimeVersion = '14.30.30704'
+$vsRuntimeVersion = '14.31.31103'
 $vsRuntimeDir = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\$vsRuntimeVersion\x64\Microsoft.VC143.CRT"
 if (-not (Test-Path $vsRuntimeDir)) {
     throw "Visual C++ Redistributable $vsRuntimeVersion not found!"
@@ -20,7 +20,7 @@ if (-not (Test-Path $wixDir)) {
     throw "WiX not found!"
 }
 
-$signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x86\signtool.exe"
+$signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.20348.0\x64\signtool.exe"
 if (-not (Test-Path $signtool)) {
     throw "Signtool not found!"
 }
