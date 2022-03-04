@@ -5,7 +5,7 @@
         <!-- Read this before publishing packages to chocolatey.org: https://github.com/chocolatey/choco/wiki/CreatePackages -->
         <id>sqlnotebook</id>
         <title>SQL Notebook</title>
-        <version>1.0.1</version>
+        <version>1.1.0</version>
         <authors>Brian Luft</authors>
         <owners>Brian Luft</owners>
         <summary>Casual data exploration in SQL.</summary>

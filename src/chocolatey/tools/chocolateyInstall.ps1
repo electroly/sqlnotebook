@@ -2,9 +2,9 @@ $ErrorActionPreference = "Stop"
 
 $packageName = 'SQL Notebook'
 $installerType = 'msi'
-$url = 'https://github.com/electroly/sqlnotebook/releases/download/v1.0.1/SQLNotebook-1.0.1.msi'
+$url = 'https://github.com/electroly/sqlnotebook/releases/download/v1.1.0/SQLNotebook-1.1.0.msi'
 $silentArgs = '/quiet'
 $validExitCodes = @(0)
-$checksum = 'DD11217155D66038DF2A3846862622F4EE9FE2A027B46D430B07349B4A383029'
+$checksum = 'D6D94DBBAA2B6FC59FBF79D906A8A7C4943F383E192A600308BFAC50F5B8A87D'
 
 Install-ChocolateyPackage "$packageName" "$installerType" "$silentArgs" "$url" -validExitCodes $validExitCodes -checksumType 'sha256' -checksum $checksum
