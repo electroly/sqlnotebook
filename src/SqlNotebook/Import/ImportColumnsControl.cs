@@ -22,6 +22,7 @@ public partial class ImportColumnsControl : UserControl {
 
     public NotifySlot Change = new NotifySlot();
     public Slot<bool> Error = new Slot<bool>();
+    private IReadOnlyList<string> _detectedTypes = Array.Empty<string>();
 
     public string SqlColumnList =>
         string.Join(",\r\n",
@@ -58,7 +59,8 @@ public partial class ImportColumnsControl : UserControl {
             (sender, e) => ValidateGridInput());
     }
 
-    public void SetSourceColumns(IReadOnlyList<string> columnNames) {
+    public void SetSourceColumns(IReadOnlyList<string> columnNames, IReadOnlyList<string> detectedTypes = null) {
+        _detectedTypes = detectedTypes;
         _table.BeginLoadData();
         _table.Clear();
         foreach (var columnName in columnNames) {
@@ -202,13 +204,21 @@ public partial class ImportColumnsControl : UserControl {
             _grid.SelectedCells
             .Cast<DataGridViewCell>()
             .Select(x => ((DataRowView)x.OwningRow.DataBoundItem).Row)
+            .Distinct()
             ) {
             dataRow[GridColumn.Conversion] = type;
         }
     }
 
     private void DetectTypesButton_Click(object sender, EventArgs e) {
-
+        var rowIndex = 0;
+        foreach (DataGridViewRow gridRow in _grid.Rows) {
+            if (rowIndex >= 0 && rowIndex < _detectedTypes.Count) {
+                var dataRow = ((DataRowView)gridRow.DataBoundItem).Row;
+                dataRow[GridColumn.Conversion] = _detectedTypes[rowIndex];
+            }
+            rowIndex++;
+        }
     }
 }
 

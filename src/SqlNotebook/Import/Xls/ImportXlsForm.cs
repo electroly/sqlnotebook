@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using SqlNotebook.Properties;
+using SqlNotebookScript.DataTables;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebook.Import.Xls;
@@ -44,7 +45,7 @@ public partial class ImportXlsForm : ZForm {
 
         _originalFilePanel.Controls.Add(_grid = DataGridViewUtil.NewDataGridView(
             rowHeadersVisible: true, autoGenerateColumns: false, allowSort: false));
-        _columnsPanel.Controls.Add(_columnsControl = new() {
+        _columnsPanel.Controls.Add(_columnsControl = new(allowDetectTypes: true) {
             Dock = DockStyle.Fill
         });
         Ui ui = new(this, 170, 50);
@@ -246,10 +247,10 @@ public partial class ImportXlsForm : ZForm {
         var sheetIndex = (int)_sheetCombo.SelectedValue;
         var sheetInfo = _input.Worksheets[sheetIndex];
 
-        int? minRowIndex = null, minColumnIndex = null, maxColumnIndex = null;
+        int? minRowIndex = null, maxRowIndex = null, minColumnIndex = null, maxColumnIndex = null;
 
         try {
-            (minRowIndex, _) = GetValidatedMinMaxRowIndices(sheetInfo);
+            (minRowIndex, maxRowIndex) = GetValidatedMinMaxRowIndices(sheetInfo);
             (minColumnIndex, maxColumnIndex) = GetValidatedMinMaxColumnIndices(sheetInfo);
         } catch {
             // Ignore for now. We will show this error when they hit OK.
@@ -257,6 +258,8 @@ public partial class ImportXlsForm : ZForm {
 
         minRowIndex ??= 0;
         minColumnIndex ??= 0;
+        maxRowIndex ??= int.MaxValue;
+        maxRowIndex = Math.Min(maxRowIndex.Value, sheetInfo.DataTable.Rows.Count - 1);
         maxColumnIndex ??= int.MaxValue;
         maxColumnIndex = Math.Min(maxColumnIndex.Value, sheetInfo.DataTable.Columns.Count - 1);
 
@@ -277,7 +280,35 @@ public partial class ImportXlsForm : ZForm {
             columnNames.Add(columnName);
         }
 
-        _columnsControl.SetSourceColumns(columnNames);
+        IReadOnlyList<string> detectedTypes = null;
+        try {
+            using SimpleDataTableBuilder detectionTableBuilder = new(columnNames);
+            var firstDataRow = minRowIndex.Value + (_columnNamesCheck.Checked ? 1 : 0);
+            var numSampleRows = Math.Min(1000, maxRowIndex.Value - firstDataRow + 1);
+            for (var rowIndex = firstDataRow; rowIndex < firstDataRow + numSampleRows; rowIndex++) {
+                var row = new object[columnNames.Count];
+                for (var columnIndex = minColumnIndex.Value; columnIndex <= maxColumnIndex.Value; columnIndex++) {
+                    var value = "";
+                    try {
+                        value = sheetInfo.DataTable.Rows[rowIndex][columnIndex].ToString();
+                    } catch {
+                        // ignore
+                    }
+                    if (columnIndex - minColumnIndex.Value < row.Length) {
+                        row[columnIndex - minColumnIndex.Value] = value;
+                    }
+                }
+                detectionTableBuilder.AddRow(row);
+            }
+
+            using var detectionTable = detectionTableBuilder.Build();
+            detectedTypes = TypeDetection.DetectTypes(detectionTable);
+        } catch {
+            // Don't let this blow up the import.
+            detectedTypes = Array.Empty<string>();
+        }
+
+        _columnsControl.SetSourceColumns(columnNames, detectedTypes);
         _columnsControl.SetTargetToNewTable();
     }
 

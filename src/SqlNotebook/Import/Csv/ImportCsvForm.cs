@@ -40,7 +40,7 @@ public partial class ImportCsvForm : ZForm {
         _optionsControl = new ImportCsvOptionsControl(schema) { AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink };
         _optionsPanel.Controls.Add(_optionsControl);
 
-        _columnsControl = new ImportColumnsControl { Dock = DockStyle.Fill };
+        _columnsControl = new ImportColumnsControl(allowDetectTypes: true) { Dock = DockStyle.Fill };
         _columnsLoadControl = new LoadingContainerControl { ContainedControl = _columnsControl, Dock = DockStyle.Fill };
         _columnsPanel.Controls.Add(_columnsLoadControl);
 
@@ -152,9 +152,9 @@ public partial class ImportCsvForm : ZForm {
         _columnsLoadControl.PushLoad();
 
         try {
-            var sourceColumns = await GetSourceColumns();
+            var (sourceColumns, detectedTypes) = await GetSourceColumns();
             if (_columnsLoadId == loadId) {
-                _columnsControl.SetSourceColumns(sourceColumns);
+                _columnsControl.SetSourceColumns(sourceColumns, detectedTypes);
                 UpdateTargetColumns();
                 _columnsLoadControl.ClearError();
                 _columnsError.Value = null;
@@ -174,7 +174,7 @@ public partial class ImportCsvForm : ZForm {
         }
     }
 
-    private async Task<IReadOnlyList<string>> GetSourceColumns() {
+    private async Task<(IReadOnlyList<string> Names, IReadOnlyList<string> DetectedTypes)> GetSourceColumns() {
         var tempTableName = Guid.NewGuid().ToString();
         try {
             var headerRow = _optionsControl.HasColumnHeaders.Value;
@@ -183,10 +183,11 @@ public partial class ImportCsvForm : ZForm {
             var separator = _optionsControl.Separator.Value;
             return await Task.Run(() => {
                 var importSql =
-                    @"IMPORT CSV @filePath INTO @tableName
-                    OPTIONS (SKIP_LINES: @skipLines, TAKE_LINES: 0, HEADER_ROW: @headerRow, TEMPORARY_TABLE: 1, 
-                        FILE_ENCODING: @encoding, SEPARATOR: @sep);";
-                _manager.ExecuteScriptNoOutput(importSql, new Dictionary<string, object> {
+                    @$"IMPORT CSV @filePath INTO @tableName
+                    OPTIONS (SKIP_LINES: @skipLines, TAKE_LINES: 1000, HEADER_ROW: @headerRow, TEMPORARY_TABLE: 1, 
+                        FILE_ENCODING: @encoding, SEPARATOR: @sep);
+                    SELECT * FROM {SqlUtil.DoubleQuote(tempTableName)};";
+                var output = _manager.ExecuteScript(importSql, new Dictionary<string, object> {
                     ["@filePath"] = _filePath,
                     ["@tableName"] = tempTableName,
                     ["@sep"] = separator,
@@ -195,10 +196,18 @@ public partial class ImportCsvForm : ZForm {
                     ["@skipLines"] = skipLines
                 });
 
+                IReadOnlyList<string> detectedTypes = null;
+                try {
+                    detectedTypes = TypeDetection.DetectTypes(output.DataTables[0]);
+                } catch {
+                    // Don't let this blow up the import.
+                    detectedTypes = Array.Empty<string>();
+                }
+
                 using var dt = _manager.ExecuteScript($"PRAGMA TABLE_INFO ({tempTableName.DoubleQuote()})")
                     .DataTables[0];
                 var nameCol = dt.GetIndex("name");
-                return dt.Rows.Select(x => x[nameCol].ToString()).Where(x => !string.IsNullOrEmpty(x)).ToList();
+                return (dt.Rows.Select(x => x[nameCol].ToString()).Where(x => !string.IsNullOrEmpty(x)).ToList(), detectedTypes);
             });
         } finally {
             await Task.Run(() => {
