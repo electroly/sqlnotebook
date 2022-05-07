@@ -200,7 +200,7 @@ public sealed class ImportDatabaseStmtRunner {
                 srcCommand.CommandText = _sql;
             } else {
                 var quotedSourceTable =
-                    _vendor == "mssql" && !string.IsNullOrEmpty(_srcSchemaName)
+                    (_vendor == "mssql" || _vendor == "pgsql") && !string.IsNullOrEmpty(_srcSchemaName)
                     ? $"{RemoteQuote(_srcSchemaName)}.{RemoteQuote(_srcTableName)}"
                     : RemoteQuote(_srcTableName);
                 srcCommand.CommandText = $"SELECT * FROM {quotedSourceTable}";

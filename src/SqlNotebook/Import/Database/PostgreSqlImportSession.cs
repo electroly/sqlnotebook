@@ -17,10 +17,15 @@ public sealed class PostgreSqlImportSession : ImportSessionBase<NpgsqlConnection
     protected override void ReadTableNames(IDbConnection connection) {
         List<(string Schema, string Table)> tableNames = new();
         using (var cmd = connection.CreateCommand()) {
-            cmd.CommandText = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name";
+            cmd.CommandText = @"
+                SELECT table_schema, table_name
+                FROM information_schema.tables
+                WHERE table_schema != 'information_schema' AND table_schema != 'pg_catalog'
+                ORDER BY table_schema, table_name";
             using var reader = cmd.ExecuteReader();
             while (reader.Read()) {
-                tableNames.Add((null, reader.GetString(0)));
+                var schema = reader.GetString(0);
+                tableNames.Add((schema == "public" ? null : schema, reader.GetString(1)));
             }
         }
         TableNames = tableNames;
