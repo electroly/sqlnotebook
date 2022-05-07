@@ -53,7 +53,8 @@ In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
 ## How to update SQLite
 
 - Download the amalgamation, doc, and src zips from the SQLite website.
-- Update `ps1/Update-Deps.ps1` with the URLs. Right-click the zips in Explorer and use CRC SHA > SHA-256 to produce the SHA-256 hashes.
+- Update `ps1/Update-Deps.ps1` with the URLs. Use `Get-FileHash` to produce the SHA-256 hashes.
+- Close Visual Studio.
 - Run `ps1/Update-Deps.ps1`.
 - Build the app and fix any errors.
 - Read the release notes. The grammar may have changed, which needs to be reflected in `SqliteGrammar.cs`.
