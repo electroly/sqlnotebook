@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
+using SqlNotebook.Properties;
 using SqlNotebookScript.Utils;
 
 namespace SqlNotebook.Import;
@@ -28,7 +30,7 @@ public partial class ImportColumnsControl : UserControl {
             select $"    {col.SourceName.DoubleQuote()}{(renamed ? " AS " + col.TargetName.DoubleQuote() : "")} {col.Conversion}"
         );
 
-    public ImportColumnsControl() {
+    public ImportColumnsControl(bool allowDetectTypes = false) {
         InitializeComponent();
 
         _table = new DataTable();
@@ -43,6 +45,12 @@ public partial class ImportColumnsControl : UserControl {
         _grid.EnableDoubleBuffering();
 
         Ui ui = new(this, false);
+        ui.Init(_toolStrip);
+        ui.Init(_detectTypesButton, Resources.magic_wand16, Resources.magic_wand32);
+        ui.Init(_toolStripSeparator);
+        _detectTypesButton.Visible = allowDetectTypes;
+        _toolStripSeparator.Visible = allowDetectTypes;
+        ui.Init(_setSelectedTypesMenu);
         ui.Init(_importColumn, 10);
         ui.Init(_conversionColumn, 25);
 
@@ -171,6 +179,36 @@ public partial class ImportColumnsControl : UserControl {
             }
         }
         Error.Value = error;
+    }
+
+    private void SetTypeMenu_Click(object sender, EventArgs e) {
+        string type;
+        if (ReferenceEquals(sender, _setTypeTextMenu)) {
+            type = "TEXT";
+        } else if (ReferenceEquals(sender, _setTypeIntegerMenu)) {
+            type = "INTEGER";
+        } else if (ReferenceEquals(sender, _setTypeRealMenu)) {
+            type = "REAL";
+        } else if (ReferenceEquals(sender, _setTypeDateMenu)) {
+            type = "DATE";
+        } else if (ReferenceEquals(sender, _setTypeDateTimeMenu)) {
+            type = "DATETIME";
+        } else {
+            Debug.Assert(false);
+            return;
+        }
+
+        foreach (var dataRow in
+            _grid.SelectedCells
+            .Cast<DataGridViewCell>()
+            .Select(x => ((DataRowView)x.OwningRow.DataBoundItem).Row)
+            ) {
+            dataRow[GridColumn.Conversion] = type;
+        }
+    }
+
+    private void DetectTypesButton_Click(object sender, EventArgs e) {
+
     }
 }
 

@@ -190,6 +190,7 @@ public sealed class Ui {
     }
 
     public void Init(ToolStripButton button) {
+        button.Padding = new((int)(2 * _scale), (int)(2 * _scale), (int)(2 * _scale), (int)(4 * _scale));
         button.AutoSize = true;
     }
 
@@ -209,6 +210,7 @@ public sealed class Ui {
     }
 
     public void Init(ToolStripDropDownButton item) {
+        item.Padding = new((int)(2 * _scale), (int)(2 * _scale), (int)(2 * _scale), (int)(4 * _scale));
     }
 
     public void Init(ToolStripDropDownButton item, Image lodpi, Image hidpi) {

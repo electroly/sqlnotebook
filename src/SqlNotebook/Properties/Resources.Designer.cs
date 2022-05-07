@@ -583,6 +583,26 @@ namespace SqlNotebook.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap magic_wand16 {
+            get {
+                object obj = ResourceManager.GetObject("magic_wand16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap magic_wand32 {
+            get {
+                object obj = ResourceManager.GetObject("magic_wand32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Magnifier {
             get {
                 object obj = ResourceManager.GetObject("Magnifier", resourceCulture);
