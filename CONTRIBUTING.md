@@ -107,7 +107,7 @@ In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
 - In PowerShell from `src\chocolatey`:
     ```
     choco pack
-    nuget sign sqlnotebook.X.X.X.nupkg -CertificatePath "C:\Tools\Brian Luft.pfx" -Timestamper http://timestamp.digicert.com
+    nuget sign sqlnotebook.X.X.X.nupkg -CertificatePath "C:\Tools\Brian Luft.pfx" -Timestamper http://timestamp.sectigo.com
     choco install sqlnotebook -s .
     (test that it worked)
     $api = '<chocolatey api key>'
