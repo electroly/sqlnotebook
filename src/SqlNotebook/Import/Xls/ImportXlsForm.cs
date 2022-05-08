@@ -264,20 +264,30 @@ public partial class ImportXlsForm : ZForm {
         maxColumnIndex = Math.Min(maxColumnIndex.Value, sheetInfo.DataTable.Columns.Count - 1);
 
         List<string> columnNames = new();
+        var columnNumber = 0;
         for (var columnIndex = minColumnIndex.Value; columnIndex <= maxColumnIndex.Value; columnIndex++) {
-            var columnName = $"column{columnIndex - minColumnIndex.Value + 1}";
+            columnNumber++;
+            var name = $"column{columnIndex - minColumnIndex.Value + 1}";
             if (_columnNamesCheck.Checked) {
                 try {
-                    columnName = sheetInfo.DataTable.Rows[minRowIndex.Value][columnIndex].ToString();
+                    name = sheetInfo.DataTable.Rows[minRowIndex.Value][columnIndex].ToString();
                 } catch {
                     // Ignore for now. We will show this error when they hit OK.
                 }
             }
-            if (string.IsNullOrWhiteSpace(columnName)) {
-                continue;
+            if (string.IsNullOrWhiteSpace(name)) {
+                name = $"column{columnNumber}";
             }
 
-            columnNames.Add(columnName);
+            // add a numeric suffix to each column name if necessary to make them all unique
+            var testName = name;
+            var testNum = 1;
+            while (columnNames.Contains(testName)) {
+                testNum++;
+                testName = $"{name}_{testNum}";
+            }
+
+            columnNames.Add(testName);
         }
 
         IReadOnlyList<string> detectedTypes = null;

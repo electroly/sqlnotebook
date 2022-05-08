@@ -204,13 +204,27 @@ public static class XlsUtil {
         if (rows.Count == 0) {
             columnNames.Add("column1");
         } else if (headerRow) {
+            var columnNumber = 0;
             foreach (var originalName in rows[0]) {
+                columnNumber++;
                 var isNull = originalName is DBNull || originalName == null;
-                if (isNull) {
-                    columnNames.Add("");
-                } else {
-                    columnNames.Add(originalName.ToString());
+                var name = "";
+                if (!isNull) {
+                    name = originalName.ToString();
                 }
+                if (string.IsNullOrWhiteSpace(name)) {
+                    name = $"column{columnNumber}";
+                }
+
+                // add a numeric suffix to each column name if necessary to make them all unique
+                var testName = name;
+                var testNum = 1;
+                while (columnNames.Contains(testName)) {
+                    testNum++;
+                    testName = $"{name}_{testNum}";
+                }
+
+                columnNames.Add(testName);
             }
         } else {
             for (int i = 0; i < rows[0].Length; i++) {

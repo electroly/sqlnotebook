@@ -139,13 +139,22 @@ public sealed class ImportCsvStmtRunner {
                 }
             }
 
-            // add a numeric suffix to each column name if necessary to make them all unique
-            foreach (var cell in cells) {
+            var columnNumber = 0;
+            foreach (var c in cells) {
+                columnNumber++;
+                var cell = c;
+
+                // fill in blank column names
+                if (string.IsNullOrWhiteSpace(cell)) {
+                    cell = $"column{columnNumber}";
+                }
+
+                // add a numeric suffix to each column name if necessary to make them all unique
                 var testName = cell;
                 var testNum = 1;
                 while (srcColNames.Contains(testName)) {
                     testNum++;
-                    testName = $"{cell}{testNum}";
+                    testName = $"{cell}_{testNum}";
                 }
                 srcColNames.Add(testName);
             }
