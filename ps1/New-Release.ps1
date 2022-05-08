@@ -63,11 +63,11 @@ rm $zipFilePath -ErrorAction SilentlyContinue
 rm "$relDir\SqlNotebook.wixobj" -ErrorAction SilentlyContinue
 rm "$relDir\SqlNotebook.wxs" -ErrorAction SilentlyContinue
 
-& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com /fd SHA256 /td SHA256 "$relDir\sqlite3.dll" | Write-Output
-& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com /fd SHA256 /td SHA256 "$relDir\crypto.dll" | Write-Output
-& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com /fd SHA256 /td SHA256 "$relDir\fuzzy.dll" | Write-Output
-& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com /fd SHA256 /td SHA256 "$relDir\stats.dll" | Write-Output
-& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com /fd SHA256 /td SHA256 "$relDir\SqlNotebook.exe" | Write-Output
+& $signtool sign /n "Brian Luft" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\sqlite3.dll" | Write-Output
+& $signtool sign /n "Brian Luft" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\crypto.dll" | Write-Output
+& $signtool sign /n "Brian Luft" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\fuzzy.dll" | Write-Output
+& $signtool sign /n "Brian Luft" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\stats.dll" | Write-Output
+& $signtool sign /n "Brian Luft" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\SqlNotebook.exe" | Write-Output
 Copy-Item -Force "$srcdir\SqlNotebook\SqlNotebookIcon.ico" "$relDir\SqlNotebookIcon.ico"
 
 #
@@ -116,6 +116,6 @@ if (-not (Test-Path "$relDir\SqlNotebook.msi")) {
 
 Move-Item -Force "$relDir\SqlNotebook.msi" $msiFilePath
 
-& $signtool sign /n "Brian Luft" /tr http://timestamp.digicert.com /fd SHA256 /td SHA256 /d $msiFilename $msiFilePath | Write-Output
+& $signtool sign /n "Brian Luft" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 /d $msiFilename $msiFilePath | Write-Output
 
 Pop-Location
