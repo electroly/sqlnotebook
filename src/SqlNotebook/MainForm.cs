@@ -463,7 +463,7 @@ public partial class MainForm : ZForm {
             CheckPathExists = true,
             DefaultExt = ".sqlnb",
             DereferenceLinks = true,
-            Filter = "SQL Notebook files|*.sqlnb",
+            Filter = "SQL Notebook files|*.sqlnb;*.sqlite3",
             Multiselect = false,
             SupportMultiDottedExtensions = true,
             Title = "Open Notebook",
