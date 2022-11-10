@@ -271,7 +271,8 @@ public sealed class PreparedStatement : IDisposable {
                     var cb = sqlite3_column_bytes(_stmt, i);
                     var sourceBuffer = sqlite3_column_blob(_stmt, i);
                     var copy = new byte[cb];
-                    Marshal.Copy(sourceBuffer, copy, 0, cb);
+                    if (cb > 0)
+                        Marshal.Copy(sourceBuffer, copy, 0, cb);
                     cellValue = copy;
                     break;
                 }
