@@ -36,8 +36,10 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_EXPORT_TXT_Shift_JIS_sql() => TestScript(@"EXPORT TXT Shift-JIS.sql");
     [TestMethod] public void Test_EXPORT_TXT_truncate_sql() => TestScript(@"EXPORT TXT truncate.sql");
     [TestMethod] public void Test_EXPORT_TXT_sql() => TestScript(@"EXPORT TXT.sql");
+    [TestMethod] public void Test_FULL_OUTER_JOIN_sql() => TestScript(@"FULL OUTER JOIN.sql");
     [TestMethod] public void Test_GETDATE_sql() => TestScript(@"GETDATE.sql");
     [TestMethod] public void Test_GETUTCDATE_sql() => TestScript(@"GETUTCDATE.sql");
+    [TestMethod] public void Test_HAVING_without_GROUP_BY_sql() => TestScript(@"HAVING without GROUP BY.sql");
     [TestMethod] public void Test_HOST_NAME_sql() => TestScript(@"HOST_NAME.sql");
     [TestMethod] public void Test_IMPORT_CSV_BLANK_VALUES_1_sql() => TestScript(@"IMPORT CSV BLANK_VALUES 1.sql");
     [TestMethod] public void Test_IMPORT_CSV_BLANK_VALUES_2_sql() => TestScript(@"IMPORT CSV BLANK_VALUES 2.sql");
@@ -104,6 +106,8 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_RETURN_from_EXECUTE_sql() => TestScript(@"RETURN from EXECUTE.sql");
     [TestMethod] public void Test_RETURN_with_value_sql() => TestScript(@"RETURN with value.sql");
     [TestMethod] public void Test_RETURN_sql() => TestScript(@"RETURN.sql");
+    [TestMethod] public void Test_RIGHT_JOIN_sql() => TestScript(@"RIGHT JOIN.sql");
+    [TestMethod] public void Test_RIGHT_OUTER_JOIN_sql() => TestScript(@"RIGHT OUTER JOIN.sql");
     [TestMethod] public void Test_THROW_from_sub_script_sql() => TestScript(@"THROW from sub-script.sql");
     [TestMethod] public void Test_THROW_rethrow_sql() => TestScript(@"THROW rethrow.sql");
     [TestMethod] public void Test_THROW_sql() => TestScript(@"THROW.sql");

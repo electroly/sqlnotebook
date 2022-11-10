@@ -639,12 +639,16 @@ public static class SqliteGrammar {
             SubProd("ineq-expr")
         );
 
-        // eq-expr-is ::= (IS [NOT] ineq-expr) | ISNULL | NOTNULL | (NOT NULL)
+        // eq-expr-is ::= (IS [NOT] (DISTINCT FROM)? ineq-expr) | ISNULL | NOTNULL | (NOT NULL)
         TopProd(p = "eq-expr-is", 1,
             Or(
                 Prod($"{p}.is-not", 1,
                     Tok(TokenType.Is),
                     Opt(Tok(TokenType.Not)),
+                    Opt(
+                        Tok(TokenType.Distinct),
+                        Tok(TokenType.From)
+                    ),
                     SubProd("ineq-expr")
                 ),
                 Prod($"{p}.is-null", 1, Tok(TokenType.Isnull)),
@@ -987,8 +991,10 @@ public static class SqliteGrammar {
                         ),
                         Opt(1,
                             Tok(TokenType.Group), Tok(TokenType.By),
-                            Lst($"{p}.group-expr", TokenType.Comma, 1, SubProd("expr")),
-                            Opt(1, Tok(TokenType.Having), SubProd("expr"))
+                            Lst($"{p}.group-expr", TokenType.Comma, 1, SubProd("expr"))
+                        ),
+                        Opt(1,
+                            Tok(TokenType.Having), SubProd("expr")
                         ),
                         Opt(1,
                             Tok(TokenType.Window),
@@ -1113,7 +1119,7 @@ public static class SqliteGrammar {
         );
 
         // join-operator ::= ,
-        // join-operator ::= [ NATURAL ] [ LEFT [ OUTER ] | INNER | CROSS ] JOIN
+        // join-operator ::= [ NATURAL ] [ (LEFT | RIGHT | FULL) [ OUTER ] | INNER | CROSS ] JOIN
         TopProd(p = "join-operator", 1,
             Or(
                 Prod($"{p}.comma", 1, Tok(TokenType.Comma)),
@@ -1121,7 +1127,13 @@ public static class SqliteGrammar {
                     Opt(Tok("natural")),
                     Opt(
                         Or(
-                            Prod($"{p}.left", 1, Tok("left"), Opt(Tok("outer"))),
+                            Prod($"{p}.left", 1,
+                                Or(
+                                    Tok("left"),
+                                    Tok("right"),
+                                    Tok("full")
+                                ),
+                                Opt(Tok("outer"))),
                             Prod($"{p}.inner", 1, Tok("inner")),
                             Prod($"{p}.cross", 1, Tok("cross"))
                         )
