@@ -10,13 +10,9 @@ $sqliteSrcHash = '02D96C6CCF811AB9B63919EF717F7E52A450C420E06BD129FB483CD70C3B3B
 $wapiUrl = 'https://github.com/contre/Windows-API-Code-Pack-1.1/archive/a8377ef8bb6fa95ff8800dd4c79089537087d539.zip'
 $wapiHash = '38E59E6AE3BF0FD0CCB05C026F7332D3B56AF81D8C69A62882D04CABAD5EF4AE'
 
-$sqleanVersion = '0.15.1'
-$sqleanCryptoUrl = "https://github.com/nalgeon/sqlean/releases/download/$sqleanVersion/crypto.dll"
-$sqleanCryptoHash = '72C7A243713E36E69F6A024E25F280B9C1C6D8973C547492246E7BA4D0F8C09C'
-$sqleanFuzzyUrl = "https://github.com/nalgeon/sqlean/releases/download/$sqleanVersion/fuzzy.dll"
-$sqleanFuzzyHash = 'A032D03855AFA60B6880486EE65E1D31A3B18FDB7F9F67668601235C18601057'
-$sqleanStatsUrl = "https://github.com/nalgeon/sqlean/releases/download/$sqleanVersion/stats.dll"
-$sqleanStatsHash = '7B05F566ECD04B7BD3AFB4B5FED40B724C7EC498B95CE9D6EB6C8BAD3D37DDBD'
+$sqleanVersion = '0.17.1'
+$sqleanZipUrl = "https://github.com/nalgeon/sqlean/releases/download/$sqleanVersion/sqlean-win-x64.zip"
+$sqleanZipHash = '7A6CF730B04E5A404FC3D4E2A1E0C2CF4D15AFF75547C573F20501D6F697F91A'
 
 $global:ProgressPreference = "SilentlyContinue"
 $ErrorActionPreference = "Stop"
@@ -64,26 +60,21 @@ function Update-WindowsApiCodePack {
     [System.IO.File]::WriteAllText("$wapiDir\source\WindowsAPICodePack\Shell\Resources\LocalizedMessages.Designer.cs", $cs)
 }
 
-function Update-SqleanDll {
-    param ($SqleanDir, $Filename, $Url, $Hash)
-    $filePath = Join-Path $downloadsDir "$Filename-$sqleanVersion"
-    if (-not (Test-Path $filePath)) {
-        Write-Host "Downloading: $Url"
-        Invoke-WebRequest -UseBasicParsing -Uri $Url -OutFile $filePath
-    }
-    VerifyHash $filePath $Hash
-    $dstFilePath = Join-Path $SqleanDir $Filename
-    Copy-Item $filePath $dstFilePath -Force
-}
-
 function Update-Sqlean {
     $sqleanDir = Join-Path $extDir "sqlean"
     if (Test-Path $sqleanDir) { Remove-Item -Force -Recurse $sqleanDir }
     mkdir $sqleanDir
 
-    Update-SqleanDll -SqleanDir $sqleanDir -Filename "crypto.dll" -Url $sqleanCryptoUrl -Hash $sqleanCryptoHash
-    Update-SqleanDll -SqleanDir $sqleanDir -Filename "fuzzy.dll" -Url $sqleanFuzzyUrl -Hash $sqleanFuzzyHash
-    Update-SqleanDll -SqleanDir $sqleanDir -Filename "stats.dll" -Url $sqleanStatsUrl -Hash $sqleanStatsHash
+    $filename = [System.IO.Path]::GetFileName($sqleanZipUrl)
+
+    $filePath = Join-Path $downloadsDir "sqlean-win-x64-$sqleanVersion.zip"
+    if (-not (Test-Path $filePath)) {
+        Write-Host "Downloading: $sqleanZipUrl"
+        Invoke-WebRequest -UseBasicParsing -Uri $sqleanZipUrl -OutFile $filePath
+    }
+    VerifyHash $filePath $sqleanZipHash
+
+    Expand-Archive $filePath -DestinationPath $sqleanDir
 }
 
 function Update-Sqlite {
