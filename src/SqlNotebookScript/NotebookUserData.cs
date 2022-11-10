@@ -141,7 +141,7 @@ public sealed class NotebookUserData : IDisposable {
                 case QueryPageBlockRecord queryBlock:
                     var optionsJson = JsonSerializer.Serialize(queryBlock.Options);
                     notebook.Execute("INSERT INTO _sqlnotebook_page_query_blocks VALUES (?, ?, ?, ?, ?);",
-                        new object[] { itemId, index, queryBlock.Sql, queryBlock.Output.GetBytes(), optionsJson });
+                        new object[] { itemId, index, queryBlock.Sql, queryBlock.Output?.GetBytes(), optionsJson });
                     break;
                 default:
                     Debug.Fail("Unknown block type");
