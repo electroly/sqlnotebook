@@ -4,17 +4,19 @@ using System.Windows.Forms;
 
 namespace SqlNotebook;
 
-public partial class FontForm : Form {
+public partial class FontForm : Form
+{
     private readonly SqlTextControl _previewText;
 
-    public FontForm(Font initialFont) {
+    public FontForm(Font initialFont)
+    {
         InitializeComponent();
         _previewPanel.Controls.Add(_previewText = new(true) { Dock = DockStyle.Fill });
-        _previewText.SqlText = 
-            "-- Example comment.\n" +
-            "SELECT type, name, tbl_name, rootpage, sql\n" +
-            "FROM sqlite_master\n" +
-            "LIMIT 100;";
+        _previewText.SqlText =
+            "-- Example comment.\n"
+            + "SELECT type, name, tbl_name, rootpage, sql\n"
+            + "FROM sqlite_master\n"
+            + "LIMIT 100;";
 
         Ui ui = new(this);
         ui.Init(_table);
@@ -39,17 +41,21 @@ public partial class FontForm : Form {
         ui.Init(_okButton);
         ui.Init(_cancelButton);
 
-        foreach (var family in FontFamily.Families) {
+        foreach (var family in FontFamily.Families)
+        {
             _fontList.Items.Add(family.Name);
-            if (initialFont.Name == family.Name) {
+            if (initialFont.Name == family.Name)
+            {
                 _fontList.SelectedIndex = _fontList.Items.Count - 1;
             }
         }
 
         _sizeList.SelectedIndex = 0;
-        for (var i = 0; i < _sizeList.Items.Count; i++) {
+        for (var i = 0; i < _sizeList.Items.Count; i++)
+        {
             var size = int.Parse((string)_sizeList.Items[i]);
-            if (size <= initialFont.SizeInPoints) {
+            if (size <= initialFont.SizeInPoints)
+            {
                 _sizeList.SelectedIndex = i;
             }
         }
@@ -61,52 +67,64 @@ public partial class FontForm : Form {
         UpdatePreview();
     }
 
-    private void OkButton_Click(object sender, EventArgs e) {
+    private void OkButton_Click(object sender, EventArgs e)
+    {
         DialogResult = DialogResult.OK;
         Close();
     }
 
-    private void FontList_SelectedIndexChanged(object sender, EventArgs e) {
+    private void FontList_SelectedIndexChanged(object sender, EventArgs e)
+    {
         UpdatePreview();
     }
 
-    private void SizeList_SelectedIndexChanged(object sender, EventArgs e) {
+    private void SizeList_SelectedIndexChanged(object sender, EventArgs e)
+    {
         UpdatePreview();
     }
 
-    private void BoldCheck_CheckedChanged(object sender, EventArgs e) {
+    private void BoldCheck_CheckedChanged(object sender, EventArgs e)
+    {
         UpdatePreview();
     }
 
-    private string GetFamily() {
+    private string GetFamily()
+    {
         var index = _fontList.SelectedIndex;
-        return
-            index >= 0 && index < _fontList.Items.Count
-            ? (string)_fontList.Items[index]
-            : "Segoe UI";
+        return index >= 0 && index < _fontList.Items.Count ? (string)_fontList.Items[index] : "Segoe UI";
     }
 
-    private int GetSize() {
-        try {
+    private int GetSize()
+    {
+        try
+        {
             return int.Parse((string)_sizeList.Items[_sizeList.SelectedIndex]);
-        } catch {
+        }
+        catch
+        {
             return 9;
         }
     }
 
-    private FontStyle GetStyle() {
+    private FontStyle GetStyle()
+    {
         return _boldCheck.Checked ? FontStyle.Bold : FontStyle.Regular;
     }
 
-    public Font GetFont() {
-        try {
+    public Font GetFont()
+    {
+        try
+        {
             return new(GetFamily(), GetSize(), GetStyle());
-        } catch {
+        }
+        catch
+        {
             return new("Segoe UI", 9f);
         }
     }
 
-    private void UpdatePreview() {
+    private void UpdatePreview()
+    {
         var font = GetFont();
         _previewText.SetFont(font);
     }

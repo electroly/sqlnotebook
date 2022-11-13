@@ -3,16 +3,20 @@ using System.Collections.Generic;
 
 namespace SqlNotebookScript.DataTables;
 
-public sealed class DiskSimpleDataTableList : IReadOnlyList<object[]> {
+public sealed class DiskSimpleDataTableList : IReadOnlyList<object[]>
+{
     private readonly DiskSimpleDataTable _table;
 
-    public DiskSimpleDataTableList(DiskSimpleDataTable table, int count) {
+    public DiskSimpleDataTableList(DiskSimpleDataTable table, int count)
+    {
         Count = count;
         _table = table;
     }
 
-    public object[] this[int index] {
-        get {
+    public object[] this[int index]
+    {
+        get
+        {
             var row = new object[_table.Columns.Count];
             _table.GetRow(index, row);
             return row;
@@ -21,11 +25,13 @@ public sealed class DiskSimpleDataTableList : IReadOnlyList<object[]> {
 
     public int Count { get; }
 
-    public IEnumerator<object[]> GetEnumerator() {
+    public IEnumerator<object[]> GetEnumerator()
+    {
         return new DiskSimpleDataTableEnumerator(_table, _table.Columns.Count, Count);
     }
 
-    IEnumerator IEnumerable.GetEnumerator() {
+    IEnumerator IEnumerable.GetEnumerator()
+    {
         return new DiskSimpleDataTableEnumerator(_table, _table.Columns.Count, Count);
     }
 }

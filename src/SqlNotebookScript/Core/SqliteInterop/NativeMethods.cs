@@ -3,7 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace SqlNotebookScript.Core.SqliteInterop;
 
-internal static class NativeMethods {
+internal static class NativeMethods
+{
     private const string SQLITE_DLL = "sqlite3.dll";
 
     public const int SQLITE_OK = 0;
@@ -140,12 +141,26 @@ internal static class NativeMethods {
     public static extern void sqlite3_result_error16(IntPtr pCtx, IntPtr z, int n);
 
     [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_create_module_v2", SetLastError = false)]
-    public static extern int sqlite3_create_module_v2(IntPtr db, IntPtr zName, IntPtr pModule, IntPtr pAux,
-        IntPtr xDestroy);
+    public static extern int sqlite3_create_module_v2(
+        IntPtr db,
+        IntPtr zName,
+        IntPtr pModule,
+        IntPtr pAux,
+        IntPtr xDestroy
+    );
 
     [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_create_function_v2", SetLastError = false)]
-    public static extern int sqlite3_create_function_v2(IntPtr db, IntPtr zFunc, int nArg, int enc, IntPtr p,
-        IntPtr xSFunc, IntPtr xStep, IntPtr xFinal, IntPtr xDestroy);
+    public static extern int sqlite3_create_function_v2(
+        IntPtr db,
+        IntPtr zFunc,
+        int nArg,
+        int enc,
+        IntPtr p,
+        IntPtr xSFunc,
+        IntPtr xStep,
+        IntPtr xFinal,
+        IntPtr xDestroy
+    );
 
     [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_user_data", SetLastError = false)]
     public static extern IntPtr sqlite3_user_data(IntPtr pCtx);

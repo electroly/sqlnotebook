@@ -4,7 +4,8 @@ using System.Data;
 
 namespace SqlNotebookScript.Core.AdoModules;
 
-public record class AdoTableMetadata {
+public record class AdoTableMetadata
+{
     public string ConnectionString { get; init; }
     public string AdoTableName { get; init; }
     public string AdoSchemaName { get; init; }

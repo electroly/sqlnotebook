@@ -9,24 +9,35 @@ using SqlNotebookScript.Utils;
 namespace Tests;
 
 [TestClass]
-public sealed class SqlServer2008R2Test {
+public sealed class SqlServer2008R2Test
+{
     [ClassInitialize]
     public static void Init(TestContext context) => GlobalInit.Init();
 
-    private static void Execute(DbConnection connection, string sql) {
+    private static void Execute(DbConnection connection, string sql)
+    {
         using var c = connection.CreateCommand();
         c.CommandText = sql;
         c.ExecuteNonQuery();
     }
 
-    private static string SetupSqlServer2008R2(bool caseSensitive) {
-        SqlConnection connection = new(
-            @"Data Source=localhost\SQL2008R2;Initial Catalog=master;Integrated Security=True;Encrypt=False");
+    private static string SetupSqlServer2008R2(bool caseSensitive)
+    {
+        SqlConnection connection =
+            new(@"Data Source=localhost\SQL2008R2;Initial Catalog=master;Integrated Security=True;Encrypt=False");
         connection.Open();
         var collateCase = caseSensitive ? "CS" : "CI";
-        Execute(connection, $"IF EXISTS (SELECT 1 FROM sys.sysdatabases WHERE name = 'sql2008r2_test_{collateCase}') DROP DATABASE sql2008r2_test_{collateCase};");
-        Execute(connection, $"CREATE DATABASE sql2008r2_test_{collateCase} COLLATE SQL_Latin1_General_CP1_{collateCase}_AS;");
-        Execute(connection, @$"
+        Execute(
+            connection,
+            $"IF EXISTS (SELECT 1 FROM sys.sysdatabases WHERE name = 'sql2008r2_test_{collateCase}') DROP DATABASE sql2008r2_test_{collateCase};"
+        );
+        Execute(
+            connection,
+            $"CREATE DATABASE sql2008r2_test_{collateCase} COLLATE SQL_Latin1_General_CP1_{collateCase}_AS;"
+        );
+        Execute(
+            connection,
+            @$"
             USE sql2008r2_test_{collateCase};
             CREATE TABLE foo (
                 a INT PRIMARY KEY,
@@ -40,20 +51,24 @@ public sealed class SqlServer2008R2Test {
             INSERT INTO foo VALUES
                 (111, 'HELLO', 1, '2010-02-03', '2013-04-05 06:45:15.123', '2013-04-05 06:45:15.123 -04:00', 123456),
                 (222, NULL, NULL, NULL, NULL, NULL, NULL);
-        ");
+        "
+        );
         return @$"Data Source=localhost\SQL2008R2;Initial Catalog=sql2008r2_test_{collateCase};Integrated Security=True;Encrypt=False";
     }
 
     [DataRow(true)]
     [DataRow(false)]
     [DataTestMethod]
-    public void ImportDatabase_SqlServer2008R2(bool caseSensitive) {
+    public void ImportDatabase_SqlServer2008R2(bool caseSensitive)
+    {
         var connectionString = SetupSqlServer2008R2(caseSensitive);
         using var notebook = Notebook.New();
         NotebookManager manager = new(notebook, new());
         manager.ExecuteScript($"IMPORT DATABASE 'mssql' CONNECTION {connectionString.SingleQuote()} TABLE foo;");
-        Assert.AreEqual(@"CREATE TABLE ""foo"" (""a"" INTEGER, ""b"" TEXT, ""c"" INTEGER, ""d"" TEXT, ""e"" TEXT, ""f"" TEXT, ""g"" BLOB, PRIMARY KEY (""a""))",
-            (string)notebook.QueryValue("SELECT sql FROM sqlite_master WHERE name = 'foo';"));
+        Assert.AreEqual(
+            @"CREATE TABLE ""foo"" (""a"" INTEGER, ""b"" TEXT, ""c"" INTEGER, ""d"" TEXT, ""e"" TEXT, ""f"" TEXT, ""g"" BLOB, PRIMARY KEY (""a""))",
+            (string)notebook.QueryValue("SELECT sql FROM sqlite_master WHERE name = 'foo';")
+        );
         using var sdt = notebook.Query("SELECT * FROM foo ORDER BY a;", Array.Empty<object>());
         Assert.AreEqual(2, sdt.Rows.Count);
         Assert.AreEqual(7, sdt.Columns.Count);
@@ -74,9 +89,9 @@ public sealed class SqlServer2008R2Test {
         Assert.AreEqual("00-01-E2-40", BitConverter.ToString((byte[])sdt.Rows[0][6]));
 
         Assert.AreEqual((long)222, sdt.Rows[1][0]);
-        for (var i = 1; i <= 6; i++) {
+        for (var i = 1; i <= 6; i++)
+        {
             Assert.IsInstanceOfType(sdt.Rows[1][i], typeof(DBNull));
         }
     }
 }
-

@@ -2,7 +2,8 @@
 
 namespace SqlNotebookScript.Utils;
 
-public enum BlankValuesOption {
+public enum BlankValuesOption
+{
     [Description("Import as empty string")]
     EmptyString = 1,
 

@@ -3,7 +3,8 @@ using System.Data;
 
 namespace SqlNotebookScript.Core.AdoModules;
 
-public record class AdoCreateInfo {
+public record class AdoCreateInfo
+{
     public Func<string, IDbConnection> ConnectionCreator { get; init; }
 
     /// <remarks>

@@ -5,13 +5,15 @@ using System.Runtime.InteropServices;
 
 namespace SqlNotebookScript.Core;
 
-public static class CustomFunctionsProvider {
+public static class CustomFunctionsProvider
+{
     private delegate void InvokeAction(IntPtr context, int argc, IntPtr argv);
-    
+
     /// <remarks>We need to keep these alive since they are unmanaged callbacks.</remarks>
     private static readonly List<InvokeAction> _delegates = new();
 
-    public static void InstallCustomFunctions(IntPtr sqlite) {
+    public static void InstallCustomFunctions(IntPtr sqlite)
+    {
         RegisterCustomFunction(sqlite, "error_message", 0, ErrorMessage, false);
     }
 
@@ -21,10 +23,12 @@ public static class CustomFunctionsProvider {
         int numArgs,
         InvokeAction action,
         bool deterministic
-        ) {
+    )
+    {
         _delegates.Add(action);
         using NativeString functionNameNative = new(functionName);
-        SqliteUtil.ThrowIfError(sqlite,
+        SqliteUtil.ThrowIfError(
+            sqlite,
             NativeMethods.sqlite3_create_function_v2(
                 db: sqlite,
                 zFunc: functionNameNative.Ptr,
@@ -34,10 +38,13 @@ public static class CustomFunctionsProvider {
                 xSFunc: Marshal.GetFunctionPointerForDelegate(action),
                 xStep: IntPtr.Zero,
                 xFinal: IntPtr.Zero,
-                xDestroy: IntPtr.Zero));
+                xDestroy: IntPtr.Zero
+            )
+        );
     }
 
-    private static void ErrorMessage(IntPtr ctx, int argc, IntPtr argv) {
+    private static void ErrorMessage(IntPtr ctx, int argc, IntPtr argv)
+    {
         SqliteUtil.Result(ctx, Notebook.ErrorMessage);
     }
 }

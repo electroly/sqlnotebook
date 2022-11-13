@@ -1,10 +1,12 @@
 ﻿namespace SqlNotebook;
 
-public interface IDocumentControl {
+public interface IDocumentControl
+{
     string ItemName { get; set; }
     void Save();
 }
 
-public interface IDocumentControlOpenNotification {
+public interface IDocumentControlOpenNotification
+{
     void OnOpen();
 }

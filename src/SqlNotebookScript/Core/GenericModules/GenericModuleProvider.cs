@@ -8,7 +8,8 @@ using static SqlNotebookScript.Core.SqliteInterop.NativeMethods;
 
 namespace SqlNotebookScript.Core.GenericModules;
 
-public sealed class GenericModuleProvider : IDisposable {
+public sealed class GenericModuleProvider : IDisposable
+{
     private static int _nextMetadataKey = 1;
 
     /// <summary>
@@ -18,12 +19,18 @@ public sealed class GenericModuleProvider : IDisposable {
 
     private delegate void RemoveCustomTableFunctionDelegate(IntPtr p);
 
-    private static readonly Lazy<(IntPtr Ptr, RemoveCustomTableFunctionDelegate Delegate)> _removeCustomTableFunctionFunc = new(() => {
-        RemoveCustomTableFunctionDelegate @delegate = p => {
-            _customTableFunctions.Remove((int)p);
-        };
-        return (Marshal.GetFunctionPointerForDelegate(@delegate), @delegate);
-    });
+    private static readonly Lazy<(
+        IntPtr Ptr,
+        RemoveCustomTableFunctionDelegate Delegate
+    )> _removeCustomTableFunctionFunc =
+        new(() =>
+        {
+            RemoveCustomTableFunctionDelegate @delegate = p =>
+            {
+                _customTableFunctions.Remove((int)p);
+            };
+            return (Marshal.GetFunctionPointerForDelegate(@delegate), @delegate);
+        });
 
     /// <summary>
     /// This matches the MetadataKey in <see cref="Sqlite3Vtab"/>.
@@ -45,15 +52,19 @@ public sealed class GenericModuleProvider : IDisposable {
     private IntPtr _moduleNative; // sqlite3_module*
     private bool _disposedValue;
 
-    private void Dispose(bool disposing) {
-        if (!_disposedValue) {
-            if (disposing) {
+    private void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
                 // dispose managed state (managed objects)
             }
 
             // free unmanaged resources (unmanaged objects) and override finalizer
             // set large fields to null
-            if (_moduleNative != IntPtr.Zero) {
+            if (_moduleNative != IntPtr.Zero)
+            {
                 Marshal.FreeHGlobal(_moduleNative);
             }
             _disposedValue = true;
@@ -61,12 +72,14 @@ public sealed class GenericModuleProvider : IDisposable {
     }
 
     // override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-    ~GenericModuleProvider() {
+    ~GenericModuleProvider()
+    {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: false);
     }
 
-    public void Dispose() {
+    public void Dispose()
+    {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
@@ -75,12 +88,15 @@ public sealed class GenericModuleProvider : IDisposable {
     public void Install(
         IntPtr sqlite, // sqlite3*
         CustomTableFunction customTableFunction
-        ) {
-        if (!_installed) {
+    )
+    {
+        if (!_installed)
+        {
             // Prepare the sqlite3_module.
             var moduleSize = Marshal.SizeOf<Sqlite3Module>();
             _moduleNative = Marshal.AllocHGlobal(moduleSize);
-            try {
+            try
+            {
                 ZeroMemory(_moduleNative, (IntPtr)moduleSize);
                 GenericPopulateModule(_moduleNative);
 
@@ -89,10 +105,19 @@ public sealed class GenericModuleProvider : IDisposable {
 
                 // Install the module into SQLite.
                 using NativeString nameNative = new(customTableFunction.Name);
-                SqliteUtil.ThrowIfError(sqlite,
-                    sqlite3_create_module_v2(sqlite, nameNative.Ptr, _moduleNative,
-                        (IntPtr)key, _removeCustomTableFunctionFunc.Value.Ptr));
-            } catch {
+                SqliteUtil.ThrowIfError(
+                    sqlite,
+                    sqlite3_create_module_v2(
+                        sqlite,
+                        nameNative.Ptr,
+                        _moduleNative,
+                        (IntPtr)key,
+                        _removeCustomTableFunctionFunc.Value.Ptr
+                    )
+                );
+            }
+            catch
+            {
                 Marshal.FreeHGlobal(_moduleNative);
                 throw;
             }
@@ -103,7 +128,8 @@ public sealed class GenericModuleProvider : IDisposable {
 
     private static void GenericPopulateModule(
         IntPtr modulePtr // sqlite3_module*
-        ) {
+    )
+    {
         ZeroMemory(modulePtr, (IntPtr)Marshal.SizeOf<Sqlite3Module>());
         var module = Marshal.PtrToStructure<Sqlite3Module>(modulePtr);
 
@@ -174,16 +200,14 @@ public sealed class GenericModuleProvider : IDisposable {
         IntPtr argv, // const char* const*
         IntPtr ppVTab, // sqlite3_vtab**
         IntPtr pzErr // char**
-        ) {
-        try {
+    )
+    {
+        try
+        {
             var customTableFunction = _customTableFunctions[(int)pAux];
             var metadataKey = _nextMetadataKey++;
-            _tableMetadatas.Add(metadataKey, new() {
-                CustomTableFunction = customTableFunction,
-            });
-            Sqlite3Vtab vtab = new() {
-                MetadataKey = metadataKey,
-            };
+            _tableMetadatas.Add(metadataKey, new() { CustomTableFunction = customTableFunction, });
+            Sqlite3Vtab vtab = new() { MetadataKey = metadataKey, };
             var vtabSize = Marshal.SizeOf<Sqlite3Vtab>();
             var vtabNative = Marshal.AllocHGlobal(vtabSize);
             ZeroMemory(vtabNative, (IntPtr)vtabSize);
@@ -192,15 +216,19 @@ public sealed class GenericModuleProvider : IDisposable {
             SqliteUtil.ThrowIfError(db, sqlite3_declare_vtab(db, sql.Ptr));
             Marshal.WriteIntPtr(ppVTab, vtabNative);
             return SQLITE_OK;
-        } catch {
+        }
+        catch
+        {
             return SQLITE_INTERNAL;
         }
     }
 
     private static int GenericDestroy(
         IntPtr pVTab // sqlite3_vtab*
-        ) {
-        if (pVTab != IntPtr.Zero) {
+    )
+    {
+        if (pVTab != IntPtr.Zero)
+        {
             var vtab = Marshal.PtrToStructure<Sqlite3Vtab>(pVTab);
             _tableMetadatas.Remove(vtab.MetadataKey);
 
@@ -212,7 +240,8 @@ public sealed class GenericModuleProvider : IDisposable {
     private static int GenericBestIndex(
         IntPtr pVTab, // sqlite3_vtab*
         IntPtr infoPtr // sqlite3_index_info*
-        ) {
+    )
+    {
         var vtab = Marshal.PtrToStructure<Sqlite3Vtab>(pVTab);
         var vtabMeta = _tableMetadatas[vtab.MetadataKey];
         var info = Marshal.PtrToStructure<Sqlite3IndexInfo>(infoPtr);
@@ -220,27 +249,32 @@ public sealed class GenericModuleProvider : IDisposable {
 
         // WHERE clause
         int argvIndex = 1;
-        for (int i = 0; i < info.nConstraint; i++) {
+        for (int i = 0; i < info.nConstraint; i++)
+        {
             var constraintPtr = info.aConstraint + i * Marshal.SizeOf<Sqlite3IndexConstraint>();
             var constraint = Marshal.PtrToStructure<Sqlite3IndexConstraint>(constraintPtr);
 
             var colIndex = constraint.iColumn;
             var op = constraint.op;
-            if (colIndex == -1) {
+            if (colIndex == -1)
+            {
                 continue;
-            } else if (constraint.usable == 0) {
+            }
+            else if (constraint.usable == 0)
+            {
                 continue;
-            } else if (colIndex > vtabMeta.CustomTableFunction.HiddenColumnCount) {
+            }
+            else if (colIndex > vtabMeta.CustomTableFunction.HiddenColumnCount)
+            {
                 continue;
-            } else if (op != SQLITE_INDEX_CONSTRAINT_EQ) {
+            }
+            else if (op != SQLITE_INDEX_CONSTRAINT_EQ)
+            {
                 continue;
             }
 
             // set info.aConstraintUsage[i]
-            Sqlite3IndexConstraintUsage constraintUsage = new() {
-                argvIndex = argvIndex,
-                omit = 0,
-            };
+            Sqlite3IndexConstraintUsage constraintUsage = new() { argvIndex = argvIndex, omit = 0, };
             var constraintUsagePtr = info.aConstraintUsage + i * Marshal.SizeOf<Sqlite3IndexConstraintUsage>();
             Marshal.StructureToPtr(constraintUsage, constraintUsagePtr, false);
 
@@ -262,7 +296,8 @@ public sealed class GenericModuleProvider : IDisposable {
     private static int GenericOpen(
         IntPtr pVTab, // sqlite3_vtab*
         IntPtr ppCursor // sqlite3_vtab_cursor**
-        ) {
+    )
+    {
         var metadataKey = ++_nextMetadataKey;
 
         // Prepare the cursor.
@@ -280,9 +315,7 @@ public sealed class GenericModuleProvider : IDisposable {
         {
             var vtab = Marshal.PtrToStructure<Sqlite3Vtab>(pVTab);
             var vtabMetadata = _tableMetadatas[vtab.MetadataKey];
-            _cursorMetadatas.Add(metadataKey, new() {
-                TableMetadata = vtabMetadata,
-            });
+            _cursorMetadatas.Add(metadataKey, new() { TableMetadata = vtabMetadata, });
         }
 
         // Write the pointer to the Sqlite3VtabCursor to *ppCursor.
@@ -292,7 +325,8 @@ public sealed class GenericModuleProvider : IDisposable {
 
     private static int GenericClose(
         IntPtr pCur // sqlite3_vtab_cursor*
-        ) {
+    )
+    {
         var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
         _cursorMetadatas.Remove(cursor.MetadataKey);
         Marshal.FreeHGlobal(pCur);
@@ -301,13 +335,17 @@ public sealed class GenericModuleProvider : IDisposable {
 
     private static int GenericNext(
         IntPtr pCur // sqlite3_vtab_cursor*
-        ) {
+    )
+    {
         var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
         var cursorMetadata = _cursorMetadatas[cursor.MetadataKey];
-        try {
+        try
+        {
             cursorMetadata.Eof = !cursorMetadata.Enumerator.MoveNext();
             return SQLITE_OK;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             SetVtabError(cursor.pVtab, ex.GetExceptionMessage());
             return SQLITE_ERROR;
         }
@@ -319,23 +357,30 @@ public sealed class GenericModuleProvider : IDisposable {
         IntPtr idxStr, // const char*
         int argc,
         IntPtr argv // sqlite3_value**
-        ) {
+    )
+    {
         var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
-        try {
+        try
+        {
             var cursorMetadata = _cursorMetadatas[cursor.MetadataKey];
             var customTableFunction = cursorMetadata.TableMetadata.CustomTableFunction;
             List<int> filter = new();
-            foreach (var numStr in Marshal.PtrToStringUTF8(idxStr).Split(',', StringSplitOptions.RemoveEmptyEntries)) {
+            foreach (var numStr in Marshal.PtrToStringUTF8(idxStr).Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
                 filter.Add(int.Parse(numStr));
             }
 
             var hiddenCount = customTableFunction.HiddenColumnCount;
             var hiddenValues = new object[hiddenCount];
-            for (var i = 0; i < argc; i++) {
+            for (var i = 0; i < argc; i++)
+            {
                 var filterI = filter[i];
-                if (filterI >= 0 && filterI < hiddenValues.Length) {
+                if (filterI >= 0 && filterI < hiddenValues.Length)
+                {
                     hiddenValues[filterI] = SqlUtil.GetArg(Marshal.ReadIntPtr(argv + i * IntPtr.Size));
-                } else {
+                }
+                else
+                {
                     System.Diagnostics.Debugger.Break();
                 }
             }
@@ -343,7 +388,9 @@ public sealed class GenericModuleProvider : IDisposable {
             cursorMetadata.Enumerator = customTableFunction.Execute(hiddenValues).GetEnumerator();
             cursorMetadata.Eof = false;
             return GenericNext(pCur);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             SetVtabError(cursor.pVtab, ex.GetExceptionMessage());
             return SQLITE_ERROR;
         }
@@ -351,7 +398,8 @@ public sealed class GenericModuleProvider : IDisposable {
 
     private static int GenericEof(
         IntPtr pCur // sqlite3_vtab_cursor*
-        ) {
+    )
+    {
         var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
         var cursorMetadata = _cursorMetadatas[cursor.MetadataKey];
         return cursorMetadata.Eof ? 1 : 0;
@@ -361,14 +409,18 @@ public sealed class GenericModuleProvider : IDisposable {
         IntPtr pCur, // sqlite3_vtab_cursor*
         IntPtr ctx, // sqlite3_context*
         int n
-        ) {
+    )
+    {
         var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
-        try {
+        try
+        {
             var cursorMetadata = _cursorMetadatas[cursor.MetadataKey];
             var row = cursorMetadata.Enumerator.Current;
             SqliteUtil.Result(ctx, row[n]);
             return SQLITE_OK;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             SetVtabError(cursor.pVtab, ex.GetExceptionMessage());
             return SQLITE_ERROR;
         }
@@ -377,18 +429,23 @@ public sealed class GenericModuleProvider : IDisposable {
     private static int GenericRowid(
         IntPtr pCur, // sqlite3_vtab_cursor*
         IntPtr pRowid // sqlite3_int64*
-        ) {
+    )
+    {
         var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
-        try {
+        try
+        {
             var cursorMetadata = _cursorMetadatas[cursor.MetadataKey];
             var arr = cursorMetadata.Enumerator.Current;
             var hash = 13;
-            foreach (var value in arr) {
+            foreach (var value in arr)
+            {
                 hash = (hash * 7) + value.GetHashCode();
             }
             Marshal.WriteInt64(pRowid, hash);
             return SQLITE_OK;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             SetVtabError(cursor.pVtab, ex.GetExceptionMessage());
             return SQLITE_ERROR;
         }
@@ -397,14 +454,17 @@ public sealed class GenericModuleProvider : IDisposable {
     private static int GenericRename(
         IntPtr pVtab, // sqlite3_vtab*
         IntPtr zNew // const char*
-        ) {
+    )
+    {
         // don't care
         return SQLITE_OK;
     }
 
-    private static void SetVtabError(IntPtr vtabNative, string message) {
+    private static void SetVtabError(IntPtr vtabNative, string message)
+    {
         var vtab = Marshal.PtrToStructure<Sqlite3Vtab>(vtabNative);
-        if (vtab.zErrMsg != IntPtr.Zero) {
+        if (vtab.zErrMsg != IntPtr.Zero)
+        {
             sqlite3_free(vtab.zErrMsg);
         }
         vtab.zErrMsg = NativeString.NewUnmanagedUtf8StringWithSqliteAllocator(message);

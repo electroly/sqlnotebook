@@ -3,17 +3,20 @@ using SqlNotebookScript;
 
 namespace SqlNotebook;
 
-public partial class QueryDocumentControl : UserControl, IDocumentControl {
+public partial class QueryDocumentControl : UserControl, IDocumentControl
+{
     private readonly NotebookManager _manager;
     private readonly QueryEmbeddedControl _queryControl;
 
     public string ItemName { get; set; }
 
-    public void Save() {
+    public void Save()
+    {
         _manager.SetItemData(ItemName, new ScriptNotebookItemRecord { Name = ItemName, Sql = _queryControl.SqlText });
     }
 
-    public QueryDocumentControl(string name, NotebookManager manager, IWin32Window mainForm) {
+    public QueryDocumentControl(string name, NotebookManager manager, IWin32Window mainForm)
+    {
         InitializeComponent();
         ItemName = name;
         _manager = manager;

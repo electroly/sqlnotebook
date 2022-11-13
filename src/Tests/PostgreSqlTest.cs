@@ -9,23 +9,27 @@ using SqlNotebookScript.Utils;
 namespace Tests;
 
 [TestClass]
-public sealed class PostgreSqlTest {
+public sealed class PostgreSqlTest
+{
     [ClassInitialize]
     public static void Init(TestContext context) => GlobalInit.Init();
 
-    private static void Execute(DbConnection connection, string sql) {
+    private static void Execute(DbConnection connection, string sql)
+    {
         using var c = connection.CreateCommand();
         c.CommandText = sql;
         c.ExecuteNonQuery();
     }
 
-    private static string SetupPostgreSql() {
+    private static string SetupPostgreSql()
+    {
         NpgsqlConnectionStringBuilder connectionStringBuilder = new();
         connectionStringBuilder.Host = "localhost";
         connectionStringBuilder.Username = "postgres";
         connectionStringBuilder.Password = "password";
         connectionStringBuilder.Database = "postgres";
-        using (NpgsqlConnection c = new(connectionStringBuilder.ToString())) {
+        using (NpgsqlConnection c = new(connectionStringBuilder.ToString()))
+        {
             c.Open();
             Execute(c, "DROP DATABASE IF EXISTS sqlnotebook_test");
             Execute(c, "CREATE DATABASE sqlnotebook_test");
@@ -34,7 +38,9 @@ public sealed class PostgreSqlTest {
         connectionStringBuilder.Database = "sqlnotebook_test";
         using NpgsqlConnection connection = new(connectionStringBuilder.ToString());
         connection.Open();
-        Execute(connection, @$"
+        Execute(
+            connection,
+            @$"
             CREATE TABLE foo (
                 a integer PRIMARY KEY,
                 b character varying (100),
@@ -54,18 +60,22 @@ public sealed class PostgreSqlTest {
                 (111, 'HELLO', 1::bit, '2010-02-03', '2013-04-05 06:45:15.123', '2013-04-05 06:45:15.123 -04:00', B'1101',
                     '{{""foo"": ""bar""}}', 123.45, 'foo', 1234567890, true, '\xA1B2C3'),
                 (222, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-        ");
+        "
+        );
         return connectionStringBuilder.ToString();
     }
 
     [TestMethod]
-    public void ImportDatabase_PostgreSql() {
+    public void ImportDatabase_PostgreSql()
+    {
         var connectionString = SetupPostgreSql();
         using var notebook = Notebook.New();
         NotebookManager manager = new(notebook, new());
         manager.ExecuteScript($"IMPORT DATABASE 'pgsql' CONNECTION {connectionString.SingleQuote()} TABLE foo;");
-        Assert.AreEqual(@"CREATE TABLE ""foo"" (""a"" INTEGER, ""b"" TEXT, ""c"" INTEGER, ""d"" TEXT, ""e"" TEXT, ""f"" TEXT, ""g"" BLOB, ""h"" TEXT, ""i"" REAL, ""j"" TEXT, ""k"" INTEGER, ""l"" INTEGER, ""m"" BLOB, PRIMARY KEY (""a""))",
-            (string)notebook.QueryValue("SELECT sql FROM sqlite_master WHERE name = 'foo';"));
+        Assert.AreEqual(
+            @"CREATE TABLE ""foo"" (""a"" INTEGER, ""b"" TEXT, ""c"" INTEGER, ""d"" TEXT, ""e"" TEXT, ""f"" TEXT, ""g"" BLOB, ""h"" TEXT, ""i"" REAL, ""j"" TEXT, ""k"" INTEGER, ""l"" INTEGER, ""m"" BLOB, PRIMARY KEY (""a""))",
+            (string)notebook.QueryValue("SELECT sql FROM sqlite_master WHERE name = 'foo';")
+        );
         using var sdt = notebook.Query("SELECT * FROM foo ORDER BY a;", Array.Empty<object>());
         Assert.AreEqual(2, sdt.Rows.Count);
         Assert.AreEqual(13, sdt.Columns.Count);
@@ -100,9 +110,9 @@ public sealed class PostgreSqlTest {
         Assert.AreEqual("A1-B2-C3", BitConverter.ToString((byte[])sdt.Rows[0][12]));
 
         Assert.AreEqual((long)222, sdt.Rows[1][0]);
-        for (var i = 1; i <= 12; i++) {
+        for (var i = 1; i <= 12; i++)
+        {
             Assert.IsInstanceOfType(sdt.Rows[1][i], typeof(DBNull));
         }
     }
 }
-

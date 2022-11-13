@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 namespace SqlNotebookScript.Interpreter;
 
-public sealed class ScriptEnv {
+public sealed class ScriptEnv
+{
     // local variables and script parameters. keys are in lowercase.
     public Dictionary<string, object> Vars { get; } = new Dictionary<string, object>();
 

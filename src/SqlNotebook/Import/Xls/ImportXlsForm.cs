@@ -12,20 +12,24 @@ using SqlNotebookScript.Utils;
 
 namespace SqlNotebook.Import.Xls;
 
-public partial class ImportXlsForm : ZForm {
-    private readonly Tuple<ImportTableExistsOption, string>[] _ifExistsOptions = new[] {
+public partial class ImportXlsForm : ZForm
+{
+    private readonly Tuple<ImportTableExistsOption, string>[] _ifExistsOptions = new[]
+    {
         Tuple.Create(ImportTableExistsOption.AppendNewRows, "Append new rows"),
         Tuple.Create(ImportTableExistsOption.DeleteExistingRows, "Delete existing rows"),
         Tuple.Create(ImportTableExistsOption.DropTable, "Drop table and re-create")
     };
 
-    private readonly Tuple<ImportConversionFailOption, string>[] _conversionFailOptions = new[] {
+    private readonly Tuple<ImportConversionFailOption, string>[] _conversionFailOptions = new[]
+    {
         Tuple.Create(ImportConversionFailOption.ImportAsText, "Import the value as text"),
         Tuple.Create(ImportConversionFailOption.SkipRow, "Skip the row"),
         Tuple.Create(ImportConversionFailOption.Abort, "Stop import with error")
     };
 
-    private readonly Tuple<BlankValuesOption, string>[] _blankValuesOptions = new[] {
+    private readonly Tuple<BlankValuesOption, string>[] _blankValuesOptions = new[]
+    {
         Tuple.Create(BlankValuesOption.EmptyString, "Blank text"),
         Tuple.Create(BlankValuesOption.Null, "NULL"),
         Tuple.Create(BlankValuesOption.EmptyStringOrNull, "NULL for non-TEXT columns only")
@@ -38,21 +42,27 @@ public partial class ImportXlsForm : ZForm {
     private readonly int _columnWidth;
     private readonly ImportColumnsControl _columnsControl;
 
-    public ImportXlsForm(XlsInput input, NotebookManager manager, DatabaseSchema schema) {
+    public ImportXlsForm(XlsInput input, NotebookManager manager, DatabaseSchema schema)
+    {
         InitializeComponent();
         _input = input;
         _manager = manager;
 
-        _originalFilePanel.Controls.Add(_grid = DataGridViewUtil.NewDataGridView(
-            rowHeadersVisible: true, autoGenerateColumns: false, allowSort: false));
-        _columnsPanel.Controls.Add(_columnsControl = new(allowDetectTypes: true) {
-            Dock = DockStyle.Fill
-        });
+        _originalFilePanel.Controls.Add(
+            _grid = DataGridViewUtil.NewDataGridView(
+                rowHeadersVisible: true,
+                autoGenerateColumns: false,
+                allowSort: false
+            )
+        );
+        _columnsPanel.Controls.Add(_columnsControl = new(allowDetectTypes: true) { Dock = DockStyle.Fill });
         Ui ui = new(this, 170, 50);
         _columnWidth = ui.XWidth(25);
 
-        Load += delegate {
-            foreach (var sheet in input.Worksheets) {
+        Load += delegate
+        {
+            foreach (var sheet in input.Worksheets)
+            {
                 _sheets.Add(Tuple.Create(sheet.Index, sheet.Name));
             }
 
@@ -60,12 +70,13 @@ public partial class ImportXlsForm : ZForm {
             _grid.RowHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             _grid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             _grid.SelectionMode = DataGridViewSelectionMode.ColumnHeaderSelect;
-            
+
             DataGridViewUtil.ApplyCustomRowHeaderPaint(_grid);
 
             _tableNameCombo.Text = Path.GetFileNameWithoutExtension(input.FilePath);
 
-            foreach (var tableName in schema.Tables.Keys) {
+            foreach (var tableName in schema.Tables.Keys)
+            {
                 _tableNameCombo.Items.Add(tableName);
             }
 
@@ -105,7 +116,7 @@ public partial class ImportXlsForm : ZForm {
             ui.MarginBottom(_useSelectionLink);
             ui.Init(_columnNamesCheck);
             ui.Init(_stopAtFirstBlankRowCheck);
-            
+
             ui.Init(_targetLabel);
             ui.MarginTop(_targetLabel);
             ui.Init(_dstFlow1);
@@ -150,23 +161,28 @@ public partial class ImportXlsForm : ZForm {
         };
     }
 
-    private void EnableDisableRowColumnTextboxes() {
+    private void EnableDisableRowColumnTextboxes()
+    {
         _columnStartText.Enabled = _columnEndText.Enabled = _specificColumnsCheck.Checked;
         _rowStartText.Enabled = _rowEndText.Enabled = _specificRowsCheck.Checked;
     }
 
-    private void SpecificColumnsCheck_CheckedChanged(object sender, EventArgs e) {
+    private void SpecificColumnsCheck_CheckedChanged(object sender, EventArgs e)
+    {
         EnableDisableRowColumnTextboxes();
         StartUpdateTimer();
     }
 
-    private void SpecificRowsCheck_CheckedChanged(object sender, EventArgs e) {
+    private void SpecificRowsCheck_CheckedChanged(object sender, EventArgs e)
+    {
         EnableDisableRowColumnTextboxes();
         StartUpdateTimer();
     }
 
-    private void UseSelectionLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-        if (_grid.SelectedCells.Count == 0) {
+    private void UseSelectionLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+        if (_grid.SelectedCells.Count == 0)
+        {
             Ui.ShowError(this, "Import Error", "Please select a range of cells in the grid.");
             return;
         }
@@ -178,12 +194,15 @@ public partial class ImportXlsForm : ZForm {
         var maxColumnIndex = cells.Max(x => x.ColumnIndex);
 
         var numRows = _grid.RowCount;
-        if (minRowIndex == 0 && maxRowIndex == numRows - 1) {
+        if (minRowIndex == 0 && maxRowIndex == numRows - 1)
+        {
             // All rows selected.
             _specificRowsCheck.Checked = false;
             _rowStartText.Text = "";
             _rowEndText.Text = "";
-        } else {
+        }
+        else
+        {
             // Subset of rows selected.
             _specificRowsCheck.Checked = true;
             _rowStartText.Text = $"{minRowIndex + 1}";
@@ -191,12 +210,15 @@ public partial class ImportXlsForm : ZForm {
         }
 
         var numColumns = _grid.ColumnCount;
-        if (minColumnIndex == 0 && maxColumnIndex == numColumns - 1) {
+        if (minColumnIndex == 0 && maxColumnIndex == numColumns - 1)
+        {
             // All columns selected.
             _specificColumnsCheck.Checked = false;
             _columnStartText.Text = "";
             _columnEndText.Text = "";
-        } else {
+        }
+        else
+        {
             // Subset of columns selected.
             _specificColumnsCheck.Checked = true;
             _columnStartText.Text = $"{XlsUtil.ConvertNumToColString(minColumnIndex)}";
@@ -206,36 +228,43 @@ public partial class ImportXlsForm : ZForm {
         StartUpdateTimer();
     }
 
-    private void SpecificRowColumnText_TextChanged(object sender, EventArgs e) {
+    private void SpecificRowColumnText_TextChanged(object sender, EventArgs e)
+    {
         StartUpdateTimer();
     }
 
-    private void SheetCombo_SelectedIndexChanged(object sender, EventArgs e) {
+    private void SheetCombo_SelectedIndexChanged(object sender, EventArgs e)
+    {
         LoadOriginalSheetPreview();
         StartUpdateTimer();
     }
 
-    private void LoadOriginalSheetPreview() {
+    private void LoadOriginalSheetPreview()
+    {
         var sheetIndex = (int)_sheetCombo.SelectedValue;
         var sheetInfo = _input.Worksheets[sheetIndex];
         _grid.DataSource = null;
         _grid.Columns.Clear();
         var dataTable = sheetInfo.DataTable;
-        foreach (DataColumn column in dataTable.Columns) {
-            DataGridViewTextBoxColumn gridColumn = new() {
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
-                Width = _columnWidth,
-                HeaderText = column.ColumnName,
-                SortMode = DataGridViewColumnSortMode.NotSortable,
-                DataPropertyName = column.ColumnName,
-                Resizable = DataGridViewTriState.True,
-            };
+        foreach (DataColumn column in dataTable.Columns)
+        {
+            DataGridViewTextBoxColumn gridColumn =
+                new()
+                {
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+                    Width = _columnWidth,
+                    HeaderText = column.ColumnName,
+                    SortMode = DataGridViewColumnSortMode.NotSortable,
+                    DataPropertyName = column.ColumnName,
+                    Resizable = DataGridViewTriState.True,
+                };
             _grid.Columns.Add(gridColumn);
         }
         _grid.DataSource = dataTable;
         _grid.AutoSizeColumns(this.Scaled(500));
         var rowNumber = 1;
-        foreach (DataGridViewRow row in _grid.Rows) {
+        foreach (DataGridViewRow row in _grid.Rows)
+        {
             row.HeaderCell.Value = $"{rowNumber}";
             rowNumber++;
         }
@@ -243,16 +272,23 @@ public partial class ImportXlsForm : ZForm {
         _columnRangeLabel.Text = $"(A-{XlsUtil.ConvertNumToColString(_grid.Columns.Count - 1)})";
     }
 
-    private void LoadColumns() {
+    private void LoadColumns()
+    {
         var sheetIndex = (int)_sheetCombo.SelectedValue;
         var sheetInfo = _input.Worksheets[sheetIndex];
 
-        int? minRowIndex = null, maxRowIndex = null, minColumnIndex = null, maxColumnIndex = null;
+        int? minRowIndex = null,
+            maxRowIndex = null,
+            minColumnIndex = null,
+            maxColumnIndex = null;
 
-        try {
+        try
+        {
             (minRowIndex, maxRowIndex) = GetValidatedMinMaxRowIndices(sheetInfo);
             (minColumnIndex, maxColumnIndex) = GetValidatedMinMaxColumnIndices(sheetInfo);
-        } catch {
+        }
+        catch
+        {
             // Ignore for now. We will show this error when they hit OK.
         }
 
@@ -265,24 +301,31 @@ public partial class ImportXlsForm : ZForm {
 
         List<string> columnNames = new();
         var columnNumber = 0;
-        for (var columnIndex = minColumnIndex.Value; columnIndex <= maxColumnIndex.Value; columnIndex++) {
+        for (var columnIndex = minColumnIndex.Value; columnIndex <= maxColumnIndex.Value; columnIndex++)
+        {
             columnNumber++;
             var name = $"column{columnIndex - minColumnIndex.Value + 1}";
-            if (_columnNamesCheck.Checked) {
-                try {
+            if (_columnNamesCheck.Checked)
+            {
+                try
+                {
                     name = sheetInfo.DataTable.Rows[minRowIndex.Value][columnIndex].ToString();
-                } catch {
+                }
+                catch
+                {
                     // Ignore for now. We will show this error when they hit OK.
                 }
             }
-            if (string.IsNullOrWhiteSpace(name)) {
+            if (string.IsNullOrWhiteSpace(name))
+            {
                 name = $"column{columnNumber}";
             }
 
             // add a numeric suffix to each column name if necessary to make them all unique
             var testName = name;
             var testNum = 1;
-            while (columnNames.Contains(testName)) {
+            while (columnNames.Contains(testName))
+            {
                 testNum++;
                 testName = $"{name}_{testNum}";
             }
@@ -291,20 +334,27 @@ public partial class ImportXlsForm : ZForm {
         }
 
         IReadOnlyList<string> detectedTypes = null;
-        try {
+        try
+        {
             using SimpleDataTableBuilder detectionTableBuilder = new(columnNames);
             var firstDataRow = minRowIndex.Value + (_columnNamesCheck.Checked ? 1 : 0);
             var numSampleRows = Math.Min(1000, maxRowIndex.Value - firstDataRow + 1);
-            for (var rowIndex = firstDataRow; rowIndex < firstDataRow + numSampleRows; rowIndex++) {
+            for (var rowIndex = firstDataRow; rowIndex < firstDataRow + numSampleRows; rowIndex++)
+            {
                 var row = new object[columnNames.Count];
-                for (var columnIndex = minColumnIndex.Value; columnIndex <= maxColumnIndex.Value; columnIndex++) {
+                for (var columnIndex = minColumnIndex.Value; columnIndex <= maxColumnIndex.Value; columnIndex++)
+                {
                     var value = "";
-                    try {
+                    try
+                    {
                         value = sheetInfo.DataTable.Rows[rowIndex][columnIndex].ToString();
-                    } catch {
+                    }
+                    catch
+                    {
                         // ignore
                     }
-                    if (columnIndex - minColumnIndex.Value < row.Length) {
+                    if (columnIndex - minColumnIndex.Value < row.Length)
+                    {
                         row[columnIndex - minColumnIndex.Value] = value;
                     }
                 }
@@ -313,7 +363,9 @@ public partial class ImportXlsForm : ZForm {
 
             using var detectionTable = detectionTableBuilder.Build();
             detectedTypes = TypeDetection.DetectTypes(detectionTable);
-        } catch {
+        }
+        catch
+        {
             // Don't let this blow up the import.
             detectedTypes = Array.Empty<string>();
         }
@@ -322,26 +374,31 @@ public partial class ImportXlsForm : ZForm {
         _columnsControl.SetTargetToNewTable();
     }
 
-    private static bool IsValidColumnString(string x) =>
-        Regex.IsMatch(x, "^[A-Za-z]+$");
+    private static bool IsValidColumnString(string x) => Regex.IsMatch(x, "^[A-Za-z]+$");
 
-    private void StartUpdateTimer() {
+    private void StartUpdateTimer()
+    {
         _updateTimer.Stop();
         _updateTimer.Start();
     }
 
-    private void UpdateTimer_Tick(object sender, EventArgs e) {
+    private void UpdateTimer_Tick(object sender, EventArgs e)
+    {
         _updateTimer.Stop();
         LoadColumns();
     }
 
-    private void ColumnNamesCheck_CheckedChanged(object sender, EventArgs e) {
+    private void ColumnNamesCheck_CheckedChanged(object sender, EventArgs e)
+    {
         StartUpdateTimer();
     }
 
-    private void PreviewButton_Click(object sender, EventArgs e) {
-        string tempSql, realSql;
-        try {
+    private void PreviewButton_Click(object sender, EventArgs e)
+    {
+        string tempSql,
+            realSql;
+        try
+        {
             var tableName = GetValidatedTableName();
 
             var tempPrefix = Guid.NewGuid().ToString().Replace("-", "") + "_";
@@ -351,21 +408,38 @@ public partial class ImportXlsForm : ZForm {
             tempSql = tempSqlSb.ToString();
 
             realSql = GenerateSql();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             Ui.ShowError(this, "Preview Error", ex);
             return;
         }
 
-        var output = WaitForm.GoWithCancel(this, "Import Preview", "Generating preview...", out var success, cancel => {
-            return SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
-                return _manager.ExecuteScript(code: tempSql);
-            }, rollback: true, cancel: cancel);
-        });
-        if (!success) {
+        var output = WaitForm.GoWithCancel(
+            this,
+            "Import Preview",
+            "Generating preview...",
+            out var success,
+            cancel =>
+            {
+                return SqlUtil.WithCancellableTransaction(
+                    _manager.Notebook,
+                    () =>
+                    {
+                        return _manager.ExecuteScript(code: tempSql);
+                    },
+                    rollback: true,
+                    cancel: cancel
+                );
+            }
+        );
+        if (!success)
+        {
             return;
         }
 
-        if (output.DataTables.Count != 1) {
+        if (output.DataTables.Count != 1)
+        {
             Ui.ShowError(this, "Preview Error", "The import failed due to an unknown error.");
             return;
         }
@@ -374,7 +448,8 @@ public partial class ImportXlsForm : ZForm {
         previewForm.ShowDialog(this);
     }
 
-    private string GenerateSql(string temporaryTablePrefix = null) {
+    private string GenerateSql(string temporaryTablePrefix = null)
+    {
         var sheetIndex = (int)_sheetCombo.SelectedValue;
         var sheetInfo = _input.Worksheets[sheetIndex];
 
@@ -390,7 +465,8 @@ public partial class ImportXlsForm : ZForm {
 
         StringBuilder sb = new();
 
-        if (ifTableExists == ImportTableExistsOption.DropTable) {
+        if (ifTableExists == ImportTableExistsOption.DropTable)
+        {
             sb.AppendLine($"DROP TABLE IF EXISTS {tableName.DoubleQuote()}; -- {ifTableExists.GetDescription()}");
             sb.AppendLine();
         }
@@ -402,24 +478,33 @@ public partial class ImportXlsForm : ZForm {
         sb.AppendLine(sqlColumnList);
         sb.Append(") ");
         sb.AppendLine("OPTIONS (");
-        if (temporaryTablePrefix != null) {
+        if (temporaryTablePrefix != null)
+        {
             sb.AppendLine($"    TEMPORARY_TABLE: 1,");
         }
-        if (minRowIndex.HasValue) {
+        if (minRowIndex.HasValue)
+        {
             sb.AppendLine($"    FIRST_ROW: {minRowIndex.Value + 1},");
         }
-        if (maxRowIndex.HasValue) {
+        if (maxRowIndex.HasValue)
+        {
             sb.AppendLine($"    LAST_ROW: {maxRowIndex.Value + 1},");
         }
-        if (minColumnIndex.HasValue) {
+        if (minColumnIndex.HasValue)
+        {
             sb.AppendLine($"    FIRST_COLUMN: {XlsUtil.ConvertNumToColString(minColumnIndex.Value).SingleQuote()},");
         }
-        if (maxColumnIndex.HasValue) {
+        if (maxColumnIndex.HasValue)
+        {
             sb.AppendLine($"    LAST_COLUMN: {XlsUtil.ConvertNumToColString(maxColumnIndex.Value).SingleQuote()},");
         }
         sb.AppendLine($"    STOP_AT_FIRST_BLANK_ROW: {(stopAtFirstBlankRow ? 1 : 0)},");
-        sb.AppendLine($"    HEADER_ROW: {(columnHeaders == ColumnHeadersOption.Present ? 1 : 0)}, -- {columnHeaders.GetDescription()}");
-        sb.AppendLine($"    TRUNCATE_EXISTING_TABLE: {(ifTableExists == ImportTableExistsOption.DeleteExistingRows ? 1 : 0)}, -- {ifTableExists.GetDescription()}");
+        sb.AppendLine(
+            $"    HEADER_ROW: {(columnHeaders == ColumnHeadersOption.Present ? 1 : 0)}, -- {columnHeaders.GetDescription()}"
+        );
+        sb.AppendLine(
+            $"    TRUNCATE_EXISTING_TABLE: {(ifTableExists == ImportTableExistsOption.DeleteExistingRows ? 1 : 0)}, -- {ifTableExists.GetDescription()}"
+        );
         sb.AppendLine($"    IF_CONVERSION_FAILS: {(int)ifConversionFails}, -- {ifConversionFails.GetDescription()}");
         sb.AppendLine($"    BLANK_VALUES: {(int)blankValues} -- {blankValues.GetDescription()}");
         sb.AppendLine($");");
@@ -427,39 +512,55 @@ public partial class ImportXlsForm : ZForm {
         return sb.ToString();
     }
 
-    private (int? Min, int? Max) GetValidatedMinMaxRowIndices(XlsWorksheetInfo sheetInfo) {
-        if (_specificRowsCheck.Checked) {
+    private (int? Min, int? Max) GetValidatedMinMaxRowIndices(XlsWorksheetInfo sheetInfo)
+    {
+        if (_specificRowsCheck.Checked)
+        {
             var numRows = sheetInfo.DataTable.Rows.Count;
 
             int? minRowIndex = null;
-            if (_rowStartText.Text != "") {
-                if (!int.TryParse(_rowStartText.Text, out var minRowNumber)) {
-                    throw new Exception($"\"{_rowStartText.Text}\" is not a valid starting row number. " +
-                        $"Please enter a number from 1 to {numRows}.");
+            if (_rowStartText.Text != "")
+            {
+                if (!int.TryParse(_rowStartText.Text, out var minRowNumber))
+                {
+                    throw new Exception(
+                        $"\"{_rowStartText.Text}\" is not a valid starting row number. "
+                            + $"Please enter a number from 1 to {numRows}."
+                    );
                 }
                 minRowIndex = minRowNumber - 1;
-                if (minRowIndex.Value < 0 || minRowIndex.Value >= numRows) {
-                    throw new Exception($"The starting row number \"{_rowStartText.Text}\" is out of range. " +
-                        $"Please enter a number from 1 to {numRows}.");
+                if (minRowIndex.Value < 0 || minRowIndex.Value >= numRows)
+                {
+                    throw new Exception(
+                        $"The starting row number \"{_rowStartText.Text}\" is out of range. "
+                            + $"Please enter a number from 1 to {numRows}."
+                    );
                 }
             }
 
             int? maxRowIndex = null;
-            if (_rowEndText.Text != "") {
-                if (!int.TryParse(_rowEndText.Text, out var maxRowNumber)) {
-                    throw new Exception($"\"{_rowEndText.Text}\" is not a valid ending row number. Please enter " +
-                        $"a number from 1 to {numRows}.");
+            if (_rowEndText.Text != "")
+            {
+                if (!int.TryParse(_rowEndText.Text, out var maxRowNumber))
+                {
+                    throw new Exception(
+                        $"\"{_rowEndText.Text}\" is not a valid ending row number. Please enter "
+                            + $"a number from 1 to {numRows}."
+                    );
                 }
                 maxRowIndex = maxRowNumber - 1;
-                if (maxRowIndex.Value < 0 || maxRowIndex.Value >= numRows) {
-                    throw new Exception($"The ending row number \"{_rowEndText.Text}\" is out of range. " +
-                        $"Please enter a number from 1 to {numRows}.");
+                if (maxRowIndex.Value < 0 || maxRowIndex.Value >= numRows)
+                {
+                    throw new Exception(
+                        $"The ending row number \"{_rowEndText.Text}\" is out of range. "
+                            + $"Please enter a number from 1 to {numRows}."
+                    );
                 }
             }
 
-            if (minRowIndex.HasValue && maxRowIndex.HasValue && minRowIndex.Value > maxRowIndex.Value) {
-                throw new Exception(
-                    "The ending row number must be greater than or equal to the starting row number.");
+            if (minRowIndex.HasValue && maxRowIndex.HasValue && minRowIndex.Value > maxRowIndex.Value)
+            {
+                throw new Exception("The ending row number must be greater than or equal to the starting row number.");
             }
 
             return (minRowIndex, maxRowIndex);
@@ -468,39 +569,55 @@ public partial class ImportXlsForm : ZForm {
         return (null, null);
     }
 
-    private (int? Min, int? Max) GetValidatedMinMaxColumnIndices(XlsWorksheetInfo sheetInfo) {
-        if (_specificColumnsCheck.Checked) {
+    private (int? Min, int? Max) GetValidatedMinMaxColumnIndices(XlsWorksheetInfo sheetInfo)
+    {
+        if (_specificColumnsCheck.Checked)
+        {
             var numColumns = sheetInfo.DataTable.Columns.Count;
 
             int? minColumnIndex = null;
-            if (_columnStartText.Text != "") {
-                if (!IsValidColumnString(_columnStartText.Text)) {
-                    throw new Exception($"\"{_columnStartText.Text}\" is not a valid starting column. " +
-                        $"Please enter a column from A to {XlsUtil.ConvertNumToColString(numColumns - 1)}.");
+            if (_columnStartText.Text != "")
+            {
+                if (!IsValidColumnString(_columnStartText.Text))
+                {
+                    throw new Exception(
+                        $"\"{_columnStartText.Text}\" is not a valid starting column. "
+                            + $"Please enter a column from A to {XlsUtil.ConvertNumToColString(numColumns - 1)}."
+                    );
                 }
                 minColumnIndex = XlsUtil.ConvertColStringToIndex(_columnStartText.Text);
-                if (minColumnIndex.Value < 0 || minColumnIndex.Value >= numColumns) {
-                    throw new Exception($"The starting column \"{_columnStartText.Text}\" is out of range. " +
-                        $"Please enter a column from A to {XlsUtil.ConvertNumToColString(numColumns - 1)}.");
+                if (minColumnIndex.Value < 0 || minColumnIndex.Value >= numColumns)
+                {
+                    throw new Exception(
+                        $"The starting column \"{_columnStartText.Text}\" is out of range. "
+                            + $"Please enter a column from A to {XlsUtil.ConvertNumToColString(numColumns - 1)}."
+                    );
                 }
             }
 
             int? maxColumnIndex = null;
-            if (_columnEndText.Text != "") {
-                if (!IsValidColumnString(_columnEndText.Text)) {
-                    throw new Exception($"\"{_columnEndText.Text}\" is not a valid ending column. Please enter " +
-                        $"a column from A to {XlsUtil.ConvertNumToColString(numColumns - 1)}.");
+            if (_columnEndText.Text != "")
+            {
+                if (!IsValidColumnString(_columnEndText.Text))
+                {
+                    throw new Exception(
+                        $"\"{_columnEndText.Text}\" is not a valid ending column. Please enter "
+                            + $"a column from A to {XlsUtil.ConvertNumToColString(numColumns - 1)}."
+                    );
                 }
                 maxColumnIndex = XlsUtil.ConvertColStringToIndex(_columnEndText.Text);
-                if (maxColumnIndex.Value < 0 || maxColumnIndex.Value >= numColumns) {
-                    throw new Exception($"The ending column \"{_columnEndText.Text}\" is out of range. " +
-                        $"Please enter a column from A to {XlsUtil.ConvertNumToColString(numColumns - 1)}.");
+                if (maxColumnIndex.Value < 0 || maxColumnIndex.Value >= numColumns)
+                {
+                    throw new Exception(
+                        $"The ending column \"{_columnEndText.Text}\" is out of range. "
+                            + $"Please enter a column from A to {XlsUtil.ConvertNumToColString(numColumns - 1)}."
+                    );
                 }
             }
 
-            if (minColumnIndex.HasValue && maxColumnIndex.HasValue && minColumnIndex.Value > maxColumnIndex.Value) {
-                throw new Exception(
-                    "The ending column must be greater than or equal to the starting column.");
+            if (minColumnIndex.HasValue && maxColumnIndex.HasValue && minColumnIndex.Value > maxColumnIndex.Value)
+            {
+                throw new Exception("The ending column must be greater than or equal to the starting column.");
             }
 
             return (minColumnIndex, maxColumnIndex);
@@ -509,36 +626,57 @@ public partial class ImportXlsForm : ZForm {
         return (null, null);
     }
 
-    private string GetValidatedTableName() {
-        if (string.IsNullOrWhiteSpace(_tableNameCombo.Text)) {
+    private string GetValidatedTableName()
+    {
+        if (string.IsNullOrWhiteSpace(_tableNameCombo.Text))
+        {
             throw new Exception("Please enter a target table name.");
         }
         return _tableNameCombo.Text;
     }
 
-    private string GetValidatedSqlColumnList() {
+    private string GetValidatedSqlColumnList()
+    {
         var x = _columnsControl.SqlColumnList;
-        if (string.IsNullOrWhiteSpace(x)) {
+        if (string.IsNullOrWhiteSpace(x))
+        {
             throw new Exception("Please select at least one column for import.");
         }
         return x;
     }
 
-    private void OkButton_Click(object sender, EventArgs e) {
+    private void OkButton_Click(object sender, EventArgs e)
+    {
         string sql;
-        try {
+        try
+        {
             sql = GenerateSql();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             Ui.ShowError(this, "Import Error", ex);
             return;
         }
 
-        WaitForm.GoWithCancel(this, "Import", $"Importing XLS file...", out var success, cancel => {
-            SqlUtil.WithCancellableTransaction(_manager.Notebook, () => {
-                _manager.ExecuteScriptNoOutput(sql);
-            }, cancel);
-        });
-        if (!success) {
+        WaitForm.GoWithCancel(
+            this,
+            "Import",
+            $"Importing XLS file...",
+            out var success,
+            cancel =>
+            {
+                SqlUtil.WithCancellableTransaction(
+                    _manager.Notebook,
+                    () =>
+                    {
+                        _manager.ExecuteScriptNoOutput(sql);
+                    },
+                    cancel
+                );
+            }
+        );
+        if (!success)
+        {
             return;
         }
 

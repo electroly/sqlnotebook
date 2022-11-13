@@ -1,6 +1,7 @@
 ﻿namespace SqlNotebook.Pages;
 
-public enum BlockType {
+public enum BlockType
+{
     Text,
     Query,
 }

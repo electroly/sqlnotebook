@@ -4,32 +4,44 @@ using System.Threading.Tasks;
 
 namespace SqlNotebookScript.Utils;
 
-public sealed class TempFile : IDisposable {
+public sealed class TempFile : IDisposable
+{
     private bool _disposedValue;
 
     public string FilePath { get; }
 
-    public TempFile(string extension) {
+    public TempFile(string extension)
+    {
         FilePath = NotebookTempFiles.GetTempFilePath(extension);
     }
 
-    private void Dispose(bool disposing) {
-        if (!_disposedValue) {
-            if (disposing) {
+    private void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
                 // dispose managed state (managed objects)
             }
 
             // free unmanaged resources (unmanaged objects) and override finalizer
             // set large fields to null
-            try {
+            try
+            {
                 File.Delete(FilePath);
-            } catch {
+            }
+            catch
+            {
                 // try again in a little bit
                 Task.Delay(TimeSpan.FromSeconds(1))
-                    .ContinueWith(t => {
-                        try {
+                    .ContinueWith(t =>
+                    {
+                        try
+                        {
                             File.Delete(FilePath);
-                        } catch {
+                        }
+                        catch
+                        {
                             // oh well. we'll clean it up at the end of the process, or on the next run.
                         }
                     });
@@ -39,12 +51,14 @@ public sealed class TempFile : IDisposable {
     }
 
     // override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-    ~TempFile() {
+    ~TempFile()
+    {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: false);
     }
 
-    public void Dispose() {
+    public void Dispose()
+    {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);

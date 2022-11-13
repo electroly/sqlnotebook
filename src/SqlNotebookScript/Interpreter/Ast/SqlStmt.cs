@@ -3,7 +3,8 @@ using System.Linq;
 
 namespace SqlNotebookScript.Interpreter.Ast;
 
-public sealed class SqlStmt : Stmt {
+public sealed class SqlStmt : Stmt
+{
     public string Sql { get; set; }
     public SqliteSyntaxProduction SqliteSyntax { get; set; }
     public int FirstTokenIndex { get; set; }

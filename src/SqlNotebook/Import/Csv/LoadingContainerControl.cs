@@ -5,7 +5,8 @@ using SqlNotebookScript.Utils;
 
 namespace SqlNotebook.Import.Csv;
 
-public partial class LoadingContainerControl : UserControl {
+public partial class LoadingContainerControl : UserControl
+{
     private Control _control;
     private int _loadCount = 0;
     private string _errorMessage = null;
@@ -16,11 +17,11 @@ public partial class LoadingContainerControl : UserControl {
     public Slot<bool> IsError { get; } = new Slot<bool>();
     public Slot<bool> IsOverlayVisible { get; } = new Slot<bool>();
 
-    public Control ContainedControl {
-        get {
-            return _control;
-        }
-        set {
+    public Control ContainedControl
+    {
+        get { return _control; }
+        set
+        {
             _control = value;
             _control.Dock = DockStyle.Fill;
             Controls.Add(_control);
@@ -28,36 +29,45 @@ public partial class LoadingContainerControl : UserControl {
         }
     }
 
-    public void PushLoad() {
+    public void PushLoad()
+    {
         _loadCount++;
         ShowHideLoadingLbl();
     }
 
-    public void PopLoad() {
+    public void PopLoad()
+    {
         _loadCount--;
         ShowHideLoadingLbl();
     }
 
-    public async Task DoLoad(Func<Task> action) {
+    public async Task DoLoad(Func<Task> action)
+    {
         PushLoad();
-        try {
+        try
+        {
             await action();
-        } finally {
+        }
+        finally
+        {
             PopLoad();
         }
     }
 
-    public void SetError(string message) {
+    public void SetError(string message)
+    {
         _errorMessage = message;
         ShowHideLoadingLbl();
     }
 
-    public void ClearError() {
+    public void ClearError()
+    {
         _errorMessage = null;
         ShowHideLoadingLbl();
     }
 
-    private void ShowHideLoadingLbl() {
+    private void ShowHideLoadingLbl()
+    {
         bool loading = _loadCount > 0;
         bool error = _errorMessage != null;
 
@@ -70,7 +80,8 @@ public partial class LoadingContainerControl : UserControl {
         IsOverlayVisible.Value = error || loading;
     }
 
-    public LoadingContainerControl() {
+    public LoadingContainerControl()
+    {
         InitializeComponent();
     }
 }

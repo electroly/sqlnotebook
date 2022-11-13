@@ -17,34 +17,39 @@ using static SqlNotebookScript.Core.SqliteInterop.NativeMethods;
 
 namespace SqlNotebookScript.Core.AdoModules;
 
-public sealed class PostgreSqlAdoModuleProvider : AdoModuleProvider {
+public sealed class PostgreSqlAdoModuleProvider : AdoModuleProvider
+{
     protected override IDbConnection CreateConnection(string connectionString) =>
         new NpgsqlConnection(connectionString);
+
     protected override string SelectRandomSampleSql => "SELECT * FROM {0} ORDER BY RANDOM() LIMIT 5000;";
     protected override string SelectRandomSampleSqlFallback => null;
     protected override string ModuleName => "pgsql";
     protected override char EscapeChar => '"';
 }
 
-public sealed class SqlServerAdoModuleProvider : AdoModuleProvider {
-    protected override IDbConnection CreateConnection(string connectionString) =>
-        new SqlConnection(connectionString);
+public sealed class SqlServerAdoModuleProvider : AdoModuleProvider
+{
+    protected override IDbConnection CreateConnection(string connectionString) => new SqlConnection(connectionString);
+
     protected override string SelectRandomSampleSql => "SELECT * FROM {0} TABLESAMPLE (5000 ROWS);";
     protected override string SelectRandomSampleSqlFallback => "SELECT TOP 5000 * FROM {0}";
     protected override string ModuleName => "mssql";
     protected override char EscapeChar => '"';
 }
 
-public sealed class MySqlAdoModuleProvider : AdoModuleProvider {
-    protected override IDbConnection CreateConnection(string connectionString) =>
-        new MySqlConnection(connectionString);
+public sealed class MySqlAdoModuleProvider : AdoModuleProvider
+{
+    protected override IDbConnection CreateConnection(string connectionString) => new MySqlConnection(connectionString);
+
     protected override string SelectRandomSampleSql => "SELECT * FROM {0} ORDER BY RAND() LIMIT 5000;";
     protected override string SelectRandomSampleSqlFallback => null;
     protected override string ModuleName => "mysql";
     protected override char EscapeChar => '`';
 }
 
-public abstract class AdoModuleProvider : IDisposable {
+public abstract class AdoModuleProvider : IDisposable
+{
 #if DEBUG
     private const bool DEBUG = true;
 #else
@@ -55,10 +60,12 @@ public abstract class AdoModuleProvider : IDisposable {
 
     private delegate void FreeDelegate(IntPtr p);
 
-    private static readonly Lazy<(IntPtr Ptr, FreeDelegate Delegate)> _freeFunc = new(() => {
-        FreeDelegate @delegate = Marshal.FreeHGlobal;
-        return (Marshal.GetFunctionPointerForDelegate(@delegate), @delegate);
-    });
+    private static readonly Lazy<(IntPtr Ptr, FreeDelegate Delegate)> _freeFunc =
+        new(() =>
+        {
+            FreeDelegate @delegate = Marshal.FreeHGlobal;
+            return (Marshal.GetFunctionPointerForDelegate(@delegate), @delegate);
+        });
 
     protected static int _nextMetadataKey = 1;
 
@@ -79,12 +86,15 @@ public abstract class AdoModuleProvider : IDisposable {
 
     private delegate void RemoveCreateInfoDelegate(IntPtr p);
 
-    private static readonly Lazy<(IntPtr Ptr, RemoveCreateInfoDelegate Delegate)> _removeCreateInfoFunc = new(() => {
-        RemoveCreateInfoDelegate @delegate = p => {
-            _adoCreateInfos.Remove((int)p);
-        };
-        return (Marshal.GetFunctionPointerForDelegate(@delegate), @delegate);
-    });
+    private static readonly Lazy<(IntPtr Ptr, RemoveCreateInfoDelegate Delegate)> _removeCreateInfoFunc =
+        new(() =>
+        {
+            RemoveCreateInfoDelegate @delegate = p =>
+            {
+                _adoCreateInfos.Remove((int)p);
+            };
+            return (Marshal.GetFunctionPointerForDelegate(@delegate), @delegate);
+        });
 
     /// <summary>
     /// These are delegates for which we've called <see cref="Marshal.GetFunctionPointerForDelegate{TDelegate}(TDelegate)"/>.
@@ -97,15 +107,19 @@ public abstract class AdoModuleProvider : IDisposable {
     private AdoCreateInfo _createInfo;
     private bool _disposedValue;
 
-    protected virtual void Dispose(bool disposing) {
-        if (!_disposedValue) {
-            if (disposing) {
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
                 // dispose managed state (managed objects)
             }
 
             // free unmanaged resources (unmanaged objects) and override finalizer
             // set large fields to null
-            if (_moduleNative != IntPtr.Zero) {
+            if (_moduleNative != IntPtr.Zero)
+            {
                 Marshal.FreeHGlobal(_moduleNative);
             }
             _disposedValue = true;
@@ -113,12 +127,14 @@ public abstract class AdoModuleProvider : IDisposable {
     }
 
     // override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-    ~AdoModuleProvider() {
+    ~AdoModuleProvider()
+    {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: false);
     }
 
-    public void Dispose() {
+    public void Dispose()
+    {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
@@ -126,18 +142,22 @@ public abstract class AdoModuleProvider : IDisposable {
 
     public void Install(
         IntPtr sqlite // sqlite3*
-        ) {
-        if (!_installed) {
+    )
+    {
+        if (!_installed)
+        {
             // Prepare the sqlite3_module.
             var moduleSize = Marshal.SizeOf<Sqlite3Module>();
             _moduleNative = Marshal.AllocHGlobal(moduleSize);
-            try {
+            try
+            {
                 ZeroMemory(_moduleNative, (IntPtr)moduleSize);
                 AdoPopulateModule(_moduleNative);
 
                 // Prepare the AdoCreateInfo.
                 var createInfoKey = _nextMetadataKey++;
-                _createInfo = new() {
+                _createInfo = new()
+                {
                     ConnectionCreator = CreateConnection,
                     SelectRandomSampleSql = SelectRandomSampleSql,
                     SelectRandomSampleSqlFallback = SelectRandomSampleSqlFallback,
@@ -147,10 +167,19 @@ public abstract class AdoModuleProvider : IDisposable {
 
                 // Install the module into SQLite.
                 using NativeString nameNative = new(ModuleName);
-                SqliteUtil.ThrowIfError(sqlite,
-                    sqlite3_create_module_v2(sqlite, nameNative.Ptr, _moduleNative,
-                        (IntPtr)createInfoKey, _removeCreateInfoFunc.Value.Ptr));
-            } catch {
+                SqliteUtil.ThrowIfError(
+                    sqlite,
+                    sqlite3_create_module_v2(
+                        sqlite,
+                        nameNative.Ptr,
+                        _moduleNative,
+                        (IntPtr)createInfoKey,
+                        _removeCreateInfoFunc.Value.Ptr
+                    )
+                );
+            }
+            catch
+            {
                 Marshal.FreeHGlobal(_moduleNative);
                 throw;
             }
@@ -167,7 +196,8 @@ public abstract class AdoModuleProvider : IDisposable {
 
     protected static void AdoPopulateModule(
         IntPtr modulePtr // sqlite3_module*
-        ) {
+    )
+    {
         ZeroMemory(modulePtr, (IntPtr)Marshal.SizeOf<Sqlite3Module>());
         var module = Marshal.PtrToStructure<Sqlite3Module>(modulePtr);
 
@@ -238,19 +268,25 @@ public abstract class AdoModuleProvider : IDisposable {
         IntPtr argv, // const char* const*
         IntPtr ppVTab, // sqlite3_vtab**
         IntPtr pzErr // char**
-        ) {
+    )
+    {
         // argv[3]: connectionString
         // argv[4]: table name
-        if (DEBUG) {
+        if (DEBUG)
+        {
             Debug.WriteLine("AdoCreate");
         }
 
         var vtabNative = IntPtr.Zero; // AdoTable*
         var adoCreateInfo = _adoCreateInfos[(int)pAux];
 
-        try {
-            if (argc != 5 && argc != 6) {
-                throw new Exception("Syntax: CREATE VIRTUAL TABLE <name> USING <driver> ('<connection string>', 'table name', ['schema name']);");
+        try
+        {
+            if (argc != 5 && argc != 6)
+            {
+                throw new Exception(
+                    "Syntax: CREATE VIRTUAL TABLE <name> USING <driver> ('<connection string>', 'table name', ['schema name']);"
+                );
             }
 
             var connectionString = TrimSingleQuote(GetArgvString(argv, 3));
@@ -258,8 +294,8 @@ public abstract class AdoModuleProvider : IDisposable {
             var adoSchemaName = argc == 6 ? TrimSingleQuote(GetArgvString(argv, 5)) : "";
             var adoQuotedCombinedName =
                 adoSchemaName.Length > 0
-                ? $"{Quote(adoSchemaName, adoCreateInfo.EscapeChar)}.{Quote(adoTableName, adoCreateInfo.EscapeChar)}"
-                : Quote(adoTableName, adoCreateInfo.EscapeChar);
+                    ? $"{Quote(adoSchemaName, adoCreateInfo.EscapeChar)}.{Quote(adoTableName, adoCreateInfo.EscapeChar)}"
+                    : Quote(adoTableName, adoCreateInfo.EscapeChar);
             var connection = adoCreateInfo.ConnectionCreator.Invoke(connectionString);
             connection.Open();
 
@@ -270,7 +306,8 @@ public abstract class AdoModuleProvider : IDisposable {
                 using var command = connection.CreateCommand();
                 command.CommandText = $"SELECT * FROM {adoQuotedCombinedName} WHERE 1 = 0";
                 using var reader = command.ExecuteReader();
-                for (var i = 0; i < reader.FieldCount; i++) {
+                for (var i = 0; i < reader.FieldCount; i++)
+                {
                     columnNames.Add(reader.GetName(i));
                     columnTypes.Add(reader.GetFieldType(i));
                 }
@@ -294,38 +331,52 @@ public abstract class AdoModuleProvider : IDisposable {
             {
                 IDbCommand command = null;
                 IDataReader reader = null;
-                try {
+                try
+                {
                     command = connection.CreateCommand();
                     command.CommandText = adoCreateInfo.SelectRandomSampleSql.Replace("{0}", adoQuotedCombinedName);
                     reader = command.ExecuteReader();
-                } catch (Exception ex) when (ex.Message.Contains("TABLESAMPLE") && adoCreateInfo.SelectRandomSampleSqlFallback != null) {
+                }
+                catch (Exception ex)
+                    when (ex.Message.Contains("TABLESAMPLE") && adoCreateInfo.SelectRandomSampleSqlFallback != null)
+                {
                     // On MSSQL we can't use TABLESAMPLE for views, so detect that error and run the fallback instead.
                     command?.Dispose();
                     command = connection.CreateCommand();
-                    command.CommandText = adoCreateInfo.SelectRandomSampleSqlFallback
-                        .Replace("{0}", adoQuotedCombinedName);
+                    command.CommandText = adoCreateInfo.SelectRandomSampleSqlFallback.Replace(
+                        "{0}",
+                        adoQuotedCombinedName
+                    );
                     reader = command.ExecuteReader();
                 }
 
-                using (command) using (reader) {
+                using (command)
+                using (reader)
+                {
                     var colCount = columnNames.Count;
 
                     // hash code => number of appearances of that hash in the column
                     var colDicts = new Dictionary<int, int>[colCount];
-                    for (var i = 0; i < colCount; i++) {
+                    for (var i = 0; i < colCount; i++)
+                    {
                         colDicts[i] = new();
                     }
 
                     var row = new object[colCount];
-                    while (reader.Read()) {
+                    while (reader.Read())
+                    {
                         sampleSize++;
                         reader.GetValues(row);
-                        for (int i = 0; i < colCount; i++) {
+                        for (int i = 0; i < colCount; i++)
+                        {
                             var colDict = colDicts[i];
                             int hash = row[i] == null ? 0 : row[i].GetHashCode();
-                            if (colDict.TryGetValue(hash, out var count)) {
+                            if (colDict.TryGetValue(hash, out var count))
+                            {
                                 colDict[hash] = count + 1;
-                            } else {
+                            }
+                            else
+                            {
                                 colDict[hash] = 1;
                             }
                         }
@@ -334,60 +385,82 @@ public abstract class AdoModuleProvider : IDisposable {
                     // This is the average number of rows we expect any arbitrary value to appear in the column.
                     // For instance, if the column is a list of 500 coin flips 0 or 1, an average around 250 is
                     // expected.
-                    for (int i = 0; i < colCount; i++) {
+                    for (int i = 0; i < colCount; i++)
+                    {
                         var name = columnNames[i];
                         var value = sampleSize > 0 ? (Enumerable.Average(colDicts[i].Values) / sampleSize) : 1.0;
                         estimatedRowsPercentByColumn[name] = value;
-                        if (DEBUG) {
-                            Debug.WriteLine("   Column " + name + " estimated rows per unique value = " + value.ToString());
+                        if (DEBUG)
+                        {
+                            Debug.WriteLine(
+                                "   Column " + name + " estimated rows per unique value = " + value.ToString()
+                            );
                         }
                     }
                 }
             }
 
-            _tableMetadatas.Add(adoTableMetadataKey, new() {
-                ConnectionString = connectionString,
-                AdoTableName = adoTableName,
-                AdoSchemaName = adoSchemaName,
-                ColumnNames = columnNames,
-                ConnectionCreator = adoCreateInfo.ConnectionCreator,
-                InitialRowCount = sampleSize,
-                EstimatedRowsPercentByColumn = estimatedRowsPercentByColumn,
-                EscapeChar = adoCreateInfo.EscapeChar,
-            });
+            _tableMetadatas.Add(
+                adoTableMetadataKey,
+                new()
+                {
+                    ConnectionString = connectionString,
+                    AdoTableName = adoTableName,
+                    AdoSchemaName = adoSchemaName,
+                    ColumnNames = columnNames,
+                    ConnectionCreator = adoCreateInfo.ConnectionCreator,
+                    InitialRowCount = sampleSize,
+                    EstimatedRowsPercentByColumn = estimatedRowsPercentByColumn,
+                    EscapeChar = adoCreateInfo.EscapeChar,
+                }
+            );
 
             // Set the virtual table schema (CREATE TABLE statement).
             List<string> columnLines = new();
-            for (int i = 0; i < columnNames.Count; i++) {
+            for (int i = 0; i < columnNames.Count; i++)
+            {
                 var t = columnTypes[i];
                 string sqlType;
-                if (t == typeof(short) || t == typeof(int) || t == typeof(long) || t == typeof(byte) || t == typeof(bool)) {
+                if (
+                    t == typeof(short)
+                    || t == typeof(int)
+                    || t == typeof(long)
+                    || t == typeof(byte)
+                    || t == typeof(bool)
+                )
+                {
                     sqlType = "integer";
-                } else if (t == typeof(float) || t == typeof(double) || t == typeof(decimal)) {
+                }
+                else if (t == typeof(float) || t == typeof(double) || t == typeof(decimal))
+                {
                     sqlType = "real";
-                } else {
+                }
+                else
+                {
                     sqlType = "text";
                 }
                 columnLines.Add("\"" + columnNames[i].Replace("\"", "\"\"") + "\" " + sqlType);
             }
             var createSql = "CREATE TABLE a (" + string.Join(", ", columnLines) + ")";
             using NativeString createSqlNative = new(createSql);
-            SqliteUtil.ThrowIfError(db,
-                sqlite3_declare_vtab(db, createSqlNative.Ptr));
+            SqliteUtil.ThrowIfError(db, sqlite3_declare_vtab(db, createSqlNative.Ptr));
 
             Marshal.WriteIntPtr(ppVTab, vtabNative);
             return SQLITE_OK;
-        } catch (Exception ex) {
-            if (vtabNative != IntPtr.Zero) {
+        }
+        catch (Exception ex)
+        {
+            if (vtabNative != IntPtr.Zero)
+            {
                 Marshal.FreeHGlobal(vtabNative);
             }
-                    
+
             // Allocate an unmanaged error string using sqlite3_malloc
             var messageUtf8Bytes = _utf8.GetBytes(ex.GetErrorMessage());
             var messageNative = sqlite3_malloc(messageUtf8Bytes.Length + 1);
             Marshal.Copy(messageUtf8Bytes, 0, messageNative, messageUtf8Bytes.Length);
             Marshal.WriteByte(messageNative + messageUtf8Bytes.Length, 0);
-                    
+
             // Equivalent of: *pzErr = messageUnmanaged;
             // SQLite will take ownership of messageUnmanaged.
             Marshal.WriteIntPtr(pzErr, messageNative);
@@ -398,12 +471,15 @@ public abstract class AdoModuleProvider : IDisposable {
 
     private static int AdoDestroy(
         IntPtr pVTab // sqlite3_vtab*
-        ) {
-        if (DEBUG) {
+    )
+    {
+        if (DEBUG)
+        {
             Debug.WriteLine("AdoDestroy");
         }
 
-        if (pVTab != IntPtr.Zero) {
+        if (pVTab != IntPtr.Zero)
+        {
             var vtab = Marshal.PtrToStructure<Sqlite3Vtab>(pVTab);
             _tableMetadatas.Remove(vtab.MetadataKey);
 
@@ -416,7 +492,8 @@ public abstract class AdoModuleProvider : IDisposable {
     private static int AdoBestIndex(
         IntPtr pVTab, // sqlite3_vtab*
         IntPtr infoPtr // sqlite3_index_info*
-        ) {
+    )
+    {
         var vtab = Marshal.PtrToStructure<Sqlite3Vtab>(pVTab);
         var vtabMeta = _tableMetadatas[vtab.MetadataKey];
         var info = Marshal.PtrToStructure<Sqlite3IndexInfo>(infoPtr);
@@ -428,73 +505,93 @@ public abstract class AdoModuleProvider : IDisposable {
         var tableName = vtabMeta.AdoTableName;
         var adoQuotedCombinedName =
             schemaName.Length > 0
-            ? $"{Quote(schemaName, vtabMeta.EscapeChar)}.{Quote(tableName, vtabMeta.EscapeChar)}"
-            : Quote(tableName, vtabMeta.EscapeChar);
+                ? $"{Quote(schemaName, vtabMeta.EscapeChar)}.{Quote(tableName, vtabMeta.EscapeChar)}"
+                : Quote(tableName, vtabMeta.EscapeChar);
         sb.Append(adoQuotedCombinedName);
 
         // WHERE clause
         var argvIndex = 1;
         var estimatedRowsPercent = 1d;
-        if (info.nConstraint > 0) {
+        if (info.nConstraint > 0)
+        {
             List<string> terms = new();
-            for (int i = 0; i < info.nConstraint; i++) {
+            for (int i = 0; i < info.nConstraint; i++)
+            {
                 // get info.aConstraint[i]
                 var constraintPtr = info.aConstraint + i * Marshal.SizeOf<Sqlite3IndexConstraint>();
                 var constraint = Marshal.PtrToStructure<Sqlite3IndexConstraint>(constraintPtr);
 
-                if (constraint.iColumn == -1) {
+                if (constraint.iColumn == -1)
+                {
                     continue; // rowid instead of a column. we don't support this type of constraint.
-                } else if (constraint.usable == 0) {
+                }
+                else if (constraint.usable == 0)
+                {
                     continue;
                 }
 
                 string op;
-                switch (constraint.op) {
-                    case SQLITE_INDEX_CONSTRAINT_EQ: op = " = "; break;
-                    case SQLITE_INDEX_CONSTRAINT_GT: op = " > "; break;
-                    case SQLITE_INDEX_CONSTRAINT_LE: op = " <= "; break;
-                    case SQLITE_INDEX_CONSTRAINT_LT: op = " < "; break;
-                    case SQLITE_INDEX_CONSTRAINT_GE: op = " >= "; break;
-                    case SQLITE_INDEX_CONSTRAINT_LIKE: op = " LIKE "; break;
-                    default: continue; // we don't support this operator
+                switch (constraint.op)
+                {
+                    case SQLITE_INDEX_CONSTRAINT_EQ:
+                        op = " = ";
+                        break;
+                    case SQLITE_INDEX_CONSTRAINT_GT:
+                        op = " > ";
+                        break;
+                    case SQLITE_INDEX_CONSTRAINT_LE:
+                        op = " <= ";
+                        break;
+                    case SQLITE_INDEX_CONSTRAINT_LT:
+                        op = " < ";
+                        break;
+                    case SQLITE_INDEX_CONSTRAINT_GE:
+                        op = " >= ";
+                        break;
+                    case SQLITE_INDEX_CONSTRAINT_LIKE:
+                        op = " LIKE ";
+                        break;
+                    default:
+                        continue; // we don't support this operator
                 }
 
                 // set info.aConstraintUsage[i]
-                Sqlite3IndexConstraintUsage constraintUsage = new() {
-                    argvIndex = argvIndex,
-                    omit = 1,
-                };
+                Sqlite3IndexConstraintUsage constraintUsage = new() { argvIndex = argvIndex, omit = 1, };
                 var constraintUsagePtr = info.aConstraintUsage + i * Marshal.SizeOf<Sqlite3IndexConstraintUsage>();
                 Marshal.StructureToPtr(constraintUsage, constraintUsagePtr, false);
-                    
+
                 var columnName = vtabMeta.ColumnNames[constraint.iColumn];
                 terms.Add("\"" + columnName.Replace("\"", "\"\"") + "\"" + op + "@arg" + argvIndex);
                 argvIndex++;
 
                 estimatedRowsPercent *= vtabMeta.EstimatedRowsPercentByColumn[columnName];
             }
-            if (terms.Count > 0) {
+            if (terms.Count > 0)
+            {
                 sb.Append(" WHERE ");
                 sb.Append(string.Join(" AND ", terms));
             }
         }
 
         // ORDER BY clause
-        if (info.nOrderBy > 0) {
+        if (info.nOrderBy > 0)
+        {
             sb.Append(" ORDER BY ");
             List<string> terms = new();
-            for (int i = 0; i < info.nOrderBy; i++) {
+            for (int i = 0; i < info.nOrderBy; i++)
+            {
                 // get info.aOrderBy[i]
                 var orderByPtr = info.aOrderBy + i * Marshal.SizeOf<Sqlite3IndexOrderBy>();
                 var orderBy = Marshal.PtrToStructure<Sqlite3IndexOrderBy>(orderByPtr);
-                    
+
                 terms.Add(vtabMeta.ColumnNames[orderBy.iColumn] + (orderBy.desc != 0 ? " DESC" : ""));
             }
             sb.Append(string.Join(", ", terms));
             info.orderByConsumed = 1;
         }
 
-        if (DEBUG) {
+        if (DEBUG)
+        {
             Debug.WriteLine(sb);
         }
 
@@ -514,7 +611,8 @@ public abstract class AdoModuleProvider : IDisposable {
     private static int AdoOpen(
         IntPtr pVTab, // sqlite3_vtab*
         IntPtr ppCursor // sqlite3_vtab_cursor**
-        ) {
+    )
+    {
         var metadataKey = ++_nextMetadataKey;
 
         // Prepare the cursor.
@@ -534,10 +632,7 @@ public abstract class AdoModuleProvider : IDisposable {
             var adoTableMetadata = _tableMetadatas[adoTable.MetadataKey];
             var connection = adoTableMetadata.ConnectionCreator(adoTableMetadata.ConnectionString);
             connection.Open();
-            _cursorMetadatas.Add(metadataKey, new() {
-                TableMetadata = adoTableMetadata,
-                Connection = connection
-            });
+            _cursorMetadatas.Add(metadataKey, new() { TableMetadata = adoTableMetadata, Connection = connection });
         }
 
         // Write the pointer to the Sqlite3VtabCursor to *ppCursor.
@@ -547,8 +642,10 @@ public abstract class AdoModuleProvider : IDisposable {
 
     private static int AdoClose(
         IntPtr pCur // sqlite3_vtab_cursor*
-        ) {
-        if (DEBUG) {
+    )
+    {
+        if (DEBUG)
+        {
             Debug.WriteLine("AdoClose");
         }
 
@@ -557,7 +654,8 @@ public abstract class AdoModuleProvider : IDisposable {
         _cursorMetadatas.Remove(adoCursor.MetadataKey);
 
         // Don't block for these because it could take awhile.
-        Task.Run(() => {
+        Task.Run(() =>
+        {
             var stopwatch = Stopwatch.StartNew();
             adoCursorMetadata.Reader?.Dispose();
             adoCursorMetadata.Command?.Dispose();
@@ -575,20 +673,24 @@ public abstract class AdoModuleProvider : IDisposable {
         IntPtr idxStr, // const char*
         int argc,
         IntPtr argv // sqlite3_value**
-        ) {
+    )
+    {
         var sql = Marshal.PtrToStringUTF8(idxStr);
         var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
         var vtab = Marshal.PtrToStructure<Sqlite3Vtab>(cursor.pVtab);
 
-        if (DEBUG) {
+        if (DEBUG)
+        {
             Debug.WriteLine("AdoFilter: " + sql);
         }
 
-        try {
+        try
+        {
             var cursorMetadata = _cursorMetadatas[cursor.MetadataKey];
             var args = new object[argc];
 
-            for (int i = 0; i < argc; i++) {
+            for (int i = 0; i < argc; i++)
+            {
                 var argvI = argv + i * IntPtr.Size;
                 args[i] = SqlUtil.GetArg(Marshal.ReadIntPtr(argvI));
             }
@@ -596,28 +698,35 @@ public abstract class AdoModuleProvider : IDisposable {
             cursorMetadata.Reader?.Dispose();
             cursorMetadata.Reader = null;
 
-            if (cursorMetadata.ReaderSql != null && sql == cursorMetadata.ReaderSql) {
+            if (cursorMetadata.ReaderSql != null && sql == cursorMetadata.ReaderSql)
+            {
                 // sqlite is issuing new arguments for the same statement
-                for (int i = 0; i < argc; i++) {
+                for (int i = 0; i < argc; i++)
+                {
                     var parameter = (IDataParameter)cursorMetadata.Command.Parameters[i];
                     parameter.Value = args[i];
-                    if (DEBUG) {
+                    if (DEBUG)
+                    {
                         Debug.WriteLine("   Change: " + parameter.ParameterName + " = " + args[i].ToString());
                     }
                 }
-            } else {
+            }
+            else
+            {
                 // brand new statement
                 cursorMetadata.Command?.Dispose();
                 cursorMetadata.Command = cursorMetadata.Connection.CreateCommand();
                 cursorMetadata.Command.CommandText = sql;
 
-                for (int i = 0; i < argc; i++) {
+                for (int i = 0; i < argc; i++)
+                {
                     var varName = "@arg" + (i + 1).ToString();
                     var parameter = cursorMetadata.Command.CreateParameter();
                     parameter.ParameterName = varName;
                     parameter.Value = args[i];
                     cursorMetadata.Command.Parameters.Add(parameter);
-                    if (DEBUG) {
+                    if (DEBUG)
+                    {
                         Debug.WriteLine("   " + varName + " = " + args[i].ToString());
                     }
                 }
@@ -626,8 +735,10 @@ public abstract class AdoModuleProvider : IDisposable {
             // Run ExecuteReader() on the thread pool so we can respond to sqlite interruption here by walking away.
             var readerTask = Task.Run(() => cursorMetadata.Command.ExecuteReader());
 
-            while (!readerTask.IsCompleted) {
-                if (Notebook.CancelInProgress) {
+            while (!readerTask.IsCompleted)
+            {
+                if (Notebook.CancelInProgress)
+                {
                     return SQLITE_INTERRUPT;
                 }
                 Thread.Sleep(100);
@@ -637,7 +748,9 @@ public abstract class AdoModuleProvider : IDisposable {
             cursorMetadata.ReaderSql = sql;
             cursorMetadata.IsEof = !cursorMetadata.Reader.Read();
             return SQLITE_OK;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             Notebook.SqliteVtabErrorMessage = ex.GetExceptionMessage();
             return SQLITE_ERROR;
         }
@@ -645,7 +758,8 @@ public abstract class AdoModuleProvider : IDisposable {
 
     private static int AdoNext(
         IntPtr pCur // sqlite3_vtab_cursor*
-        ) {
+    )
+    {
         var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
         var cursorMetadata = _cursorMetadatas[cursor.MetadataKey];
         cursorMetadata.IsEof = !cursorMetadata.Reader.Read();
@@ -654,7 +768,8 @@ public abstract class AdoModuleProvider : IDisposable {
 
     private static int AdoEof(
         IntPtr pCur // sqlite3_vtab_cursor*
-        ) {
+    )
+    {
         var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
         var cursorMetadata = _cursorMetadatas[cursor.MetadataKey];
         return cursorMetadata.IsEof ? 1 : 0;
@@ -663,7 +778,8 @@ public abstract class AdoModuleProvider : IDisposable {
     private static void ResultText16(
         IntPtr ctx, // sqlite3_context*
         string str
-        ) {
+    )
+    {
         var wstrUnmanaged = Marshal.StringToHGlobalUni(str);
         var lenB = str.Length * 2;
         sqlite3_result_text16(ctx, wstrUnmanaged, lenB, _freeFunc.Value.Ptr);
@@ -673,46 +789,80 @@ public abstract class AdoModuleProvider : IDisposable {
         IntPtr pCur, // sqlite3_vtab_cursor*
         IntPtr ctx, // sqlite3_context*
         int n
-        ) {
-        try {
+    )
+    {
+        try
+        {
             var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
             var cursorMetadata = _cursorMetadatas[cursor.MetadataKey];
-            if (cursorMetadata.IsEof) {
+            if (cursorMetadata.IsEof)
+            {
                 return SQLITE_ERROR;
             }
             var type = cursorMetadata.Reader.GetFieldType(n);
-            if (cursorMetadata.Reader.IsDBNull(n)) {
+            if (cursorMetadata.Reader.IsDBNull(n))
+            {
                 sqlite3_result_null(ctx);
-            } else if (type == typeof(short)) {
+            }
+            else if (type == typeof(short))
+            {
                 sqlite3_result_int(ctx, cursorMetadata.Reader.GetInt16(n));
-            } else if (type == typeof(int)) {
+            }
+            else if (type == typeof(int))
+            {
                 sqlite3_result_int(ctx, cursorMetadata.Reader.GetInt32(n));
-            } else if (type == typeof(long)) {
+            }
+            else if (type == typeof(long))
+            {
                 sqlite3_result_int64(ctx, cursorMetadata.Reader.GetInt64(n));
-            } else if (type == typeof(byte)) {
+            }
+            else if (type == typeof(byte))
+            {
                 sqlite3_result_int(ctx, cursorMetadata.Reader.GetByte(n));
-            } else if (type == typeof(float)) {
+            }
+            else if (type == typeof(float))
+            {
                 sqlite3_result_double(ctx, cursorMetadata.Reader.GetFloat(n));
-            } else if (type == typeof(double)) {
+            }
+            else if (type == typeof(double))
+            {
                 sqlite3_result_double(ctx, cursorMetadata.Reader.GetDouble(n));
-            } else if (type == typeof(decimal)) {
+            }
+            else if (type == typeof(decimal))
+            {
                 sqlite3_result_double(ctx, (double)cursorMetadata.Reader.GetDecimal(n));
-            } else if (type == typeof(string)) {
+            }
+            else if (type == typeof(string))
+            {
                 ResultText16(ctx, cursorMetadata.Reader.GetString(n));
-            } else if (type == typeof(char)) {
+            }
+            else if (type == typeof(char))
+            {
                 ResultText16(ctx, new string(cursorMetadata.Reader.GetChar(n), 1));
-            } else if (type == typeof(bool)) {
+            }
+            else if (type == typeof(bool))
+            {
                 sqlite3_result_int(ctx, cursorMetadata.Reader.GetBoolean(n) ? 1 : 0);
-            } else if (type == typeof(DateTime)) {
+            }
+            else if (type == typeof(DateTime))
+            {
                 ResultText16(ctx, cursorMetadata.Reader.GetDateTime(n).ToString("yyyy-MM-dd HH:mm:ss.fff"));
-            } else if (type == typeof(DateTimeOffset)) {
-                ResultText16(ctx, ((DateTimeOffset)cursorMetadata.Reader.GetValue(n))
-                    .UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"));
-            } else {
+            }
+            else if (type == typeof(DateTimeOffset))
+            {
+                ResultText16(
+                    ctx,
+                    ((DateTimeOffset)cursorMetadata.Reader.GetValue(n)).UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")
+                );
+            }
+            else
+            {
                 ResultText16(ctx, cursorMetadata.Reader.GetValue(n).ToString());
             }
             return SQLITE_OK;
-        } catch {
+        }
+        catch
+        {
             return SQLITE_ERROR;
         }
     }
@@ -720,16 +870,18 @@ public abstract class AdoModuleProvider : IDisposable {
     private static int AdoRowid(
         IntPtr pCur, // sqlite3_vtab_cursor*
         IntPtr pRowid // sqlite3_int64*
-        ) {
+    )
+    {
         var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
         var cursorMetadata = _cursorMetadatas[cursor.MetadataKey];
         var values = new object[cursorMetadata.TableMetadata.ColumnNames.Count];
         cursorMetadata.Reader.GetValues(values);
         long hash = 13;
-        foreach (var value in values) {
+        foreach (var value in values)
+        {
             hash = (hash * 7) + value.GetHashCode();
         }
-            
+
         Marshal.WriteIntPtr(pRowid, (IntPtr)hash); // *pRowid = hash;
         return SQLITE_OK;
     }
@@ -737,27 +889,37 @@ public abstract class AdoModuleProvider : IDisposable {
     private static int AdoRename(
         IntPtr pVtab, // sqlite3_vtab*
         IntPtr zNew // const char*
-        ) {
+    )
+    {
         // don't care
         return SQLITE_OK;
     }
 
-    private static string GetArgvString(IntPtr argv, int index) {
+    private static string GetArgvString(IntPtr argv, int index)
+    {
         // argv is const char**, i.e. an array of string pointers
         var stringPtr = argv + index * IntPtr.Size; // char*
         return Marshal.PtrToStringUTF8(Marshal.ReadIntPtr(stringPtr));
     }
 
-    private static string TrimSingleQuote(string s) {
+    private static string TrimSingleQuote(string s)
+    {
         var start = s.StartsWith("'");
         var end = s.EndsWith("'");
-        if (start && end) {
+        if (start && end)
+        {
             return s[1..^1];
-        } else if (start) {
+        }
+        else if (start)
+        {
             return s[1..];
-        } else if (end) {
+        }
+        else if (end)
+        {
             return s[..^1];
-        } else {
+        }
+        else
+        {
             return s;
         }
     }

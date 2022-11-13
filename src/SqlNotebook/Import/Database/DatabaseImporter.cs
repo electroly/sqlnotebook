@@ -2,18 +2,22 @@
 
 namespace SqlNotebook.Import.Database;
 
-public sealed class DatabaseImporter {
+public sealed class DatabaseImporter
+{
     private readonly NotebookManager _manager;
     private readonly IWin32Window _owner;
 
-    public DatabaseImporter(NotebookManager manager, IWin32Window owner) {
+    public DatabaseImporter(NotebookManager manager, IWin32Window owner)
+    {
         _manager = manager;
         _owner = owner;
     }
 
-    public void DoDatabaseImport<T>() where T : IImportSession, new() {
+    public void DoDatabaseImport<T>() where T : IImportSession, new()
+    {
         T session = new();
-        if (!session.FromConnectForm(_owner)) {
+        if (!session.FromConnectForm(_owner))
+        {
             return;
         }
 

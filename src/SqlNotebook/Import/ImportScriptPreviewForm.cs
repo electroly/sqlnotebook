@@ -4,13 +4,13 @@ using SqlNotebookScript.DataTables;
 
 namespace SqlNotebook.Import;
 
-public partial class ImportScriptPreviewForm : ZForm {
-    public ImportScriptPreviewForm(string sql, SimpleDataTable table) {
+public partial class ImportScriptPreviewForm : ZForm
+{
+    public ImportScriptPreviewForm(string sql, SimpleDataTable table)
+    {
         InitializeComponent();
 
-        SqlTextControl textbox = new(true) {
-            Dock = DockStyle.Fill
-        };
+        SqlTextControl textbox = new(true) { Dock = DockStyle.Fill };
         textbox.SqlText = sql;
         _scriptPanel.Controls.Add(textbox);
 

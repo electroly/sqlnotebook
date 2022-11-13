@@ -4,13 +4,15 @@ using System.Windows.Forms;
 
 namespace SqlNotebook;
 
-public partial class OptionsForm : ZForm {
+public partial class OptionsForm : ZForm
+{
     private Font _dataTableFont;
     private Font _codeFont;
     private Color[] _colors;
     private readonly ColorDialog _colorDialog;
 
-    public OptionsForm() {
+    public OptionsForm()
+    {
         InitializeComponent();
 
         Ui ui = new(this);
@@ -78,16 +80,21 @@ public partial class OptionsForm : ZForm {
         UpdateDataTableFontButton();
         UpdateCodeFontButton();
 
-        _colorDialog = new() {
+        _colorDialog = new()
+        {
             AllowFullOpen = true,
             AnyColor = true,
             FullOpen = true,
             ShowHelp = false,
         };
-        Disposed += delegate { _colorDialog.Dispose(); };
+        Disposed += delegate
+        {
+            _colorDialog.Dispose();
+        };
     }
 
-    private void OkButton_Click(object sender, EventArgs e) {
+    private void OkButton_Click(object sender, EventArgs e)
+    {
         var x = UserOptions.Instance;
         x.SetDataTableFont(_dataTableFont);
         x.SetCodeFont(_codeFont);
@@ -97,9 +104,11 @@ public partial class OptionsForm : ZForm {
         Close();
     }
 
-    private void DataTableFontButton_Click(object sender, EventArgs e) {
+    private void DataTableFontButton_Click(object sender, EventArgs e)
+    {
         var newFont = ChooseFont(_dataTableFont);
-        if (newFont == null) {
+        if (newFont == null)
+        {
             return;
         }
 
@@ -107,13 +116,16 @@ public partial class OptionsForm : ZForm {
         UpdateDataTableFontButton();
     }
 
-    private void UpdateDataTableFontButton() {
+    private void UpdateDataTableFontButton()
+    {
         _gridFontButton.Text = GetFontDisplayName(_dataTableFont);
     }
 
-    private void CodeFontButton_Click(object sender, EventArgs e) {
+    private void CodeFontButton_Click(object sender, EventArgs e)
+    {
         var newFont = ChooseFont(_codeFont);
-        if (newFont == null) {
+        if (newFont == null)
+        {
             return;
         }
 
@@ -121,65 +133,80 @@ public partial class OptionsForm : ZForm {
         UpdateCodeFontButton();
     }
 
-    private void UpdateCodeFontButton() {
+    private void UpdateCodeFontButton()
+    {
         _codeFontButton.Text = GetFontDisplayName(_codeFont);
     }
 
     private static string GetFontDisplayName(Font font) =>
         $"{font.Name}{(font.Style == FontStyle.Regular ? "" : $" {font.Style}")} {font.SizeInPoints:0}pt";
 
-    private Font ChooseFont(Font font) {
+    private Font ChooseFont(Font font)
+    {
         using FontForm f = new(font);
-        if (f.ShowDialog(this) != DialogResult.OK) {
+        if (f.ShowDialog(this) != DialogResult.OK)
+        {
             return null;
         }
 
         return f.GetFont();
     }
 
-    private void GridPlainColorButton_Click(object sender, EventArgs e) {
+    private void GridPlainColorButton_Click(object sender, EventArgs e)
+    {
         ClickColorButton(_gridPlainColorButton, UserOptionsColor.GRID_PLAIN);
     }
 
-    private void GridHeaderColorButton_Click(object sender, EventArgs e) {
+    private void GridHeaderColorButton_Click(object sender, EventArgs e)
+    {
         ClickColorButton(_gridHeaderColorButton, UserOptionsColor.GRID_HEADER);
     }
 
-    private void GridLineColorButton_Click(object sender, EventArgs e) {
+    private void GridLineColorButton_Click(object sender, EventArgs e)
+    {
         ClickColorButton(_gridLineColorButton, UserOptionsColor.GRID_LINES);
     }
 
-    private void GridBackgroundColorButton_Click(object sender, EventArgs e) {
+    private void GridBackgroundColorButton_Click(object sender, EventArgs e)
+    {
         ClickColorButton(_gridBackgroundColorButton, UserOptionsColor.GRID_BACKGROUND);
     }
 
-    private void EditorPlainColorButton_Click(object sender, EventArgs e) {
+    private void EditorPlainColorButton_Click(object sender, EventArgs e)
+    {
         ClickColorButton(_editorPlainColorButton, UserOptionsColor.CODE_PLAIN);
     }
 
-    private void EditorKeywordColorButton_Click(object sender, EventArgs e) {
+    private void EditorKeywordColorButton_Click(object sender, EventArgs e)
+    {
         ClickColorButton(_editorKeywordColorButton, UserOptionsColor.CODE_KEYWORD);
     }
 
-    private void EditorCommentColorButton_Click(object sender, EventArgs e) {
+    private void EditorCommentColorButton_Click(object sender, EventArgs e)
+    {
         ClickColorButton(_editorCommentColorButton, UserOptionsColor.CODE_COMMENT);
     }
 
-    private void EditorStringColorButton_Click(object sender, EventArgs e) {
+    private void EditorStringColorButton_Click(object sender, EventArgs e)
+    {
         ClickColorButton(_editorStringColorButton, UserOptionsColor.CODE_STRING);
     }
 
-    private void EditorLineNumbersColorButton_Click(object sender, EventArgs e) {
+    private void EditorLineNumbersColorButton_Click(object sender, EventArgs e)
+    {
         ClickColorButton(_editorLineNumbersColorButton, UserOptionsColor.CODE_LINENUMS);
     }
 
-    private void EditorBackgroundColorButton_Click(object sender, EventArgs e) {
+    private void EditorBackgroundColorButton_Click(object sender, EventArgs e)
+    {
         ClickColorButton(_editorBackgroundColorButton, UserOptionsColor.CODE_BACKGROUND);
     }
 
-    private void ClickColorButton(Button button, int colorIndex) {
+    private void ClickColorButton(Button button, int colorIndex)
+    {
         _colorDialog.Color = _colors[colorIndex];
-        if (_colorDialog.ShowDialog(this) != DialogResult.OK) {
+        if (_colorDialog.ShowDialog(this) != DialogResult.OK)
+        {
             return;
         }
 
@@ -187,73 +214,79 @@ public partial class OptionsForm : ZForm {
         button.Invalidate();
     }
 
-    private void GridPlainColorButton_Paint(object sender, PaintEventArgs e) {
+    private void GridPlainColorButton_Paint(object sender, PaintEventArgs e)
+    {
         PaintColorButton(_gridPlainColorButton, _colors[UserOptionsColor.GRID_PLAIN], e.Graphics);
     }
 
-    private void GridHeaderColorButton_Paint(object sender, PaintEventArgs e) {
+    private void GridHeaderColorButton_Paint(object sender, PaintEventArgs e)
+    {
         PaintColorButton(_gridHeaderColorButton, _colors[UserOptionsColor.GRID_HEADER], e.Graphics);
     }
 
-    private void GridLineColorButton_Paint(object sender, PaintEventArgs e) {
+    private void GridLineColorButton_Paint(object sender, PaintEventArgs e)
+    {
         PaintColorButton(_gridLineColorButton, _colors[UserOptionsColor.GRID_LINES], e.Graphics);
     }
 
-    private void GridBackgroundColorButton_Paint(object sender, PaintEventArgs e) {
+    private void GridBackgroundColorButton_Paint(object sender, PaintEventArgs e)
+    {
         PaintColorButton(_gridBackgroundColorButton, _colors[UserOptionsColor.GRID_BACKGROUND], e.Graphics);
     }
 
-    private void EditorPlainColorButton_Paint(object sender, PaintEventArgs e) {
+    private void EditorPlainColorButton_Paint(object sender, PaintEventArgs e)
+    {
         PaintColorButton(_editorPlainColorButton, _colors[UserOptionsColor.CODE_PLAIN], e.Graphics);
     }
 
-    private void EditorKeywordColorButton_Paint(object sender, PaintEventArgs e) {
+    private void EditorKeywordColorButton_Paint(object sender, PaintEventArgs e)
+    {
         PaintColorButton(_editorKeywordColorButton, _colors[UserOptionsColor.CODE_KEYWORD], e.Graphics);
     }
 
-    private void EditorCommentColorButton_Paint(object sender, PaintEventArgs e) {
+    private void EditorCommentColorButton_Paint(object sender, PaintEventArgs e)
+    {
         PaintColorButton(_editorCommentColorButton, _colors[UserOptionsColor.CODE_COMMENT], e.Graphics);
     }
 
-    private void EditorStringColorButton_Paint(object sender, PaintEventArgs e) {
+    private void EditorStringColorButton_Paint(object sender, PaintEventArgs e)
+    {
         PaintColorButton(_editorStringColorButton, _colors[UserOptionsColor.CODE_STRING], e.Graphics);
     }
 
-    private void EditorLineNumbersColorButton_Paint(object sender, PaintEventArgs e) {
+    private void EditorLineNumbersColorButton_Paint(object sender, PaintEventArgs e)
+    {
         PaintColorButton(_editorLineNumbersColorButton, _colors[UserOptionsColor.CODE_LINENUMS], e.Graphics);
     }
 
-    private void EditorBackgroundColorButton_Paint(object sender, PaintEventArgs e) {
+    private void EditorBackgroundColorButton_Paint(object sender, PaintEventArgs e)
+    {
         PaintColorButton(_editorBackgroundColorButton, _colors[UserOptionsColor.CODE_BACKGROUND], e.Graphics);
     }
 
-    private static void PaintColorButton(Button button, Color color, Graphics g) {
+    private static void PaintColorButton(Button button, Color color, Graphics g)
+    {
         var squareSize = 6 * button.Height / 10;
         var margin = 2 * button.Height / 10;
         using var brush = new SolidBrush(color);
-        g.FillRectangle(brush,
-            margin * 2,
-            margin,
-            squareSize,
-            squareSize);
-        g.DrawRectangle(Pens.Black,
-            margin * 2,
-            margin,
-            squareSize,
-            squareSize);
+        g.FillRectangle(brush, margin * 2, margin, squareSize, squareSize);
+        g.DrawRectangle(Pens.Black, margin * 2, margin, squareSize, squareSize);
     }
 
-    private void ResetButton_Click(object sender, EventArgs e) {
+    private void ResetButton_Click(object sender, EventArgs e)
+    {
         _colors = UserOptions.GetDefaultColors();
         _codeFont = UserOptions.GetDefaultCodeFont();
         _dataTableFont = UserOptions.GetDefaultDataTableFont();
         UpdateCodeFontButton();
         UpdateDataTableFontButton();
 
-        foreach (Control c in _editorColorsFlow.Controls) {
+        foreach (Control c in _editorColorsFlow.Controls)
+        {
             c.Invalidate();
         }
-        foreach (Control c in _gridColorsFlow.Controls) {
+        foreach (Control c in _gridColorsFlow.Controls)
+        {
             c.Invalidate();
         }
     }

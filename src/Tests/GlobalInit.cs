@@ -4,8 +4,10 @@ using SqlNotebookScript.Core;
 
 namespace Tests;
 
-public sealed class GlobalInit {
-    private GlobalInit() {
+public sealed class GlobalInit
+{
+    private GlobalInit()
+    {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         Notebook.InitSqlite();
     }

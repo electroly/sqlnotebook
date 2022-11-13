@@ -6,7 +6,8 @@ using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.Interpreter;
 
-public sealed class ImportXlsStmtRunner {
+public sealed class ImportXlsStmtRunner
+{
     private readonly Notebook _notebook;
     private readonly ScriptEnv _env;
     private readonly ScriptRunner _runner;
@@ -27,61 +28,77 @@ public sealed class ImportXlsStmtRunner {
     private readonly IfConversionFails _ifConversionFails = IfConversionFails.ImportAsText;
     private readonly BlankValuesOption _blankValuesMethod = BlankValuesOption.Null;
 
-    public static void Run(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt) {
+    public static void Run(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt)
+    {
         var importer = new ImportXlsStmtRunner(notebook, env, runner, stmt);
         SqlUtil.WithTransaction(notebook, importer.Import);
     }
 
-    private ImportXlsStmtRunner(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt) {
+    private ImportXlsStmtRunner(Notebook notebook, ScriptEnv env, ScriptRunner runner, Ast.ImportXlsStmt stmt)
+    {
         _notebook = notebook;
         _env = env;
         _runner = runner;
         _stmt = stmt;
 
         _filePath = _runner.EvaluateExpr<string>(_stmt.FilenameExpr, _env);
-        if (!File.Exists(_filePath)) {
+        if (!File.Exists(_filePath))
+        {
             throw new Exception($"The specified XLS/XLSX file was not found: \"{_filePath}\"");
         }
 
-        if (_stmt.WhichSheetExpr != null) {
+        if (_stmt.WhichSheetExpr != null)
+        {
             _whichSheet = _runner.EvaluateExpr(_stmt.WhichSheetExpr, _env);
         }
 
         int? index;
-        foreach (var option in _stmt.OptionsList.GetOptionKeys()) {
-            switch (option) {
+        foreach (var option in _stmt.OptionsList.GetOptionKeys())
+        {
+            switch (option)
+            {
                 case "FIRST_ROW":
                     _firstRowIndex = _stmt.OptionsList.GetOptionInt(option, _runner, _env, 1, minValue: 1) - 1;
                     break;
 
                 case "LAST_ROW":
                     var lastRowNum = _stmt.OptionsList.GetOptionInt(option, _runner, _env, 0, minValue: 0);
-                    if (lastRowNum == 0) {
+                    if (lastRowNum == 0)
+                    {
                         _lastRowIndex = null;
-                    } else {
+                    }
+                    else
+                    {
                         _lastRowIndex = lastRowNum - 1;
                     }
                     break;
 
                 case "FIRST_COLUMN":
                     index = XlsUtil.ColumnRefToIndex(_stmt.OptionsList.GetOption<object>(option, _runner, _env, null));
-                    if (index.HasValue) {
+                    if (index.HasValue)
+                    {
                         _firstColumnIndex = index.Value;
-                    } else {
+                    }
+                    else
+                    {
                         throw new Exception($"The {option} option must be a valid column number or string.");
                     }
                     break;
 
                 case "LAST_COLUMN":
                     var lastColumnValue = _stmt.OptionsList.GetOption<object>(option, _runner, _env, null);
-                    if (lastColumnValue is long b && b == 0) {
+                    if (lastColumnValue is long b && b == 0)
+                    {
                         _lastColumnIndex = null;
                         break;
                     }
                     index = XlsUtil.ColumnRefToIndex(lastColumnValue);
-                    if (index.HasValue) {
+                    if (index.HasValue)
+                    {
                         _lastColumnIndex = index.Value;
-                    } else {
+                    }
+                    else
+                    {
                         throw new Exception($"The {option} option must be a valid column number or string.");
                     }
                     break;
@@ -99,8 +116,8 @@ public sealed class ImportXlsStmtRunner {
                     break;
 
                 case "IF_CONVERSION_FAILS":
-                    _ifConversionFails = (IfConversionFails)_stmt.OptionsList.GetOptionLong(
-                        option, _runner, _env, 1, minValue: 1, maxValue: 3);
+                    _ifConversionFails = (IfConversionFails)
+                        _stmt.OptionsList.GetOptionLong(option, _runner, _env, 1, minValue: 1, maxValue: 3);
                     break;
 
                 case "STOP_AT_FIRST_BLANK_ROW":
@@ -108,8 +125,8 @@ public sealed class ImportXlsStmtRunner {
                     break;
 
                 case "BLANK_VALUES":
-                    _blankValuesMethod = (BlankValuesOption)_stmt.OptionsList.GetOptionLong(
-                        option, _runner, _env, 2, minValue: 1, maxValue: 3);
+                    _blankValuesMethod = (BlankValuesOption)
+                        _stmt.OptionsList.GetOptionLong(option, _runner, _env, 2, minValue: 1, maxValue: 3);
                     break;
 
                 default:
@@ -118,43 +135,59 @@ public sealed class ImportXlsStmtRunner {
         }
     }
 
-    private void Import() {
-        XlsUtil.WithWorkbook(_filePath, workbook => {
-            workbook.SeekToWorksheet(GetSheetIndex(workbook));
-            var rows = workbook.ReadSheet(_firstRowIndex, _lastRowIndex, _firstColumnIndex, _lastColumnIndex);
+    private void Import()
+    {
+        XlsUtil.WithWorkbook(
+            _filePath,
+            workbook =>
+            {
+                workbook.SeekToWorksheet(GetSheetIndex(workbook));
+                var rows = workbook.ReadSheet(_firstRowIndex, _lastRowIndex, _firstColumnIndex, _lastColumnIndex);
 
-            SqlUtil.Import(
-                srcColNames: XlsUtil.ReadColumnNames(rows, _headerRow), 
-                dataRows: rows.Skip(_headerRow ? 1 : 0),
-                importTable: _stmt.ImportTable, 
-                temporaryTable: _temporaryTable, 
-                truncateExistingTable: _truncateExistingTable, 
-                stopAtFirstBlankRow: _stopAtFirstBlankRow,
-                ifConversionFails: _ifConversionFails, 
-                blankValuesMethod: _blankValuesMethod,
-                notebook: _notebook, 
-                runner: _runner,
-                env: _env);
-        });
+                SqlUtil.Import(
+                    srcColNames: XlsUtil.ReadColumnNames(rows, _headerRow),
+                    dataRows: rows.Skip(_headerRow ? 1 : 0),
+                    importTable: _stmt.ImportTable,
+                    temporaryTable: _temporaryTable,
+                    truncateExistingTable: _truncateExistingTable,
+                    stopAtFirstBlankRow: _stopAtFirstBlankRow,
+                    ifConversionFails: _ifConversionFails,
+                    blankValuesMethod: _blankValuesMethod,
+                    notebook: _notebook,
+                    runner: _runner,
+                    env: _env
+                );
+            }
+        );
     }
 
-    private int GetSheetIndex(XlsUtil.IWorkbook workbook) {
+    private int GetSheetIndex(XlsUtil.IWorkbook workbook)
+    {
         var whichSheet = _whichSheet ?? 1; // 1-based number or name string
-        if (whichSheet is int || whichSheet is long) {
+        if (whichSheet is int || whichSheet is long)
+        {
             var whichSheetNum = Convert.ToInt32(whichSheet);
-            if (whichSheetNum < 1) {
+            if (whichSheetNum < 1)
+            {
                 throw new Exception($"The worksheet number must be at least 1.");
             }
             return whichSheetNum - 1;
-        } else if (whichSheet is string name) {
+        }
+        else if (whichSheet is string name)
+        {
             var names = workbook.ReadWorksheetNames();
             var index = names.IndexOf(name);
-            if (index == -1) {
+            if (index == -1)
+            {
                 throw new Exception($"The worksheet \"{name}\" was not found.");
-            } else {
+            }
+            else
+            {
                 return index;
             }
-        } else {
+        }
+        else
+        {
             throw new Exception($"The \"which-sheet\" argument must be a number or a string.");
         }
     }

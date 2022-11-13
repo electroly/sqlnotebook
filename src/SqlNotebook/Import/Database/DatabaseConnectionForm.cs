@@ -6,11 +6,13 @@ using MySql.Data.MySqlClient;
 
 namespace SqlNotebook.Import.Database;
 
-public partial class DatabaseConnectionForm : ZForm {
+public partial class DatabaseConnectionForm : ZForm
+{
     private readonly DbConnectionStringBuilder _builder;
     private readonly IImportSession _session;
 
-    public sealed class BasicOptions {
+    public sealed class BasicOptions
+    {
         public string Server { get; set; } = "";
         public string Database { get; set; } = "";
         public string Username { get; set; } = "";
@@ -18,7 +20,8 @@ public partial class DatabaseConnectionForm : ZForm {
         public bool UseWindowsAuth { get; set; } = false;
     }
 
-    public DatabaseConnectionForm(string title, DbConnectionStringBuilder builder, IImportSession session) {
+    public DatabaseConnectionForm(string title, DbConnectionStringBuilder builder, IImportSession session)
+    {
         InitializeComponent();
 
         _builder = builder;
@@ -51,10 +54,12 @@ public partial class DatabaseConnectionForm : ZForm {
         ui.Init(_okBtn);
         ui.Init(_cancelBtn);
 
-        if (builder is not SqlConnectionStringBuilder) {
+        if (builder is not SqlConnectionStringBuilder)
+        {
             _windowsAuthChk.Visible = false;
         }
-        if (builder is MySqlConnectionStringBuilder) {
+        if (builder is MySqlConnectionStringBuilder)
+        {
             _databaseLabel.Text = "&Schema name:";
         }
         _propertyGrid.SelectedObject = builder;
@@ -62,10 +67,14 @@ public partial class DatabaseConnectionForm : ZForm {
 
         UpdateBasicOptionsUi(_session.GetBasicOptions(builder)); // populate basic options with info from builder
 
-        Load += delegate { _serverTxt.Select(); };
+        Load += delegate
+        {
+            _serverTxt.Select();
+        };
     }
 
-    private void UpdateBasicOptionsUi(BasicOptions opt) {
+    private void UpdateBasicOptionsUi(BasicOptions opt)
+    {
         _serverTxt.Text = opt.Server;
         _databaseTxt.Text = opt.Database;
         _usernameTxt.Text = opt.Username;
@@ -73,8 +82,10 @@ public partial class DatabaseConnectionForm : ZForm {
         _windowsAuthChk.Checked = opt.UseWindowsAuth;
     }
 
-    private BasicOptions ReadBasicOptionsUi() {
-        return new BasicOptions {
+    private BasicOptions ReadBasicOptionsUi()
+    {
+        return new BasicOptions
+        {
             Server = _serverTxt.Text,
             Database = _databaseTxt.Text,
             Username = _usernameTxt.Text,
@@ -83,8 +94,10 @@ public partial class DatabaseConnectionForm : ZForm {
         };
     }
 
-    private void OkBtn_Click(object sender, EventArgs e) {
-        if (_tabs.SelectedIndex == 0) {
+    private void OkBtn_Click(object sender, EventArgs e)
+    {
+        if (_tabs.SelectedIndex == 0)
+        {
             // "Basic" tab is selected.
             _session.SetBasicOptions(_builder, ReadBasicOptionsUi());
         }
@@ -92,22 +105,28 @@ public partial class DatabaseConnectionForm : ZForm {
         Close();
     }
 
-    private void WindowsAuthChk_CheckedChanged(object sender, EventArgs e) {
+    private void WindowsAuthChk_CheckedChanged(object sender, EventArgs e)
+    {
         _usernameTxt.Enabled = _passwordTxt.Enabled = !_windowsAuthChk.Checked;
     }
 
-    private void Tabs_TabIndexChanged(object sender, EventArgs e) {
-        if (_tabs.SelectedIndex == 0) {
+    private void Tabs_TabIndexChanged(object sender, EventArgs e)
+    {
+        if (_tabs.SelectedIndex == 0)
+        {
             // "Basic" tab is now selected.
             UpdateBasicOptionsUi(_session.GetBasicOptions(_builder));
-        } else {
+        }
+        else
+        {
             // "Advanced" tab is now selected.
             _session.SetBasicOptions(_builder, ReadBasicOptionsUi());
             _propertyGrid.SelectedObject = _builder; // Refresh the property grid.
         }
     }
 
-    private void ClearButton_Click(object sender, EventArgs e) {
+    private void ClearButton_Click(object sender, EventArgs e)
+    {
         _session.Clear(_builder);
         UpdateBasicOptionsUi(_session.GetBasicOptions(_builder)); // populate basic options with info from builder
     }

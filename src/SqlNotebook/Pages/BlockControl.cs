@@ -5,7 +5,8 @@ using System.Windows.Forms;
 
 namespace SqlNotebook.Pages;
 
-public abstract class BlockControl : UserControl {
+public abstract class BlockControl : UserControl
+{
     private const int HORIZONTAL_MARGIN_UNSCALED = 10;
     private const int VERTICAL_MARGIN_UNSCALED = 5;
 
@@ -16,48 +17,63 @@ public abstract class BlockControl : UserControl {
     protected int HorizontalMargin => this.Scaled(HORIZONTAL_MARGIN_UNSCALED);
     protected int VerticalMargin => this.Scaled(VERTICAL_MARGIN_UNSCALED);
 
-    public BlockControl() {
+    public BlockControl()
+    {
         _hover = new(this);
         Cursor = Cursors.Hand;
         ResizeRedraw = true;
         this.EnableDoubleBuffering();
         UserOptions.OnUpdate(this, Invalidate);
-        Disposed += delegate { _tooltip.Dispose(); };
+        Disposed += delegate
+        {
+            _tooltip.Dispose();
+        };
     }
 
     public abstract int CalculateHeight();
 
     public delegate void BlockDeletedEventHandler(BlockControl block);
     public event BlockDeletedEventHandler BlockDeleted;
-    protected void RaiseBlockDeleted() {
+
+    protected void RaiseBlockDeleted()
+    {
         BlockDeleted?.Invoke(this);
     }
 
     public delegate void BlockMovedEventHandler(BlockControl block, bool up);
     public event BlockMovedEventHandler BlockMoved;
-    protected void RaiseBlockMoved(bool up) {
+
+    protected void RaiseBlockMoved(bool up)
+    {
         BlockMoved?.Invoke(this, up);
     }
 
     public event EventHandler BlockClicked;
-    protected void RaiseBlockClicked() {
+
+    protected void RaiseBlockClicked()
+    {
         BlockClicked?.Invoke(this, EventArgs.Empty);
     }
 
     public virtual void StartEditing() { }
+
     public virtual void StopEditing() { }
 
     public event EventHandler Dirty;
-    protected void RaiseDirty() {
+
+    protected void RaiseDirty()
+    {
         Dirty?.Invoke(this, EventArgs.Empty);
     }
 
-    protected override void OnPaint(PaintEventArgs e) {
+    protected override void OnPaint(PaintEventArgs e)
+    {
         e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
         var opt = UserOptions.Instance;
         var colors = opt.GetColors();
 
-        if (EditMode) {
+        if (EditMode)
+        {
             using SolidBrush editModeBg = new(colors[UserOptionsColor.GRID_BACKGROUND]);
             e.Graphics.FillRectangle(editModeBg, 0, 0, Width, Height);
             return;
@@ -68,12 +84,12 @@ public abstract class BlockControl : UserControl {
         var gridLineColor5 = Color.FromArgb(13, gridLineColor100);
 
         // Background
-        var backgroundColor =
-            _hover.State switch {
-                MouseHoverState.Down => gridLineColor30,
-                MouseHoverState.Hover => gridLineColor5,
-                _ => colors[UserOptionsColor.GRID_BACKGROUND]
-            };
+        var backgroundColor = _hover.State switch
+        {
+            MouseHoverState.Down => gridLineColor30,
+            MouseHoverState.Hover => gridLineColor5,
+            _ => colors[UserOptionsColor.GRID_BACKGROUND]
+        };
         using SolidBrush backgroundBrush = new(backgroundColor);
         e.Graphics.FillRectangle(backgroundBrush, e.ClipRectangle);
 
@@ -82,66 +98,82 @@ public abstract class BlockControl : UserControl {
 
     protected abstract void OnPaint(Graphics g, UserOptions opt, Color[] colors, Color backColor);
 
-    protected (Button Accept, TableLayoutPanel table, Panel panel) CreateStandardEditModeLayout() {
-        Button upButton = new() {
-            Dock = DockStyle.Fill,
-            FlatStyle = FlatStyle.Flat,
-            Margin = new(this.Scaled(2), 0, 0, this.Scaled(2)),
-            Text = "▲",
-            Padding = Padding.Empty,
-            BackColor = Color.WhiteSmoke,
-            Cursor = Cursors.Hand,
-        };
+    protected (Button Accept, TableLayoutPanel table, Panel panel) CreateStandardEditModeLayout()
+    {
+        Button upButton =
+            new()
+            {
+                Dock = DockStyle.Fill,
+                FlatStyle = FlatStyle.Flat,
+                Margin = new(this.Scaled(2), 0, 0, this.Scaled(2)),
+                Text = "▲",
+                Padding = Padding.Empty,
+                BackColor = Color.WhiteSmoke,
+                Cursor = Cursors.Hand,
+            };
         upButton.FlatAppearance.BorderSize = 0;
-        upButton.Click += delegate {
+        upButton.Click += delegate
+        {
             RaiseBlockMoved(true);
         };
 
-        Button downButton = new() {
-            Dock = DockStyle.Fill,
-            FlatStyle = FlatStyle.Flat,
-            Margin = new(this.Scaled(2), 0, 0, this.Scaled(2)),
-            Text = "▼",
-            Padding = Padding.Empty,
-            BackColor = Color.WhiteSmoke,
-            Cursor = Cursors.Hand,
-        };
+        Button downButton =
+            new()
+            {
+                Dock = DockStyle.Fill,
+                FlatStyle = FlatStyle.Flat,
+                Margin = new(this.Scaled(2), 0, 0, this.Scaled(2)),
+                Text = "▼",
+                Padding = Padding.Empty,
+                BackColor = Color.WhiteSmoke,
+                Cursor = Cursors.Hand,
+            };
         downButton.FlatAppearance.BorderSize = 0;
-        downButton.Click += delegate {
+        downButton.Click += delegate
+        {
             RaiseBlockMoved(false);
         };
 
-        Button acceptButton = new() {
-            Dock = DockStyle.Fill,
-            FlatStyle = FlatStyle.Flat,
-            Margin = new(this.Scaled(2), 0, 0, this.Scaled(2)),
-            Text = "✔️",
-            BackColor = Color.AliceBlue,
-            Cursor = Cursors.Hand,
-        };
+        Button acceptButton =
+            new()
+            {
+                Dock = DockStyle.Fill,
+                FlatStyle = FlatStyle.Flat,
+                Margin = new(this.Scaled(2), 0, 0, this.Scaled(2)),
+                Text = "✔️",
+                BackColor = Color.AliceBlue,
+                Cursor = Cursors.Hand,
+            };
         acceptButton.FlatAppearance.BorderSize = 0;
 
-        Button deleteButton = new() {
-            Dock = DockStyle.Fill,
-            FlatStyle = FlatStyle.Flat,
-            Margin = new(this.Scaled(2), 0, 0, 0),
-            Text = "❌",
-            BackColor = Color.WhiteSmoke,
-            Cursor = Cursors.Hand,
-        };
+        Button deleteButton =
+            new()
+            {
+                Dock = DockStyle.Fill,
+                FlatStyle = FlatStyle.Flat,
+                Margin = new(this.Scaled(2), 0, 0, 0),
+                Text = "❌",
+                BackColor = Color.WhiteSmoke,
+                Cursor = Cursors.Hand,
+            };
         deleteButton.FlatAppearance.BorderSize = 0;
-        deleteButton.Click += delegate {
-            var choice = Ui.ShowTaskDialog(TopLevelControl,
-                "Do you want to delete this block?", "Page", new[] { Ui.DELETE, Ui.CANCEL },
-                TaskDialogIcon.Warning, defaultIsFirst: false);
-            if (choice == Ui.DELETE) {
+        deleteButton.Click += delegate
+        {
+            var choice = Ui.ShowTaskDialog(
+                TopLevelControl,
+                "Do you want to delete this block?",
+                "Page",
+                new[] { Ui.DELETE, Ui.CANCEL },
+                TaskDialogIcon.Warning,
+                defaultIsFirst: false
+            );
+            if (choice == Ui.DELETE)
+            {
                 RaiseBlockDeleted();
             }
         };
 
-        TableLayoutPanel table = new() {
-            Dock = DockStyle.Fill
-        };
+        TableLayoutPanel table = new() { Dock = DockStyle.Fill };
 
         table.RowStyles.Add(new(SizeType.Absolute, this.Scaled(25)));
         table.RowStyles.Add(new(SizeType.Absolute, this.Scaled(25)));
@@ -149,7 +181,7 @@ public abstract class BlockControl : UserControl {
         table.RowStyles.Add(new(SizeType.Absolute, this.Scaled(25)));
         table.ColumnStyles.Add(new(SizeType.Absolute, this.Scaled(40)));
         table.ColumnStyles.Add(new(SizeType.Percent, 100));
-            
+
         table.Controls.Add(upButton);
         table.SetRow(upButton, 0);
         table.SetColumn(upButton, 0);
@@ -161,16 +193,18 @@ public abstract class BlockControl : UserControl {
         table.Controls.Add(acceptButton);
         table.SetRow(acceptButton, 2);
         table.SetColumn(acceptButton, 0);
-            
+
         table.Controls.Add(deleteButton);
         table.SetRow(deleteButton, 3);
         table.SetColumn(deleteButton, 0);
 
-        Panel panel = new() {
-            Dock = DockStyle.Fill,
-            Margin = new(this.Scaled(2), 0, this.Scaled(5), 0),
-            Padding = Padding.Empty,
-        };
+        Panel panel =
+            new()
+            {
+                Dock = DockStyle.Fill,
+                Margin = new(this.Scaled(2), 0, this.Scaled(5), 0),
+                Padding = Padding.Empty,
+            };
         table.Controls.Add(panel);
         table.SetRow(panel, 0);
         table.SetColumn(panel, 1);

@@ -2,7 +2,8 @@
 
 namespace SqlNotebookScript.Core.AdoModules;
 
-public record class AdoCursorMetadata {
+public record class AdoCursorMetadata
+{
     public AdoTableMetadata TableMetadata { get; set; }
     public IDbConnection Connection { get; set; }
     public IDbCommand Command { get; set; }

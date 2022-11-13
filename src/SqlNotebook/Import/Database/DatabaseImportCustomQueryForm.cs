@@ -8,7 +8,8 @@ using SqlNotebook.Properties;
 
 namespace SqlNotebook.Import.Database;
 
-public partial class DatabaseImportCustomQueryForm : ZForm {
+public partial class DatabaseImportCustomQueryForm : ZForm
+{
     private readonly SqlTextControl _sqlTextControl;
     private readonly DataGridView _grid;
     private readonly IImportSession _session;
@@ -16,7 +17,8 @@ public partial class DatabaseImportCustomQueryForm : ZForm {
     public string TargetName { get; private set; }
     public string Sql { get; private set; }
 
-    public DatabaseImportCustomQueryForm(IImportSession session, string targetName, string sql) {
+    public DatabaseImportCustomQueryForm(IImportSession session, string targetName, string sql)
+    {
         InitializeComponent();
         _session = session;
 
@@ -51,64 +53,94 @@ public partial class DatabaseImportCustomQueryForm : ZForm {
         ui.Init(_cancelButton);
 
         _targetNameText.Text = targetName;
-        _sqlTextControl.F5KeyPress += delegate { Execute(); };
-        Shown += delegate { _sqlTextControl.SqlFocus(); };
+        _sqlTextControl.F5KeyPress += delegate
+        {
+            Execute();
+        };
+        Shown += delegate
+        {
+            _sqlTextControl.SqlFocus();
+        };
     }
 
-    private void PreviewButton_Click(object sender, EventArgs e) {
+    private void PreviewButton_Click(object sender, EventArgs e)
+    {
         Execute();
     }
 
-    private void Execute() {
+    private void Execute()
+    {
         var sql = _sqlTextControl.SqlText;
-        if (string.IsNullOrWhiteSpace(sql)) {
+        if (string.IsNullOrWhiteSpace(sql))
+        {
             Ui.ShowError(this, "Error", "Please enter an SQL query.");
             return;
         }
-        if (string.IsNullOrWhiteSpace(_targetNameText.Text)) {
+        if (string.IsNullOrWhiteSpace(_targetNameText.Text))
+        {
             Ui.ShowError(this, "Error", "Please enter an imported table name.");
             return;
         }
 
         DataTable dt = null;
-        WaitForm.GoWithCancel(this, "Preview", "Executing remote query...", out var success, cancel => {
-            DbConnection connection = null;
-            DbCommand command = null;
-            DbDataReader reader = null;
-            try {
-                connection = _session.CreateConnection();
-                connection.OpenAsync(cancel).ConfigureAwait(false).GetAwaiter().GetResult();
-                command = connection.CreateCommand();
-                command.CommandText = sql;
-                reader = command.ExecuteReaderAsync(cancel).ConfigureAwait(false).GetAwaiter().GetResult();
-                dt = new();
-                for (var i = 0; i < reader.FieldCount; i++) {
-                    dt.Columns.Add(reader.GetName(i));
+        WaitForm.GoWithCancel(
+            this,
+            "Preview",
+            "Executing remote query...",
+            out var success,
+            cancel =>
+            {
+                DbConnection connection = null;
+                DbCommand command = null;
+                DbDataReader reader = null;
+                try
+                {
+                    connection = _session.CreateConnection();
+                    connection.OpenAsync(cancel).ConfigureAwait(false).GetAwaiter().GetResult();
+                    command = connection.CreateCommand();
+                    command.CommandText = sql;
+                    reader = command.ExecuteReaderAsync(cancel).ConfigureAwait(false).GetAwaiter().GetResult();
+                    dt = new();
+                    for (var i = 0; i < reader.FieldCount; i++)
+                    {
+                        dt.Columns.Add(reader.GetName(i));
+                    }
+                    dt.BeginLoadData();
+                    while (
+                        dt.Rows.Count < 1000 && reader.ReadAsync(cancel).ConfigureAwait(false).GetAwaiter().GetResult()
+                    )
+                    {
+                        cancel.ThrowIfCancellationRequested();
+                        var row = new object[reader.FieldCount];
+                        reader.GetValues(row);
+                        dt.LoadDataRow(row, true);
+                    }
+                    dt.EndLoadData();
                 }
-                dt.BeginLoadData();
-                while (dt.Rows.Count < 1000 && reader.ReadAsync(cancel).ConfigureAwait(false).GetAwaiter().GetResult()) {
-                    cancel.ThrowIfCancellationRequested();
-                    var row = new object[reader.FieldCount];
-                    reader.GetValues(row);
-                    dt.LoadDataRow(row, true);
+                finally
+                {
+                    _ = Task.Run(
+                        () =>
+                        {
+                            reader?.DisposeAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                            command?.Dispose();
+                            connection?.Dispose();
+                        },
+                        CancellationToken.None
+                    );
                 }
-                dt.EndLoadData();
-            } finally {
-                _ = Task.Run(() => {
-                    reader?.DisposeAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-                    command?.Dispose();
-                    connection?.Dispose();
-                }, CancellationToken.None);
             }
-        });
-        if (success) {
+        );
+        if (success)
+        {
             _splitter.Panel2Collapsed = false;
             _grid.DataSource = dt;
             _grid.AutoSizeColumns(this.Scaled(400));
         }
     }
 
-    private void OkButton_Click(object sender, EventArgs e) {
+    private void OkButton_Click(object sender, EventArgs e)
+    {
         TargetName = _targetNameText.Text;
         Sql = _sqlTextControl.SqlText;
         DialogResult = DialogResult.OK;

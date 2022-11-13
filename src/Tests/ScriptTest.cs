@@ -10,14 +10,17 @@ using SqlNotebookScript.Utils;
 namespace Tests;
 
 [TestClass]
-public sealed partial class ScriptTest {
+public sealed partial class ScriptTest
+{
     [ClassInitialize]
     public static void Init(TestContext context) => GlobalInit.Init();
 
-    private void TestScript(string scriptRelativePath) {
+    private void TestScript(string scriptRelativePath)
+    {
         // Make a temp directory to store notebook files in.
         var tempDir = Path.Combine(Path.GetTempPath(), "SqlNotebookScriptTest");
-        if (Directory.Exists(tempDir)) {
+        if (Directory.Exists(tempDir))
+        {
             Directory.Delete(tempDir, true);
         }
 
@@ -31,14 +34,17 @@ public sealed partial class ScriptTest {
         var scriptsDir = Path.Combine(testsDir, "scripts");
         var scriptFilePath = Path.Combine(scriptsDir, scriptRelativePath);
         Directory.CreateDirectory(tempDir);
-        string expectedOutput = "", actualOutput;
-        try {
+        string expectedOutput = "",
+            actualOutput;
+        try
+        {
             // Parse the file into SQL text(s) and expected output text.
             var scriptFileText = File.ReadAllText(scriptFilePath)
                 .Replace("<TEMP>", tempDir)
                 .Replace("<FILES>", filesDir);
             const string OUTPUT_SEPARATOR = "\r\n--output--\r\n";
-            if (scriptFileText.Contains(OUTPUT_SEPARATOR)) {
+            if (scriptFileText.Contains(OUTPUT_SEPARATOR))
+            {
                 var parts = scriptFileText.Split(OUTPUT_SEPARATOR);
                 Assert.AreEqual(parts.Length, 2);
                 scriptFileText = parts[0];
@@ -50,32 +56,40 @@ public sealed partial class ScriptTest {
             // Run the SQL.
             using Notebook notebook = Notebook.New();
             NotebookManager manager = new(notebook, new());
-            foreach (var item in manager.Items.ToList()) {
+            foreach (var item in manager.Items.ToList())
+            {
                 manager.DeleteItem(item);
             }
             var scriptNumber = 1;
-            foreach (var sql in sqls) {
+            foreach (var sql in sqls)
+            {
                 manager.NewItem(NotebookItemType.Script, $"Script{scriptNumber++}", sql);
             }
             using var output = manager.ExecuteScript(sqls[0]);
 
             // Convert the actual ScriptOutput to text.
             StringBuilder sb = new();
-            if (output.ScalarResult != null) {
+            if (output.ScalarResult != null)
+            {
                 sb.AppendLine(ResultObjectToString(output.ScalarResult));
             }
-            foreach (var line in output.TextOutput) {
+            foreach (var line in output.TextOutput)
+            {
                 sb.AppendLine(line);
             }
-            foreach (var table in output.DataTables) {
+            foreach (var table in output.DataTables)
+            {
                 sb.AppendLine(string.Join(",", table.Columns));
-                foreach (var row in table.Rows) {
+                foreach (var row in table.Rows)
+                {
                     sb.AppendLine(string.Join(",", row.Select(ResultObjectToString)));
                 }
                 sb.AppendLine("-");
             }
             actualOutput = sb.ToString();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             throw new Exception($"{scriptFilePath[scriptsDir.Length..]} failed. {ex.GetExceptionMessage()}", ex);
         }
         Assert.AreEqual(expectedOutput, actualOutput, scriptFilePath[scriptsDir.Length..]);
@@ -85,7 +99,8 @@ public sealed partial class ScriptTest {
     }
 
     private static string ResultObjectToString(object obj) =>
-        obj switch {
+        obj switch
+        {
             DBNull => "null",
             double x => $"{x:0.####}",
             byte[] x => BlobUtil.ToString(x),

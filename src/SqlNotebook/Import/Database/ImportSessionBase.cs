@@ -10,10 +10,11 @@ using SqlNotebookScript.Utils;
 namespace SqlNotebook.Import.Database;
 
 public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImportSession
-    where TConnectionStringBuilder : DbConnectionStringBuilder, new() {
-
+    where TConnectionStringBuilder : DbConnectionStringBuilder, new()
+{
     public abstract string ProductName { get; }
-    public IReadOnlyList<(string Schema, string Table)> TableNames { get; protected set; } = Array.Empty<(string Schema, string Table)>();
+    public IReadOnlyList<(string Schema, string Table)> TableNames { get; protected set; } =
+        Array.Empty<(string Schema, string Table)>();
     public abstract DbConnection CreateConnection();
     protected abstract void ReadTableNames(IDbConnection connection);
     protected abstract TConnectionStringBuilder CreateBuilder(string connStr);
@@ -26,26 +27,34 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
 
     protected TConnectionStringBuilder _builder = new();
 
-    public ImportSessionBase() {
+    public ImportSessionBase()
+    {
         Clear(_builder);
     }
 
-    public bool FromConnectForm(IWin32Window owner) {
+    public bool FromConnectForm(IWin32Window owner)
+    {
         var successfulConnect = false;
 
-        do {
+        do
+        {
             var initialConnectionString = GetDefaultConnectionString();
-            if (!string.IsNullOrWhiteSpace(initialConnectionString)) {
-                try {
+            if (!string.IsNullOrWhiteSpace(initialConnectionString))
+            {
+                try
+                {
                     _builder.ConnectionString = initialConnectionString;
-                } catch { }
-            } else {
+                }
+                catch { }
+            }
+            else
+            {
                 Clear(_builder);
             }
 
-            using DatabaseConnectionForm f = new(
-                $"Connect to {ProductName}", _builder, this);
-            if (f.ShowDialog(owner) != DialogResult.OK) {
+            using DatabaseConnectionForm f = new($"Connect to {ProductName}", _builder, this);
+            if (f.ShowDialog(owner) != DialogResult.OK)
+            {
                 return false;
             }
 
@@ -59,26 +68,37 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
         return true;
     }
 
-    private bool DoConnect(IWin32Window owner) {
+    private bool DoConnect(IWin32Window owner)
+    {
         WaitForm.GoWithCancelByWalkingAway(
-            owner, "Database Connection", $"Accessing {ProductName}...", out var success,
-            () => {
-            using var connection = CreateConnection();
-            connection.Open();
-            ReadTableNames(connection);
-        });
+            owner,
+            "Database Connection",
+            $"Accessing {ProductName}...",
+            out var success,
+            () =>
+            {
+                using var connection = CreateConnection();
+                connection.Open();
+                ReadTableNames(connection);
+            }
+        );
         return success;
     }
 
-    public string GenerateSql(IEnumerable<SourceTable> selectedTables, bool link) {
+    public string GenerateSql(IEnumerable<SourceTable> selectedTables, bool link)
+    {
         StringBuilder sb = new();
         sb.Append("DECLARE @cs = ");
         sb.Append(_builder.ConnectionString.SingleQuote());
         sb.Append(";\r\n\r\n");
-        foreach (var sourceTable in selectedTables) {
-            if (sourceTable.SourceIsSql && link) {
-                throw new ExceptionEx("Live links to custom queries are not supported.",
-                    "Choose the \"Copy source data into notebook\" method instead.");
+        foreach (var sourceTable in selectedTables)
+        {
+            if (sourceTable.SourceIsSql && link)
+            {
+                throw new ExceptionEx(
+                    "Live links to custom queries are not supported.",
+                    "Choose the \"Copy source data into notebook\" method instead."
+                );
             }
             sb.Append("DROP TABLE IF EXISTS ");
             sb.Append(sourceTable.TargetTableName.DoubleQuote());
@@ -86,25 +106,33 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
             sb.Append("IMPORT DATABASE ");
             sb.Append(SqliteModuleName.SingleQuote());
             sb.Append(" CONNECTION @cs ");
-            if (sourceTable.SourceIsTable) {
-                if (sourceTable.SourceSchemaName != null) {
+            if (sourceTable.SourceIsTable)
+            {
+                if (sourceTable.SourceSchemaName != null)
+                {
                     sb.Append("SCHEMA ");
                     sb.Append(sourceTable.SourceSchemaName.SingleQuote());
                     sb.Append(' ');
                 }
                 sb.Append("TABLE ");
                 sb.Append(sourceTable.SourceTableName.SingleQuote());
-            } else if (sourceTable.SourceIsSql) {
+            }
+            else if (sourceTable.SourceIsSql)
+            {
                 sb.Append("QUERY ");
                 sb.Append(sourceTable.SourceSql.SingleQuote());
-            } else {
+            }
+            else
+            {
                 throw new Exception("Unexpected source table; neither table nor SQL?");
             }
-            if (sourceTable.SourceIsSql || sourceTable.SourceTableName != sourceTable.TargetTableName) {
+            if (sourceTable.SourceIsSql || sourceTable.SourceTableName != sourceTable.TargetTableName)
+            {
                 sb.Append(" INTO ");
                 sb.Append(sourceTable.TargetTableName.DoubleQuote());
             }
-            if (link) {
+            if (link)
+            {
                 sb.Append(" OPTIONS (LINK: 1)");
             }
             sb.Append(";\r\n\r\n");
@@ -112,15 +140,18 @@ public abstract partial class ImportSessionBase<TConnectionStringBuilder> : IImp
         return sb.ToString();
     }
 
-    DatabaseConnectionForm.BasicOptions IImportSession.GetBasicOptions(DbConnectionStringBuilder builder) {
+    DatabaseConnectionForm.BasicOptions IImportSession.GetBasicOptions(DbConnectionStringBuilder builder)
+    {
         return GetBasicOptions((TConnectionStringBuilder)builder);
     }
 
-    void IImportSession.SetBasicOptions(DbConnectionStringBuilder builder, DatabaseConnectionForm.BasicOptions opt) {
+    void IImportSession.SetBasicOptions(DbConnectionStringBuilder builder, DatabaseConnectionForm.BasicOptions opt)
+    {
         SetBasicOptions((TConnectionStringBuilder)builder, opt);
     }
 
-    public virtual void Clear(DbConnectionStringBuilder builder) {
+    public virtual void Clear(DbConnectionStringBuilder builder)
+    {
         builder.Clear();
     }
 }

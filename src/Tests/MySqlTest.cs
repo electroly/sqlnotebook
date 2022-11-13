@@ -9,23 +9,27 @@ using SqlNotebookScript.Utils;
 namespace Tests;
 
 [TestClass]
-public sealed class MySqlTest {
+public sealed class MySqlTest
+{
     [ClassInitialize]
     public static void Init(TestContext context) => GlobalInit.Init();
 
-    private static void Execute(DbConnection connection, string sql) {
+    private static void Execute(DbConnection connection, string sql)
+    {
         using var c = connection.CreateCommand();
         c.CommandText = sql;
         c.ExecuteNonQuery();
     }
 
-    private static string SetupMySql() {
+    private static string SetupMySql()
+    {
         MySqlConnectionStringBuilder connectionStringBuilder = new();
         connectionStringBuilder.Server = "localhost";
         connectionStringBuilder.UserID = "root";
         connectionStringBuilder.Password = "password";
         connectionStringBuilder.Database = "sys";
-        using (MySqlConnection c = new(connectionStringBuilder.ToString())) {
+        using (MySqlConnection c = new(connectionStringBuilder.ToString()))
+        {
             c.Open();
             Execute(c, "DROP DATABASE IF EXISTS sqlnotebook_test");
             Execute(c, "CREATE DATABASE sqlnotebook_test");
@@ -34,7 +38,9 @@ public sealed class MySqlTest {
         connectionStringBuilder.Database = "sqlnotebook_test";
         using MySqlConnection connection = new(connectionStringBuilder.ToString());
         connection.Open();
-        Execute(connection, @$"
+        Execute(
+            connection,
+            @$"
             CREATE TABLE foo (
                 c00 INTEGER PRIMARY KEY,
                 c01 INT,
@@ -91,22 +97,27 @@ public sealed class MySqlTest {
             ), (
                 222, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                 NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-        ");
+        "
+        );
         return connectionStringBuilder.ToString();
     }
 
     [TestMethod]
-    public void ImportDatabase_MySql() {
+    public void ImportDatabase_MySql()
+    {
         var connectionString = SetupMySql();
         using var notebook = Notebook.New();
         NotebookManager manager = new(notebook, new());
         manager.ExecuteScript($"IMPORT DATABASE 'mysql' CONNECTION {connectionString.SingleQuote()} TABLE foo;");
-        Assert.AreEqual(@"CREATE TABLE ""foo"" (""c00"" INTEGER, ""c01"" INTEGER, ""c02"" INTEGER, ""c03"" INTEGER, ""c04"" INTEGER, ""c05"" INTEGER, ""c06"" REAL, ""c07"" REAL, ""c08"" REAL, ""c09"" REAL, ""c10"" INTEGER, ""c11"" TEXT, ""c12"" TEXT, ""c13"" TEXT, ""c14"" TEXT, ""c15"" INTEGER, ""c16"" TEXT, ""c17"" TEXT, ""c18"" BLOB, ""c19"" BLOB, ""c20"" BLOB, ""c21"" TEXT, ""c22"" TEXT, ""c23"" TEXT, ""c24"" TEXT, PRIMARY KEY (""c00""))",
-            (string)notebook.QueryValue("SELECT sql FROM sqlite_master WHERE name = 'foo';"));
+        Assert.AreEqual(
+            @"CREATE TABLE ""foo"" (""c00"" INTEGER, ""c01"" INTEGER, ""c02"" INTEGER, ""c03"" INTEGER, ""c04"" INTEGER, ""c05"" INTEGER, ""c06"" REAL, ""c07"" REAL, ""c08"" REAL, ""c09"" REAL, ""c10"" INTEGER, ""c11"" TEXT, ""c12"" TEXT, ""c13"" TEXT, ""c14"" TEXT, ""c15"" INTEGER, ""c16"" TEXT, ""c17"" TEXT, ""c18"" BLOB, ""c19"" BLOB, ""c20"" BLOB, ""c21"" TEXT, ""c22"" TEXT, ""c23"" TEXT, ""c24"" TEXT, PRIMARY KEY (""c00""))",
+            (string)notebook.QueryValue("SELECT sql FROM sqlite_master WHERE name = 'foo';")
+        );
         using var sdt = notebook.Query("SELECT * FROM foo ORDER BY c00;", Array.Empty<object>());
         Assert.AreEqual(2, sdt.Rows.Count);
         Assert.AreEqual(25, sdt.Columns.Count);
-        for (var i = 0; i < 25; i++) {
+        for (var i = 0; i < 25; i++)
+        {
             Assert.AreEqual($"c{i:00}", sdt.Columns[i]);
         }
 
@@ -137,9 +148,9 @@ public sealed class MySqlTest {
         Assert.AreEqual("{\"foo\": \"bar\"}", sdt.Rows[0][24]);
 
         Assert.AreEqual((long)222, sdt.Rows[1][0]);
-        for (var i = 1; i < 25; i++) {
+        for (var i = 1; i < 25; i++)
+        {
             Assert.IsInstanceOfType(sdt.Rows[1][i], typeof(DBNull));
         }
     }
 }
-

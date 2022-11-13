@@ -10,13 +10,14 @@ using SqlNotebookScript;
 
 namespace SqlNotebook;
 
-public partial class WaitForm : ZForm {
+public partial class WaitForm : ZForm
+{
     private readonly Stopwatch _stopwatch;
     private readonly Pen _spinnerPen;
     private readonly SolidBrush _spinnerBrush;
     private readonly float _spinnerPenWidth;
     private readonly System.Windows.Forms.Timer _timer;
-        
+
     // Set this at startup.
     public static MainForm MainAppForm { private get; set; }
 
@@ -28,64 +29,117 @@ public partial class WaitForm : ZForm {
     public static void Go(IWin32Window owner, string title, string text, out bool success, Action action) =>
         GoCore(owner, title, text, out success, action);
 
-    public static T Go<T>(IWin32Window owner, string title, string text, out bool success, Func<T> func) {
+    public static T Go<T>(IWin32Window owner, string title, string text, out bool success, Func<T> func)
+    {
         T result = default;
-        Go(owner, title, text, out success, action: () => {
-            result = func();
-        });
+        Go(
+            owner,
+            title,
+            text,
+            out success,
+            action: () =>
+            {
+                result = func();
+            }
+        );
         return result;
     }
 
-    public static void GoWithCancel(IWin32Window owner, string title, string text, out bool success, Action<CancellationToken> action) {
+    public static void GoWithCancel(
+        IWin32Window owner,
+        string title,
+        string text,
+        out bool success,
+        Action<CancellationToken> action
+    )
+    {
         using CancellationTokenSource cts = new();
         GoCore(owner, title, text, out success, () => action(cts.Token), cancelAction: () => cts.Cancel());
     }
 
-    public static T GoWithCancel<T>(IWin32Window owner, string title, string text, out bool success, Func<CancellationToken, T> func) {
+    public static T GoWithCancel<T>(
+        IWin32Window owner,
+        string title,
+        string text,
+        out bool success,
+        Func<CancellationToken, T> func
+    )
+    {
         T result = default;
-        GoWithCancel(owner, title, text, out success, action: cancel => {
-            result = func(cancel);
-        });
+        GoWithCancel(
+            owner,
+            title,
+            text,
+            out success,
+            action: cancel =>
+            {
+                result = func(cancel);
+            }
+        );
         return result;
     }
 
     // The action is uncancelable, so just let it finish and forget about it. This is the worst kind of
     // cancellation so we give it an irritating name to discourage its use.
     public static void GoWithCancelByWalkingAway(
-        IWin32Window owner, string title, string text, out bool success, Action action
-        ) {
+        IWin32Window owner,
+        string title,
+        string text,
+        out bool success,
+        Action action
+    )
+    {
         success = false;
 
         // Try running the action briefly before pulling up the wait form, to avoid a flicker of the wait form for
         // very fast tasks.
         var task = Task.Run(action);
-        try {
+        try
+        {
             task.Wait(millisecondsTimeout: 100);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             Ui.ShowError(owner, title, ex);
             return;
         }
 
-        if (task.IsCompleted) {
-            try {
+        if (task.IsCompleted)
+        {
+            try
+            {
                 task.GetAwaiter().GetResult();
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Ui.ShowError(owner, title, ex);
                 return;
             }
-        } else {
+        }
+        else
+        {
             using CancellationTokenSource cts = new();
-            using WaitForm f = new(title, text, () => {
-                task.Wait(cts.Token);
-                cts.Token.ThrowIfCancellationRequested();
-                task.GetAwaiter().GetResult();
-            }, allowCancel: true);
-            f.CancelRequested += delegate {
+            using WaitForm f =
+                new(
+                    title,
+                    text,
+                    () =>
+                    {
+                        task.Wait(cts.Token);
+                        cts.Token.ThrowIfCancellationRequested();
+                        task.GetAwaiter().GetResult();
+                    },
+                    allowCancel: true
+                );
+            f.CancelRequested += delegate
+            {
                 cts.Cancel();
             };
             var result = f.ShowDialogWithPositioning(owner);
-            if (result != DialogResult.OK) {
-                if (f.ResultException is not OperationCanceledException) {
+            if (result != DialogResult.OK)
+            {
+                if (f.ResultException is not OperationCanceledException)
+                {
                     Ui.ShowError(owner, title, f.ResultException);
                 }
                 return;
@@ -96,40 +150,58 @@ public partial class WaitForm : ZForm {
         return;
     }
 
-    private static void GoCore(IWin32Window owner, string title, string text, out bool success, Action action,
+    private static void GoCore(
+        IWin32Window owner,
+        string title,
+        string text,
+        out bool success,
+        Action action,
         Action cancelAction = null
-        ) {
+    )
+    {
         success = false;
         var sw = Stopwatch.StartNew();
 
         // Try running the action briefly before pulling up the wait form, to avoid a flicker of the wait form for
         // very fast tasks.
         var task = Task.Run(action);
-        try {
+        try
+        {
             task.Wait(millisecondsTimeout: 100);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             Ui.ShowError(owner, title, ex);
             return;
         }
 
-        if (task.IsCompleted) {
-            try {
+        if (task.IsCompleted)
+        {
+            try
+            {
                 task.GetAwaiter().GetResult();
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Ui.ShowError(owner, title, ex);
                 return;
             }
-        } else {
+        }
+        else
+        {
             using WaitForm f = new(title, text, () => task.GetAwaiter().GetResult(), allowCancel: cancelAction != null);
-            f.CancelRequested += delegate {
+            f.CancelRequested += delegate
+            {
                 cancelAction?.Invoke();
             };
             var result = f.ShowDialogWithPositioning(owner);
-            if (result == DialogResult.Cancel) {
+            if (result == DialogResult.Cancel)
+            {
                 success = false;
                 return;
             }
-            if (result != DialogResult.OK) {
+            if (result != DialogResult.OK)
+            {
                 Ui.ShowError(owner, title, f.ResultException);
                 return;
             }
@@ -140,11 +212,15 @@ public partial class WaitForm : ZForm {
         return;
     }
 
-    private DialogResult ShowDialogWithPositioning(IWin32Window owner) {
+    private DialogResult ShowDialogWithPositioning(IWin32Window owner)
+    {
         DialogResult result;
-        if (owner != null) {
+        if (owner != null)
+        {
             result = ShowDialog(owner);
-        } else {
+        }
+        else
+        {
             StartPosition = FormStartPosition.CenterScreen;
             result = ShowDialog();
         }
@@ -152,7 +228,8 @@ public partial class WaitForm : ZForm {
         return result;
     }
 
-    private WaitForm(string title, string text, Action action, bool allowCancel) {
+    private WaitForm(string title, string text, Action action, bool allowCancel)
+    {
         InitializeComponent();
         Text = title;
         _infoTxt.Text = text;
@@ -172,13 +249,16 @@ public partial class WaitForm : ZForm {
         ui.Init(_spinner);
         ui.MarginLeft(_spinner);
         ui.MarginTop(_spinner, 0.95);
-        if (allowCancel) {
+        if (allowCancel)
+        {
             ui.Init(_buttonFlow);
             ui.Init(_cancelButton);
             ui.MarginTop(_cancelButton);
             ui.MarginRight(_cancelButton);
             ui.MarginBottom(_cancelButton);
-        } else {
+        }
+        else
+        {
             _buttonFlow.Visible = false;
         }
         _infoTxt.ForeColor = Color.FromArgb(0, 51, 171);
@@ -188,77 +268,104 @@ public partial class WaitForm : ZForm {
         _spinnerPen = new(Color.FromArgb(0, 51, 171), _spinnerPenWidth);
         _spinnerBrush = new(Color.FromArgb(0, 51, 171));
 
-        Disposed += delegate {
+        Disposed += delegate
+        {
             _spinnerPen.Dispose();
         };
 
-        WaitTask = Task.Run(() => {
-            try {
+        WaitTask = Task.Run(() =>
+        {
+            try
+            {
                 action();
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 ResultException = ex;
             }
-            while (!IsHandleCreated && !IsDisposed) {
+            while (!IsHandleCreated && !IsDisposed)
+            {
                 Thread.Sleep(1);
             }
-            if (!IsDisposed) {
-                BeginInvoke(new MethodInvoker(() => {
-                    if (DidCancel) {
-                        DialogResult = DialogResult.Cancel;
-                    } else {
-                        DialogResult = ResultException == null ? DialogResult.OK : DialogResult.Abort;
-                    }
-                    Close();
-                }));
+            if (!IsDisposed)
+            {
+                BeginInvoke(
+                    new MethodInvoker(() =>
+                    {
+                        if (DidCancel)
+                        {
+                            DialogResult = DialogResult.Cancel;
+                        }
+                        else
+                        {
+                            DialogResult = ResultException == null ? DialogResult.OK : DialogResult.Abort;
+                        }
+                        Close();
+                    })
+                );
             }
         });
 
-        _timer = new() {
-            Interval = 16,
-            Enabled = true
-        };
+        _timer = new() { Interval = 16, Enabled = true };
 
-        _timer.Tick += delegate {
-            if (!DidCancel) {
+        _timer.Tick += delegate
+        {
+            if (!DidCancel)
+            {
                 var progressText = WaitStatus.Status;
-                if (progressText != null && progressText != _progressLabel.Text) {
-                    if (!_progressLabel.Visible) {
+                if (progressText != null && progressText != _progressLabel.Text)
+                {
+                    if (!_progressLabel.Visible)
+                    {
                         _progressLabel.Visible = true;
                     }
                     _progressLabel.Text = progressText;
                 }
-                if (progressText == null && _progressLabel.Visible) {
+                if (progressText == null && _progressLabel.Visible)
+                {
                     _progressLabel.Visible = false;
                 }
             }
         };
 
-        if (TaskbarManager.IsPlatformSupported && MainAppForm != null && MainAppForm.IsHandleCreated) {
+        if (TaskbarManager.IsPlatformSupported && MainAppForm != null && MainAppForm.IsHandleCreated)
+        {
             // It seems like the indeterminate progressbar state isn't shown on Windows 10. Let's fake a progress
             // by asymptotically approaching 90% with a hand-tweaked curve that seems to be OK most of the time.
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal, MainAppForm.Handle);
             var stopwatch = Stopwatch.StartNew();
             var lastValue = 0;
-            _timer.Tick += delegate {
-                try {
+            _timer.Tick += delegate
+            {
+                try
+                {
                     var value = (int)(90 * (1 - Math.Exp(0.01 * stopwatch.ElapsedMilliseconds * Math.Log(0.9))));
-                    if (value != lastValue) {
+                    if (value != lastValue)
+                    {
                         TaskbarManager.Instance.SetProgressValue(value, 100);
                         lastValue = value;
                     }
-                } catch { }
+                }
+                catch { }
             };
-            FormClosed += delegate {
-                try {
+            FormClosed += delegate
+            {
+                try
+                {
                     _timer.Stop();
                     TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress, MainAppForm.Handle);
-                } catch { }
+                }
+                catch { }
             };
-            Disposed += delegate { _timer.Dispose(); };
+            Disposed += delegate
+            {
+                _timer.Dispose();
+            };
         }
     }
 
-    private void Spinner_Paint(object sender, PaintEventArgs e) {
+    private void Spinner_Paint(object sender, PaintEventArgs e)
+    {
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
         var size = _spinner.ClientSize;
         var radius = 0.9 * (size.Width - 2 * _spinnerPenWidth) / 2;
@@ -271,33 +378,43 @@ public partial class WaitForm : ZForm {
         fraction -= Math.Floor(fraction);
         var tailDegrees = fraction * 360;
 
-        for (var i = 0; i < 2; i++) {
+        for (var i = 0; i < 2; i++)
+        {
             var headDegrees = tailDegrees - 70;
 
-            RectangleF rect = new(
-                (float)(1.5 * _spinnerPenWidth), (float)(1.5 * _spinnerPenWidth),
-                size.Width - 3 * _spinnerPenWidth, size.Height - 3 * _spinnerPenWidth);
+            RectangleF rect =
+                new(
+                    (float)(1.5 * _spinnerPenWidth),
+                    (float)(1.5 * _spinnerPenWidth),
+                    size.Width - 3 * _spinnerPenWidth,
+                    size.Height - 3 * _spinnerPenWidth
+                );
             e.Graphics.DrawArc(_spinnerPen, rect, (float)tailDegrees, 100);
 
             var x = radius * Math.Cos(Math.PI * headDegrees / 180) + (double)_spinner.ClientSize.Width / 2;
             var y = radius * Math.Sin(Math.PI * headDegrees / 180) + (double)_spinner.ClientSize.Height / 2;
-            e.Graphics.FillEllipse(_spinnerBrush,
+            e.Graphics.FillEllipse(
+                _spinnerBrush,
                 (float)(x - 1.5 * _spinnerPenWidth),
                 (float)(y - 1.5 * _spinnerPenWidth),
                 3 * _spinnerPenWidth,
-                3 * _spinnerPenWidth);
+                3 * _spinnerPenWidth
+            );
 
             tailDegrees += 180;
             tailDegrees %= 360;
         }
     }
 
-    private void SpinnerTimer_Tick(object sender, EventArgs e) {
+    private void SpinnerTimer_Tick(object sender, EventArgs e)
+    {
         _spinner.Invalidate();
     }
 
-    private void CancelButton_Click(object sender, EventArgs e) {
-        if (DidCancel) {
+    private void CancelButton_Click(object sender, EventArgs e)
+    {
+        if (DidCancel)
+        {
             return;
         }
         DidCancel = true;

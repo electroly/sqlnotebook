@@ -2,7 +2,8 @@
 
 namespace SqlNotebook.Import;
 
-public enum ColumnHeadersOption {
+public enum ColumnHeadersOption
+{
     [Description("Cell range includes headers")]
     Present,
 

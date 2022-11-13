@@ -4,17 +4,23 @@ using static SqlNotebookScript.Core.SqliteInterop.NativeMethods;
 
 namespace SqlNotebookScript.Core.SqliteInterop;
 
-public static class SqliteUtil {
+public static class SqliteUtil
+{
     private delegate void FreeDelegate(IntPtr p);
 
-    private static readonly Lazy<(IntPtr Ptr, FreeDelegate Delegate)> _freeFunc = new(() => {
-        FreeDelegate @delegate = Marshal.FreeHGlobal;
-        return (Marshal.GetFunctionPointerForDelegate(@delegate), @delegate);
-    });
+    private static readonly Lazy<(IntPtr Ptr, FreeDelegate Delegate)> _freeFunc =
+        new(() =>
+        {
+            FreeDelegate @delegate = Marshal.FreeHGlobal;
+            return (Marshal.GetFunctionPointerForDelegate(@delegate), @delegate);
+        });
 
-    public static void ThrowIfError(IntPtr sqlite, int result, string sql = null) {
-        if (result != SQLITE_OK) {
-            if (sqlite == IntPtr.Zero) {
+    public static void ThrowIfError(IntPtr sqlite, int result, string sql = null)
+    {
+        if (result != SQLITE_OK)
+        {
+            if (sqlite == IntPtr.Zero)
+            {
                 throw new SqliteException($"SQLite error {result}");
             }
 
@@ -24,9 +30,11 @@ public static class SqliteUtil {
             SqliteException ex = new(message);
 
             var errorOffset = sqlite3_error_offset(sqlite);
-            if (errorOffset >= 0 && sql != null) {
+            if (errorOffset >= 0 && sql != null)
+            {
                 var snippet = sql[errorOffset..];
-                if (snippet.Length > 30) {
+                if (snippet.Length > 30)
+                {
                     snippet = snippet[..30] + "...";
                 }
                 ex.Snippet = snippet;
@@ -39,12 +47,15 @@ public static class SqliteUtil {
     public static void Result(
         IntPtr ctx, // sqlite3_context*
         object value
-        ) {
-        if (value is null) {
+    )
+    {
+        if (value is null)
+        {
             sqlite3_result_null(ctx);
             return;
         }
-        switch (value) {
+        switch (value)
+        {
             case DBNull:
                 sqlite3_result_null(ctx);
                 break;
@@ -93,11 +104,15 @@ public static class SqliteUtil {
     public static void ResultError(
         IntPtr ctx, // sqlite3_context*
         string message
-        ) {
+    )
+    {
         var messageUnmanaged = Marshal.StringToHGlobalUni(message);
-        try {
+        try
+        {
             sqlite3_result_error16(ctx, messageUnmanaged, -1);
-        } finally {
+        }
+        finally
+        {
             Marshal.FreeHGlobal(messageUnmanaged);
         }
     }
@@ -105,7 +120,8 @@ public static class SqliteUtil {
     public static void ResultText16(
         IntPtr ctx, // sqlite3_context*
         string str
-        ) {
+    )
+    {
         var strNative16 = Marshal.StringToHGlobalUni(str);
         var lenB = str.Length * 2;
         sqlite3_result_text16(ctx, strNative16, lenB, _freeFunc.Value.Ptr);
@@ -114,7 +130,8 @@ public static class SqliteUtil {
     public static void ResultBlob(
         IntPtr ctx, // sqlite3_context*
         byte[] bytes
-        ) {
+    )
+    {
         var bytesNative = Marshal.AllocHGlobal(bytes.Length);
         Marshal.Copy(bytes, 0, bytesNative, bytes.Length);
         sqlite3_result_blob64(ctx, bytesNative, (ulong)bytes.Length, _freeFunc.Value.Ptr);

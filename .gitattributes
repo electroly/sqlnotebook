@@ -22,3 +22,4 @@ ext/* linguist-vendored
 *.sql text eol=crlf
 *.pikchr text eol=crlf
 *.svg text eol=crlf
+*.csharpierrc text eol=crlf

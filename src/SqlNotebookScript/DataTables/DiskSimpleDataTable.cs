@@ -7,7 +7,8 @@ using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.DataTables;
 
-public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable {
+public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable
+{
     private readonly Timer _inactivityTimer;
     private readonly List<object[]> _rowCache = new(100); // First 100 rows cached in memory.
     private bool _disposed = false;
@@ -30,27 +31,31 @@ public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable {
     private Stream _dataReaderStream;
     private BinaryReader _dataReader;
 
-    public DiskSimpleDataTable(IReadOnlyList<string> columns) {
+    public DiskSimpleDataTable(IReadOnlyList<string> columns)
+    {
         Columns = columns;
         var dict = new Dictionary<string, int>();
         int i = 0;
-        foreach (var columnName in columns) {
+        foreach (var columnName in columns)
+        {
             dict[columnName] = i++;
         }
         _columnIndices = dict;
 
         var headerStream = File.Create(_headerTempFile.FilePath);
         _headerWriter = new(headerStream, Encoding.UTF8, leaveOpen: false);
-        
+
         _dataWriterStream = File.Create(_dataTempFile.FilePath);
         _dataWriter = new(_dataWriterStream, Encoding.UTF8, leaveOpen: false);
 
         _inactivityTimer = new(OnInactivityTimerTick, null, Timeout.Infinite, Timeout.Infinite);
     }
 
-    private void OnInactivityTimerTick(object obj) {
+    private void OnInactivityTimerTick(object obj)
+    {
         _inactivityTimer.Change(Timeout.Infinite, Timeout.Infinite);
-        lock (_readerLock) {
+        lock (_readerLock)
+        {
             _headerReader?.Dispose();
             _headerReader = null;
             _headerReaderStream?.Dispose();
@@ -62,17 +67,21 @@ public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable {
         }
     }
 
-    public void LoadRow(object[] row) {
-        if (_loadingFinished) {
+    public void LoadRow(object[] row)
+    {
+        if (_loadingFinished)
+        {
             throw new InvalidOperationException("Loading has finished.");
         }
 
         _headerWriter.Write(_dataWriterStream.Position);
-        for (var i = 0; i < row.Length; i++) {
+        for (var i = 0; i < row.Length; i++)
+        {
             _dataWriter.WriteScalar(row[i]);
         }
 
-        if (_rowCache.Count < 100) {
+        if (_rowCache.Count < 100)
+        {
             var rowCopy = new object[row.Length];
             Array.Copy(row, rowCopy, row.Length);
             _rowCache.Add(rowCopy);
@@ -81,7 +90,8 @@ public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable {
         _dataCount++;
     }
 
-    public void FinishLoading(long? fullCount = null) {
+    public void FinishLoading(long? fullCount = null)
+    {
         FullCount = fullCount ?? _dataCount;
         _loadingFinished = true;
         _headerWriter?.Dispose();
@@ -93,8 +103,10 @@ public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable {
         Rows = new DiskSimpleDataTableList(this, _dataCount);
     }
 
-    private void CreateReaders() {
-        if (_headerReader == null) {
+    private void CreateReaders()
+    {
+        if (_headerReader == null)
+        {
             _headerReaderStream = File.OpenRead(_headerTempFile.FilePath);
             _headerReader = new(_headerReaderStream);
             _dataReaderStream = File.OpenRead(_dataTempFile.FilePath);
@@ -104,7 +116,8 @@ public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable {
         _inactivityTimer.Change(2000, Timeout.Infinite);
     }
 
-    public override void Dispose() {
+    public override void Dispose()
+    {
         _headerWriter?.Dispose();
         _headerWriter = null;
         _headerReader?.Dispose();
@@ -129,26 +142,32 @@ public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable {
         _disposed = true;
     }
 
-    public void GetRow(long index, object[] row) {
-        if (_disposed) {
+    public void GetRow(long index, object[] row)
+    {
+        if (_disposed)
+        {
             throw new ObjectDisposedException(nameof(DiskSimpleDataTable));
         }
-        if (!_loadingFinished) {
+        if (!_loadingFinished)
+        {
             throw new InvalidOperationException("Loading has not finished.");
         }
 
-        if (index < _rowCache.Count) {
+        if (index < _rowCache.Count)
+        {
             var cachedRow = _rowCache[(int)index];
             Array.Copy(cachedRow, row, cachedRow.Length);
             return;
         }
 
-        lock (_readerLock) {
+        lock (_readerLock)
+        {
             CreateReaders();
             _headerReaderStream.Seek(index * sizeof(long), SeekOrigin.Begin);
             var dataOffset = _headerReader.ReadInt64();
             _dataReaderStream.Seek(dataOffset, SeekOrigin.Begin);
-            for (var i = 0; i < Columns.Count; i++) {
+            for (var i = 0; i < Columns.Count; i++)
+            {
                 row[i] = _dataReader.ReadScalar();
             }
         }

@@ -1,6 +1,7 @@
 ﻿namespace SqlNotebookScript.Interpreter.Ast;
 
-public enum TypeConversion {
+public enum TypeConversion
+{
     Text,
     Integer,
     Real,

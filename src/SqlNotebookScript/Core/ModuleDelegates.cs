@@ -2,8 +2,7 @@
 
 namespace SqlNotebookScript.Core.ModuleDelegates;
 
-public delegate int ModuleCreateDelegate(IntPtr db, IntPtr pAux, int argc, IntPtr argv, IntPtr ppVTab,
-    IntPtr pzErr);
+public delegate int ModuleCreateDelegate(IntPtr db, IntPtr pAux, int argc, IntPtr argv, IntPtr ppVTab, IntPtr pzErr);
 public delegate int ModuleBestIndexDelegate(IntPtr pVTab, IntPtr infoPtr);
 public delegate int ModuleDestroyDelegate(IntPtr pVTab);
 public delegate int ModuleOpenDelegate(IntPtr pVTab, IntPtr ppCursor);

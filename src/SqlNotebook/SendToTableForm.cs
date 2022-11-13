@@ -6,19 +6,22 @@ using System.Windows.Forms;
 
 namespace SqlNotebook;
 
-public partial class SendToTableForm : ZForm {
+public partial class SendToTableForm : ZForm
+{
     private readonly HashSet<string> _existingNames; // lowercase
 
     public string SelectedName { get; private set; }
 
-    public SendToTableForm(string defaultName, IReadOnlyList<string> existingNames) {
+    public SendToTableForm(string defaultName, IReadOnlyList<string> existingNames)
+    {
         InitializeComponent();
         _existingNames = new HashSet<string>(existingNames.Select(x => x.ToLowerInvariant()));
         _existingNames.Add("sqlite_master");
 
         var prefix = defaultName;
         var suffix = 2;
-        while (existingNames.Contains(defaultName.ToLowerInvariant())) {
+        while (existingNames.Contains(defaultName.ToLowerInvariant()))
+        {
             defaultName = $"{prefix}{suffix}";
             suffix++;
         }
@@ -37,10 +40,14 @@ public partial class SendToTableForm : ZForm {
         ui.Init(_cancelBtn);
     }
 
-    private void OkBtn_Click(object sender, EventArgs e) {
-        try {
+    private void OkBtn_Click(object sender, EventArgs e)
+    {
+        try
+        {
             ValidateInput();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             Ui.ShowError(this, "Send to Table", ex);
             return;
         }
@@ -50,15 +57,19 @@ public partial class SendToTableForm : ZForm {
         Close();
     }
 
-    private void NameTxt_TextChanged(object sender, EventArgs e) {
+    private void NameTxt_TextChanged(object sender, EventArgs e)
+    {
         ValidateInput();
     }
 
-    private void ValidateInput() {
-        if (string.IsNullOrWhiteSpace(_nameTxt.Text)) {
+    private void ValidateInput()
+    {
+        if (string.IsNullOrWhiteSpace(_nameTxt.Text))
+        {
             throw new Exception("Please enter a table name.");
         }
-        if (_existingNames.Contains(_nameTxt.Text.ToLowerInvariant())) {
+        if (_existingNames.Contains(_nameTxt.Text.ToLowerInvariant()))
+        {
             throw new Exception("This name is already in use.");
         }
     }

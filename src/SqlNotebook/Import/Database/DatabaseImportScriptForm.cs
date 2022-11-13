@@ -1,13 +1,14 @@
 ﻿using System.Windows.Forms;
 
-namespace SqlNotebook.Import.Database {
-    public partial class DatabaseImportScriptForm : ZForm {
-        public DatabaseImportScriptForm(string sql) {
+namespace SqlNotebook.Import.Database
+{
+    public partial class DatabaseImportScriptForm : ZForm
+    {
+        public DatabaseImportScriptForm(string sql)
+        {
             InitializeComponent();
 
-            SqlTextControl textbox = new(true) {
-                Dock = DockStyle.Fill
-            };
+            SqlTextControl textbox = new(true) { Dock = DockStyle.Fill };
             textbox.SqlText = sql;
             _scriptPanel.BorderStyle = BorderStyle.FixedSingle;
             _scriptPanel.Controls.Add(textbox);

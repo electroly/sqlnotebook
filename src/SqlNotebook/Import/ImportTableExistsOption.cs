@@ -2,7 +2,8 @@
 
 namespace SqlNotebook.Import;
 
-public enum ImportTableExistsOption {
+public enum ImportTableExistsOption
+{
     [Description("Append new rows")]
     AppendNewRows,
 

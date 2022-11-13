@@ -5,7 +5,8 @@ using System.Linq;
 
 namespace SqlNotebookScript.TableFunctions;
 
-public sealed class ListFilesFunction : CustomTableFunction {
+public sealed class ListFilesFunction : CustomTableFunction
+{
     public override string Name => "list_files";
 
     public override string CreateTableSql =>
@@ -14,16 +15,20 @@ public sealed class ListFilesFunction : CustomTableFunction {
 
     public override int HiddenColumnCount => 2;
 
-    public override IEnumerable<object[]> Execute(object[] hiddenValues) {
+    public override IEnumerable<object[]> Execute(object[] hiddenValues)
+    {
         var rootPathObj = hiddenValues[0];
         var recursiveObj = hiddenValues[1] ?? 0L;
-        if (rootPathObj == null) {
+        if (rootPathObj == null)
+        {
             throw new Exception("LIST_FILES: The \"root-path\" argument is required.");
         }
-        if (!(rootPathObj is string)) {
+        if (!(rootPathObj is string))
+        {
             throw new Exception("LIST_FILES: The \"root-path\" argument must be a string.");
         }
-        if (!(recursiveObj is Int64)) {
+        if (!(recursiveObj is Int64))
+        {
             throw new Exception("LIST_FILES: The \"recursive\" argument must be an integer.");
         }
         var rootPath = (string)rootPathObj;
@@ -32,27 +37,40 @@ public sealed class ListFilesFunction : CustomTableFunction {
         var folderQueue = new Queue<string>();
         var fileQueue = new Queue<string>();
 
-        if (recursive) {
+        if (recursive)
+        {
             folderQueue.Enqueue(rootPath);
-        } else {
-            foreach (var filePath in Directory.GetFiles(rootPath)) {
+        }
+        else
+        {
+            foreach (var filePath in Directory.GetFiles(rootPath))
+            {
                 fileQueue.Enqueue(filePath);
             }
         }
 
-        while (fileQueue.Any() || folderQueue.Any()) {
-            if (fileQueue.Any()) {
+        while (fileQueue.Any() || folderQueue.Any())
+        {
+            if (fileQueue.Any())
+            {
                 yield return GetRow(fileQueue.Dequeue(), rootPath, recursive);
-            } else if (folderQueue.Any()) {
+            }
+            else if (folderQueue.Any())
+            {
                 var folder = folderQueue.Dequeue();
-                try {
-                    foreach (var filePath in Directory.GetFiles(folder)) {
+                try
+                {
+                    foreach (var filePath in Directory.GetFiles(folder))
+                    {
                         fileQueue.Enqueue(filePath);
                     }
-                    foreach (var subfolder in Directory.GetDirectories(folder)) {
+                    foreach (var subfolder in Directory.GetDirectories(folder))
+                    {
                         folderQueue.Enqueue(subfolder);
                     }
-                } catch {
+                }
+                catch
+                {
                     // might get ourselves into trouble with permissions, folders being while we search, etc.
                     // just skip folders when that happens.
                 }
@@ -60,8 +78,10 @@ public sealed class ListFilesFunction : CustomTableFunction {
         }
     }
 
-    private static object[] GetRow(string filePath, string rootPath, bool recursive) {
-        return new object[] {
+    private static object[] GetRow(string filePath, string rootPath, bool recursive)
+    {
+        return new object[]
+        {
             rootPath,
             recursive ? 1L : 0L,
             filePath,

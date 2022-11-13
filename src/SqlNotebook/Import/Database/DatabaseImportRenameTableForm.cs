@@ -3,10 +3,12 @@ using System.Windows.Forms;
 
 namespace SqlNotebook.Import.Database;
 
-public partial class DatabaseImportRenameTableForm : ZForm {
+public partial class DatabaseImportRenameTableForm : ZForm
+{
     public string NewName { get; private set; }
 
-    public DatabaseImportRenameTableForm(string oldName, string newName) {
+    public DatabaseImportRenameTableForm(string oldName, string newName)
+    {
         InitializeComponent();
 
         Ui ui = new(this);
@@ -26,8 +28,10 @@ public partial class DatabaseImportRenameTableForm : ZForm {
         _newNameTxt.Select();
     }
 
-    private void OkBtn_Click(object sender, EventArgs e) {
-        if (_newNameTxt.Text == "") {
+    private void OkBtn_Click(object sender, EventArgs e)
+    {
+        if (_newNameTxt.Text == "")
+        {
             Ui.ShowError(this, "Error", "Please enter a new name.");
             return;
         }

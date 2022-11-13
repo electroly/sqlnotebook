@@ -1,5 +1,6 @@
 ﻿namespace SqlNotebookScript.Interpreter.Ast;
 
-public sealed class BreakStmt : Stmt {
+public sealed class BreakStmt : Stmt
+{
     protected override bool IsLeaf { get; } = true;
 }

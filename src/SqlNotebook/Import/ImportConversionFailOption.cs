@@ -2,7 +2,8 @@
 
 namespace SqlNotebook.Import;
 
-public enum ImportConversionFailOption {
+public enum ImportConversionFailOption
+{
     [Description("Import the value as text")]
     ImportAsText = 1,
 

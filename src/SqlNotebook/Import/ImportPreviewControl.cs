@@ -3,10 +3,12 @@ using System.Windows.Forms;
 
 namespace SqlNotebook.Import;
 
-public partial class ImportPreviewControl : UserControl {
+public partial class ImportPreviewControl : UserControl
+{
     private readonly DataGridView _grid;
 
-    public ImportPreviewControl(DataTable table) {
+    public ImportPreviewControl(DataTable table)
+    {
         InitializeComponent();
 
         Controls.Add(_grid = DataGridViewUtil.NewDataGridView());
@@ -14,7 +16,8 @@ public partial class ImportPreviewControl : UserControl {
         _grid.DataSource = table;
         _grid.AutoSizeColumns(this.Scaled(500));
 
-        Disposed += delegate {
+        Disposed += delegate
+        {
             table.Dispose();
         };
     }

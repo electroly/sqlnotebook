@@ -2,13 +2,16 @@
 
 namespace SqlNotebook;
 
-public partial class ViewFullTextForm : ZForm {
+public partial class ViewFullTextForm : ZForm
+{
     private readonly SqlTextControl _textControl;
 
-    public ViewFullTextForm(string text) {
+    public ViewFullTextForm(string text)
+    {
         InitializeComponent();
 
-        _textControl = new(true, syntaxColoring: false) {
+        _textControl = new(true, syntaxColoring: false)
+        {
             Dock = DockStyle.Fill,
             SqlText = text,
             BorderStyle = BorderStyle.FixedSingle,
@@ -26,7 +29,8 @@ public partial class ViewFullTextForm : ZForm {
         ui.Init(_closeButton);
     }
 
-    private void CopyButton_Click(object sender, System.EventArgs e) {
+    private void CopyButton_Click(object sender, System.EventArgs e)
+    {
         Clipboard.SetText(_textControl.SqlText);
     }
 }

@@ -6,15 +6,18 @@ using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.Interpreter;
 
-public sealed class ScriptRunner {
+public sealed class ScriptRunner
+{
     private readonly Notebook _notebook;
     private readonly IReadOnlyDictionary<Type, Action<Ast.Stmt, ScriptEnv>> _stmtRunners;
     private readonly IReadOnlyDictionary<string, string> _scripts; // lowercase script name -> script code
 
-    public ScriptRunner(Notebook notebook, IReadOnlyDictionary<string, string> scripts) {
+    public ScriptRunner(Notebook notebook, IReadOnlyDictionary<string, string> scripts)
+    {
         _notebook = notebook;
         _scripts = scripts;
-        _stmtRunners = new Dictionary<Type, Action<Ast.Stmt, ScriptEnv>> {
+        _stmtRunners = new Dictionary<Type, Action<Ast.Stmt, ScriptEnv>>
+        {
             [typeof(Ast.SqlStmt)] = (s, e) => ExecuteSqlStmt((Ast.SqlStmt)s, e),
             [typeof(Ast.DeclareStmt)] = (s, e) => ExecuteDeclareStmt((Ast.DeclareStmt)s, e),
             [typeof(Ast.SetStmt)] = (s, e) => ExecuteSetStmt((Ast.SetStmt)s, e),
@@ -39,22 +42,29 @@ public sealed class ScriptRunner {
         };
     }
 
-    private string GetScriptCode(string name) {
+    private string GetScriptCode(string name)
+    {
         string code;
-        if (_scripts.TryGetValue(name.ToLower(), out code)) {
+        if (_scripts.TryGetValue(name.ToLower(), out code))
+        {
             return code ?? "";
-        } else {
+        }
+        else
+        {
             throw new ScriptException($"There is no script named \"{name}\".");
         }
     }
 
     // must be run from the SQLite thread
-    public ScriptOutput Execute(Ast.Script script, IReadOnlyDictionary<string, object> args) {
+    public ScriptOutput Execute(Ast.Script script, IReadOnlyDictionary<string, object> args)
+    {
         return Execute(script, new ScriptEnv(), args);
     }
 
-    public ScriptOutput Execute(Ast.Script script, ScriptEnv env, IReadOnlyDictionary<string, object> args) {
-        foreach (var arg in args) {
+    public ScriptOutput Execute(Ast.Script script, ScriptEnv env, IReadOnlyDictionary<string, object> args)
+    {
+        foreach (var arg in args)
+        {
             var lowercaseKey = arg.Key.ToLower();
             env.Vars[lowercaseKey] = arg.Value;
         }
@@ -62,162 +72,236 @@ public sealed class ScriptRunner {
         return env.Output;
     }
 
-    public void Execute(Ast.Script script, ScriptEnv env) {
-        try {
+    public void Execute(Ast.Script script, ScriptEnv env)
+    {
+        try
+        {
             ExecuteBlock(script.Block, env);
 
-            if (env.DidBreak) {
+            if (env.DidBreak)
+            {
                 throw new ScriptException($"Attempted to BREAK outside of a WHILE loop.");
-            } else if (env.DidContinue) {
+            }
+            else if (env.DidContinue)
+            {
                 throw new ScriptException($"Attempted to CONTINUE outside of a WHILE loop.");
             }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             var snippet = ex is SqliteException s ? s.Snippet : null;
             throw new UncaughtErrorScriptException(ex.GetExceptionMessage(), ex) { Snippet = snippet };
         }
     }
 
-    private void ExecuteBlock(Ast.Block block, ScriptEnv env) {
-        foreach (var stmt in block.Statements) {
+    private void ExecuteBlock(Ast.Block block, ScriptEnv env)
+    {
+        foreach (var stmt in block.Statements)
+        {
             ExecuteStmt(stmt, env);
-            if (env.DidReturn || env.DidBreak || env.DidContinue) {
+            if (env.DidReturn || env.DidBreak || env.DidContinue)
+            {
                 return;
             }
         }
     }
 
-    private void ExecuteStmt(Ast.Stmt stmt, ScriptEnv env) {
+    private void ExecuteStmt(Ast.Stmt stmt, ScriptEnv env)
+    {
         var runner = _stmtRunners[stmt.GetType()];
         runner(stmt, env);
     }
 
-    private void ExecuteSqlStmt(Ast.SqlStmt stmt, ScriptEnv env) {
-        foreach (var beforeStmt in stmt.RunBefore) {
+    private void ExecuteSqlStmt(Ast.SqlStmt stmt, ScriptEnv env)
+    {
+        foreach (var beforeStmt in stmt.RunBefore)
+        {
             ExecuteStmt(beforeStmt, env);
         }
 
-        try {
+        try
+        {
             var dt = _notebook.Query(stmt.Sql, env.Vars, env.OnRow);
-            if (dt.Columns.Any()) {
+            if (dt.Columns.Any())
+            {
                 env.Output.DataTables.Add(dt);
-            } else {
+            }
+            else
+            {
                 dt.Dispose();
             }
-        } finally {
-            foreach (var afterStmt in stmt.RunAfter) {
+        }
+        finally
+        {
+            foreach (var afterStmt in stmt.RunAfter)
+            {
                 ExecuteStmt(afterStmt, env);
             }
         }
     }
 
-    private void ExecuteDeclareStmt(Ast.DeclareStmt stmt, ScriptEnv env) {
+    private void ExecuteDeclareStmt(Ast.DeclareStmt stmt, ScriptEnv env)
+    {
         var name = stmt.VariableName.ToLower();
         var declarationExists = env.Vars.ContainsKey(name);
-        if (stmt.IsParameter) {
-            if (env.ParNames.Contains(name)) {
+        if (stmt.IsParameter)
+        {
+            if (env.ParNames.Contains(name))
+            {
                 throw new ScriptException($"Duplicate DECLARE for parameter \"{stmt.VariableName}\".");
-            } else {
+            }
+            else
+            {
                 env.ParNames.Add(name);
             }
 
-            if (declarationExists) {
+            if (declarationExists)
+            {
                 // do nothing; the parameter value was specified by the caller
-            } else if (stmt.InitialValue != null) {
+            }
+            else if (stmt.InitialValue != null)
+            {
                 // the caller did not specify a value, but there is an initial value in the DECLARE statement.
                 env.Vars[name] = EvaluateExpr(stmt.InitialValue, env);
-            } else {
-                throw new ScriptException(
-                    $"An argument value was not provided for parameter \"{stmt.VariableName}\".");
             }
-        } else if (declarationExists) {
+            else
+            {
+                throw new ScriptException($"An argument value was not provided for parameter \"{stmt.VariableName}\".");
+            }
+        }
+        else if (declarationExists)
+        {
             throw new ScriptException($"Duplicate DECLARE for variable \"{stmt.VariableName}\".");
-        } else {
-            if (stmt.InitialValue != null) {
+        }
+        else
+        {
+            if (stmt.InitialValue != null)
+            {
                 env.Vars[name] = EvaluateExpr(stmt.InitialValue, env);
-            } else {
-                env.Vars[name] =  DBNull.Value;
+            }
+            else
+            {
+                env.Vars[name] = DBNull.Value;
             }
         }
     }
 
-    private void ExecuteSetStmt(Ast.SetStmt stmt, ScriptEnv env) {
+    private void ExecuteSetStmt(Ast.SetStmt stmt, ScriptEnv env)
+    {
         var name = stmt.VariableName.ToLower();
-        if (env.Vars.ContainsKey(name)) {
+        if (env.Vars.ContainsKey(name))
+        {
             env.Vars[name] = EvaluateExpr(stmt.InitialValue, env);
-        } else {
+        }
+        else
+        {
             throw new ScriptException($"Attempted to SET the undeclared variable \"{stmt.VariableName}\".");
         }
     }
 
-    private void ExecuteIfStmt(Ast.IfStmt stmt, ScriptEnv env) {
+    private void ExecuteIfStmt(Ast.IfStmt stmt, ScriptEnv env)
+    {
         var condition = EvaluateExpr<long>(stmt.Condition, env);
-        if (condition == 0) {
-            if (stmt.ElseBlock != null) {
+        if (condition == 0)
+        {
+            if (stmt.ElseBlock != null)
+            {
                 ExecuteBlock(stmt.ElseBlock, env);
             }
-        } else if (condition == 1) {
+        }
+        else if (condition == 1)
+        {
             ExecuteBlock(stmt.Block, env);
-        } else {
+        }
+        else
+        {
             throw new ScriptException(
-                $"Evaluation of IF condition expression \"{stmt.Condition.Sql}\" " +
-                $"produced a value of {condition} instead of the expected 0 or 1.");
+                $"Evaluation of IF condition expression \"{stmt.Condition.Sql}\" "
+                    + $"produced a value of {condition} instead of the expected 0 or 1."
+            );
         }
     }
 
-    private void ExecuteWhileStmt(Ast.WhileStmt stmt, ScriptEnv env) {
+    private void ExecuteWhileStmt(Ast.WhileStmt stmt, ScriptEnv env)
+    {
         long condition;
-        do {
+        do
+        {
             condition = EvaluateExpr<long>(stmt.Condition, env);
-            if (condition == 1) {
+            if (condition == 1)
+            {
                 ExecuteBlock(stmt.Block, env);
-                if (env.DidReturn) {
+                if (env.DidReturn)
+                {
                     return;
-                } else if (env.DidBreak) {
+                }
+                else if (env.DidBreak)
+                {
                     env.DidBreak = false;
                     break;
-                } else if (env.DidContinue) {
+                }
+                else if (env.DidContinue)
+                {
                     env.DidContinue = false;
                 }
-            } else if (condition != 0) {
+            }
+            else if (condition != 0)
+            {
                 throw new ScriptException(
-                    $"Evaluation of WHILE condition expression \"{stmt.Condition.Sql}\" " +
-                    $"produced a value of {condition} instead of the expected 0 or 1.");
+                    $"Evaluation of WHILE condition expression \"{stmt.Condition.Sql}\" "
+                        + $"produced a value of {condition} instead of the expected 0 or 1."
+                );
             }
         } while (condition == 1);
     }
 
-    private void ExecuteForStmt(Ast.ForStmt stmt, ScriptEnv env) {
+    private void ExecuteForStmt(Ast.ForStmt stmt, ScriptEnv env)
+    {
         var firstNumber = EvaluateExpr<long>(stmt.FirstNumberExpr, env);
         var lastNumber = EvaluateExpr<long>(stmt.LastNumberExpr, env);
 
         long step = firstNumber <= lastNumber ? 1 : -1;
-        if (stmt.StepExpr != null) {
+        if (stmt.StepExpr != null)
+        {
             step = EvaluateExpr<long>(stmt.StepExpr, env);
         }
 
-        if (step == 0) {
+        if (step == 0)
+        {
             throw new ScriptException("The STEP value in a FOR statement must not be zero.");
-        } else if (step < 0 && firstNumber < lastNumber) {
+        }
+        else if (step < 0 && firstNumber < lastNumber)
+        {
             throw new ScriptException(
-                "The STEP value in a FOR statement must be positive if \"first-number\" < \"last-number\".");
-        } else if (step > 0 && firstNumber > lastNumber) {
+                "The STEP value in a FOR statement must be positive if \"first-number\" < \"last-number\"."
+            );
+        }
+        else if (step > 0 && firstNumber > lastNumber)
+        {
             throw new ScriptException(
-                "The STEP value in a FOR statement must be negative if \"first-number\" > \"last-number\".");
+                "The STEP value in a FOR statement must be negative if \"first-number\" > \"last-number\"."
+            );
         }
 
         var upward = step > 0;
         long counter = firstNumber;
 
-        while ((upward && counter <= lastNumber) || (!upward && counter >= lastNumber)) {
+        while ((upward && counter <= lastNumber) || (!upward && counter >= lastNumber))
+        {
             env.Vars[stmt.VariableName] = counter;
 
             ExecuteBlock(stmt.Block, env);
-            if (env.DidReturn) {
+            if (env.DidReturn)
+            {
                 return;
-            } else if (env.DidBreak) {
+            }
+            else if (env.DidBreak)
+            {
                 env.DidBreak = false;
                 break;
-            } else if (env.DidContinue) {
+            }
+            else if (env.DidContinue)
+            {
                 env.DidContinue = false;
             }
 
@@ -225,22 +309,27 @@ public sealed class ScriptRunner {
         }
     }
 
-    private void ExecuteBlockStmt(Ast.BlockStmt stmt, ScriptEnv env) {
+    private void ExecuteBlockStmt(Ast.BlockStmt stmt, ScriptEnv env)
+    {
         ExecuteBlock(stmt.Block, env);
     }
 
-    private void ExecuteBreakStmt(Ast.BreakStmt stmt, ScriptEnv env) {
+    private void ExecuteBreakStmt(Ast.BreakStmt stmt, ScriptEnv env)
+    {
         env.DidBreak = true;
     }
 
-    private void ExecuteContinueStmt(Ast.ContinueStmt stmt, ScriptEnv env) {
+    private void ExecuteContinueStmt(Ast.ContinueStmt stmt, ScriptEnv env)
+    {
         env.DidContinue = true;
     }
 
-    private void ExecutePrintStmt(Ast.PrintStmt stmt, ScriptEnv env) {
+    private void ExecutePrintStmt(Ast.PrintStmt stmt, ScriptEnv env)
+    {
         var value = EvaluateExpr(stmt.Value, env);
 
-        if (value is byte[] byteArray) {
+        if (value is byte[] byteArray)
+        {
             env.Output.TextOutput.Add(BlobUtil.ToString(byteArray));
             return;
         }
@@ -248,13 +337,16 @@ public sealed class ScriptRunner {
         env.Output.TextOutput.Add(value.ToString());
     }
 
-    public ScriptOutput ExecuteSubScript(string scriptName, List<Ast.ArgumentPair> arguments, ScriptEnv env) {
+    public ScriptOutput ExecuteSubScript(string scriptName, List<Ast.ArgumentPair> arguments, ScriptEnv env)
+    {
         var parser = new ScriptParser(_notebook);
         var runner = new ScriptRunner(_notebook, _scripts);
         var script = parser.Parse(GetScriptCode(scriptName));
         var subEnv = new ScriptEnv { OnRow = env.OnRow };
-        foreach (var arg in arguments) {
-            if (arg.Value != null) {
+        foreach (var arg in arguments)
+        {
+            if (arg.Value != null)
+            {
                 subEnv.Vars[arg.Name.ToLower()] = EvaluateExpr(arg.Value, env);
             }
         }
@@ -262,100 +354,130 @@ public sealed class ScriptRunner {
         return subEnv.Output;
     }
 
-    private void ExecuteExecuteStmt(Ast.ExecuteStmt stmt, ScriptEnv env) {
+    private void ExecuteExecuteStmt(Ast.ExecuteStmt stmt, ScriptEnv env)
+    {
         var subOutput = ExecuteSubScript(stmt.ScriptName, stmt.Arguments, env);
         env.Output.Append(subOutput);
         var returnCode = subOutput.ScalarResult;
-        if (stmt.ReturnVariableName != null) {
+        if (stmt.ReturnVariableName != null)
+        {
             var name = stmt.ReturnVariableName.ToLower();
             env.Vars[name] = returnCode ?? DBNull.Value;
         }
     }
 
-    private void ExecuteReturnStmt(Ast.ReturnStmt stmt, ScriptEnv env) {
-        if (stmt.Value != null) {
+    private void ExecuteReturnStmt(Ast.ReturnStmt stmt, ScriptEnv env)
+    {
+        if (stmt.Value != null)
+        {
             env.Output.ScalarResult = EvaluateExpr(stmt.Value, env);
         }
         env.DidReturn = true;
     }
 
-    private void ExecuteThrowStmt(Ast.ThrowStmt stmt, ScriptEnv env) {
-        if (stmt.HasErrorValues) {
+    private void ExecuteThrowStmt(Ast.ThrowStmt stmt, ScriptEnv env)
+    {
+        if (stmt.HasErrorValues)
+        {
             var errorMessage = EvaluateExpr(stmt.Message, env);
             Throw(errorMessage.ToString());
-        } else {
+        }
+        else
+        {
             Throw(Notebook.ErrorMessage);
         }
     }
 
-    private static void Throw(string errorMessage) {
+    private static void Throw(string errorMessage)
+    {
         throw new ScriptException(errorMessage);
     }
 
-    private void ExecuteRethrowStmt(Ast.RethrowStmt stmt, ScriptEnv env) {
+    private void ExecuteRethrowStmt(Ast.RethrowStmt stmt, ScriptEnv env)
+    {
         Throw(Notebook.ErrorMessage);
     }
 
-    private void ExecuteTryCatchStmt(Ast.TryCatchStmt stmt, ScriptEnv env) {
-        try {
+    private void ExecuteTryCatchStmt(Ast.TryCatchStmt stmt, ScriptEnv env)
+    {
+        try
+        {
             ExecuteBlock(stmt.TryBlock, env);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             Notebook.ErrorMessage = ex.GetExceptionMessage();
             ExecuteBlock(stmt.CatchBlock, env);
         }
     }
 
-    private void ExecuteImportCsvStmt(Ast.ImportCsvStmt stmt, ScriptEnv env) {
+    private void ExecuteImportCsvStmt(Ast.ImportCsvStmt stmt, ScriptEnv env)
+    {
         ImportCsvStmtRunner.Run(_notebook, env, this, stmt);
     }
 
-    private void ExecuteImportXlsStmt(Ast.ImportXlsStmt stmt, ScriptEnv env) {
+    private void ExecuteImportXlsStmt(Ast.ImportXlsStmt stmt, ScriptEnv env)
+    {
         ImportXlsStmtRunner.Run(_notebook, env, this, stmt);
     }
 
-    private void ExecuteImportTxtStmt(Ast.ImportTxtStmt stmt, ScriptEnv env) {
+    private void ExecuteImportTxtStmt(Ast.ImportTxtStmt stmt, ScriptEnv env)
+    {
         ImportTxtStmtRunner.Run(_notebook, env, this, stmt);
     }
 
-    private void ExecuteExportTxtStmt(Ast.ExportTxtStmt stmt, ScriptEnv env) {
+    private void ExecuteExportTxtStmt(Ast.ExportTxtStmt stmt, ScriptEnv env)
+    {
         ExportTxtStmtRunner.Run(_notebook, env, this, stmt);
     }
 
-    private void ExecuteImportDatabaseStmt(Ast.ImportDatabaseStmt stmt, ScriptEnv env) {
-        Notebook.WithCancellationToken(cancel =>
-            ImportDatabaseStmtRunner.Run(_notebook, env, this, stmt, cancel));
+    private void ExecuteImportDatabaseStmt(Ast.ImportDatabaseStmt stmt, ScriptEnv env)
+    {
+        Notebook.WithCancellationToken(cancel => ImportDatabaseStmtRunner.Run(_notebook, env, this, stmt, cancel));
     }
 
-    private void ExecuteExportCsvStmt(Ast.ExportCsvStmt stmt, ScriptEnv env) {
-        Notebook.WithCancellationToken(cancel =>
-            ExportCsvStmtRunner.Run(_notebook, env, this, stmt, cancel));
+    private void ExecuteExportCsvStmt(Ast.ExportCsvStmt stmt, ScriptEnv env)
+    {
+        Notebook.WithCancellationToken(cancel => ExportCsvStmtRunner.Run(_notebook, env, this, stmt, cancel));
     }
 
-    public T EvaluateExpr<T>(Ast.Expr expr, ScriptEnv env) {
+    public T EvaluateExpr<T>(Ast.Expr expr, ScriptEnv env)
+    {
         var value = EvaluateExpr(expr, env);
-        if (typeof(T).IsAssignableFrom(value.GetType())) {
+        if (typeof(T).IsAssignableFrom(value.GetType()))
+        {
             return (T)value;
-        } else {
+        }
+        else
+        {
             throw new ScriptException(
-                $"Evaluation of expression \"{expr.Sql}\" produced a value of type " +
-                $"\"{value.GetType().Name}\" instead of the expected \"{typeof(T).Name}\".");
+                $"Evaluation of expression \"{expr.Sql}\" produced a value of type "
+                    + $"\"{value.GetType().Name}\" instead of the expected \"{typeof(T).Name}\"."
+            );
         }
     }
 
-    public object EvaluateExpr(Ast.Expr expr, ScriptEnv env) {
+    public object EvaluateExpr(Ast.Expr expr, ScriptEnv env)
+    {
         using var dt = _notebook.Query($"SELECT ({expr.Sql})", env.Vars);
-        if (dt.Columns.Count == 1 && dt.Rows.Count == 1) {
+        if (dt.Columns.Count == 1 && dt.Rows.Count == 1)
+        {
             return dt.Rows[0][0];
-        } else {
-            throw new ScriptException(
-                $"Evaluation of expression \"{expr.Sql}\" did not produce a value.");
+        }
+        else
+        {
+            throw new ScriptException($"Evaluation of expression \"{expr.Sql}\" did not produce a value.");
         }
     }
 
-    public string EvaluateIdentifierOrExpr(Ast.IdentifierOrExpr idOrExpr, ScriptEnv env) {
-        if (idOrExpr.Expr != null) {
+    public string EvaluateIdentifierOrExpr(Ast.IdentifierOrExpr idOrExpr, ScriptEnv env)
+    {
+        if (idOrExpr.Expr != null)
+        {
             return EvaluateExpr<string>(idOrExpr.Expr, env);
-        } else {
+        }
+        else
+        {
             return idOrExpr.Identifier;
         }
     }

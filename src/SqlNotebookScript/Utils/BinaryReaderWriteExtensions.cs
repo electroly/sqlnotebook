@@ -3,10 +3,13 @@ using System.IO;
 
 namespace SqlNotebookScript.Utils;
 
-public static class BinaryReaderWriterExtensions {
-    public static object ReadScalar(this BinaryReader reader) {
+public static class BinaryReaderWriterExtensions
+{
+    public static object ReadScalar(this BinaryReader reader)
+    {
         var which = reader.ReadByte();
-        return which switch {
+        return which switch
+        {
             1 => reader.ReadInt32(),
             2 => reader.ReadInt64(),
             3 => reader.ReadSingle(),
@@ -16,8 +19,10 @@ public static class BinaryReaderWriterExtensions {
         };
     }
 
-    public static void WriteScalar(this BinaryWriter writer, object value) {
-        switch (value) {
+    public static void WriteScalar(this BinaryWriter writer, object value)
+    {
+        switch (value)
+        {
             case int a:
                 writer.Write((byte)1);
                 writer.Write(a);

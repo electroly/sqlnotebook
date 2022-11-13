@@ -2,7 +2,8 @@
 
 namespace SqlNotebookScript;
 
-public abstract class CustomScalarFunction {
+public abstract class CustomScalarFunction
+{
     public abstract string Name { get; }
     public abstract int ParamCount { get; }
     public abstract bool IsDeterministic { get; }

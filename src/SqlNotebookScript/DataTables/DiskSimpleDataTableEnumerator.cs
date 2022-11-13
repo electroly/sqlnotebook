@@ -3,12 +3,14 @@ using System.Collections.Generic;
 
 namespace SqlNotebookScript.DataTables;
 
-public sealed class DiskSimpleDataTableEnumerator : IEnumerator<object[]> {
+public sealed class DiskSimpleDataTableEnumerator : IEnumerator<object[]>
+{
     private readonly DiskSimpleDataTable _table;
     private readonly int _rowCount;
     private long _rowIndex = -1;
 
-    public DiskSimpleDataTableEnumerator(DiskSimpleDataTable table, int columnCount, int rowCount) {
+    public DiskSimpleDataTableEnumerator(DiskSimpleDataTable table, int columnCount, int rowCount)
+    {
         _table = table;
         _rowCount = rowCount;
         Current = new object[columnCount];
@@ -18,19 +20,22 @@ public sealed class DiskSimpleDataTableEnumerator : IEnumerator<object[]> {
 
     object IEnumerator.Current => Current;
 
-    public void Dispose() {}
+    public void Dispose() { }
 
-    public bool MoveNext() {
+    public bool MoveNext()
+    {
         _rowIndex++;
-        if (_rowIndex >= _rowCount) {
+        if (_rowIndex >= _rowCount)
+        {
             return false;
         }
-        
+
         _table.GetRow(_rowIndex, Current);
         return true;
     }
 
-    public void Reset() {
+    public void Reset()
+    {
         _rowIndex = -1;
     }
 }

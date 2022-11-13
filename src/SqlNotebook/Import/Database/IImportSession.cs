@@ -4,7 +4,8 @@ using System.Windows.Forms;
 
 namespace SqlNotebook.Import.Database;
 
-public interface IImportSession {
+public interface IImportSession
+{
     bool FromConnectForm(IWin32Window owner);
     IReadOnlyList<(string Schema, string Table)> TableNames { get; }
     string GenerateSql(IEnumerable<SourceTable> selectedTables, bool link);
