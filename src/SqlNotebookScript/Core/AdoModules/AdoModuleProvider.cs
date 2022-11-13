@@ -703,13 +703,8 @@ public abstract class AdoModuleProvider : IDisposable {
                 ResultText16(ctx, new string(cursorMetadata.Reader.GetChar(n), 1));
             } else if (type == typeof(bool)) {
                 sqlite3_result_int(ctx, cursorMetadata.Reader.GetBoolean(n) ? 1 : 0);
-#pragma warning disable CS0618 // Type or member is obsolete
-            } else if (type == typeof(NpgsqlTypes.NpgsqlDate)) {
-                var reader = (NpgsqlDataReader)cursorMetadata.Reader;
-                ResultText16(ctx, ((DateTime)reader.GetDate(n)).ToString("yyyy-MM-dd"));
-            } else if (type == typeof(NpgsqlTypes.NpgsqlDateTime) || type == typeof(DateTime)) {
+            } else if (type == typeof(DateTime)) {
                 ResultText16(ctx, cursorMetadata.Reader.GetDateTime(n).ToString("yyyy-MM-dd HH:mm:ss.fff"));
-#pragma warning restore CS0618 // Type or member is obsolete
             } else if (type == typeof(DateTimeOffset)) {
                 ResultText16(ctx, ((DateTimeOffset)cursorMetadata.Reader.GetValue(n))
                     .UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"));
