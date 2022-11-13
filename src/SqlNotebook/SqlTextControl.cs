@@ -125,6 +125,24 @@ public partial class SqlTextControl : UserControl {
             } else if (e.KeyCode == Keys.F10 && e.Modifiers == Keys.None) {
                 F10KeyPress?.Invoke(this, EventArgs.Empty);
                 e.Handled = true;
+            } else if (e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z && e.Modifiers.HasFlag(Keys.Control)) {
+                // Avoid insertion of nonprintable control characters, which Scintilla supports but is not desired.
+                // This can happen if the user types Ctrl + any letter key that isn't an enabled menu accelerator.
+                // But we do need Scintilla to handle a few text editing hotkeys.
+                switch (e.KeyCode) {
+                    case Keys.A: // Select All
+                    case Keys.C: // Copy
+                    case Keys.X: // Cut
+                    case Keys.V: // Paste
+                    case Keys.Z: // Undo
+                    case Keys.Y: // Redo
+                        break;
+
+                    default:
+                        e.SuppressKeyPress = true;
+                        e.Handled = true;
+                        break;
+                }
             }
         };
 
