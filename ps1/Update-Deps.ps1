@@ -1,11 +1,11 @@
 # Downloads non-NuGet deps
 
-$sqliteCodeUrl = 'https://sqlite.org/2022/sqlite-amalgamation-3390400.zip'
-$sqliteCodeHash = '9C99955B21D2374F3A385D67A1F64CBACB1D4130947473D25C77AD609C03B4CD'
-$sqliteDocUrl = 'https://sqlite.org/2022/sqlite-doc-3390400.zip'
-$sqliteDocHash = '1C30C23D0AB6FB2302CD5671FEFC06C1C6EB37FD6CFFAB7A58138D9A3A78A22E'
-$sqliteSrcUrl = 'https://sqlite.org/2022/sqlite-src-3390400.zip'
-$sqliteSrcHash = '02D96C6CCF811AB9B63919EF717F7E52A450C420E06BD129FB483CD70C3B3BBA'
+$sqliteCodeUrl = 'https://sqlite.org/2022/sqlite-amalgamation-3400000.zip'
+$sqliteCodeHash = '7C23EB51409315738C930A222CF7CD41518AE5823C41E60A81B93A07070EF22A'
+$sqliteDocUrl = 'https://sqlite.org/2022/sqlite-doc-3400000.zip'
+$sqliteDocHash = '1ADC16F71E920963913597D5D0DA4FD90AEF24A43779E7F75D86E47442F08DAD'
+$sqliteSrcUrl = 'https://sqlite.org/2022/sqlite-src-3400000.zip'
+$sqliteSrcHash = '48550828142051293E179FFC6A8520F6FBFD82E1CDCA78B93792F766CC89B8E2'
 
 $wapiUrl = 'https://github.com/contre/Windows-API-Code-Pack-1.1/archive/a8377ef8bb6fa95ff8800dd4c79089537087d539.zip'
 $wapiHash = '38E59E6AE3BF0FD0CCB05C026F7332D3B56AF81D8C69A62882D04CABAD5EF4AE'
@@ -167,6 +167,10 @@ function Update-Sqlite {
     $startIndex = $notebookCs.IndexOf('public enum TokenType')
     if ($startIndex -eq -1) {
         throw "Can't find TokenType in $notebookCsFilePath"
+    }
+    $startIndex = $notebookCs.IndexOf("{", $startIndex)
+    if ($startIndex -eq -1) {
+        throw "Can't find TokenType's open brace in $notebookCsFilePath"
     }
     $startIndex = $notebookCs.IndexOf("`n", $startIndex)
     if ($startIndex -eq -1) {
