@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SQL Notebook")]
-[assembly: AssemblyCopyright("© 2016-2022 Brian Luft")]
+[assembly: AssemblyCopyright("© 2016-2023 Brian Luft")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -35,4 +35,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 
 // this is Application.ProductVersion
-[assembly: AssemblyFileVersion("1.2.0")]
+[assembly: AssemblyFileVersion("1.2.1")]

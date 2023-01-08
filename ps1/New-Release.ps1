@@ -3,13 +3,13 @@ Set-StrictMode -Version 3
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-$windowsSdkVersion = '10.0.20348.0'
+$windowsSdkVersion = '10.0.22000.0'
 $windowsSdkDir = "C:\Program Files (x86)\Windows Kits\10\Redist\$windowsSdkVersion\ucrt\DLLs\x64"
 if (-not (Test-Path $windowsSdkDir)) {
     throw "Windows 10 SDK $windowsSdkVersion not found!"
 }
 
-$vsRuntimeVersion = '14.31.31103'
+$vsRuntimeVersion = '14.34.31931'
 $vsRuntimeDir = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\$vsRuntimeVersion\x64\Microsoft.VC143.CRT"
 if (-not (Test-Path $vsRuntimeDir)) {
     throw "Visual C++ Redistributable $vsRuntimeVersion not found!"
@@ -20,7 +20,7 @@ if (-not (Test-Path $wixDir)) {
     throw "WiX not found!"
 }
 
-$signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.20348.0\x64\signtool.exe"
+$signtool = "C:\Program Files (x86)\Windows Kits\10\bin\$windowsSdkVersion\x64\signtool.exe"
 if (-not (Test-Path $signtool)) {
     throw "Signtool not found!"
 }
@@ -91,6 +91,11 @@ $doneWithFilesXml = $false
 for ($i = 5; $i -lt $heatLines.Length; $i++) {
     if ($heatLines[$i].Contains("</DirectoryRef>")) {
         $doneWithFilesXml = $true
+
+        # heat misses this one
+        $filesXml += '<Component Win64="yes" Id="System.IO.Compression.Native.dll" Guid="D1B5046E-FA58-4D54-AE9D-DF56895DFB5C">' + "`r`n"
+        $filesXml += '<File Id="System.IO.Compression.Native.dll" KeyPath="yes" Source="SourceDir\System.IO.Compression.Native.dll" />' + "`r`n"
+        $filesXml += '</Component>' + "`r`n"
     }
     if (-not $doneWithFilesXml) {
         $filesXml += $heatLines[$i] + "`r`n"
