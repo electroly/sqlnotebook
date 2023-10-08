@@ -10,6 +10,7 @@ $sqliteDir = (Resolve-Path "$rootDir\ext\sqlite\sqlite-doc").Path
 $webDir = (Resolve-Path "$rootDir\web").Path
 [System.IO.Directory]::CreateDirectory("$webDir\site")
 [System.IO.Directory]::CreateDirectory("$webDir\site\sqlite")
+[System.IO.Directory]::CreateDirectory("$rootDir\src\SqlNotebook\doc")
 $resDir = (Resolve-Path "$rootDir\src\SqlNotebook\doc").Path
 
 function DeleteIfExists($path) {
