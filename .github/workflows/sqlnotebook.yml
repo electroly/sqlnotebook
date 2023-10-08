@@ -11,8 +11,9 @@ jobs:
       id: msbuild
       shell: pwsh
       run: |
-        $msbuildPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
-        echo "path=$msbuildPath" >> $GITHUB_OUTPUT
+        $msbuildPath = & vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
+        Write-Output "Found msbuild at: $msbuildPath"
+        Write-Output "path=$msbuildPath" >> $env:GITHUB_OUTPUT
 
     - name: Checkout Repository
       uses: actions/checkout@v2
