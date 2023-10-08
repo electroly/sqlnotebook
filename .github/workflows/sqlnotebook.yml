@@ -15,7 +15,8 @@ jobs:
       run: |
         $msbuildPath = & vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
         Write-Output "Found msbuild at: $msbuildPath"
-        cd src/SqlNotebook
+        & ps1\Update-Deps.ps1
+        cd src\SqlNotebook
         & "$msbuildPath" /t:restore /p:Configuration=Release /p:Platform=x64 /p:PublishReadyToRun=true SqlNotebook.csproj
         & "$msbuildPath" /t:build /p:Configuration=Release /p:Platform=x64 ..\SqlNotebookDb\SqlNotebookDb.vcxproj
         & "$msbuildPath" /t:publish /p:Configuration=Release /p:Platform=x64 /p:PublishProfile=FolderProfile SqlNotebook.csproj
