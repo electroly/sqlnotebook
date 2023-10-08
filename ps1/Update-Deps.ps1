@@ -58,6 +58,15 @@ function Update-WindowsApiCodePack {
     $cs = [System.IO.File]::ReadAllText("$wapiDir\source\WindowsAPICodePack\Shell\Resources\LocalizedMessages.Designer.cs")
     $cs = $cs.Replace("Microsoft.WindowsAPICodePack.Resources", "Microsoft.WindowsAPICodePack.Shell.Resources")
     [System.IO.File]::WriteAllText("$wapiDir\source\WindowsAPICodePack\Shell\Resources\LocalizedMessages.Designer.cs", $cs)
+
+    # This patch ignores warnings that we don't intend to fix in the third party code.
+    $x = [System.IO.File]::ReadAllText("$wapiDir\source\WindowsAPICodePack\Core\Core.csproj")
+    $x = $x.Replace('<AssemblyName>', '<NoWarn>$(NoWarn);CS1591;CS1587;CS8073;SYSLIB0003</NoWarn><AssemblyName>')
+    [System.IO.File]::WriteAllText("$wapiDir\source\WindowsAPICodePack\Core\Core.csproj", $x)
+
+    $x = [System.IO.File]::ReadAllText("$wapiDir\source\WindowsAPICodePack\Shell\Shell.csproj")
+    $x = $x.Replace('<AssemblyName>', '<NoWarn>$(NoWarn);CS8073;CS1572;CS1591;CS0618;CS0108;CS7023;CS1587;SYSLIB00</NoWarn><AssemblyName>')
+    [System.IO.File]::WriteAllText("$wapiDir\source\WindowsAPICodePack\Shell\Shell.csproj", $x)
 }
 
 function Update-Sqlean {

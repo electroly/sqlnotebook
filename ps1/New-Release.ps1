@@ -16,6 +16,7 @@ $windowsSdkVersion = `
     Where-Object { $_.Name -match '^10\.0\.\d+\.\d+$' } | 
     Sort-Object Name -Descending | 
     Select-Object -First 1 -ExpandProperty Name
+Write-Output "Windows SDK version: $windowsSdkVersion"
 $windowsSdkDir = Join-Path -Path $windowsSdkBaseDir -ChildPath "$windowsSdkVersion\ucrt\DLLs\x64"
 if (-not (Test-Path $windowsSdkDir)) {
     throw "Windows 10 SDK $windowsSdkVersion not found!"
@@ -30,6 +31,7 @@ $vsRuntimeVersion = `
     Where-Object { $_.Name -match '^14\.\d+\.\d+$' } | 
     Sort-Object Name -Descending | 
     Select-Object -First 1 -ExpandProperty Name
+Write-Output "Visual C++ Redistributable version: $vsRuntimeVersion"
 $vsRuntimeDir = Join-Path -Path $vsRuntimeBaseDir -ChildPath "$vsRuntimeVersion\x64\Microsoft.VC143.CRT"
 if (-not (Test-Path $vsRuntimeDir)) {
     throw "Visual C++ Redistributable $vsRuntimeVersion not found!"
