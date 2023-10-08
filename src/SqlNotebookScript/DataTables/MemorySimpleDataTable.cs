@@ -18,6 +18,4 @@ public sealed class MemorySimpleDataTable : SimpleDataTable
         }
         _columnIndices = dict;
     }
-
-    public override void Dispose() { }
 }

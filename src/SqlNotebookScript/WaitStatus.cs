@@ -85,7 +85,7 @@ public static class WaitStatus
             }
         }
 
-        private void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)
             {
@@ -95,8 +95,13 @@ public static class WaitStatus
                 }
 
                 // free unmanaged resources (unmanaged objects) and override finalizer
+                lock (_stack)
+                {
+                    var success = _stack.Remove(this);
+                    Debug.Assert(success);
+                }
+
                 // set large fields to null
-                OnDisposed();
                 _disposedValue = true;
             }
         }
@@ -113,15 +118,6 @@ public static class WaitStatus
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
-        }
-
-        protected virtual void OnDisposed()
-        {
-            lock (_stack)
-            {
-                var success = _stack.Remove(this);
-                Debug.Assert(success);
-            }
         }
     }
 
@@ -169,9 +165,9 @@ public static class WaitStatus
             _thread.Start();
         }
 
-        protected override void OnDisposed()
+        protected override void Dispose(bool disposing)
         {
-            base.OnDisposed();
+            base.Dispose(disposing);
             _cts.Cancel();
             _thread.Join();
             _cts.Dispose();

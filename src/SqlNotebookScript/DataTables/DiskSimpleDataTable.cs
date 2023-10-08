@@ -7,7 +7,7 @@ using SqlNotebookScript.Utils;
 
 namespace SqlNotebookScript.DataTables;
 
-public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable
+public sealed class DiskSimpleDataTable : SimpleDataTable
 {
     private readonly Timer _inactivityTimer;
     private readonly List<object[]> _rowCache = new(100); // First 100 rows cached in memory.
@@ -116,30 +116,33 @@ public sealed class DiskSimpleDataTable : SimpleDataTable, IDisposable
         _inactivityTimer.Change(2000, Timeout.Infinite);
     }
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        _headerWriter?.Dispose();
-        _headerWriter = null;
-        _headerReader?.Dispose();
-        _headerReader = null;
-        _headerReaderStream?.Dispose();
-        _headerReaderStream = null;
-        _headerTempFile?.Dispose();
-        _headerTempFile = null;
+        if (disposing)
+        {
+            _headerWriter?.Dispose();
+            _headerWriter = null;
+            _headerReader?.Dispose();
+            _headerReader = null;
+            _headerReaderStream?.Dispose();
+            _headerReaderStream = null;
+            _headerTempFile?.Dispose();
+            _headerTempFile = null;
 
-        _dataWriter?.Dispose();
-        _dataWriter = null;
-        _dataReader?.Dispose();
-        _dataReader = null;
-        _dataReaderStream?.Dispose();
-        _dataReaderStream = null;
-        _dataWriterStream?.Dispose();
-        _dataWriterStream = null;
-        _dataTempFile?.Dispose();
-        _dataTempFile = null;
+            _dataWriter?.Dispose();
+            _dataWriter = null;
+            _dataReader?.Dispose();
+            _dataReader = null;
+            _dataReaderStream?.Dispose();
+            _dataReaderStream = null;
+            _dataWriterStream?.Dispose();
+            _dataWriterStream = null;
+            _dataTempFile?.Dispose();
+            _dataTempFile = null;
 
-        _inactivityTimer.Dispose();
-        _disposed = true;
+            _inactivityTimer.Dispose();
+            _disposed = true;
+        }
     }
 
     public void GetRow(long index, object[] row)

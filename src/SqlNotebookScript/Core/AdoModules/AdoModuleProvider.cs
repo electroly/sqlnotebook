@@ -272,11 +272,6 @@ public abstract class AdoModuleProvider : IDisposable
     {
         // argv[3]: connectionString
         // argv[4]: table name
-        if (DEBUG)
-        {
-            Debug.WriteLine("AdoCreate");
-        }
-
         var vtabNative = IntPtr.Zero; // AdoTable*
         var adoCreateInfo = _adoCreateInfos[(int)pAux];
 
@@ -390,12 +385,6 @@ public abstract class AdoModuleProvider : IDisposable
                         var name = columnNames[i];
                         var value = sampleSize > 0 ? (Enumerable.Average(colDicts[i].Values) / sampleSize) : 1.0;
                         estimatedRowsPercentByColumn[name] = value;
-                        if (DEBUG)
-                        {
-                            Debug.WriteLine(
-                                "   Column " + name + " estimated rows per unique value = " + value.ToString()
-                            );
-                        }
                     }
                 }
             }
@@ -473,11 +462,6 @@ public abstract class AdoModuleProvider : IDisposable
         IntPtr pVTab // sqlite3_vtab*
     )
     {
-        if (DEBUG)
-        {
-            Debug.WriteLine("AdoDestroy");
-        }
-
         if (pVTab != IntPtr.Zero)
         {
             var vtab = Marshal.PtrToStructure<Sqlite3Vtab>(pVTab);
@@ -590,11 +574,6 @@ public abstract class AdoModuleProvider : IDisposable
             info.orderByConsumed = 1;
         }
 
-        if (DEBUG)
-        {
-            Debug.WriteLine(sb);
-        }
-
         info.idxNum = 0;
         info.idxStr = NativeString.NewUnmanagedUtf8StringWithSqliteAllocator(sb.ToString());
         info.needToFreeIdxStr = 1;
@@ -644,11 +623,6 @@ public abstract class AdoModuleProvider : IDisposable
         IntPtr pCur // sqlite3_vtab_cursor*
     )
     {
-        if (DEBUG)
-        {
-            Debug.WriteLine("AdoClose");
-        }
-
         var adoCursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
         var adoCursorMetadata = _cursorMetadatas[adoCursor.MetadataKey];
         _cursorMetadatas.Remove(adoCursor.MetadataKey);
@@ -679,11 +653,6 @@ public abstract class AdoModuleProvider : IDisposable
         var cursor = Marshal.PtrToStructure<Sqlite3VtabCursor>(pCur);
         var vtab = Marshal.PtrToStructure<Sqlite3Vtab>(cursor.pVtab);
 
-        if (DEBUG)
-        {
-            Debug.WriteLine("AdoFilter: " + sql);
-        }
-
         try
         {
             var cursorMetadata = _cursorMetadatas[cursor.MetadataKey];
@@ -705,10 +674,6 @@ public abstract class AdoModuleProvider : IDisposable
                 {
                     var parameter = (IDataParameter)cursorMetadata.Command.Parameters[i];
                     parameter.Value = args[i];
-                    if (DEBUG)
-                    {
-                        Debug.WriteLine("   Change: " + parameter.ParameterName + " = " + args[i].ToString());
-                    }
                 }
             }
             else
@@ -725,10 +690,6 @@ public abstract class AdoModuleProvider : IDisposable
                     parameter.ParameterName = varName;
                     parameter.Value = args[i];
                     cursorMetadata.Command.Parameters.Add(parameter);
-                    if (DEBUG)
-                    {
-                        Debug.WriteLine("   " + varName + " = " + args[i].ToString());
-                    }
                 }
             }
 

@@ -112,14 +112,17 @@ public sealed class ScriptOutput : RefCounted
         return this;
     }
 
-    protected override void OnDispose()
+    protected override void Dispose(bool disposing)
     {
-        foreach (var sdt in DataTables)
+        if (disposing)
         {
-            sdt.Dispose();
+            foreach (var sdt in DataTables)
+            {
+                sdt.Dispose();
+            }
+            DataTables.Clear();
+            TextOutput.Clear();
+            ScalarResult = null;
         }
-        DataTables.Clear();
-        TextOutput.Clear();
-        ScalarResult = null;
     }
 }

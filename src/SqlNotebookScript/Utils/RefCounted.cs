@@ -2,6 +2,8 @@
 using System;
 using System.Threading;
 
+#pragma warning disable CA1063
+
 namespace SqlNotebookScript.Utils;
 
 public abstract class RefCounted : IDisposable
@@ -11,6 +13,8 @@ public abstract class RefCounted : IDisposable
 #endif
     private long _refCount = 1;
 
+    protected virtual void Dispose(bool disposing) { }
+
     public void Dispose()
     {
         var decremented = Interlocked.Decrement(ref _refCount);
@@ -19,7 +23,7 @@ public abstract class RefCounted : IDisposable
 #if DEBUG_REFCOUNTS
             System.Diagnostics.Debug.WriteLine($"{GetType().Name}.Dispose(): refcount = 0; disposing... ({_id})");
 #endif
-            OnDispose();
+            Dispose(true);
         }
         else
         {
@@ -29,8 +33,6 @@ public abstract class RefCounted : IDisposable
         }
         GC.SuppressFinalize(this);
     }
-
-    protected abstract void OnDispose();
 
     protected void ThrowIfDisposed()
     {

@@ -269,7 +269,8 @@ public sealed class NotebookUserData : IDisposable
     {
         foreach (var item in Items)
         {
-            item.Dispose();
+            if (item is IDisposable disposable)
+                disposable.Dispose();
         }
     }
 }

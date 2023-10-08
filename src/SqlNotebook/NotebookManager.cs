@@ -243,7 +243,8 @@ public sealed class NotebookManager
         if (oldItemRecord != null)
         {
             ud.Items.Remove(oldItemRecord);
-            oldItemRecord.Dispose();
+            if (oldItemRecord is IDisposable disposable)
+                disposable.Dispose();
         }
         ud.Items.Add(record);
 
@@ -363,7 +364,8 @@ public sealed class NotebookManager
                 if (itemRecord != null)
                 {
                     Notebook.UserData.Items.Remove(itemRecord);
-                    itemRecord.Dispose();
+                    if (itemRecord is IDisposable disposable)
+                        disposable.Dispose();
                 }
                 break;
             }

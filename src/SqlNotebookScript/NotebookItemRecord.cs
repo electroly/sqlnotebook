@@ -4,48 +4,42 @@ using SqlNotebookScript.Interpreter;
 
 namespace SqlNotebookScript;
 
-public abstract class NotebookItemRecord : IDisposable
+public abstract class NotebookItemRecord
 {
     public string Name { get; set; }
-    public abstract void Dispose();
 }
 
 public sealed class ScriptNotebookItemRecord : NotebookItemRecord
 {
     public string Sql { get; set; }
     public List<string> Parameters { get; set; }
-
-    public override void Dispose() { }
 }
 
-public sealed class PageNotebookItemRecord : NotebookItemRecord
+public sealed class PageNotebookItemRecord : NotebookItemRecord, IDisposable
 {
     public List<PageBlockRecord> Blocks { get; set; }
 
-    public override void Dispose()
+    public void Dispose()
     {
         foreach (var block in Blocks)
         {
-            block.Dispose();
+            if (block is IDisposable disposable)
+                disposable.Dispose();
         }
     }
 }
 
-public abstract class PageBlockRecord : IDisposable
-{
-    public abstract void Dispose();
-}
+public abstract class PageBlockRecord { }
 
-public sealed class QueryPageBlockRecord : PageBlockRecord
+public sealed class QueryPageBlockRecord : PageBlockRecord, IDisposable
 {
     public string Sql { get; set; }
     public ScriptOutput Output { get; set; }
     public QueryPageBlockOptions Options { get; set; }
 
-    public override void Dispose()
+    public void Dispose()
     {
         Output?.Dispose();
-        Output = null;
     }
 }
 
@@ -59,6 +53,4 @@ public sealed class QueryPageBlockOptions
 public sealed class TextPageBlockRecord : PageBlockRecord
 {
     public string Content;
-
-    public override void Dispose() { }
 }
