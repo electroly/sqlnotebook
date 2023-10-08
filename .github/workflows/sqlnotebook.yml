@@ -25,3 +25,15 @@ jobs:
 
         Write-Output "Running New-Release.ps1."
         ps1\New-Release.ps1 -MsbuildPath $msbuildPath -CertificatePath $certificatePath -CertificatePassword $certificatePassword
+
+    - name: Upload MSI
+      uses: actions/upload-artifact@v3
+      with:
+        name: SqlNotebook.msi
+        path: src/SqlNotebook/bin/SqlNotebook.msi
+
+    - name: Upload ZIP
+      uses: actions/upload-artifact@v3
+      with:
+        name: SqlNotebook.msi
+        path: src/SqlNotebook/bin/SqlNotebook.zip
