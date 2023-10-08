@@ -61,38 +61,14 @@ In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
 
 ## How to release a new version
 
-- Update Visual Studio.
-    - In the Visual Studio Installer, check to see if there's a newer Windows 10 SDK under Invididual Components. If there is, then:
-        - Install the SDK update.
-        - SqlNotebookDb > Properties > All Configurations > General > Set "Windows SDK Version" to the new version.
-        - Update `New-Release.ps1` with the new SDK version.
-    - Look in `C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC` and update `New-Release.ps1` with the new version if there is one.
 - Check for new updates to NuGet packages.
 - Bump `AssemblyFileVersion` and `AssemblyCopyright` in `src\SqlNotebook\Properties\AssemblyInfo.cs`.
 - Bump `ProductVersion` in `src\SqlNotebook.wxs`.
 - Add a news entry in `web\index.html`.
 - Close Visual Studio.
-- In PowerShell from the repo root:
-    ```
-    $p = "src\SqlNotebook\bin"; if (Test-Path $p) { rm -Force -Recurse $p }
-    $p = "src\SqlNotebook\obj"; if (Test-Path $p) { rm -Force -Recurse $p }
-    $p = "src\SqlNotebookScript\bin"; if (Test-Path $p) { rm -Force -Recurse $p }
-    $p = "src\SqlNotebookScript\obj"; if (Test-Path $p) { rm -Force -Recurse $p }
-    $p = "src\SqlNotebookDb\bin"; if (Test-Path $p) { rm -Force -Recurse $p }
-    $p = "src\SqlNotebookDb\obj"; if (Test-Path $p) { rm -Force -Recurse $p }
-    $p = "src\packages"; if (Test-Path $p) { rm -Force -Recurse $p }
-    $p = "web\site"; if (Test-Path $p) { rm -Force -Recurse $p }
-    ps1\Update-Deps.ps1
-    ```
-- In Dev Command Prompt from `src\SqlNotebook`:
-    ```
-    msbuild /t:restore /p:Configuration=Release /p:Platform=x64 /p:PublishReadyToRun=true SqlNotebook.csproj
-    msbuild /t:build /p:Configuration=Release /p:Platform=x64 ..\SqlNotebookDb\SqlNotebookDb.vcxproj
-    msbuild /t:publish /p:Configuration=Release /p:Platform=x64 /p:PublishProfile=FolderProfile SqlNotebook.csproj
-    ```
-- In PowerShell from the repo root: `ps1\New-Release.ps1`
-- Test the zip and MSI in `src\SqlNotebook\bin`. Rename them to `SQLNotebook-X.X.X.*`.
 - Commit changes using commit message "Version X.X.X", and push.
+- Wait for GitHub Actions to build.
+- Test the zip and MSI in the GitHub Actions output. Rename them to `SQLNotebook-X.X.X.*`.
 - Create release on GitHub, upload zip and msi.
     - Let GitHub create a new tag, name it `vX.X.X`.
     - Set release title to `vX.X.X`.
