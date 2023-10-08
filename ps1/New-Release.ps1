@@ -1,16 +1,34 @@
+param (
+    [string]$MsbuildPath,
+    [string]$CertificatePath,
+    [string]$CertificatePassword
+)
+
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 3
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-$windowsSdkVersion = '10.0.22000.0'
-$windowsSdkDir = "C:\Program Files (x86)\Windows Kits\10\Redist\$windowsSdkVersion\ucrt\DLLs\x64"
+# Windows SDK 10.0.*.*
+$windowsSdkBaseDir = "C:\Program Files (x86)\Windows Kits\10\Redist"
+$windowsSdkVersion = `
+    Get-ChildItem -Path $windowsSdkBaseDir | 
+    Where-Object { $_.Name -match '^10\.0\.\d+\.\d+$' } | 
+    Sort-Object Name -Descending | 
+    Select-Object -First 1 -ExpandProperty Name
+$windowsSdkDir = Join-Path -Path $windowsSdkBaseDir -ChildPath "$windowsSdkVersion\ucrt\DLLs\x64"
 if (-not (Test-Path $windowsSdkDir)) {
     throw "Windows 10 SDK $windowsSdkVersion not found!"
 }
 
-$vsRuntimeVersion = '14.34.31931'
-$vsRuntimeDir = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\$vsRuntimeVersion\x64\Microsoft.VC143.CRT"
+# Visual C++ Redistributable 14.*.*
+$vsRuntimeBaseDir = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC"
+$vsRuntimeVersion = `
+    Get-ChildItem -Path $vsRuntimeBaseDir | 
+    Where-Object { $_.Name -match '^14\.\d+\.\d+$' } | 
+    Sort-Object Name -Descending | 
+    Select-Object -First 1 -ExpandProperty Name
+$vsRuntimeDir = Join-Path -Path $vsRuntimeBaseDir -ChildPath "$vsRuntimeVersion\x64\Microsoft.VC143.CRT"
 if (-not (Test-Path $vsRuntimeDir)) {
     throw "Visual C++ Redistributable $vsRuntimeVersion not found!"
 }
@@ -25,6 +43,21 @@ if (-not (Test-Path $signtool)) {
     throw "Signtool not found!"
 }
 
+# Do the build
+Write-Output "Restoring source dependencies."
+& ps1\Update-Deps.ps1
+
+Write-Output "Restoring NuGet dependencies."
+cd src\SqlNotebook
+& "$MsbuildPath" /verbosity:quiet /t:restore /p:Configuration=Release /p:Platform=x64 /p:PublishReadyToRun=true SqlNotebook.csproj
+
+Write-Output "Building SQLite."
+& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=x64 ..\SqlNotebookDb\SqlNotebookDb.vcxproj
+
+Write-Output "Publishing."
+& "$MsbuildPath" /verbosity:quiet /t:publish /p:Configuration=Release /p:Platform=x64 /p:PublishProfile=FolderProfile SqlNotebook.csproj
+
+Write-Output "Creating release."
 $ps1Dir = $PSScriptRoot
 $rootDir = (Resolve-Path (Join-Path $ps1Dir "..\")).Path
 $srcDir = Join-Path $rootDir "src"
@@ -63,11 +96,11 @@ rm $zipFilePath -ErrorAction SilentlyContinue
 rm "$relDir\SqlNotebook.wixobj" -ErrorAction SilentlyContinue
 rm "$relDir\SqlNotebook.wxs" -ErrorAction SilentlyContinue
 
-& $signtool sign /n "Brian Luft" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\sqlite3.dll" | Write-Output
-& $signtool sign /n "Brian Luft" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\crypto.dll" | Write-Output
-& $signtool sign /n "Brian Luft" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\fuzzy.dll" | Write-Output
-& $signtool sign /n "Brian Luft" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\stats.dll" | Write-Output
-& $signtool sign /n "Brian Luft" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\SqlNotebook.exe" | Write-Output
+& $signtool sign /f "$CertificatePath" /p "$CertificatePassword" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\sqlite3.dll" | Write-Output
+& $signtool sign /f "$CertificatePath" /p "$CertificatePassword" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\crypto.dll" | Write-Output
+& $signtool sign /f "$CertificatePath" /p "$CertificatePassword" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\fuzzy.dll" | Write-Output
+& $signtool sign /f "$CertificatePath" /p "$CertificatePassword" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\stats.dll" | Write-Output
+& $signtool sign /f "$CertificatePath" /p "$CertificatePassword" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\SqlNotebook.exe" | Write-Output
 Copy-Item -Force "$srcdir\SqlNotebook\SqlNotebookIcon.ico" "$relDir\SqlNotebookIcon.ico"
 
 #
@@ -121,6 +154,6 @@ if (-not (Test-Path "$relDir\SqlNotebook.msi")) {
 
 Move-Item -Force "$relDir\SqlNotebook.msi" $msiFilePath
 
-& $signtool sign /n "Brian Luft" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 /d $msiFilename $msiFilePath | Write-Output
+& $signtool sign /f "$CertificatePath" /p "$CertificatePassword" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 /d $msiFilename $msiFilePath | Write-Output
 
 Pop-Location
