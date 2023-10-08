@@ -35,5 +35,5 @@ jobs:
     - name: Upload ZIP
       uses: actions/upload-artifact@v3
       with:
-        name: SqlNotebook.msi
+        name: SqlNotebook.zip
         path: src/SqlNotebook/bin/SqlNotebook.zip
