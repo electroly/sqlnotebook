@@ -22,7 +22,9 @@ if (-not (Test-Path $windowsSdkDir)) {
 }
 
 # Visual C++ Redistributable 14.*.*
-$vsRuntimeBaseDir = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC"
+$vsBaseDir = "C:\Program Files\Microsoft Visual Studio\2022"
+$vsEditionDir = Get-ChildItem -Path $vsBaseDir | Select-Object -First 1
+$vsRuntimeBaseDir = Join-Path -Path $vsEditionDir.FullName -ChildPath "VC\Redist\MSVC"
 $vsRuntimeVersion = `
     Get-ChildItem -Path $vsRuntimeBaseDir | 
     Where-Object { $_.Name -match '^14\.\d+\.\d+$' } | 
