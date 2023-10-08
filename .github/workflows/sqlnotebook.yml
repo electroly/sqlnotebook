@@ -7,12 +7,19 @@ jobs:
     runs-on: windows-2022
     steps:
 
+    - name: Find MSBuild
+      id: msbuild
+      shell: pwsh
+      run: |
+        $msbuildPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
+        echo "path=$msbuildPath" >> $GITHUB_OUTPUT
+
     - name: Checkout Repository
       uses: actions/checkout@v2
 
     - name: Restore, Build, and Publish
       run: |
         cd src/SqlNotebook
-        msbuild /t:restore /p:Configuration=Release /p:Platform=x64 /p:PublishReadyToRun=true SqlNotebook.csproj
-        msbuild /t:build /p:Configuration=Release /p:Platform=x64 ..\SqlNotebookDb\SqlNotebookDb.vcxproj
-        msbuild /t:publish /p:Configuration=Release /p:Platform=x64 /p:PublishProfile=FolderProfile SqlNotebook.csproj
+        ${{ steps.msbuild.outputs.path }} /t:restore /p:Configuration=Release /p:Platform=x64 /p:PublishReadyToRun=true SqlNotebook.csproj
+        ${{ steps.msbuild.outputs.path }} /t:build /p:Configuration=Release /p:Platform=x64 ..\SqlNotebookDb\SqlNotebookDb.vcxproj
+        ${{ steps.msbuild.outputs.path }} /t:publish /p:Configuration=Release /p:Platform=x64 /p:PublishProfile=FolderProfile SqlNotebook.csproj
