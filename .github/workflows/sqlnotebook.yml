@@ -23,17 +23,38 @@ jobs:
         $msbuildPath = & vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
         Write-Output "Found msbuild at: $msbuildPath"
 
-        Write-Output "Running New-Release.ps1."
-        ps1\New-Release.ps1 -MsbuildPath $msbuildPath -CertificatePath $certificatePath -CertificatePassword $certificatePassword
+        Write-Output "Building x64."
+        ps1\Clear-TempFiles.ps1
+        ps1\New-Release.ps1 -MsbuildPath $msbuildPath -CertificatePath $certificatePath -CertificatePassword $certificatePassword -Platform x64
+        Move-Item src/SqlNotebook/bin/SqlNotebook.msi SqlNotebook-x64.msi
+        Move-Item src/SqlNotebook/bin/SqlNotebook.zip SqlNotebook-x64.zip
 
-    - name: Upload MSI
+        Write-Output "Building x86."
+        ps1\Clear-TempFiles.ps1
+        ps1\New-Release.ps1 -MsbuildPath $msbuildPath -CertificatePath $certificatePath -CertificatePassword $certificatePassword -Platform x86
+        Move-Item src/SqlNotebook/bin/SqlNotebook.msi SqlNotebook-x86.msi
+        Move-Item src/SqlNotebook/bin/SqlNotebook.zip SqlNotebook-x86.zip
+
+    - name: Upload x64 MSI
       uses: actions/upload-artifact@v3
       with:
-        name: SqlNotebook.msi
-        path: src/SqlNotebook/bin/SqlNotebook.msi
+        name: SqlNotebook-x64.msi
+        path: SqlNotebook-x64.msi
 
-    - name: Upload ZIP
+    - name: Upload x64 ZIP
       uses: actions/upload-artifact@v3
       with:
-        name: SqlNotebook.zip
-        path: src/SqlNotebook/bin/SqlNotebook.zip
+        name: SqlNotebook-x64.zip
+        path: SqlNotebook-x64.zip
+
+    - name: Upload x86 MSI
+      uses: actions/upload-artifact@v3
+      with:
+        name: SqlNotebook-x86.msi
+        path: SqlNotebook-x86.msi
+
+    - name: Upload x86 ZIP
+      uses: actions/upload-artifact@v3
+      with:
+        name: SqlNotebook-x86.zip
+        path: SqlNotebook-x86.zip

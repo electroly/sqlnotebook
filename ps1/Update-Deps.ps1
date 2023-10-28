@@ -10,15 +10,22 @@ $sqliteSrcHash = '22E9C2EF49FE6F8A2DBC93C4D3DCE09C6D6A4F563DE52B0A8171AD49A8C729
 $wapiUrl = 'https://github.com/contre/Windows-API-Code-Pack-1.1/archive/a8377ef8bb6fa95ff8800dd4c79089537087d539.zip'
 $wapiHash = '38E59E6AE3BF0FD0CCB05C026F7332D3B56AF81D8C69A62882D04CABAD5EF4AE'
 
-$sqleanVersion = '0.17.2'
-$sqleanZipUrl = "https://github.com/nalgeon/sqlean/releases/download/$sqleanVersion/sqlean-win-x64.zip"
-$sqleanZipHash = '0FEDD20244049C0B89B46EA19D4DB4E29D68158887328BB0EED14283BC46FF9F'
+$sqleanVersion = '0.21.8'
+$sqleanZipUrl = "https://github.com/nalgeon/sqlean/archive/refs/tags/$sqleanVersion.zip"
+$sqleanZipHash = '463DFDE2C784DEEDD08B912AB221B2ADB3FCD484E715E817785795A13C8C3E69'
 
 $global:ProgressPreference = "SilentlyContinue"
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 3
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+# Detect if devenv.exe is running. If so, bail out. We can't do this with VS running.
+$devenvRunning = Get-Process | Where-Object { $_.ProcessName -eq "devenv" }
+if ($devenvRunning) {
+    Write-Host "Visual Studio is running. Please close it and try again."
+    exit 1
+}
 
 $ps1Dir = $PSScriptRoot
 $rootDir = (Resolve-Path (Join-Path $ps1Dir "..\")).Path
@@ -76,7 +83,7 @@ function Update-Sqlean {
 
     $filename = [System.IO.Path]::GetFileName($sqleanZipUrl)
 
-    $filePath = Join-Path $downloadsDir "sqlean-win-x64-$sqleanVersion.zip"
+    $filePath = Join-Path $downloadsDir "sqlean-$sqleanVersion.zip"
     if (-not (Test-Path $filePath)) {
         Write-Host "Downloading: $sqleanZipUrl"
         Invoke-WebRequest -UseBasicParsing -Uri $sqleanZipUrl -OutFile $filePath
@@ -84,6 +91,47 @@ function Update-Sqlean {
     VerifyHash $filePath $sqleanZipHash
 
     Expand-Archive $filePath -DestinationPath $sqleanDir
+
+    Move-Item "$sqleanDir\sqlean-$sqleanVersion\*" "$sqleanDir\"
+    Remove-Item "$sqleanDir\sqlean-$sqleanVersion"
+
+    # Generate .vsxproj files
+    $vcxprojTemplate = [System.IO.File]::ReadAllText("$rootDir\src\sqlean.vcxproj.template")
+    Update-SqleanProjectFile -Name "crypto" -Id "3450c322-3527-4a61-81a2-8d7552c3de3e" -Template $vcxprojTemplate
+    Update-SqleanProjectFile -Name "fuzzy" -Id "63ca9325-9a8a-4d54-a9b1-4e0b2b2dbcaa" -Template $vcxprojTemplate
+    Update-SqleanProjectFile -Name "stats" -Id "2464ae91-59e7-404b-98d2-26f27afa0496" -Template $vcxprojTemplate
+}
+
+function Update-SqleanProjectFile {
+    param(
+        [string]$Name,
+        [string]$Id,
+        [string]$Template
+    )
+
+    # Find all *.c files in "$sqleanDir\src\$Name\", top directory only.
+    $srcDir = Join-Path $sqleanDir "src\$Name"
+    $srcFiles = Get-ChildItem -Path $srcDir -Filter "*.c" | ForEach-Object { $_.FullName }
+
+    # Append $sqleanDir\src\sqlite3-$Name.c to the list.
+    $srcFiles += Join-Path $sqleanDir "src\sqlite3-$Name.c"
+
+    # Create the block of <ClCompile Include="filename.c" /> lines.
+    $clCompileLines = ""
+    foreach ($srcFile in $srcFiles) {
+        $clCompileLines += "    <ClCompile Include=`"$srcFile`" />`r`n"
+    }
+
+    # Make the directory "$rootDir\src\$Name\".
+    $targetDir = Join-Path $rootDir "src\$Name"
+    if (-not (Test-Path $targetDir)) {
+        mkdir $targetDir
+    }
+
+    # Write the vcxproj file to "$rootDir\src\$Name\$Name.vcxproj".
+    $targetFilePath = Join-Path $targetDir "$Name.vcxproj"
+    $proj = $Template.Replace("[PROJECT_ID]", $Id).Replace("[FILES]", $clCompileLines)
+    [System.IO.File]::WriteAllText($targetFilePath, $proj)
 }
 
 function Update-Sqlite {

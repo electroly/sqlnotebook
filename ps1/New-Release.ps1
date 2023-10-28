@@ -1,13 +1,19 @@
 param (
     [string]$MsbuildPath,
     [string]$CertificatePath,
-    [string]$CertificatePassword
+    [string]$CertificatePassword,
+    [string]$Platform
 )
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 3
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+# Verify that $Platform is either 'x86' or 'x64'
+if ($Platform -ne 'x86' -and $Platform -ne 'x64') {
+    throw "Platform must be either 'x86' or 'x64'"
+}
 
 # Windows SDK 10.0.*.*
 $windowsSdkBaseDir = "C:\Program Files (x86)\Windows Kits\10\Redist"
@@ -17,7 +23,7 @@ $windowsSdkVersion = `
     Sort-Object Name -Descending | 
     Select-Object -First 1 -ExpandProperty Name
 Write-Output "Windows SDK version: $windowsSdkVersion"
-$windowsSdkDir = Join-Path -Path $windowsSdkBaseDir -ChildPath "$windowsSdkVersion\ucrt\DLLs\x64"
+$windowsSdkDir = Join-Path -Path $windowsSdkBaseDir -ChildPath "$windowsSdkVersion\ucrt\DLLs\$Platform"
 if (-not (Test-Path $windowsSdkDir)) {
     throw "Windows 10 SDK $windowsSdkVersion not found!"
 }
@@ -32,7 +38,7 @@ $vsRuntimeVersion = `
     Sort-Object Name -Descending | 
     Select-Object -First 1 -ExpandProperty Name
 Write-Output "Visual C++ Redistributable version: $vsRuntimeVersion"
-$vsRuntimeDir = Join-Path -Path $vsRuntimeBaseDir -ChildPath "$vsRuntimeVersion\x64\Microsoft.VC143.CRT"
+$vsRuntimeDir = Join-Path -Path $vsRuntimeBaseDir -ChildPath "$vsRuntimeVersion\$Platform\Microsoft.VC143.CRT"
 if (-not (Test-Path $vsRuntimeDir)) {
     throw "Visual C++ Redistributable $vsRuntimeVersion not found!"
 }
@@ -42,7 +48,7 @@ if (-not (Test-Path $wixDir)) {
     throw "WiX not found!"
 }
 
-$signtool = "C:\Program Files (x86)\Windows Kits\10\bin\$windowsSdkVersion\x64\signtool.exe"
+$signtool = "C:\Program Files (x86)\Windows Kits\10\bin\$windowsSdkVersion\$Platform\signtool.exe"
 if (-not (Test-Path $signtool)) {
     throw "Signtool not found!"
 }
@@ -53,13 +59,13 @@ Write-Output "Restoring source dependencies."
 
 Write-Output "Restoring NuGet dependencies."
 cd src\SqlNotebook
-& "$MsbuildPath" /verbosity:quiet /t:restore /p:Configuration=Release /p:Platform=x64 /p:PublishReadyToRun=true SqlNotebook.csproj
+& "$MsbuildPath" /verbosity:quiet /t:restore /p:Configuration=Release /p:Platform=$Platform /p:PublishReadyToRun=true SqlNotebook.csproj
 
 Write-Output "Building SQLite."
-& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=x64 ..\SqlNotebookDb\SqlNotebookDb.vcxproj
+& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$Platform ..\SqlNotebookDb\SqlNotebookDb.vcxproj
 
 Write-Output "Publishing."
-& "$MsbuildPath" /verbosity:quiet /t:publish /p:Configuration=Release /p:Platform=x64 /p:PublishProfile=FolderProfile SqlNotebook.csproj
+& "$MsbuildPath" /verbosity:quiet /t:publish /p:Configuration=Release /p:Platform=$Platform /p:PublishProfile=FolderProfile SqlNotebook.csproj
 
 Write-Output "Creating release."
 $ps1Dir = $PSScriptRoot
@@ -75,10 +81,10 @@ Remove-Item "$relDir\*.xml" -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.wixpdb" -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.wixobj" -ErrorAction SilentlyContinue
 Remove-Item "$relDir\*.wxs" -ErrorAction SilentlyContinue
-Copy-Item -Force "$rootDir\src\SqlNotebookDb\bin\x64\Release\sqlite3.dll" "$relDir\sqlite3.dll"
-Copy-Item -Force "$rootDir\ext\sqlean\crypto.dll" "$relDir\crypto.dll"
-Copy-Item -Force "$rootDir\ext\sqlean\fuzzy.dll" "$relDir\fuzzy.dll"
-Copy-Item -Force "$rootDir\ext\sqlean\stats.dll" "$relDir\stats.dll"
+Copy-Item -Force "$rootDir\src\SqlNotebookDb\bin\$Platform\Release\sqlite3.dll" "$relDir\sqlite3.dll"
+Copy-Item -Force "$rootDir\src\crypto\bin\$Platform\Release\crypto.dll" "$relDir\crypto.dll"
+Copy-Item -Force "$rootDir\src\fuzzy\bin\$Platform\Release\fuzzy.dll" "$relDir\fuzzy.dll"
+Copy-Item -Force "$rootDir\src\stats\bin\$Platform\Release\stats.dll" "$relDir\stats.dll"
 Copy-Item -Force "$windowsSdkDir\*.dll" "$relDir\"
 Copy-Item -Force "$vsRuntimeDir\*.dll" "$relDir\"
 

@@ -5,10 +5,10 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <NoWarn>$(NoWarn);CA1416</NoWarn>
-    <Platforms>x64</Platforms>
+    <Platforms>x64;x86</Platforms>
     <LangVersion>latest</LangVersion>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
     <ApplicationIcon>SqlNotebookIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
@@ -3321,8 +3321,8 @@
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /Y $(ProjectDir)..\SqlNotebookDb\bin\$(Platform)\$(Configuration)\sqlite3.dll $(TargetDir)sqlite3.dll" />
-    <Exec Command="copy /Y $(ProjectDir)..\..\ext\sqlean\crypto.dll $(TargetDir)crypto.dll" />
-    <Exec Command="copy /Y $(ProjectDir)..\..\ext\sqlean\fuzzy.dll $(TargetDir)fuzzy.dll" />
-    <Exec Command="copy /Y $(ProjectDir)..\..\ext\sqlean\stats.dll $(TargetDir)stats.dll" />
+    <Exec Command="copy /Y $(ProjectDir)..\crypto\bin\$(Platform)\$(Configuration)\crypto.dll $(TargetDir)crypto.dll" />
+    <Exec Command="copy /Y $(ProjectDir)..\fuzzy\bin\$(Platform)\$(Configuration)\fuzzy.dll $(TargetDir)fuzzy.dll" />
+    <Exec Command="copy /Y $(ProjectDir)..\stats\bin\$(Platform)\$(Configuration)\stats.dll $(TargetDir)stats.dll" />
   </Target>
 </Project>
