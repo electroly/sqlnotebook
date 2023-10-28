@@ -58,7 +58,7 @@ Write-Output "Restoring source dependencies."
 & ps1\Update-Deps.ps1
 
 Write-Output "Restoring NuGet dependencies."
-cd src\SqlNotebook
+Push-Location src\SqlNotebook
 & "$MsbuildPath" /verbosity:quiet /t:restore /p:Configuration=Release /p:Platform=$Platform /p:PublishReadyToRun=true SqlNotebook.csproj
 
 Write-Output "Building sqlite3."
@@ -104,6 +104,7 @@ foreach ($dir in [System.IO.Directory]::GetDirectories($relDir)) {
     }
 }
 
+Pop-Location
 Push-Location $relDir
 
 $msiFilename = "SQLNotebook.msi"
