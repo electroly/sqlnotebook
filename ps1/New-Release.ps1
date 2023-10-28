@@ -61,8 +61,17 @@ Write-Output "Restoring NuGet dependencies."
 cd src\SqlNotebook
 & "$MsbuildPath" /verbosity:quiet /t:restore /p:Configuration=Release /p:Platform=$Platform /p:PublishReadyToRun=true SqlNotebook.csproj
 
-Write-Output "Building SQLite."
+Write-Output "Building sqlite3."
 & "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$Platform ..\SqlNotebookDb\SqlNotebookDb.vcxproj
+
+Write-Output "Building crypto."
+& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$Platform ..\crypto\crypto.vcxproj
+
+Write-Output "Building fuzzy."
+& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$Platform ..\fuzzy\fuzzy.vcxproj
+
+Write-Output "Building stats."
+& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$Platform ..\stats\stats.vcxproj
 
 Write-Output "Publishing."
 & "$MsbuildPath" /verbosity:quiet /t:publish /p:Configuration=Release /p:Platform=$Platform /p:PublishProfile=FolderProfile SqlNotebook.csproj
