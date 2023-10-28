@@ -59,7 +59,7 @@ Write-Output "Restoring source dependencies."
 
 Write-Output "Restoring NuGet dependencies."
 Push-Location src\SqlNotebook
-& "$MsbuildPath" /verbosity:quiet /t:restore /p:Configuration=Release /p:Platform=$Platform /p:PublishReadyToRun=true SqlNotebook.csproj
+& "$MsbuildPath" /verbosity:quiet /t:restore /p:Configuration=Release /p:Platform=$Platform /p:RuntimeIdentifier=win-$Platform /p:PublishReadyToRun=true SqlNotebook.csproj
 
 Write-Output "Building sqlite3."
 & "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$Platform ..\SqlNotebookDb\SqlNotebookDb.vcxproj
@@ -74,7 +74,7 @@ Write-Output "Building stats."
 & "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$Platform ..\stats\stats.vcxproj
 
 Write-Output "Publishing."
-& "$MsbuildPath" /verbosity:quiet /t:publish /p:Configuration=Release /p:Platform=$Platform /p:PublishProfile=FolderProfile SqlNotebook.csproj
+& "$MsbuildPath" /verbosity:quiet /t:publish /p:Configuration=Release /p:Platform=$Platform /p:RuntimeIdentifier=win-$Platform /p:PublishProfile=FolderProfile SqlNotebook.csproj
 
 Write-Output "Creating release."
 $ps1Dir = $PSScriptRoot
