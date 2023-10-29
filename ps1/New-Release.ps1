@@ -160,6 +160,11 @@ for ($i = 5; $i -lt $heatLines.Length; $i++) {
 $filesXml = $filesXml.Substring(0, $filesXml.LastIndexOf('</Directory>')).Replace("<Component ", '<Component Win64="yes" ')
 
 $wxs = (Get-Content "$srcdir\SqlNotebook.wxs").Replace("<!--FILES-->", $filesXml).Replace("<!--REFS-->", $refsXml).Replace("<!--PLATFORM-->", $Platform)
+
+if ($Platform -eq 'x86') {
+    $wxs = $wxs.Replace('Win64="yes"', '').Replace('ProgramFiles64Folder', 'ProgramFilesFolder')
+}
+
 Set-Content "$relDir\SqlNotebook.wxs" $wxs
 
 & "$wixDir\candle.exe" -nologo -pedantic "$relDir\SqlNotebook.wxs" | Write-Output
