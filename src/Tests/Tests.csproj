@@ -36,12 +36,6 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Scripts\doc\break-stmt-1.sql">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /Y $(ProjectDir)..\SqlNotebookDb\bin\$(Platform)\$(Configuration)\sqlite3.dll $(TargetDir)sqlite3.dll" />
     <Exec Command="copy /Y $(ProjectDir)..\crypto\bin\$(Platform)\$(Configuration)\crypto.dll $(TargetDir)crypto.dll" />
