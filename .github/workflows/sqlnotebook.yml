@@ -26,14 +26,14 @@ jobs:
         Write-Output "Building x64."
         ps1\Clear-TempFiles.ps1
         ps1\New-Release.ps1 -MsbuildPath $msbuildPath -CertificatePath $certificatePath -CertificatePassword $certificatePassword -Platform x64
-        Move-Item src/SqlNotebook/bin/SqlNotebook.msi SqlNotebook-x64.msi
-        Move-Item src/SqlNotebook/bin/SqlNotebook.zip SqlNotebook-x64.zip
+        Move-Item src/SqlNotebook/bin/SqlNotebook.msi SqlNotebook-64bit.msi
+        Move-Item src/SqlNotebook/bin/SqlNotebook.zip SqlNotebook-64bit.zip
 
         Write-Output "Building x86."
         ps1\Clear-TempFiles.ps1
         ps1\New-Release.ps1 -MsbuildPath $msbuildPath -CertificatePath $certificatePath -CertificatePassword $certificatePassword -Platform x86
-        Move-Item src/SqlNotebook/bin/SqlNotebook.msi SqlNotebook-x86.msi
-        Move-Item src/SqlNotebook/bin/SqlNotebook.zip SqlNotebook-x86.zip
+        Move-Item src/SqlNotebook/bin/SqlNotebook.msi SqlNotebook-32bit.msi
+        Move-Item src/SqlNotebook/bin/SqlNotebook.zip SqlNotebook-32bit.zip
 
     - name: Upload x64 MSI
       uses: actions/upload-artifact@v3
