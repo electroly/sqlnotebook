@@ -71,76 +71,196 @@ internal static class NativeMethods
     [DllImport("kernel32.dll", EntryPoint = "RtlZeroMemory", SetLastError = false)]
     public static extern void ZeroMemory(IntPtr dest, IntPtr size);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "SxGetToken", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "SxGetToken",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int SxGetToken(IntPtr z, IntPtr tokenType);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_initialize", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_initialize",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_initialize();
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_shutdown", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_shutdown",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_shutdown();
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_open", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_open",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_open(IntPtr zFilename, IntPtr ppDb);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_open_v2", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_open_v2",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_open_v2(IntPtr filename, IntPtr ppDb, int flags, IntPtr zVfs);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_close", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_close",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_close(IntPtr db);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_malloc", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_malloc",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern IntPtr sqlite3_malloc(int n);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_free", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_free",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern void sqlite3_free(IntPtr p);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_errmsg16", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_errmsg16",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern IntPtr sqlite3_errmsg16(IntPtr db);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_declare_vtab", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_declare_vtab",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_declare_vtab(IntPtr db, IntPtr zCreateTable);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_value_type", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_value_type",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_value_type(IntPtr pVal);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_value_int64", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_value_int64",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern long sqlite3_value_int64(IntPtr pVal);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_value_double", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_value_double",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern double sqlite3_value_double(IntPtr pVal);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_value_text16", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_value_text16",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern IntPtr sqlite3_value_text16(IntPtr pVal);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_value_bytes", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_value_bytes",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_value_bytes(IntPtr pVal);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_value_blob", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_value_blob",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern IntPtr sqlite3_value_blob(IntPtr pVal);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_result_text16", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_result_text16",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern void sqlite3_result_text16(IntPtr pCtx, IntPtr z, int n, IntPtr xDel);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_result_blob64", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_result_blob64",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern void sqlite3_result_blob64(IntPtr pCtx, IntPtr z, ulong n, IntPtr xDel);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_result_null", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_result_null",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern void sqlite3_result_null(IntPtr pCtx);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_result_int", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_result_int",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern void sqlite3_result_int(IntPtr pCtx, int iVal);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_result_int64", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_result_int64",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern void sqlite3_result_int64(IntPtr pCtx, long iVal);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_result_double", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_result_double",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern void sqlite3_result_double(IntPtr pCtx, double rVal);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_result_error16", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_result_error16",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern void sqlite3_result_error16(IntPtr pCtx, IntPtr z, int n);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_create_module_v2", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_create_module_v2",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_create_module_v2(
         IntPtr db,
         IntPtr zName,
@@ -149,7 +269,12 @@ internal static class NativeMethods
         IntPtr xDestroy
     );
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_create_function_v2", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_create_function_v2",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_create_function_v2(
         IntPtr db,
         IntPtr zFunc,
@@ -162,96 +287,251 @@ internal static class NativeMethods
         IntPtr xDestroy
     );
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_user_data", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_user_data",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern IntPtr sqlite3_user_data(IntPtr pCtx);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_prepare_v2", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_prepare_v2",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_prepare_v2(IntPtr db, IntPtr zSql, int nBytes, IntPtr ppStmt, IntPtr pzTail);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_prepare16_v2", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_prepare16_v2",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_prepare16_v2(IntPtr db, IntPtr zSql, int nBytes, IntPtr ppStmt, IntPtr pzTail);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_reset", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_reset",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_reset(IntPtr pStmt);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_clear_bindings", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_clear_bindings",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_clear_bindings(IntPtr pStmt);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_bind_parameter_count", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_bind_parameter_count",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_bind_parameter_count(IntPtr pStmt);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_bind_parameter_name", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_bind_parameter_name",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern IntPtr sqlite3_bind_parameter_name(IntPtr pStmt, int i);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_bind_null", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_bind_null",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_bind_null(IntPtr pStmt, int i);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_bind_int", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_bind_int",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_bind_int(IntPtr pStmt, int i, int iValue);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_bind_int64", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_bind_int64",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_bind_int64(IntPtr pStmt, int i, long iValue);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_bind_double", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_bind_double",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_bind_double(IntPtr pStmt, int i, double rValue);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_bind_blob64", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_bind_blob64",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_bind_blob64(IntPtr pStmt, int i, IntPtr zData, ulong nData, IntPtr xDel);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_bind_text16", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_bind_text16",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_bind_text16(IntPtr pStmt, int i, IntPtr zData, int nData, IntPtr xDel);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_step", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_step",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_step(IntPtr pStmt);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_column_count", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_column_count",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_column_count(IntPtr pStmt);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_column_name16", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_column_name16",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern IntPtr sqlite3_column_name16(IntPtr pStmt, int N);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_column_type", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_column_type",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_column_type(IntPtr pStmt, int i);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_column_int", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_column_int",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_column_int(IntPtr pStmt, int i);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_column_int64", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_column_int64",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern long sqlite3_column_int64(IntPtr pStmt, int i);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_column_double", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_column_double",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern double sqlite3_column_double(IntPtr pStmt, int i);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_column_text16", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_column_text16",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern IntPtr sqlite3_column_text16(IntPtr pStmt, int i);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_column_blob", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_column_blob",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern IntPtr sqlite3_column_blob(IntPtr pStmt, int i);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_column_bytes", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_column_bytes",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_column_bytes(IntPtr pStmt, int i);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_finalize", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_finalize",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_finalize(IntPtr pStmt);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_interrupt", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_interrupt",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern void sqlite3_interrupt(IntPtr db);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_get_autocommit", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_get_autocommit",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_get_autocommit(IntPtr db);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_series_init", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_series_init",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_series_init(IntPtr db, IntPtr pzErrMsg, IntPtr pApi);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_uuid_init", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_uuid_init",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_uuid_init(IntPtr db, IntPtr pzErrMsg, IntPtr pApi);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_enable_load_extension", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_enable_load_extension",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_enable_load_extension(IntPtr db, int onoff);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_load_extension", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_load_extension",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_load_extension(IntPtr db, IntPtr zFile, IntPtr zProc, IntPtr pzErrMsg);
 
-    [DllImport(SQLITE_DLL, EntryPoint = "sqlite3_error_offset", SetLastError = false)]
+    [DllImport(
+        SQLITE_DLL,
+        EntryPoint = "sqlite3_error_offset",
+        SetLastError = false,
+        CallingConvention = CallingConvention.Cdecl
+    )]
     public static extern int sqlite3_error_offset(IntPtr db);
 }

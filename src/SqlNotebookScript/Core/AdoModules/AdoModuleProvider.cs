@@ -58,6 +58,7 @@ public abstract class AdoModuleProvider : IDisposable
 
     private static readonly UTF8Encoding _utf8 = new(false);
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void FreeDelegate(IntPtr p);
 
     private static readonly Lazy<(IntPtr Ptr, FreeDelegate Delegate)> _freeFunc =
@@ -84,6 +85,7 @@ public abstract class AdoModuleProvider : IDisposable
     /// </summary>
     protected static readonly Dictionary<int, AdoCreateInfo> _adoCreateInfos = new();
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void RemoveCreateInfoDelegate(IntPtr p);
 
     private static readonly Lazy<(IntPtr Ptr, RemoveCreateInfoDelegate Delegate)> _removeCreateInfoFunc =

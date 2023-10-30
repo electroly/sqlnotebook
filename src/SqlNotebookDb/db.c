@@ -50,6 +50,8 @@
 
 // Compiler Linkage and Calling Convention Control
 #define SQLITE_API __declspec(dllexport)
+#define SQLITE_CDECL __cdecl
+#define SQLITE_APICALL __cdecl
 
 #include "sqlite3.c"
 

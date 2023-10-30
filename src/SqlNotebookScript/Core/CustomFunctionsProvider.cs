@@ -7,6 +7,7 @@ namespace SqlNotebookScript.Core;
 
 public static class CustomFunctionsProvider
 {
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void InvokeAction(IntPtr context, int argc, IntPtr argv);
 
     /// <remarks>We need to keep these alive since they are unmanaged callbacks.</remarks>

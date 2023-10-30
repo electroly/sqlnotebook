@@ -13,7 +13,9 @@ namespace SqlNotebookScript.Core;
 
 public sealed class PreparedStatement : IDisposable
 {
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void FreeDelegate(IntPtr p);
+
     private static readonly Lazy<(IntPtr Ptr, FreeDelegate Delegate)> _freeFunc =
         new(() =>
         {

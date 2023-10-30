@@ -17,6 +17,7 @@ public sealed class GenericModuleProvider : IDisposable
     /// </summary>
     private static readonly Dictionary<int, CustomTableFunction> _customTableFunctions = new();
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void RemoveCustomTableFunctionDelegate(IntPtr p);
 
     private static readonly Lazy<(

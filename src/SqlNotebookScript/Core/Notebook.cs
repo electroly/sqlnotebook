@@ -22,7 +22,9 @@ public sealed class Notebook : IDisposable
     // We disable all synchronization in SQLite, so this lock protects any call into SQLite.
     private static readonly object _lock = new();
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void ExecuteGenericFunctionDelegate(IntPtr a, int b, IntPtr c);
+
     private static readonly Lazy<(IntPtr Ptr, ExecuteGenericFunctionDelegate Delegate)> _executeGenericFunctionFunc =
         new(() =>
         {
@@ -253,6 +255,7 @@ public sealed class Notebook : IDisposable
         }
     }
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate object GenericFunctionExecuteDelegate(IReadOnlyList<object> args);
 
     private void RegisterGenericFunction(CustomScalarFunction scalarFunction)

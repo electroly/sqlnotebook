@@ -6,6 +6,7 @@ namespace SqlNotebookScript.Core.SqliteInterop;
 
 public static class SqliteUtil
 {
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void FreeDelegate(IntPtr p);
 
     private static readonly Lazy<(IntPtr Ptr, FreeDelegate Delegate)> _freeFunc =
