@@ -38,23 +38,23 @@ jobs:
     - name: Upload x64 MSI
       uses: actions/upload-artifact@v3
       with:
-        name: SqlNotebook-x64.msi
-        path: SqlNotebook-x64.msi
+        name: SqlNotebook-64bit.msi
+        path: SqlNotebook-64bit.msi
 
     - name: Upload x64 ZIP
       uses: actions/upload-artifact@v3
       with:
-        name: SqlNotebook-x64.zip
-        path: SqlNotebook-x64.zip
+        name: SqlNotebook-64bit.zip
+        path: SqlNotebook-64bit.zip
 
     - name: Upload x86 MSI
       uses: actions/upload-artifact@v3
       with:
-        name: SqlNotebook-x86.msi
-        path: SqlNotebook-x86.msi
+        name: SqlNotebook-32bit.msi
+        path: SqlNotebook-32bit.msi
 
     - name: Upload x86 ZIP
       uses: actions/upload-artifact@v3
       with:
-        name: SqlNotebook-x86.zip
-        path: SqlNotebook-x86.zip
+        name: SqlNotebook-32bit.zip
+        path: SqlNotebook-32bit.zip
