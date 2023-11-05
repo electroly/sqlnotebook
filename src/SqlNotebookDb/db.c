@@ -40,6 +40,7 @@
 #define SQLITE_ENABLE_STMTVTAB 1
 #define SQLITE_ENABLE_STAT4 1
 #define SQLITE_SOUNDEX 1
+#define SQLITE_USE_SEH 1
 
 // Options To Omit Features
 #define SQLITE_OMIT_DESERIALIZE 1

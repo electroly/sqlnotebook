@@ -1,11 +1,11 @@
 # Downloads non-NuGet deps
 
-$sqliteCodeUrl = 'https://sqlite.org/2023/sqlite-amalgamation-3430100.zip'
-$sqliteCodeHash = '7E634BBD4B2870A83DC7C1E3CC02E4D30B8555CD7DB7B332F24E0C447FD0DD16'
-$sqliteDocUrl = 'https://sqlite.org/2023/sqlite-doc-3430100.zip'
-$sqliteDocHash = 'DE4E2B6489F3EF4F7068C77D9DF11A7C099851CD2431C457C88EE194EB56D41D'
-$sqliteSrcUrl = 'https://sqlite.org/2023/sqlite-src-3430100.zip'
-$sqliteSrcHash = '22E9C2EF49FE6F8A2DBC93C4D3DCE09C6D6A4F563DE52B0A8171AD49A8C72917'
+$sqliteCodeUrl = 'https://sqlite.org/2023/sqlite-amalgamation-3440000.zip'
+$sqliteCodeHash = '93299C8D2C8397622FE00BD807204B1F58815F45BDA8097BF93B3BF759A3EBAD'
+$sqliteDocUrl = 'https://sqlite.org/2023/sqlite-doc-3440000.zip'
+$sqliteDocHash = '3E3A2DA6FA6F74A1C02292ABE153677C6160AEBFFEE4E9A710FB51437DBEE541'
+$sqliteSrcUrl = 'https://sqlite.org/2023/sqlite-src-3440000.zip'
+$sqliteSrcHash = 'AB9AAE38A11B931F35D8D1C6D62826D215579892E6FFBF89F20BDCE106A9C8C5'
 
 $wapiUrl = 'https://github.com/contre/Windows-API-Code-Pack-1.1/archive/a8377ef8bb6fa95ff8800dd4c79089537087d539.zip'
 $wapiHash = '38E59E6AE3BF0FD0CCB05C026F7332D3B56AF81D8C69A62882D04CABAD5EF4AE'

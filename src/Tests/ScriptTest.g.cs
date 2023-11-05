@@ -9,6 +9,7 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_ALTER_TABLE_DROP_COLUMN_2_sql() => TestScript(@"ALTER TABLE DROP COLUMN 2.sql");
     [TestMethod] public void Test_ALTER_TABLE_RENAME_COLUMN_1_sql() => TestScript(@"ALTER TABLE RENAME COLUMN 1.sql");
     [TestMethod] public void Test_ALTER_TABLE_RENAME_COLUMN_2_sql() => TestScript(@"ALTER TABLE RENAME COLUMN 2.sql");
+    [TestMethod] public void Test_CONCAT_and_CONCAT_WS_sql() => TestScript(@"CONCAT and CONCAT_WS.sql");
     [TestMethod] public void Test_CREATE_TABLE_duplicate_options_sql() => TestScript(@"CREATE TABLE duplicate options.sql");
     [TestMethod] public void Test_CREATE_TABLE_STRICT_sql() => TestScript(@"CREATE TABLE STRICT.sql");
     [TestMethod] public void Test_CREATE_TABLE_WITHOUT_ROWID_sql() => TestScript(@"CREATE TABLE WITHOUT ROWID.sql");
@@ -95,6 +96,8 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_IMPORT_XLS_sql() => TestScript(@"IMPORT XLS.sql");
     [TestMethod] public void Test_IN_table_valued_function_sql() => TestScript(@"IN table-valued function.sql");
     [TestMethod] public void Test_INSERT_RETURNING_sql() => TestScript(@"INSERT RETURNING.sql");
+    [TestMethod] public void Test_JSON_GROUP_ARRAY_with_ORDER_BY_sql() => TestScript(@"JSON_GROUP_ARRAY with ORDER BY.sql");
+    [TestMethod] public void Test_JSON_GROUP_ARRAY_sql() => TestScript(@"JSON_GROUP_ARRAY.sql");
     [TestMethod] public void Test_LIST_FILES_sql() => TestScript(@"LIST_FILES.sql");
     [TestMethod] public void Test_NEWID_sql() => TestScript(@"NEWID.sql");
     [TestMethod] public void Test_NOW_sql() => TestScript(@"NOW.sql");
@@ -108,6 +111,9 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_RETURN_sql() => TestScript(@"RETURN.sql");
     [TestMethod] public void Test_RIGHT_JOIN_sql() => TestScript(@"RIGHT JOIN.sql");
     [TestMethod] public void Test_RIGHT_OUTER_JOIN_sql() => TestScript(@"RIGHT OUTER JOIN.sql");
+    [TestMethod] public void Test_STRFTIME_new_conversion_letters_in_v3_44_0_sql() => TestScript(@"STRFTIME new conversion letters in v3.44.0.sql");
+    [TestMethod] public void Test_STRING_AGG_with_ORDER_BY_sql() => TestScript(@"STRING_AGG with ORDER BY.sql");
+    [TestMethod] public void Test_STRING_AGG_sql() => TestScript(@"STRING_AGG.sql");
     [TestMethod] public void Test_THROW_from_sub_script_sql() => TestScript(@"THROW from sub-script.sql");
     [TestMethod] public void Test_THROW_rethrow_sql() => TestScript(@"THROW rethrow.sql");
     [TestMethod] public void Test_THROW_sql() => TestScript(@"THROW.sql");

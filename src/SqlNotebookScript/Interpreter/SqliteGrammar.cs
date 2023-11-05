@@ -838,7 +838,7 @@ public static class SqliteGrammar
         //      <bind-parameter> |
         //      [ [ database-name "." ] table-name "." ] column-name |
         //      window-function-invocation |
-        //      function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* | "*" ] ")" |
+        //      function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* [ ORDER BY <ordering-term> [ "," <ordering-term> ] ] | "*" ] ")" |
         //      "(" <expr> ["," <expr>]* ")" |
         //      CAST "(" <expr> AS <type-name> ")" |
         //      [ [NOT] EXISTS ] ( <select-stmt> ) |
@@ -850,7 +850,7 @@ public static class SqliteGrammar
             Or(
                 // window-function-invocation -- must be above simple/aggregate function invocation
                 Prod($"{p}.window-function-invocation", 1, SubProd("window-function-invocation")),
-                // expr ::= function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* | "*" ] ")"
+                // expr ::= function-name "(" [ [DISTINCT] <expr> [ "," <expr> ]* [ ORDER BY <ordering-term> [ "," <ordering-term> ] ] | "*" ] ")"
                 // (this is aggregate-function-invocation in the SQLite docs now)
                 Prod(
                     $"{p}.function-call",
@@ -864,7 +864,12 @@ public static class SqliteGrammar
                                 $"{p}.args",
                                 2,
                                 Opt(Tok(TokenType.Distinct)),
-                                Lst($"{p}.arg", TokenType.Comma, 1, SubProd("expr"))
+                                Lst($"{p}.arg", TokenType.Comma, 1, SubProd("expr")),
+                                Opt(
+                                    Tok(TokenType.Order),
+                                    Tok(TokenType.By),
+                                    Lst($"{p}.ordering-term", TokenType.Comma, 1, SubProd("ordering-term"))
+                                )
                             )
                         )
                     ),
