@@ -10,9 +10,9 @@ Set-StrictMode -Version 3
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-# Verify that $Platform is either 'x86' or 'x64'
-if ($Platform -ne 'x86' -and $Platform -ne 'x64') {
-    throw "Platform must be either 'x86' or 'x64'"
+# Verify that $Platform is either 'x86' or 'x64' or 'arm64'
+if ($Platform -ne 'x86' -and $Platform -ne 'x64' -and $Platform -ne 'arm64') {
+    throw "Platform must be either 'x86', 'x64', or 'arm64'."
 }
 
 # Windows SDK 10.0.*.*
@@ -23,7 +23,11 @@ $windowsSdkVersion = `
     Sort-Object Name -Descending | 
     Select-Object -First 1 -ExpandProperty Name
 Write-Output "Windows SDK version: $windowsSdkVersion"
-$windowsSdkDir = Join-Path -Path $windowsSdkBaseDir -ChildPath "$windowsSdkVersion\ucrt\DLLs\$Platform"
+$windowsSdkPlatform = $Platform
+if ($Platform -eq 'arm64') {
+    $windowsSdkPlatform = 'arm'
+}
+$windowsSdkDir = Join-Path -Path $windowsSdkBaseDir -ChildPath "$windowsSdkVersion\ucrt\DLLs\$windowsSdkPlatform"
 if (-not (Test-Path $windowsSdkDir)) {
     throw "Windows 10 SDK $windowsSdkVersion not found!"
 }
@@ -43,12 +47,12 @@ if (-not (Test-Path $vsRuntimeDir)) {
     throw "Visual C++ Redistributable $vsRuntimeVersion not found!"
 }
 
-$wixDir = "C:\Program Files (x86)\WiX Toolset v3.11\bin"
+$wixDir = "C:\Program Files (x86)\WiX Toolset v3.14\bin"
 if (-not (Test-Path $wixDir)) {
     throw "WiX not found!"
 }
 
-$signtool = "C:\Program Files (x86)\Windows Kits\10\bin\$windowsSdkVersion\$Platform\signtool.exe"
+$signtool = "C:\Program Files (x86)\Windows Kits\10\bin\$windowsSdkVersion\x64\signtool.exe"
 if (-not (Test-Path $signtool)) {
     throw "Signtool not found!"
 }
@@ -57,24 +61,47 @@ if (-not (Test-Path $signtool)) {
 Write-Output "Restoring source dependencies."
 & ps1\Update-Deps.ps1
 
+$msbuildPlatform = $Platform
+if ($Platform -eq 'arm64') {
+    $msbuildPlatform = 'ARM64'
+}
+
 Write-Output "Restoring NuGet dependencies."
 Push-Location src\SqlNotebook
-& "$MsbuildPath" /verbosity:quiet /t:restore /p:Configuration=Release /p:Platform=$Platform /p:RuntimeIdentifier=win-$Platform /p:PublishReadyToRun=true SqlNotebook.csproj
+& "$MsbuildPath" /verbosity:quiet /t:restore /p:Configuration=Release /p:Platform=$msbuildPlatform /p:RuntimeIdentifier=win-$Platform /p:PublishReadyToRun=true SqlNotebook.csproj
+if ($LastExitCode -ne 0) {
+    throw "Failed to restore NuGet dependencies."
+}
 
 Write-Output "Building sqlite3."
-& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$Platform ..\SqlNotebookDb\SqlNotebookDb.vcxproj
+& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$msbuildPlatform ..\SqlNotebookDb\SqlNotebookDb.vcxproj
+if ($LastExitCode -ne 0) {
+    throw "Failed to build sqlite3."
+}
 
 Write-Output "Building crypto."
-& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$Platform ..\crypto\crypto.vcxproj
+& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$msbuildPlatform ..\crypto\crypto.vcxproj
+if ($LastExitCode -ne 0) {
+    throw "Failed to build crypto."
+}
 
 Write-Output "Building fuzzy."
-& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$Platform ..\fuzzy\fuzzy.vcxproj
+& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$msbuildPlatform ..\fuzzy\fuzzy.vcxproj
+if ($LastExitCode -ne 0) {
+    throw "Failed to build fuzzy."
+}
 
 Write-Output "Building stats."
-& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$Platform ..\stats\stats.vcxproj
+& "$MsbuildPath" /verbosity:quiet /t:build /p:Configuration=Release /p:Platform=$msbuildPlatform ..\stats\stats.vcxproj
+if ($LastExitCode -ne 0) {
+    throw "Failed to build stats."
+}
 
 Write-Output "Publishing."
-& "$MsbuildPath" /verbosity:quiet /t:publish /p:Configuration=Release /p:Platform=$Platform /p:RuntimeIdentifier=win-$Platform /p:PublishProfile=FolderProfile SqlNotebook.csproj
+& "$MsbuildPath" /verbosity:quiet /t:publish /p:Configuration=Release /p:Platform=$msbuildPlatform /p:RuntimeIdentifier=win-$Platform /p:PublishProfile=FolderProfile SqlNotebook.csproj
+if ($LastExitCode -ne 0) {
+    throw "Failed to publish."
+}
 
 Write-Output "Creating release."
 $ps1Dir = $PSScriptRoot
@@ -117,10 +144,30 @@ rm "$relDir\SqlNotebook.wixobj" -ErrorAction SilentlyContinue
 rm "$relDir\SqlNotebook.wxs" -ErrorAction SilentlyContinue
 
 & $signtool sign /f "$CertificatePath" /p "$CertificatePassword" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\sqlite3.dll" | Write-Output
+if ($LastExitCode -ne 0) {
+    throw "Failed to sign sqlite3.dll."
+}
+
 & $signtool sign /f "$CertificatePath" /p "$CertificatePassword" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\crypto.dll" | Write-Output
+if ($LastExitCode -ne 0) {
+    throw "Failed to sign crypto.dll."
+}
+
 & $signtool sign /f "$CertificatePath" /p "$CertificatePassword" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\fuzzy.dll" | Write-Output
+if ($LastExitCode -ne 0) {
+    throw "Failed to sign fuzzy.dll."
+}
+
 & $signtool sign /f "$CertificatePath" /p "$CertificatePassword" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\stats.dll" | Write-Output
+if ($LastExitCode -ne 0) {
+    throw "Failed to sign stats.dll."
+}
+
 & $signtool sign /f "$CertificatePath" /p "$CertificatePassword" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 "$relDir\SqlNotebook.exe" | Write-Output
+if ($LastExitCode -ne 0) {
+    throw "Failed to sign SqlNotebook.exe."
+}
+
 Copy-Item -Force "$srcdir\SqlNotebook\SqlNotebookIcon.ico" "$relDir\SqlNotebookIcon.ico"
 
 #
@@ -138,6 +185,10 @@ $filesXml = ""
 $refsXml = ""
 
 & "$wixDir\heat.exe" dir . -o "$tempWxsFilePath" -cg SqlNotebookComponentGroup -sfrag -gg -g1 -sreg -svb6 -scom -suid
+if ($LastExitCode -ne 0) {
+    throw "heat failed."
+}
+
 $heatLines = [System.IO.File]::ReadAllLines($tempWxsFilePath)
 Remove-Item $tempWxsFilePath
 $doneWithFilesXml = $false
@@ -168,11 +219,17 @@ if ($Platform -eq 'x86') {
 Set-Content "$relDir\SqlNotebook.wxs" $wxs
 
 & "$wixDir\candle.exe" -nologo -pedantic "$relDir\SqlNotebook.wxs" | Write-Output
+if ($LastExitCode -ne 0) {
+    throw "candle failed."
+}
 if (-not (Test-Path "$relDir\SqlNotebook.wixobj")) {
     throw "candle failed to produce SqlNotebook.wixobj"
 }
 
 & "$wixDir\light.exe" -nologo -pedantic -ext WixUIExtension -cultures:en-us "$relDir\SqlNotebook.wixobj" | Write-Output
+if ($LastExitCode -ne 0) {
+    throw "light failed."
+}
 if (-not (Test-Path "$relDir\SqlNotebook.msi")) {
     throw "light failed to produce SqlNotebook.msi"
 }
@@ -180,5 +237,8 @@ if (-not (Test-Path "$relDir\SqlNotebook.msi")) {
 Move-Item -Force "$relDir\SqlNotebook.msi" $msiFilePath
 
 & $signtool sign /f "$CertificatePath" /p "$CertificatePassword" /tr http://timestamp.sectigo.com /fd SHA256 /td SHA256 /d $msiFilename $msiFilePath | Write-Output
+if ($LastExitCode -ne 0) {
+    throw "Failed to sign $msiFilename."
+}
 
 Pop-Location

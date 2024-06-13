@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -875,6 +876,12 @@ public partial class MainForm : ZForm
                 return (data[0], data[1]);
             }
         );
+
+        var arch = RuntimeInformation.ProcessArchitecture;
+        if (arch == Architecture.Arm64)
+            msiUrl = msiUrl.Replace("-64bit-", "-arm64-");
+        else if (arch == Architecture.X86)
+            msiUrl = msiUrl.Replace("-64bit-", "-32bit-");
 
         var confirmation = Ui.ShowTaskDialog(
             this,

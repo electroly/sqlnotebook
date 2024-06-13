@@ -9,6 +9,7 @@ In AWS, a `c5a.xlarge` instance running Windows Server 2022 will do.
     - Include "Desktop development with C++" workload.
     - Include individual component: Windows Universal CRT SDK
     - Include individual component: Windows Universal C Runtime
+    - Include individual component: MSVC v143 - VS 2022 C++ ARM64/ARM64EC build tools (Latest)
 - Install [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/) with Ubuntu 20.04, and install `tidy`, `unix2dos`, and `pwsh` inside.
     ```
     sudo apt-get update

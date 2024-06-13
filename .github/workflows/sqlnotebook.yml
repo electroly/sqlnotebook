@@ -35,6 +35,12 @@ jobs:
         Move-Item src/SqlNotebook/bin/SqlNotebook.msi SqlNotebook-32bit.msi
         Move-Item src/SqlNotebook/bin/SqlNotebook.zip SqlNotebook-32bit.zip
 
+        Write-Output "Building arm64."
+        ps1\Clear-TempFiles.ps1
+        ps1\New-Release.ps1 -MsbuildPath $msbuildPath -CertificatePath $certificatePath -CertificatePassword $certificatePassword -Platform arm64
+        Move-Item src/SqlNotebook/bin/SqlNotebook.msi SqlNotebook-arm64.msi
+        Move-Item src/SqlNotebook/bin/SqlNotebook.zip SqlNotebook-arm64.zip
+
     - name: Upload x64 MSI
       uses: actions/upload-artifact@v3
       with:
@@ -58,3 +64,15 @@ jobs:
       with:
         name: SqlNotebook-32bit.zip
         path: SqlNotebook-32bit.zip
+
+    - name: Upload arm64 MSI
+      uses: actions/upload-artifact@v3
+      with:
+        name: SqlNotebook-arm64.msi
+        path: SqlNotebook-arm64.msi
+
+    - name: Upload arm64 ZIP
+      uses: actions/upload-artifact@v3
+      with:
+        name: SqlNotebook-arm64.zip
+        path: SqlNotebook-arm64.zip

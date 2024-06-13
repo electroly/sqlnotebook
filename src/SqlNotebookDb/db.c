@@ -15,7 +15,8 @@
 #define SQLITE_OMIT_DEPRECATED 1
 #define SQLITE_OMIT_PROGRESS_CALLBACK 1
 #define SQLITE_OMIT_SHARED_CACHE 1
-#define SQLITE_USE_ALLOCA 1
+// Alloca is recommended but doesn't seem to be available on ARM64, we disable it.
+#undef SQLITE_USE_ALLOCA
 #define SQLITE_OMIT_AUTOINIT 1
 
 // Options To Set Default Parameter Values
