@@ -704,7 +704,7 @@ public abstract class AdoModuleProvider : IDisposable
                 {
                     return SQLITE_INTERRUPT;
                 }
-                Thread.Sleep(100);
+                Thread.Sleep(0);
             }
 
             cursorMetadata.Reader = readerTask.GetAwaiter().GetResult();
