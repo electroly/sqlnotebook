@@ -10,9 +10,9 @@ $sqliteSrcHash = '070362109BEB6899F65797571B98B8824C8F437F5B2926F88EE068D98EF368
 $wapiUrl = 'https://github.com/contre/Windows-API-Code-Pack-1.1/archive/a8377ef8bb6fa95ff8800dd4c79089537087d539.zip'
 $wapiHash = '38E59E6AE3BF0FD0CCB05C026F7332D3B56AF81D8C69A62882D04CABAD5EF4AE'
 
-$sqleanVersion = '0.21.8'
+$sqleanVersion = '0.24.0'
 $sqleanZipUrl = "https://github.com/nalgeon/sqlean/archive/refs/tags/$sqleanVersion.zip"
-$sqleanZipHash = '463DFDE2C784DEEDD08B912AB221B2ADB3FCD484E715E817785795A13C8C3E69'
+$sqleanZipHash = 'B5C349D83EAF7B3F6902678C1E701AE3FE0D639C18DEF2CC87C396EF9000BC14'
 
 $global:ProgressPreference = "SilentlyContinue"
 $ErrorActionPreference = "Stop"
