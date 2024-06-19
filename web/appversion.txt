@@ -1,2 +1,2 @@
-1.2.2
-https://github.com/electroly/sqlnotebook/releases/download/v1.2.2/SQLNotebook-64bit-1.2.2.msi
+1.2.3
+https://github.com/electroly/sqlnotebook/releases/download/v1.2.3/SQLNotebook-64bit-1.2.3.msi
