@@ -381,7 +381,12 @@ public static class SqliteGrammar
         );
 
         // signed-number ::= [ + | - ] numeric-literal
-        TopProd(p = "signed-number", 2, Opt(Or(Tok("+"), Tok("-"))), Or(Tok(TokenType.Integer), Tok(TokenType.Float)));
+        TopProd(
+            p = "signed-number",
+            2,
+            Opt(Or(Tok("+"), Tok("-"))),
+            Or(Tok(TokenType.Integer), Tok(TokenType.Float), Tok(TokenType.Qnumber))
+        );
 
         // table-constraint ::= [ CONSTRAINT name ]
         //      ( ( PRIMARY KEY | UNIQUE ) "(" <indexed-column> [ , <indexed-column> ]* ")"
@@ -971,6 +976,7 @@ public static class SqliteGrammar
             Or(
                 Tok(TokenType.Integer),
                 Tok(TokenType.Float),
+                Tok(TokenType.Qnumber),
                 Tok(TokenType.String),
                 Tok(TokenType.Blob),
                 Tok(TokenType.Null),

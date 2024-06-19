@@ -175,8 +175,8 @@ public enum TokenType
     Truefalse = 170,
     Isnot = 171,
     Function = 172,
-    Uminus = 173,
-    Uplus = 174,
+    Uplus = 173,
+    Uminus = 174,
     Truth = 175,
     Register = 176,
     Vector = 177,
@@ -185,8 +185,9 @@ public enum TokenType
     Asterisk = 180,
     Span = 181,
     Error = 182,
-    Space = 183,
-    Illegal = 184,
+    Qnumber = 183,
+    Space = 184,
+    Illegal = 185,
 }
 
 // we want to add an additional token that SQLite doesn't use but we want to avoid changing the enum

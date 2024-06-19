@@ -117,6 +117,7 @@ public sealed partial class ScriptTest {
     [TestMethod] public void Test_THROW_from_sub_script_sql() => TestScript(@"THROW from sub-script.sql");
     [TestMethod] public void Test_THROW_rethrow_sql() => TestScript(@"THROW rethrow.sql");
     [TestMethod] public void Test_THROW_sql() => TestScript(@"THROW.sql");
+    [TestMethod] public void Test_Underscores_in_numeric_literals_sql() => TestScript(@"Underscores in numeric literals.sql");
     [TestMethod] public void Test_UPDATE_RETURNING_sql() => TestScript(@"UPDATE RETURNING.sql");
     [TestMethod] public void Test_USER_NAME_sql() => TestScript(@"USER_NAME.sql");
     [TestMethod] public void Test_UUID_sql() => TestScript(@"UUID.sql");
