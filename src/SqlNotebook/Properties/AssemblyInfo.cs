@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -35,4 +35,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 
 // this is Application.ProductVersion
-[assembly: AssemblyFileVersion("1.2.2")]
+[assembly: AssemblyFileVersion("1.2.3")]
